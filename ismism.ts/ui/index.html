@@ -10,14 +10,21 @@
 <style>
 	* {
 		box-sizing: border-box;
-		--color-purple: purple;
-		--color-gray: gray;
-		--color-white: darkgray;
+		--color-black: hsl(297, 35%, 11%);
+		--color-purple: hsl(297, 35%, 33%);
+		--color-pink: hsl(335, 56%, 51%);
+		--color-red: hsl(356, 95%, 69%);
+		--color-yellow: hsl(29, 83%, 80%);
+		--color-cyan: hsl(190, 58%, 50%);
+		--color-blue: hsl(195, 93%, 40%);
+		--color-gray: hsl(0, 0%, 90%);
+		--color-white: hsl(0, 0%, 95%);
 		--interval: 20px;
 	}
 
 	body {
 		font-family: "PingFang SC", "Lantinghei SC", "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", STHeitiSC-Light, simsun, "WenQuanYi Zen Hei", "WenQuanYi Micro Hei", sans-serif;
+		color: var(--color-gray);
 		padding: var(--interval);
 		background: var(--color-purple);
 	}
@@ -25,7 +32,7 @@
 	.header {
 		padding: 30px;
 		text-align: center;
-		background: var(--color-gray);
+		background: var(--color-black);
 	}
 
 	.header h1 {
@@ -44,15 +51,24 @@
 	}
 
 	.noimg {
-		background: var(--color-white);
+		background: var(--color-blue);
 		width: 100%;
 		padding: var(--interval);
 	}
 
 	.card {
-		background: var(--color-gray);
+		background: var(--color-black);
 		padding: var(--interval);
 		margin-top: var(--interval);
+	}
+
+	.card .title {
+		color: var(--color-gray);
+	}
+
+	.card .tag {
+		list-style-type: none;
+		color: var(--color-yellow);
 	}
 
 	.row:after {
@@ -62,7 +78,7 @@
 	}
 
 	.footer {
-		background: var(--color-gray);
+		background: var(--color-black);
 		text-align: center;
 		padding: var(--interval);
 		margin-top: var(--interval);
@@ -88,8 +104,8 @@
 	<div class="row">
 		<div class="left">
 			<div class="card">
-				<h2>TITLE HEADING</h2>
-				<h5>Title description, Dec 7, 2017</h5>
+				<h2 class="title">TITLE HEADING</h2>
+				<h5 class="tag">Title description, Dec 7, 2017</h5>
 				<div class="noimg" style="height:200px;">Image</div>
 				<p>Some text..</p>
 				<p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do
@@ -99,8 +115,8 @@
 					ullamco.</p>
 			</div>
 			<div class="card">
-				<h2>TITLE HEADING</h2>
-				<h5>Title description, Sep 2, 2017</h5>
+				<h2 class="title">TITLE HEADING</h2>
+				<h5 class="tag">Title description, Sep 2, 2017</h5>
 				<div class="noimg" style="height:200px;">Image</div>
 				<p>Some text..</p>
 				<p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do
@@ -113,25 +129,22 @@
 
 		<div class="right">
 			<div class="card">
-				<h2>About Me</h2>
-				<div class="noimg" style="height:100px;">Image</div>
-				<p>Some text about me in culpa qui officia deserunt mollit anim..</p>
+				<h3>公示标签</h3>
+				<ul class="tag">
+					<li>#活动公示</li>
+					<li>#信息发布</li>
+					<li>#星星家园</li>
+				</ul>
 			</div>
 			<div class="card">
-				<h3>Popular Post</h3>
-				<div class="noimg">Image</div><br>
-				<div class="noimg">Image</div><br>
-				<div class="noimg">Image</div>
-			</div>
-			<div class="card">
-				<h3>Follow Me</h3>
+				<h3>相关链接</h3>
 				<p>Some text..</p>
 			</div>
 		</div>
 	</div>
 
 	<div class="footer">
-		<h2>Footer</h2>
+		<h2>联系方式</h2>
 	</div>
 </body>
 
