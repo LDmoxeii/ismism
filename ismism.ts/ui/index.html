@@ -19,27 +19,136 @@
 		--color-blue: hsl(195, 93%, 40%);
 		--color-gray: hsl(0, 0%, 90%);
 		--color-white: hsl(0, 0%, 95%);
+		--font-normal: "PingFang SC", "Lantinghei SC", "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", STHeitiSC-Light, simsun, "WenQuanYi Zen Hei", "WenQuanYi Micro Hei", sans-serif;
+		--font-mono: consolas, "Courier New", Courier, monospace;
 		--interval: 20px;
-		--shadow: 6px;
+		--shadow-blur: 6px;
+		--border-radius: 6px;
 	}
 
 	body {
-		font-family: "PingFang SC", "Lantinghei SC", "Helvetica Neue", Helvetica, Arial, "Microsoft YaHei", STHeitiSC-Light, simsun, "WenQuanYi Zen Hei", "WenQuanYi Micro Hei", sans-serif;
+		font-family: var(--font-normal);
 		color: var(--color-gray);
 		padding: var(--interval);
 		background: var(--color-purple);
 	}
 
-	.header {
+	button {
+		border: none;
+	}
+
+	button:hover {
+		cursor: pointer
+	}
+
+	article {
+		background: var(--color-black);
+		padding: var(--interval);
+		margin-top: var(--interval);
+		border-radius: var(--border-radius);
+		box-shadow: var(--color-black) 1px 0 var(--shadow-blur);
+	}
+
+	.banner {
 		padding: 30px;
 		text-align: center;
 		background: var(--color-black);
-		box-shadow: var(--color-black) 1px 0 var(--shadow);
+		border-radius: 0;
+		box-shadow: var(--color-black) 1px 0 var(--shadow-blur);
 	}
 
-	.header h1 {
+	.banner h1 {
 		font-size: 50px;
-		text-shadow: var(--color-red) 1px 0 var(--shadow);
+		text-shadow: var(--color-red) 1px 0 var(--shadow-blur);
+	}
+
+	header {
+		padding: 0;
+		margin: 0;
+	}
+
+	header .title,
+	header .tag,
+	header .stat {
+		display: flex;
+		align-items: center;
+		margin: 0.5ch 0;
+	}
+
+	header .title code,
+	header .title button {
+		text-align: center;
+		border: none;
+		font-size: 16px;
+		color: var(--color-black);
+		background: var(--color-purple);
+		border-radius: var(--border-radius);
+		padding: 0.5ch;
+		height: 3ch;
+	}
+
+	header .title code {
+		font-family: var(--font-mono);
+		margin-right: 1ch;
+	}
+
+	header .title button {
+		margin-left: 0.5ch;
+	}
+
+	header .title h1 {
+		flex-grow: 1;
+		margin: 0;
+	}
+
+	header .tag ul {
+		flex-grow: 1;
+	}
+
+	header .tag span {
+		color: var(--color-purple);
+		font-size: 12px;
+		font-style: italic;
+	}
+
+	header .stat div {
+		text-align: center;
+		border: 1px solid var(--color-purple);
+	}
+
+	header .stat .item {
+		border: none;
+		padding: 0.5ch 1ch;
+		background: var(--color-purple);
+		color: var(--color-black);
+		font-weight: bold;
+	}
+
+	header .stat .item:hover {
+		cursor: pointer;
+	}
+
+	header .stat .value {
+		border: none;
+		padding: 0.5ch 1ch;
+		color: var(--color-cyan);
+	}
+
+	header .stat .value:hover {
+		cursor: pointer;
+	}
+
+	header .stat .sp {
+		flex-grow: 1;
+	}
+
+	header .stat button {
+		font-size: 16px;
+		font-weight: bold;
+		padding: 1ch 2ch;
+		background: var(--color-purple);
+		color: var(--color-blue);
+		border-radius: var(--border-radius);
 	}
 
 	.left {
@@ -65,32 +174,13 @@
 		color: inherit;
 	}
 
-	article {
-		background: var(--color-black);
-		padding: var(--interval);
-		margin-top: var(--interval);
-		border-radius: 6px;
-		box-shadow: var(--color-black) 1px 0 var(--shadow);
-	}
-
-	header {
-		color: var(--color-gray);
-	}
-
-	header h1,
-	header h2,
-	header h3 {
-		display: inline-block;
-	}
-
-	header code {
-		font-family: consolas, "Courier New", Courier, monospace;
-		font-size: 20px;
+	button {
+		color: var(--color-cyan);
 		background: var(--color-purple);
-		border-radius: 6px;
-		color: var(--color-black);
-		padding: 0.5ch;
-		margin-right: 0.5ch;
+	}
+
+	.toggle {
+		float: right;
 	}
 
 	.tag {
@@ -98,6 +188,10 @@
 		padding: 0;
 		color: var(--color-yellow);
 		font-size: 15px;
+	}
+
+	.tag ul {
+		padding: 0;
 	}
 
 	.tag li {
@@ -112,7 +206,7 @@
 
 	footer {
 		background: var(--color-black);
-		box-shadow: var(--color-black) 1px 0 var(--shadow);
+		box-shadow: var(--color-black) 1px 0 var(--shadow-blur);
 		text-align: center;
 		padding: var(--interval);
 		margin-top: var(--interval);
@@ -130,25 +224,54 @@
 </style>
 
 <body>
-	<div class="header">
+	<article class="banner">
 		<h1><a href="">主义主义 <span style="color: var(--color-red);">活动</span>公示</a></h1>
 		<p>This is a slogan.</p>
-	</div>
+	</article>
 
 	<div class="row">
 		<div class="left">
 			<article>
 				<header>
-					<div>
+					<div class="title">
 						<code><a href="#1">#1</a></code>
 						<h1><a href="#1">星星家园扩建</a></h1>
+						<button>🔔订阅</button>
+						<button>■折叠</button>
 					</div>
-					<ul class="tag">
-						<li><a href="#活动公示">#活动公示</a></li>
-						<li><a href="#星星家园">#星星家园</a></li>
-					</ul>
+					<div class="tag">
+						<ul>
+							<li><a href="#活动公示">#活动公示</a></li>
+							<li><a href="#星星家园">#星星家园</a></li>
+						</ul>
+						<span>公示时间： 2022-08-12 12:34:56<br>最后更新： 2022-08-12 12:34:56</span>
+					</div>
+					<div class="stat">
+						<div>
+							<div class="item">活动状态</div>
+							<div class="value">执行中</div>
+						</div>
+						<div>
+							<div class="item">预算</div>
+							<div class="value">6000</div>
+						</div>
+						<div>
+							<div class="item">收到支持</div>
+							<div class="value">6000</div>
+						</div>
+						<div>
+							<div class="item">当前支出</div>
+							<div class="value">1000</div>
+						</div>
+						<div>
+							<div class="item">支持者</div>
+							<div class="value">1000</div>
+						</div>
+						<span class="sp"></span>
+						<button>支持</button>
+					</div>
 				</header>
-				<div>
+				<section>
 					<div class="noimg" style="height:200px;">Image</div>
 					<p>Some text..</p>
 					<p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do
@@ -156,7 +279,7 @@
 						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
 						exercitation
 						ullamco.</p>
-				</div>
+				</section>
 			</article>
 			<article>
 				<header>
