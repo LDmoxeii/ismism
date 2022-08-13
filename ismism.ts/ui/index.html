@@ -24,6 +24,8 @@
 		--interval: 20px;
 		--shadow-blur: 6px;
 		--border-radius: 6px;
+		--transition: 0.2s;
+		--transform: scale(1.25);
 	}
 
 	body {
@@ -71,6 +73,7 @@
 	header .tag,
 	header .stat {
 		display: flex;
+		justify-content: center;
 		align-items: center;
 		margin: 0.5ch 0;
 	}
@@ -93,7 +96,7 @@
 	}
 
 	header .title button {
-		margin-left: 0.5ch;
+		padding: 0 1.5ch;
 	}
 
 	header .title h1 {
@@ -132,10 +135,16 @@
 		border: none;
 		padding: 0.5ch 1ch;
 		color: var(--color-cyan);
+		transition: var(--transition);
 	}
 
 	header .stat .value:hover {
 		cursor: pointer;
+		transform: var(--transform);
+	}
+
+	header .stat .value.final {
+		color: var(--color-yellow)
 	}
 
 	header .stat .sp {
@@ -149,6 +158,19 @@
 		background: var(--color-purple);
 		color: var(--color-blue);
 		border-radius: var(--border-radius);
+		transition: var(--transition);
+	}
+
+	header .stat button:hover {
+		transform: var(--transform);
+	}
+
+	section {
+		margin-top: var(--interval);
+	}
+
+	section img {
+		width: 100%;
 	}
 
 	.left {
@@ -196,6 +218,11 @@
 
 	.tag li {
 		display: inline-block;
+		transition: var(--transition);
+	}
+
+	.tag li:hover {
+		transform: scale(1.2);
 	}
 
 	.row:after {
@@ -237,14 +264,13 @@
 						<code><a href="#1">#1</a></code>
 						<h1><a href="#1">星星家园扩建</a></h1>
 						<button>🔔订阅</button>
-						<button>■折叠</button>
 					</div>
 					<div class="tag">
 						<ul>
 							<li><a href="#活动公示">#活动公示</a></li>
 							<li><a href="#星星家园">#星星家园</a></li>
 						</ul>
-						<span>公示时间： 2022-08-12 12:34:56<br>最后更新： 2022-08-12 12:34:56</span>
+						<span>公示时间： 2022-08-12 12:34:56<br>更新时间： 2022-08-12 12:34:56</span>
 					</div>
 					<div class="stat">
 						<div>
@@ -257,7 +283,7 @@
 						</div>
 						<div>
 							<div class="item">收到支持</div>
-							<div class="value">6000</div>
+							<div class="value final">6000</div>
 						</div>
 						<div>
 							<div class="item">当前支出</div>
@@ -265,14 +291,19 @@
 						</div>
 						<div>
 							<div class="item">支持者</div>
-							<div class="value">1000</div>
+							<div class="value final">1000</div>
 						</div>
 						<span class="sp"></span>
 						<button>支持</button>
 					</div>
 				</header>
 				<section>
-					<div class="noimg" style="height:200px;">Image</div>
+					<img src="./1-0.jpg">
+					<h2>活动介绍</h2>
+					<h2>预算与筹备</h2>
+					<h2>参与人员</h2>
+					<h2>执行情况</h2>
+					<h2><i>后续回访（未开始）</i></h2>
 					<p>Some text..</p>
 					<p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do
 						eiusmod
