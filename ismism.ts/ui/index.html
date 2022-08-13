@@ -43,7 +43,8 @@
 		cursor: pointer
 	}
 
-	article {
+	article,
+	footer {
 		background: var(--color-black);
 		padding: var(--interval);
 		margin-top: var(--interval);
@@ -196,15 +197,6 @@
 		color: inherit;
 	}
 
-	button {
-		color: var(--color-cyan);
-		background: var(--color-purple);
-	}
-
-	.toggle {
-		float: right;
-	}
-
 	.tag {
 		list-style: none;
 		padding: 0;
@@ -231,12 +223,99 @@
 		clear: both;
 	}
 
-	footer {
-		background: var(--color-black);
-		box-shadow: var(--color-black) 1px 0 var(--shadow-blur);
-		text-align: center;
+	#shade {
+		position: fixed;
+		z-index: 100;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: black;
+		transition: var(--transition);
+		opacity: 0.3;
+	}
+
+	#info {
+		position: fixed;
+		z-index: 101;
 		padding: var(--interval);
-		margin-top: var(--interval);
+		border: 2px solid var(--color-black);
+		border-radius: var(--border-radius);
+		box-shadow: var(--color-black) 0 0 32px;
+		top: 20vh;
+		height: 60vh;
+		left: 20vw;
+		width: 60vw;
+		overflow-y: scroll;
+		background: var(--color-purple);
+	}
+
+	#info h3 {
+		text-align: center;
+		padding: 0;
+		margin-top: 0;
+	}
+
+	#stage,
+	#budget {
+		margin-bottom: var(--interval);
+	}
+
+	#stage {
+		text-align: center;
+	}
+
+	#stage .done,
+	#stage .going,
+	#stage .plan {
+		padding: 0.5ch 1ch;
+		border-radius: var(--border-radius);
+	}
+
+	#stage .done {
+		border: 2px solid var(--color-yellow);
+		background: var(--color-black);
+		color: var(--color-yellow);
+		box-shadow: var(--color-black) 0 1px var(--shadow-blur);
+	}
+
+	#stage .going {
+		border: 2px solid var(--color-cyan);
+		background: var(--color-black);
+		color: var(--color-cyan);
+		box-shadow: var(--color-black) 0 1px var(--shadow-blur);
+	}
+
+	#stage .plan {
+		border: 2px dashed var(--color-cyan);
+	}
+
+	#budget table {
+		margin: auto;
+		border-collapse: collapse;
+	}
+
+	#budget table,
+	#budget th,
+	#budget td {
+		padding: 0.5ch 1ch;
+		border: 2px solid var(--color-black);
+		text-align: center;
+	}
+
+	#budget th {
+		background: var(--color-black);
+		color: var(--color-purple);
+	}
+
+	#budget table a {
+		font-size: 14px;
+		color: var(--color-blue);
+		text-decoration: underline;
+	}
+
+	#budget table a:hover {
+		color: var(--color-yellow);
 	}
 
 	@media screen and (max-width: 800px) {
@@ -314,23 +393,24 @@
 			</article>
 			<article>
 				<header>
-					<div>
-						<code><a href="#0">#0</a></code>
+					<div class="title">
+						<code><a href="#0">#1</a></code>
 						<h1><a href="#0">网站说明</a></h1>
 					</div>
-					<ul class="tag">
-						<li><a href="#信息公示">#信息公示</a></li>
-					</ul>
+					<div class="tag">
+						<ul>
+							<li><a href="#信息公示">#信息公示</a></li>
+						</ul>
+						<span>公示时间： 2022-08-12 12:34:56<br>更新时间： 2022-08-12 12:34:56</span>
+					</div>
 				</header>
-				<div>
-					<div class="noimg" style="height:200px;">Image</div>
-					<p>Some text..</p>
+				<section>
 					<p>Sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do
 						eiusmod
 						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
 						exercitation
 						ullamco.</p>
-				</div>
+				</section>
 			</article>
 		</div>
 
@@ -354,6 +434,90 @@
 	<footer>
 		<h2>联系方式</h2>
 	</footer>
+
+	<div id="shade"></div>
+	<div id="info">
+		<div id="stage">
+			<h3>活动状态</h3>
+			<span class="done">筹备</span>
+			➡ <span class="going">执行</span>
+			➡ <span class="plan">回访</span>
+			➡ <span class="plan">完成</span>
+		</div>
+		<div id="budget">
+			<h3>预算与当前支出</h3>
+			<table>
+				<tr>
+					<th>款项</th>
+					<th>预算</th>
+					<th>当前支出</th>
+					<th>备注</th>
+				</tr>
+				<tr>
+					<td>油漆</td>
+					<td>500</td>
+					<td>0</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>吊顶</td>
+					<td>500</td>
+					<td>500</td>
+					<td><a href="">查看票据</a></td>
+				</tr>
+				<tr>
+					<td>地板贴</td>
+					<td>600</td>
+					<td>0</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>铝塑板</td>
+					<td>500</td>
+					<td>500</td>
+					<td><a href="">查看票据</a></td>
+				</tr>
+				<tr>
+					<td>灯具</td>
+					<td>300</td>
+					<td>0</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>课桌椅</td>
+					<td>1000</td>
+					<td>0</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>人工</td>
+					<td>900</td>
+					<td>0</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>杂费</td>
+					<td>1700</td>
+					<td>0</td>
+					<td></td>
+				</tr>
+				<tr style="color: var(--color-yellow); font-style: italic; font-weight: bold;">
+					<td>合计</td>
+					<td>6000</td>
+					<td>1000</td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div id="supporter">
+			<h3>支持者</h3>
+			<ul>
+				<li>徽章买家（1000名）：3000</li>
+				<li>其它：3000</li>
+			</ul>
+			<p style="color: var(--color-yellow);">* 待网站开放用户功能后，将邀请支持者注册账号，并展示支持者名单。</p>
+		</div>
+	</div>
 </body>
 
 <script src="bind.js"></script>
