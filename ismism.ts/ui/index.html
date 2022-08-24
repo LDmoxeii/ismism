@@ -10,8 +10,188 @@
 </head>
 
 <style>
+	* {
+		--cl-white: #fff;
+		--cl-light-gray: #f1f1f1;
+		--cl-dark-gray: #616161;
+		--cl-black: #000;
+		--cl-red: #f44336;
+		--small: 12px;
+		--normal: 15px;
+		--large: 18px;
+	}
+
+	.light-gray {
+		color: var(--cl-black) !important;
+		border-color: var(--cl-black) !important;
+		background-color: var(--cl-light-gray) !important;
+	}
+
+	.dark-gray {
+		color: var(--cl-white) !important;
+		border-color: var(--cl-dark-gray) !important;
+		background-color: var(--cl-dark-gray) !important;
+	}
+
+	html {
+		box-sizing: border-box;
+		overflow-x: hidden;
+	}
+
+	body {
+		margin: 0;
+		font-family: Verdana, sans-serif;
+		font-size: var(--normal);
+		line-height: 1.5;
+	}
+
+	h1 {
+		font-size: 36px
+	}
+
+	h2 {
+		font-size: 30px
+	}
+
+	h3 {
+		font-size: 24px
+	}
+
+	h4 {
+		font-size: 20px
+	}
+
+	h5 {
+		font-size: 18px
+	}
+
+	h6 {
+		font-size: 16px
+	}
+
+	hr {
+		box-sizing: content-box;
+		height: 0;
+		overflow: visible;
+	}
+
+	code {
+		font-family: monospace, monospace;
+		font-size: 1em;
+	}
+
 	a {
 		text-decoration: none;
+	}
+
+	header {
+		padding-top: 32px;
+		padding-bottom: 16px;
+		text-align: center;
+	}
+
+	header .tag {
+		margin: 16px 32px;
+	}
+
+	.tag a {
+		border-width: 1px;
+		border-style: solid;
+		border-radius: 6px;
+		margin-right: 6px;
+		margin-bottom: 6px;
+	}
+
+	.tag a,
+	button {
+		display: inline-block;
+		padding: 5px 10px;
+		vertical-align: middle;
+		overflow: hidden;
+		text-decoration: none;
+		text-align: center;
+		cursor: pointer;
+		white-space: nowrap;
+		user-select: none;
+		color: inherit;
+		background-color: inherit;
+	}
+
+	.tag span {
+		display: inline-block;
+		padding-left: 8px;
+		padding-right: 8px;
+		text-align: center;
+		border-radius: 50%;
+		font-size: var(--small);
+		color: var(--cl-white);
+		background-color: var(--cl-black);
+	}
+
+	button {
+		border: none;
+	}
+
+	button:hover,
+	.tag a:hover {
+		color: var(--cl-white) !important;
+		border-color: var(--cl-dark-gray) !important;
+		background-color: var(--cl-dark-gray) !important;
+		opacity: 0.7;
+	}
+
+	.padding {
+		padding: 0.01em 16px;
+	}
+
+	.banner {
+		position: relative;
+		padding: 0.01em 16px;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
+	}
+
+	.banner button {
+		font-size: large;
+	}
+
+	.topright {
+		position: absolute;
+		right: 0;
+		top: 0
+	}
+
+	.animate-left {
+		position: relative;
+		animation: animateleft 0.4s
+	}
+
+	@keyframes animateleft {
+		from {
+			left: -300px;
+			opacity: 0
+		}
+
+		to {
+			left: 0;
+			opacity: 1
+		}
+	}
+
+	.animate-right {
+		position: relative;
+		animation: animateright 0.4s
+	}
+
+	@keyframes animateright {
+		from {
+			right: -300px;
+			opacity: 0
+		}
+
+		to {
+			right: 0;
+			opacity: 1
+		}
 	}
 
 </style>
@@ -19,36 +199,24 @@
 <script>
 </script>
 
-<body class="w3-light-grey">
-	<div class="w3-dark-grey w3-container w3-display-container w3-card w3-animate-right">
-		<span onclick="this.parentElement.style.display='none'"
-			class="w3-button w3-large w3-display-topright">&times;</span>
+<body class="light-gray">
+	<div class="dark-gray banner animate-right">
+		<button onclick="this.parentElement.style.display='none'" class="dark-gray topright">&times;</button>
 		<h3>提示!</h3>
 		<p>网站开发中。当前页面皆为测试内容。</p>
 	</div>
 
-	<header class="w3-container w3-center w3-padding-16 w3-animate-left">
-		<a class="" href="">
-			<h1><b>主义主义 <span class="w3-text-red">活动</span>公示</b></h1>
+	<header class="animate-left">
+		<a href="">
+			<h1><b>主义主义 <span style="color: var(--cl-red)">活动</span>公示</b></h1>
 		</a>
 		<hr>
-		<div class="w3-container w3-margin">
-			<a class="w3-button w3-margin-bottom w3-padding-small w3-dark-grey w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-				href="#全部标签">全部标签 <span class="w3-badge w3-small w3-black">2</span></a>
-			<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-				href="#设施建设">设施建设 <span class="w3-badge w3-small w3-grey">1</span></a>
-			<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-				href="#设施建设">物资配给 <span class="w3-badge w3-small w3-grey">1</span></a>
-			<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-				href="#软件开发">软件开发 <span class="w3-badge w3-small w3-grey">1</span></a>
-			<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-				href="#苏州">苏州 <span class="w3-badge w3-small w3-grey">1</span></a>
-			<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-				href="#成都">成都 <span class="w3-badge w3-small w3-grey">1</span></a>
-			<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-				href="#星星家园">星星家园 <span class="w3-badge w3-small w3-grey">1</span></a>
-			<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-				href="#主义主义网站">主义主义网站 <span class="w3-badge w3-small w3-grey">1</span></a>
+		<div class="tag">
+			<a class="dark-gray" href="#全部标签">全部标签 <span>2</span></a><a class="light-gray" href="#设施建设">设施建设
+				<span>1</span></a><a class="light-gray" href="#设施建设">物资配给 <span>1</span></a><a class="light-gray"
+				href="#软件开发">软件开发 <span>1</span></a><a class="light-gray" href="#苏州">苏州 <span>1</span></a><a
+				class="light-gray" href="#成都">成都 <span>1</span></a><a class="light-gray" href="#星星家园">星星家园
+				<span>1</span></a><a class="light-gray" href="#主义主义网站">主义主义网站 <span>1</span></a>
 		</div>
 	</header>
 
