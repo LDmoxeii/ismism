@@ -76,7 +76,7 @@
 	}
 
 	code {
-		font-family: monospace, monospace;
+		font-family: monospace;
 		font-size: 1em;
 	}
 
@@ -87,7 +87,7 @@
 	header {
 		padding-top: 32px;
 		padding-bottom: 16px;
-		max-width: 1140px;
+		max-width: 1400px;
 		margin-left: auto;
 		margin-right: auto;
 		text-align: center;
@@ -103,6 +103,21 @@
 		border-radius: 6px;
 		margin-right: 6px;
 		margin-bottom: 6px;
+		color: var(--cl-black);
+		border-color: var(--cl-black);
+		background-color: var(--cl-light-gray);
+	}
+
+	.tag span {
+		display: inline-block;
+		padding-left: 8px;
+		padding-right: 8px;
+		margin-left: 0.75ch;
+		text-align: center;
+		border-radius: 50%;
+		font-size: var(--small);
+		color: var(--cl-white);
+		background-color: var(--cl-black);
 	}
 
 	.tag a,
@@ -118,17 +133,6 @@
 		user-select: none;
 		color: inherit;
 		background-color: inherit;
-	}
-
-	.tag span {
-		display: inline-block;
-		padding-left: 8px;
-		padding-right: 8px;
-		text-align: center;
-		border-radius: 50%;
-		font-size: var(--small);
-		color: var(--cl-white);
-		background-color: var(--cl-black);
 	}
 
 	button {
@@ -180,6 +184,41 @@
 		flex-grow: 1;
 		min-width: 320px;
 		max-width: 960px;
+	}
+
+	.content-main>article {
+		margin: 16px !important;
+		color: var(--cl-black);
+		background: var(--cl-white);
+		box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+	}
+
+	.content-main>article>section {
+		padding: 0.01em 16px;
+	}
+
+	.title {
+		display: inline-block;
+		font-size: 24px;
+		font-weight: bold;
+		margin: 10px 0;
+	}
+
+	.title code {
+		font-weight: normal;
+		color: var(--cl-light-gray);
+		background-color: var(--cl-dark-gray);
+		padding: 0.1em 8px;
+		border-radius: 4px;
+		text-align: center
+	}
+
+	.date {
+		color: var(--cl-dark-gray);
+		font-size: 12px;
+		font-family: monospace;
+		font-style: italic;
+		margin: 10px 0;
 	}
 
 	.animate-left {
@@ -234,44 +273,26 @@
 		</a>
 		<hr>
 		<div class="tag">
-			<a class="dark-gray" href="#全部标签">全部标签 <span>2</span></a><a class="light-gray" href="#设施建设">设施建设
-				<span>1</span></a><a class="light-gray" href="#设施建设">物资配给 <span>1</span></a><a class="light-gray"
-				href="#软件开发">软件开发 <span>1</span></a><a class="light-gray" href="#苏州">苏州 <span>1</span></a><a
-				class="light-gray" href="#成都">成都 <span>1</span></a><a class="light-gray" href="#星星家园">星星家园
-				<span>1</span></a><a class="light-gray" href="#主义主义网站">主义主义网站 <span>1</span></a>
+			<a class="dark-gray" href="#全部公示">全部公示<span>2</span></a><a href="#进行中">进行中<span>2</span></a><a
+				href="#已结束">已结束<span>0</span></a><a href="#设施建设">设施建设<span>1</span></a><a
+				href="#设施建设">物资配给<span>1</span></a><a href="#软件开发">软件开发<span>1</span></a><a
+				href="#苏州">苏州<span>1</span></a><a href="#成都">成都<span>1</span></a><a
+				href="#星星家园">星星家园<span>1</span></a><a href="#主义主义网站">主义主义网站<span>1</span></a>
 		</div>
 	</header>
 
 	<div class="content animate-right">
 		<div class="content-main">
-			<div class="w3-card-4 w3-margin w3-white">
-				<div class="w3-container">
-					<a href="#1">
-						<h3><code class="w3-dark-grey w3-tag w3-round">#1</code> <b>星星家园扩建</b>
-						</h3>
-					</a>
-					<div><a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-							href="#设施建设">设施建设</a>
-						<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-							href="#设施建设">物资配给</a>
-						<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-							href="#苏州">苏州</a>
-						<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-							href="#星星家园">星星家园</a>
-						<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-							href="#星星家园">星星家园</a>
-						<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-							href="#星星家园">星星家园</a>
-						<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-							href="#星星家园">星星家园</a>
-						<a class="w3-button w3-margin-bottom w3-padding-small w3-hover-dark-grey w3-round w3-border w3-border-dark-grey"
-							href="#星星家园">星星家园</a>
+			<article>
+				<section>
+					<a href="#1" class="title"><code>#123</code> 星星家园扩建</a>
+					<div class="tag">
+						<a href="#进行中">进行中</a><a href="#已结束">已结束</a><a href="#设施建设">设施建设</a><a href="#设施建设">物资配给</a><a
+							href="#软件开发">软件开发</a><a href="#苏州">苏州</a><a href="#成都">成都</a><a href="#星星家园">星星家园</a><a
+							href="#主义主义网站">主义主义网站</a>
 					</div>
-					<div class="w3-margin-bottom w3-small">
-						<i><code>公示时间：2022-08-12 12:32<br>
-							更新时间：2022-08-12 12:32</code></i>
-					</div>
-				</div>
+					<div class="date">公示时间：2022-08-12 12:32<br>更新时间：2022-08-12 12:32</div>
+				</section>
 
 				<img src="https://www.w3schools.com/w3images/woods.jpg" alt="Nature" style="width:100%">
 
@@ -294,9 +315,9 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			</article>
 			<hr>
-			<div class="w3-card-4 w3-margin w3-white">
+			<article>
 				<div class="w3-container">
 					<h3><b>BLOG ENTRY</b></h3>
 					<h5>Title description, <span class="w3-opacity">April 2, 2014</span></h5>
@@ -321,7 +342,7 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			</article>
 		</div>
 
 		<div class="content-side">
