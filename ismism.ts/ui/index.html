@@ -221,6 +221,54 @@
 		margin: 10px 0;
 	}
 
+	.photo {
+		color: var(--cl-dark-gray);
+		text-align: center;
+		width: auto;
+	}
+
+	.photo>div {
+		display: flex;
+		flex-flow: row wrap;
+		align-items: center;
+		text-align: center;
+		border-top: 1px dotted var(--cl-dark-gray);
+		padding: 10px 0;
+	}
+
+	@media (max-width: 720px) {
+		.photo>div>span {
+			width: 100%;
+		}
+	}
+
+	@media (min-width: 720px) {
+		.photo>div>span {
+			flex-basis: 180px;
+			flex-grow: 1;
+		}
+
+		.photo>div>span:nth-child(1) {
+			text-align: left;
+		}
+
+		.photo>div>span:nth-child(2) {
+			text-align: center;
+		}
+
+		.photo>div>span:nth-child(3) {
+			text-align: right;
+		}
+	}
+
+	.photo button {
+		padding: 0;
+	}
+
+	.photo img {
+		width: 100%;
+	}
+
 	.animate-left {
 		position: relative;
 		animation: animateleft 0.4s
@@ -294,7 +342,14 @@
 					<div class="date">公示时间：2022-08-12 12:32<br>更新时间：2022-08-12 12:32</div>
 				</section>
 
-				<img src="https://www.w3schools.com/w3images/woods.jpg" alt="Nature" style="width:100%">
+				<section class="photo">
+					<div>
+						<span>图片标题xxxx标题标题图片标题xxxx</span>
+						<span><button>上一张</button> / <button>下一张</button></span>
+						<span>第12张 / 共43张</span>
+					</div>
+					<img src="https://www.w3schools.com/w3css/img_nature_wide.jpg">
+				</section>
 
 				<div class="w3-container">
 					<p>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed mattis nunc id lorem
