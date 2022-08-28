@@ -296,7 +296,12 @@
 		color: var(--cl-amber);
 	}
 
-	.stat>.progress {
+	.stat>.bar {
+		margin: 5px 0;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
+	}
+
+	.stat>.bar>.progress {
 		position: relative;
 		width: 100%;
 		color: var(--cl-black);
@@ -304,7 +309,7 @@
 		font-family: monospace;
 	}
 
-	.stat>.progress>span {
+	.stat>.bar>.progress>span {
 		display: inline-block;
 		position: absolute;
 		padding: 0.25em 8px;
@@ -312,18 +317,18 @@
 		width: 100%;
 	}
 
-	.stat>.progress>span:nth-child(1) {
+	.stat>.bar>.progress>span:nth-child(1) {
 		position: relative;
 		min-width: 1em;
 		background-color: var(--cl-gray);
 	}
 
-	.stat>.progress>span:nth-child(2) {
+	.stat>.bar>.progress>span:nth-child(2) {
 		text-align: center;
 		background: none;
 	}
 
-	.stat>.progress>span:nth-child(3) {
+	.stat>.bar>.progress>span:nth-child(3) {
 		text-align: right;
 		background: none;
 	}
@@ -416,14 +421,16 @@
 							<span>收到支持</span>
 							<span>预算(元)</span>
 						</div>
-						<div class="progress">
-							<span style="width: 50%">123456</span>
-							<span>50%</span>
-							<span>123456</span>
-						</div>
-						<div class="progress">
-							<span style="width: 25%;">12345</span>
-							<span>25%</span>
+						<div class="bar">
+							<div class="progress">
+								<span style="width: 50%">123456</span>
+								<span>50%</span>
+								<span>123456</span>
+							</div>
+							<div class="progress">
+								<span style="width: 25%;">12345</span>
+								<span>25%</span>
+							</div>
 						</div>
 						<div class="label">
 							<span>当前支出</span>
