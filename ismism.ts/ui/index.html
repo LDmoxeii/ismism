@@ -386,6 +386,57 @@
 		text-align: center
 	}
 
+	.log {
+		background: var(--cl-light-gray);
+		border-radius: 16px;
+		padding: 16px 8px;
+		margin-bottom: 16px;
+		max-height: 480px;
+		overflow-y: scroll;
+	}
+
+	.log>span {
+		display: block;
+		width: 100%;
+		margin: 8px 0;
+		color: var(--cl-gray);
+		text-align: center;
+	}
+
+	.log>div {
+		display: flex;
+		flex-flow: row nowrap;
+		margin: 16px 0;
+	}
+
+	.log>div>.avatar {
+		flex-shrink: 0;
+		width: 48px;
+		height: 48px;
+		background: var(--cl-amber);
+		border-radius: 50%;
+	}
+
+	.log>div>div:nth-child(2) {
+		display: flex;
+		flex-flow: column nowrap;
+		margin-left: 16px;
+		margin-right: 8px;
+	}
+
+	.log>div>div>.label {
+		font-size: var(--small);
+		margin-bottom: 6px;
+	}
+
+	.log>div>div>.msg {
+		min-width: 120px;
+		padding: 0.5em 16px;
+		background-color: var(--cl-light-gray);
+		border-radius: 0 8px 8px 8px;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+	}
+
 	.animate-left {
 		position: relative;
 		animation: animateleft 0.4s
@@ -518,6 +569,45 @@
 						<button><span>332</span> 条活动日志 ❯</button>
 						<button><span>32</span> 名参与者 ❯</button>
 						<button><span>3212</span> 位支持者 ❯</button>
+					</div>
+					<div class="log">
+						<span>322 条活动日志</span>
+						<div>
+							<div class="avatar"></div>
+							<div>
+								<div class="label">username, icons <span>timestamp</span></div>
+								<div class="msg">msg</div>
+							</div>
+						</div>
+						<div>
+							<div class="avatar"></div>
+							<div>
+								<div class="label">username, icons <span>timestamp</span></div>
+								<div class="msg">Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
+									mattis nunc id lorem
+									euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
+									Phasellus sed
+									ultricies mi non congue ullam corper. Praesent tincidunt sed
+									tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
+									gravida
+									diam non fringilla</div>
+							</div>
+						</div>
+						<div>
+							<div class="avatar"></div>
+							<div>
+								<div class="label">username, icons <span>timestamp</span></div>
+								<div class="msg">Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
+									mattis nunc id lorem
+									euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
+									Phasellus sed
+									ultricies mi non congue ullam corper. Praesent tincidunt sed
+									tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
+									gravida
+									diam non fringilla</div>
+							</div>
+						</div>
+						<span>322 条活动日志</span>
 					</div>
 				</section>
 			</article>
