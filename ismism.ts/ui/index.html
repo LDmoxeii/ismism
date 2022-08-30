@@ -541,6 +541,22 @@
 </style>
 
 <script>
+	const imgs = [
+		{ title: "墙面施工", src: "https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" },
+		{ title: "防水涂层", src: "https://img1.imgtp.com/2022/08/30/AxvEND6h.jpg" },
+		{ title: "堆放点", src: "https://img1.imgtp.com/2022/08/30/hDH79lFo.jpg" },
+		{ title: "平面图", src: "https://img1.imgtp.com/2022/08/30/TjxiIeeg.jpg" },
+		{ title: "庭院", src: "https://img1.imgtp.com/2022/08/30/mfqTjt9n.jpg" },
+		{ title: "室内", src: "https://img1.imgtp.com/2022/08/30/ymN6Lziv.jpg" },
+	]
+	let nimg = 0
+	function imgsrc(title, img, index, d) {
+		nimg = ((nimg + d) % imgs.length + imgs.length) % imgs.length
+		const s = imgs[nimg]
+		title.innerHTML = s.title
+		img.src = s.src
+		index.innerHTML = `第${nimg + 1}张 / 共${imgs.length}张`
+	}
 </script>
 
 <body>
@@ -568,7 +584,7 @@
 		<div class="main">
 			<article>
 				<section>
-					<a href="#1" class="title"><code>#1</code> 星星家园扩建</a>
+					<a href="#1" class="title"><code>#1</code> 星星家园改造计划</a>
 					<div class="tag">
 						<a href="#进行中">进行中</a><a href="#已结束">已结束</a><a href="#设施建设">设施建设</a><a href="#设施建设">物资配给</a><a
 							href="#软件开发">软件开发</a><a href="#苏州">苏州</a><a href="#成都">成都</a><a href="#星星家园">星星家园</a><a
@@ -579,11 +595,16 @@
 
 				<section class="photo">
 					<div>
-						<span>图片标题xxxx标题标题图片标题xxxx</span>
-						<span><button>上一张</button> / <button>下一张</button></span>
-						<span>第12张 / 共43张</span>
+						<span>墙面施工</span>
+						<span>
+							<button
+								onclick="imgsrc(this.parentElement.previousElementSibling, this.parentElement.parentElement.nextElementSibling, this.parentElement.nextElementSibling, -1)">上一张</button>
+							/ <button
+								onclick="imgsrc(this.parentElement.previousElementSibling, this.parentElement.parentElement.nextElementSibling, this.parentElement.nextElementSibling, 1)">下一张</button>
+						</span>
+						<span>第1张 / 共6张</span>
 					</div>
-					<img src="https://www.w3schools.com/w3css/img_nature_wide.jpg">
+					<img src="https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" />
 				</section>
 
 				<section>
@@ -733,7 +754,5 @@
 	</footer>
 
 </body>
-
-<script src="bind.js"></script>
 
 </html>
