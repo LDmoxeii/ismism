@@ -297,6 +297,7 @@
 
 	.content .photo img {
 		width: 100%;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 	}
 
 	.content .stat {
@@ -540,25 +541,6 @@
 
 </style>
 
-<script>
-	const imgs = [
-		{ title: "墙面施工", src: "https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" },
-		{ title: "防水涂层", src: "https://img1.imgtp.com/2022/08/30/AxvEND6h.jpg" },
-		{ title: "堆放点", src: "https://img1.imgtp.com/2022/08/30/hDH79lFo.jpg" },
-		{ title: "平面图", src: "https://img1.imgtp.com/2022/08/30/TjxiIeeg.jpg" },
-		{ title: "庭院", src: "https://img1.imgtp.com/2022/08/30/mfqTjt9n.jpg" },
-		{ title: "室内", src: "https://img1.imgtp.com/2022/08/30/ymN6Lziv.jpg" },
-	]
-	let nimg = 0
-	function imgsrc(title, img, index, d) {
-		nimg = ((nimg + d) % imgs.length + imgs.length) % imgs.length
-		const s = imgs[nimg]
-		title.innerHTML = s.title
-		img.src = s.src
-		index.innerHTML = `第${nimg + 1}张 / 共${imgs.length}张`
-	}
-</script>
-
 <body>
 	<div class="banner dark-gray animate-right">
 		<button onclick="this.parentElement.style.display='none'" class="dark-gray topright">&times;</button>
@@ -752,7 +734,25 @@
 				src="https://www.bilibili.com/favicon.ico">张正午</a>
 		<span>网站维护：seven.two.eight@outlook.com</span>
 	</footer>
-
 </body>
+
+<script>
+	const imgs = [
+		{ title: "墙面施工", src: "https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" },
+		{ title: "防水涂层", src: "https://img1.imgtp.com/2022/08/30/AxvEND6h.jpg" },
+		{ title: "堆放点", src: "https://img1.imgtp.com/2022/08/30/hDH79lFo.jpg" },
+		{ title: "平面图", src: "https://img1.imgtp.com/2022/08/30/TjxiIeeg.jpg" },
+		{ title: "庭院", src: "https://img1.imgtp.com/2022/08/30/mfqTjt9n.jpg" },
+		{ title: "室内", src: "https://img1.imgtp.com/2022/08/30/ymN6Lziv.jpg" },
+	]
+	let nimg = 0
+	function imgsrc(title, img, index, d) {
+		nimg = ((nimg + d) % imgs.length + imgs.length) % imgs.length
+		const s = imgs[nimg]
+		title.innerHTML = s.title
+		img.src = s.src
+		index.innerHTML = `第${nimg + 1}张 / 共${imgs.length}张`
+	}
+</script>
 
 </html>
