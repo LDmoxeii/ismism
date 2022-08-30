@@ -293,6 +293,12 @@
 
 	.content .photo button {
 		padding: 0;
+		font-size: 1em;
+	}
+
+	.content .photo button:nth-child(1):after {
+		content: "/";
+		margin: 0 5px;
 	}
 
 	.content .photo img {
@@ -553,14 +559,20 @@
 			<h1><b>主义主义 <span style="color: var(--cl-red)">活动</span>公示</b></h1>
 		</a>
 		<hr>
-		<div class="tag"></div>
+		<div class="tag">
+			<a class="dark-gray" href="#全部公示">全部公示<span>2</span></a><a href="#进行中">进行中<span>2</span></a><a
+				href="#已结束">已结束<span>0</span></a><a href="#设施建设">设施建设<span>1</span></a><a
+				href="#设施建设">物资配给<span>1</span></a><a href="#软件开发">软件开发<span>1</span></a><a
+				href="#苏州">苏州<span>1</span></a><a href="#成都">成都<span>1</span></a><a
+				href="#星星家园">星星家园<span>1</span></a><a href="#主义主义网站">主义主义网站<span>1</span></a>
+		</div>
 	</header>
 
 	<div class="content animate-right">
 		<div class="main">
 			<article>
 				<section>
-					<a href="#1" class="title"><code>#1</code> 星星家园改造计划</a>
+					<a href="#1" class="title"><code>#1</code> 星星家园改造</a>
 					<div class="tag">
 						<a href="#进行中">进行中</a><a href="#已结束">已结束</a><a href="#设施建设">设施建设</a><a href="#设施建设">物资配给</a><a
 							href="#软件开发">软件开发</a><a href="#苏州">苏州</a><a href="#成都">成都</a><a href="#星星家园">星星家园</a><a
@@ -572,12 +584,7 @@
 				<section class="photo">
 					<div>
 						<span>墙面施工</span>
-						<span>
-							<button
-								onclick="imgsrc(this.parentElement.previousElementSibling, this.parentElement.parentElement.nextElementSibling, this.parentElement.nextElementSibling, -1)">上一张</button>
-							/ <button
-								onclick="imgsrc(this.parentElement.previousElementSibling, this.parentElement.parentElement.nextElementSibling, this.parentElement.nextElementSibling, 1)">下一张</button>
-						</span>
+						<span><button>上一张</button><button>下一张</button></span>
 						<span>第1张 / 共6张</span>
 					</div>
 					<img src="https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" />
@@ -620,7 +627,6 @@
 						<div>
 							<div class="progress" style="--pct: 100; color: var(--cl-gray)">完成</div>
 							<span>雨棚扩建雨棚扩建</span>
-
 						</div>
 						<div>
 							<div class="progress" style="--pct: 0; color: var(--cl-gray)">0%</div>
@@ -731,8 +737,10 @@
 </body>
 
 <script>
+	let hash = ""
+
 	const tags = [
-		{ tag: "全部公示", n: 3 },
+		{ tag: "", n: 3 },
 		{ tag: "进行中", n: 3 },
 		{ tag: "已结束", n: 0 },
 		{ tag: "设施建设", n: 1 },
@@ -744,39 +752,140 @@
 		{ tag: "主义主义网站", n: 1 }
 	]
 
-	function tag(
+	function etag(
+		el, tags
 	) {
-		const el = document.getElementsByTagName("header")[0].getElementsByClassName("tag")[0]
 		el.innerHTML = ""
-		const hash = window.location.hash.length > 0 ? decodeURI(window.location.hash).substr(1) : "全部公示"
-		for (const t of tags) {
+		for (let t of tags) {
+			if (typeof t == "string") t = { tag: t }
 			const a = document.createElement("a")
 			a.href = `#${t.tag}`
 			if (t.tag == hash) a.classList.add("dark-gray")
-			a.innerHTML = `${t.tag} <span>${t.n}</span>`
+			a.innerHTML = (t.tag.length == 0 ? "全部公示" : t.tag)
+				+ (t.n == undefined ? "" : `<span>${t.n}</span>`)
 			el.appendChild(a)
 		}
 	}
 
-	tag()
-	window.addEventListener("hashchange", tag)
+	const articles = [
+		{
+			id: 2,
+			title: "星星家园改造",
+			tag: ["进行中", "设施建设", "苏州", "星星家园"],
+			date: { pub: "2022-08-12 12:32", update: "2022-08-12 12:32" },
+			img: [
+				{ title: "墙面施工", src: "https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" },
+				{ title: "防水涂层", src: "https://img1.imgtp.com/2022/08/30/AxvEND6h.jpg" },
+				{ title: "堆放点", src: "https://img1.imgtp.com/2022/08/30/hDH79lFo.jpg" },
+				{ title: "平面图", src: "https://img1.imgtp.com/2022/08/30/TjxiIeeg.jpg" },
+				{ title: "庭院", src: "https://img1.imgtp.com/2022/08/30/mfqTjt9n.jpg" },
+				{ title: "室内", src: "https://img1.imgtp.com/2022/08/30/ymN6Lziv.jpg" },
+			],
+			nimg: 0,
+			stat: { fund: 7000, budget: 7000, expense: 3500, detail: "https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1?tab=BB08J2" },
+			progress: [
+				{ name: "淋浴间改造", pct: 0 },
+				{ name: "卫生间改造", pct: 25 },
+				{ name: "墙面改造", pct: 75 },
+				{ name: "吊顶改造", pct: 85 },
+				{ name: "庭院雨棚", pct: 100 },
+			],
+			participant: [
 
-	const imgs = [
-		{ title: "墙面施工", src: "https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" },
-		{ title: "防水涂层", src: "https://img1.imgtp.com/2022/08/30/AxvEND6h.jpg" },
-		{ title: "堆放点", src: "https://img1.imgtp.com/2022/08/30/hDH79lFo.jpg" },
-		{ title: "平面图", src: "https://img1.imgtp.com/2022/08/30/TjxiIeeg.jpg" },
-		{ title: "庭院", src: "https://img1.imgtp.com/2022/08/30/mfqTjt9n.jpg" },
-		{ title: "室内", src: "https://img1.imgtp.com/2022/08/30/ymN6Lziv.jpg" },
+			],
+			activity: [
+
+			],
+			sponsor: [
+
+			]
+		}
 	]
-	let nimg = 0
-	function imgsrc(title, img, index, d) {
-		nimg = ((nimg + d) % imgs.length + imgs.length) % imgs.length
-		const s = imgs[nimg]
-		title.innerHTML = s.title
-		img.src = s.src
-		index.innerHTML = `第${nimg + 1}张 / 共${imgs.length}张`
+
+	function etitle(
+		el, { id, title, tag, date }
+	) {
+		el.innerHTML = ""
+		const a = document.createElement("a")
+		a.href = `#${id}`
+		a.classList.add("title")
+		a.innerHTML = `<code>#${id}</code> ${title}`
+		el.appendChild(a)
+		const t = document.createElement("div")
+		t.classList.add("tag")
+		etag(t, tag)
+		el.appendChild(t)
+		const d = document.createElement("div")
+		d.classList.add("date")
+		d.innerHTML = `公示时间：${date.pub}<br>更新时间：${date.update}`
+		el.appendChild(d)
 	}
+
+	function eimg(
+		el, d
+	) {
+		el.innerHTML = ""
+		if (d.img.length == 0) return
+		const img = document.createElement("img")
+		const span = [
+			document.createElement("span"),
+			document.createElement("span"),
+			document.createElement("span"),
+		]
+		const nimg = dn => {
+			d.nimg = ((d.nimg + dn) % d.img.length + d.img.length) % d.img.length
+			span[0].innerHTML = d.img[d.nimg].title
+			span[2].innerHTML = `第${d.nimg + 1}张 / 共${d.img.length}张`
+			img.src = d.img[d.nimg].src
+		}
+		nimg(0)
+		const prev = document.createElement("button")
+		prev.innerHTML = "上一张"
+		prev.addEventListener("click", () => nimg(-1))
+		span[1].appendChild(prev)
+		const next = document.createElement("button")
+		next.innerHTML = "下一张"
+		next.addEventListener("click", () => nimg(+1))
+		span[1].appendChild(next)
+		const div = document.createElement("div")
+		span.forEach(s => div.appendChild(s))
+		el.appendChild(div)
+		el.appendChild(img)
+	}
+
+	function article(
+		el
+	) {
+		console.log(hash)
+		el.innerHTML = ""
+		for (const d of (hash.length > 0 ? articles.filter(a => a.tag.includes(hash)) : articles)) {
+			const a = document.createElement("article")
+			let s = document.createElement("section")
+			etitle(s, d)
+			a.appendChild(s)
+			s = document.createElement("section")
+			s.classList.add("photo")
+			eimg(s, d)
+			a.appendChild(s)
+			el.appendChild(a)
+		}
+	}
+
+	window.addEventListener("hashchange", () => {
+		hash = decodeURI(window.location.hash).substr(1)
+		etag(
+			document.getElementsByTagName("header")[0].getElementsByClassName("tag")[0],
+			tags, hash.length > 0 ? hash : tags[0].tag
+		)
+		article(document.getElementsByClassName("main")[0])
+	})
+
+	function load(
+	) {
+		window.dispatchEvent(new Event("hashchange"))
+	}
+
+	load()
 </script>
 
 </html>
