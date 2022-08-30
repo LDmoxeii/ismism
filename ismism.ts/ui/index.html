@@ -307,37 +307,37 @@
 	}
 
 	.content .stat {
+		--fund: 7000;
 		--budget: 7000;
-		--support: 7000;
 		--expense: 3500;
 	}
 
-	.content .stat>.label {
+	.content .stat>.bar>.label {
 		overflow: auto;
 	}
 
-	.content .stat>.label>*:nth-child(1) {
+	.content .stat>.bar>.label>*:nth-child(1) {
 		float: left;
 	}
 
-	.content .stat>.label>*:nth-child(2) {
+	.content .stat>.bar>.label>*:nth-child(2) {
 		float: right;
 	}
 
-	.content .stat>.label>a {
+	.content .stat>.bar>.label>a {
 		text-decoration: underline;
 	}
 
-	.content .stat>.label>a:hover {
+	.content .stat>.bar>.label>a:hover {
 		color: var(--cl-amber);
 	}
 
-	.content .stat>.bar {
+	.content .stat>.bar>div:nth-child(2) {
 		margin: 5px 0;
 		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
 	}
 
-	.content .stat>.bar>.progress {
+	.content .stat>.bar>div:nth-child(2)>div {
 		position: relative;
 		width: 100%;
 		color: var(--cl-black);
@@ -346,7 +346,7 @@
 		overflow: hidden;
 	}
 
-	.content .stat>.bar>.progress>span {
+	.content .stat>.bar>div:nth-child(2)>div>span {
 		display: inline-block;
 		position: absolute;
 		padding: 0.25em 8px;
@@ -355,32 +355,32 @@
 		width: 100%;
 	}
 
-	.content .stat>.bar>.progress>span:nth-child(1) {
+	.content .stat>.bar>div:nth-child(2)>div>span:nth-child(1) {
 		position: relative;
 		background-color: var(--cl-gray);
 	}
 
-	.content .stat>.bar>.progress>span.support {
-		width: calc(var(--support) / var(--budget) * 100%);
+	.content .stat>.bar>div:nth-child(2)>div>span.fund {
+		width: calc(var(--fund) / var(--budget) * 100%);
 	}
 
-	.content .stat>.bar>.progress>span.expense {
+	.content .stat>.bar>div:nth-child(2)>div>span.expense {
 		width: calc(var(--expense) / var(--budget) * 100%);
 	}
 
-	.content .stat>.bar>.progress>span:nth-child(2) {
+	.content .stat>.bar>div:nth-child(2)>div>span:nth-child(2) {
 		text-align: center;
 		background: none;
 		left: 8px;
 	}
 
-	.content .stat>.bar>.progress>span:nth-child(3) {
+	.content .stat>.bar>div:nth-child(2)>div>span:nth-child(3) {
 		text-align: right;
 		background: none;
 		left: -16px;
 	}
 
-	.circle {
+	.content .stat>.circle {
 		display: flex;
 		flex-flow: row wrap;
 		justify-content: center;
@@ -388,7 +388,7 @@
 		--pct: 65;
 	}
 
-	.circle>div {
+	.content .stat>.circle>div {
 		flex-basis: 1px;
 		flex-grow: 1;
 		display: flex;
@@ -398,7 +398,7 @@
 		font-size: var(--large);
 	}
 
-	.circle>div>.progress {
+	.content .stat>.circle>div>div {
 		--size: 4em;
 		width: var(--size);
 		height: var(--size);
@@ -590,19 +590,19 @@
 					<img src="https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" />
 				</section>
 
-				<section>
-					<div class="stat">
+				<section class="stat">
+					<div class="bar">
 						<div class="label">
 							<span>收到支持</span>
 							<span>预算(元)</span>
 						</div>
-						<div class="bar">
-							<div class="progress">
-								<span class="support">123456</span>
+						<div>
+							<div>
+								<span class="fund">123456</span>
 								<span>50%</span>
 								<span>123456</span>
 							</div>
-							<div class="progress">
+							<div>
 								<span class="expense">12345</span>
 								<span>25%</span>
 							</div>
@@ -616,20 +616,20 @@
 					<br>活动目标：
 					<div class="circle">
 						<div>
-							<div class="progress" style="--pct: 65">65%</div>
+							<div style="--pct: 65">65%</div>
 							<span>雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建</span>
 						</div>
 						<div>
-							<div class="progress" style="--pct: 65">65%</div>
+							<div style="--pct: 65">65%</div>
 							<span>雨棚扩建雨棚扩建</span>
 
 						</div>
 						<div>
-							<div class="progress" style="--pct: 100; color: var(--cl-gray)">完成</div>
+							<div style="--pct: 100; color: var(--cl-gray)">完成</div>
 							<span>雨棚扩建雨棚扩建</span>
 						</div>
 						<div>
-							<div class="progress" style="--pct: 0; color: var(--cl-gray)">0%</div>
+							<div style="--pct: 0; color: var(--cl-gray)">0%</div>
 							<span>雨棚扩建</span>
 						</div>
 					</div>
@@ -885,7 +885,7 @@
 		window.dispatchEvent(new Event("hashchange"))
 	}
 
-	load()
+	//load()
 </script>
 
 </html>
