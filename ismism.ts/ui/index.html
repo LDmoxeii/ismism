@@ -438,6 +438,32 @@
 		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 	}
 
+	footer {
+		padding: 32px 16px;
+		margin-top: 16px;
+		color: var(--cl-gray);
+		background: var(--cl-dark-gray);
+		text-align: center;
+	}
+
+	footer>a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	footer>a>img {
+		height: 1.2em;
+		margin-right: 0.2em;
+	}
+
+	footer>span {
+		display: block;
+		margin-top: 8px;
+		font-size: var(--small);
+		font-family: monospace;
+	}
+
 	.animate-left {
 		position: relative;
 		animation: animateleft 0.4s
@@ -677,10 +703,12 @@
 		</div>
 	</div>
 
-	<footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top w3-animate-left">
-		<button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>
-		<button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next »</button>
-		<p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+	<footer class="animate-left">
+		<a href="https://space.bilibili.com/23191782" target="_blank" rel="noopener"><img
+				src="https://www.bilibili.com/favicon.ico">未明子</a> ·
+		<a href="https://space.bilibili.com/19147010" target="_blank" rel="noopener"><img
+				src="https://www.bilibili.com/favicon.ico">张正午</a>
+		<span>网站维护：seven.two.eight@outlook.com</span>
 	</footer>
 
 </body>
