@@ -560,7 +560,7 @@
 		</a>
 		<hr>
 		<div class="tag">
-			<a class="dark-gray" href="#全部公示">全部公示<span>2</span></a><a href="#进行中">进行中<span>2</span></a><a
+			<a class="dark-gray" href="#">全部公示<span>2</span></a><a href="#进行中">进行中<span>2</span></a><a
 				href="#已结束">已结束<span>0</span></a><a href="#设施建设">设施建设<span>1</span></a><a
 				href="#设施建设">物资配给<span>1</span></a><a href="#软件开发">软件开发<span>1</span></a><a
 				href="#苏州">苏州<span>1</span></a><a href="#成都">成都<span>1</span></a><a
@@ -613,7 +613,7 @@
 								href="https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1?tab=BB08J2">查看明细</a>
 						</div>
 					</div>
-					<br>活动目标：
+					<div><br>活动目标：</div>
 					<div class="circle">
 						<div>
 							<div style="--pct: 65">65%</div>
@@ -622,7 +622,6 @@
 						<div>
 							<div style="--pct: 65">65%</div>
 							<span>雨棚扩建雨棚扩建</span>
-
 						</div>
 						<div>
 							<div style="--pct: 100; color: var(--cl-gray)">完成</div>
@@ -772,7 +771,7 @@
 			id: 2,
 			title: "星星家园改造",
 			tag: ["进行中", "设施建设", "苏州", "星星家园"],
-			date: { pub: "2022-08-12 12:32", update: "2022-08-12 12:32" },
+			date: { pub: "2022-08-12 12:32", update: "2022-08-29 12:33" },
 			img: [
 				{ title: "墙面施工", src: "https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" },
 				{ title: "防水涂层", src: "https://img1.imgtp.com/2022/08/30/AxvEND6h.jpg" },
@@ -782,14 +781,17 @@
 				{ title: "室内", src: "https://img1.imgtp.com/2022/08/30/ymN6Lziv.jpg" },
 			],
 			nimg: 0,
-			stat: { fund: 7000, budget: 7000, expense: 3500, detail: "https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1?tab=BB08J2" },
-			progress: [
-				{ name: "淋浴间改造", pct: 0 },
-				{ name: "卫生间改造", pct: 25 },
-				{ name: "墙面改造", pct: 75 },
-				{ name: "吊顶改造", pct: 85 },
-				{ name: "庭院雨棚", pct: 100 },
-			],
+			stat: {
+				fund: 7000, budget: 7000, expense: 4500,
+				detail: "https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1?tab=BB08J2",
+				progress: [
+					{ name: "淋浴间改造", pct: 0 },
+					{ name: "卫生间改造", pct: 25 },
+					{ name: "墙面改造", pct: 75 },
+					{ name: "吊顶改造", pct: 85 },
+					{ name: "雨棚安装", pct: 100 },
+				]
+			},
 			participant: [
 
 			],
@@ -853,6 +855,35 @@
 		el.appendChild(img)
 	}
 
+	function estat(
+		el, stat
+	) {
+		el.innerHTML = ""
+		const bar = document.createElement("div")
+		bar.classList.add("bar")
+		bar.style.setProperty("--fund", stat.fund)
+		bar.style.setProperty("--budget", stat.budget)
+		bar.style.setProperty("--expense", stat.expense)
+		bar.innerHTML = `<div class="label"><span>收到支持</span><span>预算(元)</span></div>`
+			+ `<div><div><span class="fund">${stat.fund}</span><span>${(stat.fund / stat.budget * 100).toFixed(0)}%</span><span>${stat.budget}</span></div>`
+			+ `<div><span class="expense">${stat.expense}</span><span>${(stat.expense / stat.budget * 100).toFixed(0)}%</span></div></div>`
+			+ `<div class="label"><span>当前支出</span><a target="_blank" rel="noopener"href="${stat.detail}">查看明细</a></div>`
+		el.appendChild(bar)
+		const div = document.createElement("div")
+		div.innerHTML = "<br>活动目标："
+		el.appendChild(div)
+		const circle = document.createElement("div")
+		circle.classList.add("circle")
+		circle.innerHTML = stat.progress
+			.map(({ name, pct }) => {
+				const c = pct == 0 || pct >= 100 ? "color: var(--cl-gray)" : ""
+				const t = pct >= 100 ? "完成" : `${pct}%`
+				return `<div><div style="--pct: ${pct};${c}">${t}</div><span>${name}</span></div>`
+			})
+			.join("")
+		el.appendChild(circle)
+	}
+
 	function article(
 		el
 	) {
@@ -866,6 +897,11 @@
 			s = document.createElement("section")
 			s.classList.add("photo")
 			eimg(s, d)
+			a.appendChild(s)
+			el.appendChild(a)
+			s = document.createElement("section")
+			s.classList.add("stat")
+			estat(s, d.stat)
 			a.appendChild(s)
 			el.appendChild(a)
 		}
