@@ -494,11 +494,16 @@
 	}
 
 	.log>div>div:nth-child(1) {
+		display: flex;
 		flex-shrink: 0;
 		width: 48px;
 		height: 48px;
+		color: var(--cl-white);
 		background: var(--cl-gray);
 		border-radius: 50%;
+		font-size: 24px;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.log>div>div:nth-child(2) {
@@ -532,6 +537,14 @@
 		background-color: var(--cl-light-gray);
 		border-radius: 0 8px 8px 8px;
 		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+	}
+
+	.log>div>div:nth-child(2)>div:nth-child(3)>a {
+		text-decoration: underline;
+	}
+
+	.log>div>div:nth-child(2)>div:nth-child(3)>a:hover {
+		color: var(--cl-amber);
 	}
 
 	footer {
@@ -709,7 +722,7 @@
 					<div class="log">
 						<span>322 条活动日志</span>
 						<div>
-							<div></div>
+							<div>u</div>
 							<div>
 								<div>username <span>badge1</span><span>badge2</span></div>
 								<div>timestamp</div>
@@ -717,7 +730,7 @@
 							</div>
 						</div>
 						<div>
-							<div></div>
+							<div>u</div>
 							<div>
 								<div>username <span>badge</span><span class="light-gray">badge</span><span
 										class="gray">badge</span><span class="dark-gray">badge</span><span
@@ -737,7 +750,7 @@
 							</div>
 						</div>
 						<div>
-							<div></div>
+							<div>u</div>
 							<div>
 								<div>username <span>badge1</span><span>badge2</span></div>
 								<div>timestamp</div>
@@ -823,6 +836,7 @@
 		{ tag: "物资配给", n: 1 },
 		{ tag: "软件开发", n: 1 },
 		{ tag: "苏州", n: 2 },
+		{ tag: "杭州", n: 1 },
 		{ tag: "成都", n: 1 },
 		{ tag: "星星家园", n: 2 },
 		{ tag: "主义主义网站", n: 1 }
@@ -848,7 +862,7 @@
 			aid: 2,
 			title: "星星家园改造",
 			tag: ["进行中", "设施建设", "苏州", "星星家园"],
-			date: { pub: "2022-08-12 12:32", update: "2022-08-29 12:33" },
+			date: { pub: "2022-08-04 14:35", update: "2022-08-24 12:34" },
 			img: [
 				{ title: "墙面施工", src: "https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" },
 				{ title: "防水涂层", src: "https://img1.imgtp.com/2022/08/30/AxvEND6h.jpg" },
@@ -872,23 +886,81 @@
 			participant: [
 				{ uid: "未明子", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
 				{ uid: "张正午", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
-				{ uid: "username1", role: ["参与者", "支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为执行人参与活动" },
-				{ uid: "username2", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为执行人参与活动" },
-				{ uid: "username3", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为媒体组成员参与活动" },
+				{ uid: "username1", role: ["参与者", "支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为施工者参与活动" },
+				{ uid: "username2", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为施工者参与活动" },
+				{ uid: "username3", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为施工者参与活动" },
 			],
 			activity: [
-				{ uid: "未明子", date: "2022-08-24 12:34", msg: "发起了活动" },
-				{ uid: "张正午", date: "2022-08-24 12:34", msg: "发布了视频", video: "" },
-				{ uid: "未明子", date: "2022-08-24 12:34", msg: "发布了视频", video: "" },
-				{ uid: "username1", date: "2022-08-24 12:34", msg: "完成了 a b c d<br>目标进度 +5%：卫生间改造" },
-				{ uid: "username2", date: "2022-08-24 12:34", msg: "完成了 a b c d目标进度 +10%：卫生间改造" },
-				{ uid: "username3", date: "2022-08-24 12:34", msg: "完成了 a b c d目标进度 +10%：卫生间改造" },
+				{ uid: "未明子", date: "2022-07-24 12:34", msg: "发起了活动" },
+				{ uid: "张正午", date: "2022-07-24 12:34", msg: "发起了活动" },
+				{ uid: "张正午", date: "2022-08-04 14:35", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1zT411L7JP" target="_blank" rel="noopener">工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录</a>` },
+				{ uid: "未明子", date: "2022-08-04 22:17", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1xG4y1v7MV" target="_blank" rel="noopener">【现实行动】我们目前的一个行动项目</a>` },
+				{ uid: "未明子", date: "2022-08-17 00:37", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1dg41167Y9" target="_blank" rel="noopener">【项目跟踪】晚托班项目硬装计划介绍</a>` },
+				{ uid: "username1", date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +100%：雨棚安装" },
+				{ uid: "username2", date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +85%：吊顶改造" },
+				{ uid: "username3", date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +75%：墙面改造" },
+				{ uid: "username3", date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +25%：卫生间改造" },
+				{ uid: "未明子", date: "2022-08-23 00:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1eB4y1z7Qc" target="_blank" rel="noopener">【项目追踪】晚托班改造计划硬装部分阶段性介绍</a>` },
 			],
 			sponsor: [
-				{ uid: "username1", role: ["参与者", "支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
-				{ uid: "username4", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
-				{ uid: "username6", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
-				{ uid: "username7", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
+				{ uid: "username4", role: ["参与者", "支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +3500" },
+				{ uid: "星星家园徽章买家", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +3500<br>网站开放注册后将邀请徽章买家注册用户名并加入支持者列表" },
+			]
+		}, {
+			aid: 1,
+			title: "星星家园晚餐供应",
+			tag: ["进行中", "物资配给", "苏州", "星星家园"],
+			date: { pub: "2022-08-04 14:35", update: "2022-08-24 12:34" },
+			stat: {
+				fund: 0, budget: 3000, expense: 0,
+				detail: "https://docs.qq.com/sheet/DZUl1Q1N5aGNGYk9x",
+				progress: [
+					{ goal: "2022九月晚餐", pct: 0 },
+					{ goal: "2022十月晚餐", pct: 0 },
+					{ goal: "2022十一月晚餐", pct: 0 },
+					{ goal: "2022十二月晚餐", pct: 0 },
+				]
+			},
+			participant: [
+				{ uid: "未明子", role: ["发起人"], badge: ["星星家园"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
+				{ uid: "张正午", role: ["发起人"], badge: ["星星家园"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
+			],
+			activity: [
+				{ uid: "张正午", date: "2022-08-04 14:35", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1zT411L7JP" target="_blank" rel="noopener">工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录</a>` },
+				{ uid: "未明子", date: "2022-08-04 22:17", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1xG4y1v7MV" target="_blank" rel="noopener">【现实行动】我们目前的一个行动项目</a>` },
+			],
+			sponsor: []
+		}, {
+			aid: 0,
+			title: "主义主义网站开发",
+			tag: ["进行中", "软件开发", "杭州", "成都", "主义主义网站"],
+			date: { pub: "2022-08-12 12:32", update: "2022-08-31 15:45" },
+			stat: {
+				fund: 105, budget: 105, expense: 105,
+				detail: "https://docs.qq.com/sheet/DZUl1Q1N5aGNGYk9x",
+				progress: [
+					{ goal: "主义主义卡片重铸网站", pct: 0 },
+					{ goal: "主义主义活动公示网站", pct: 15 },
+					{ goal: "魔怔人论坛", pct: 100 },
+				]
+			},
+			participant: [
+				{ uid: "川羽", role: ["参与者"], badge: ["主义主义网站"], date: "2022-08-24 12:34", msg: "作为程序员参与活动" },
+				{ uid: "未明子", role: ["发起人"], badge: ["主义主义网站"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
+				{ uid: "张正午", role: ["发起人"], badge: ["主义主义网站"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
+				{ uid: "万大可", role: ["参与者"], badge: ["主义主义网站"], date: "2022-07-24 12:34", msg: "作为程序员参与活动" },
+			],
+			activity: [
+				{ uid: "川羽", date: "2022-08-24 12:34", msg: "魔怔人论坛上线" },
+				{ uid: "未明子", date: "2022-07-04 01:38", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1if4y1Z7xo" target="_blank" rel="noopener">【实践】我的行动路径——我卖什么货，我开什么店，我成立什么团体，我追求什么理想</a>` },
+				{ uid: "未明子", date: "2022-08-01 01:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1wa411M7jK" target="_blank" rel="noopener">【公告】我们眼下的行动路径</a>` },
+				{ uid: "万大可", date: "2022-08-13 15:45", msg: `上线了网站 ismist.cn` },
+				{ uid: "未明子", date: "2022-08-14 01:45", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1EG411t7Wh" target="_blank" rel="noopener">【行动计划】我们打算做一个什么样的网站（1）——初步功能</a>` },
+				{ uid: "万大可", date: "2022-08-31 15:45", msg: `更新了网站 ismist.cn` },
+			],
+			sponsor: [
+				{ uid: "未明子", role: ["支持者"], badge: ["主义主义网站"], date: "2022-08-08 12:34", msg: "提供支持 +35 购买域名 ismism.cn" },
+				{ uid: "万大可", role: ["支持者"], badge: ["主义主义网站"], date: "2022-08-11 12:34", msg: "提供支持 +70 购买域名 ismist.cn 与 主义主义.中国" },
 			]
 		}
 	]
@@ -916,7 +988,7 @@
 		el, d
 	) {
 		el.innerHTML = ""
-		if (d.img.length == 0) return
+		if (d.img == undefined || d.img.length == 0) return
 		const img = document.createElement("img")
 		const span = [
 			document.createElement("span"),
@@ -996,7 +1068,7 @@
 				...p.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
 				...p.badge.map(r => `<span class="black"}>${r}</span>`)
 			].join("")
-			logp.innerHTML += `<div><div></div><div><div>${p.uid} ${badge}</div><div>${p.date}</div><div>${p.msg}</div></div></div>`
+			logp.innerHTML += `<div><div>${p.uid[0]}</div><div><div>${p.uid} ${badge}</div><div>${p.date}</div><div>${p.msg}</div></div></div>`
 		}
 		logp.innerHTML += `<span>${participant.length} 名参与者</span>`
 		const loga = document.createElement("div")
@@ -1008,7 +1080,7 @@
 				...p.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
 				...p.badge.map(r => `<span class="black"}>${r}</span>`)
 			].join("")
-			loga.innerHTML += `<div><div></div><div><div>${a.uid} ${badge}</div><div>${a.date}</div><div>${a.msg}</div></div></div>`
+			loga.innerHTML += `<div><div>${a.uid[0]}</div><div><div>${a.uid} ${badge}</div><div>${a.date}</div><div>${a.msg}</div></div></div>`
 		}
 		loga.innerHTML += `<span>${activity.length} 条活动日志</span>`
 		const logs = document.createElement("div")
@@ -1019,7 +1091,7 @@
 				...s.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
 				...s.badge.map(r => `<span class="black"}>${r}</span>`)
 			].join("")
-			logs.innerHTML += `<div><div></div><div><div>${s.uid} ${badge}</div><div>${s.date}</div><div>${s.msg}</div></div></div>`
+			logs.innerHTML += `<div><div>${s.uid[0]}</div><div><div>${s.uid} ${badge}</div><div>${s.date}</div><div>${s.msg}</div></div></div>`
 		}
 		logs.innerHTML += `<span>${sponsor.length} 位支持者</span>`
 		const log = [loga, logp, logs]
