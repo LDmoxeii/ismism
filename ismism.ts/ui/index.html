@@ -545,6 +545,23 @@
 		}
 	}
 
+	.animate-opacity {
+		position: relative;
+		animation: animateopacity 0.4s;
+	}
+
+	@keyframes animateopacity {
+		from {
+			transform: scale(0.25);
+			opacity: 0;
+		}
+
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+
 </style>
 
 <body>
@@ -590,7 +607,7 @@
 					<img src="https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" />
 				</section>
 
-				<section class="stat">
+				<section class="stat animate-opacity">
 					<div class="bar">
 						<div class="label">
 							<span>收到支持</span>
@@ -768,7 +785,7 @@
 
 	const articles = [
 		{
-			id: 2,
+			aid: 2,
 			title: "星星家园改造",
 			tag: ["进行中", "设施建设", "苏州", "星星家园"],
 			date: { pub: "2022-08-12 12:32", update: "2022-08-29 12:33" },
@@ -785,33 +802,45 @@
 				fund: 7000, budget: 7000, expense: 4500,
 				detail: "https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1?tab=BB08J2",
 				progress: [
-					{ name: "淋浴间改造", pct: 0 },
-					{ name: "卫生间改造", pct: 25 },
-					{ name: "墙面改造", pct: 75 },
-					{ name: "吊顶改造", pct: 85 },
-					{ name: "雨棚安装", pct: 100 },
+					{ goal: "淋浴间改造", pct: 0 },
+					{ goal: "卫生间改造", pct: 25 },
+					{ goal: "墙面改造", pct: 75 },
+					{ goal: "吊顶改造", pct: 85 },
+					{ goal: "雨棚安装", pct: 100 },
 				]
 			},
 			participant: [
-
+				{ uid: "未明子", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
+				{ uid: "张正午", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
+				{ uid: "username1", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为执行人参与活动" },
+				{ uid: "username2", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为执行人参与活动" },
+				{ uid: "username3", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为媒体组成员参与活动" },
 			],
 			activity: [
-
+				{ uid: "未明子", date: "2022-08-24 12:34", msg: "发起了活动" },
+				{ uid: "张正午", date: "2022-08-24 12:34", msg: "发布了视频", video: "" },
+				{ uid: "未明子", date: "2022-08-24 12:34", msg: "发布了视频", video: "" },
+				{ uid: "username1", date: "2022-08-24 12:34", msg: "完成了 a b c d<br>目标进度 +5%：卫生间改造" },
+				{ uid: "username2", date: "2022-08-24 12:34", msg: "完成了 a b c d目标进度 +10%：卫生间改造" },
+				{ uid: "username3", date: "2022-08-24 12:34", msg: "完成了 a b c d目标进度 +10%：卫生间改造" },
 			],
 			sponsor: [
-
+				{ uid: "username4", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
+				{ uid: "username5", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
+				{ uid: "username6", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
+				{ uid: "username7", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
 			]
 		}
 	]
 
 	function etitle(
-		el, { id, title, tag, date }
+		el, { aid, title, tag, date }
 	) {
 		el.innerHTML = ""
 		const a = document.createElement("a")
-		a.href = `#${id}`
+		a.href = `#${aid}`
 		a.classList.add("title")
-		a.innerHTML = `<code>#${id}</code> ${title}`
+		a.innerHTML = `<code>#${aid}</code> ${title}`
 		el.appendChild(a)
 		const t = document.createElement("div")
 		t.classList.add("tag")
@@ -875,19 +904,39 @@
 		const circle = document.createElement("div")
 		circle.classList.add("circle")
 		circle.innerHTML = stat.progress
-			.map(({ name, pct }) => {
+			.map(({ goal, pct }) => {
 				const c = pct == 0 || pct >= 100 ? "color: var(--cl-gray)" : ""
 				const t = pct >= 100 ? "完成" : `${pct}%`
-				return `<div><div style="--pct: ${pct};${c}">${t}</div><span>${name}</span></div>`
+				return `<div><div style="--pct: ${pct};${c}">${t}</div><span>${goal}</span></div>`
 			})
 			.join("")
 		el.appendChild(circle)
 	}
 
+	function elog(
+		el, { participant, activity, sponsor }
+	) {
+		el.innerHTML = ""
+		const tab = document.createElement("div")
+		tab.classList.add("tab")
+		tab.innerHTML = `<button><span>${activity.length}</span> 条活动日志 ❯</button>`
+			+ `<button><span>${participant.length}</span> 名参与者 ❯</button>`
+			+ `<button><span>${sponsor.length}</span> 位支持者 ❯</button>`
+		const toggle = (b, n) => {
+			if (b.classList.contains("dark-gray")) b.classList.remove("dark-gray")
+			else {
+				for (const c of tab.children) c.classList.remove("dark-gray")
+				b.classList.add("dark-gray")
+			}
+		}
+		let n = 0
+		for (const c of tab.children) c.addEventListener("click", () => toggle(c, n++))
+		el.appendChild(tab)
+	}
+
 	function article(
 		el
 	) {
-		console.log(hash)
 		el.innerHTML = ""
 		for (const d of (hash.length > 0 ? articles.filter(a => a.tag.includes(hash)) : articles)) {
 			const a = document.createElement("article")
@@ -902,6 +951,9 @@
 			s = document.createElement("section")
 			s.classList.add("stat")
 			estat(s, d.stat)
+			a.appendChild(s)
+			s = document.createElement("section")
+			elog(s, d)
 			a.appendChild(s)
 			el.appendChild(a)
 		}
