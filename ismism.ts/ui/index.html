@@ -33,10 +33,46 @@
 		background-color: var(--cl-light-gray) !important;
 	}
 
+	.gray {
+		color: var(--cl-white) !important;
+		border-color: var(--cl-gray) !important;
+		background-color: var(--cl-gray) !important;
+	}
+
 	.dark-gray {
 		color: var(--cl-white) !important;
 		border-color: var(--cl-dark-gray) !important;
 		background-color: var(--cl-dark-gray) !important;
+	}
+
+	.black {
+		color: var(--cl-white) !important;
+		border-color: var(--cl-black) !important;
+		background-color: var(--cl-black) !important;
+	}
+
+	.pale-red {
+		color: var(--cl-black) !important;
+		border-color: var(--cl-pale-red) !important;
+		background-color: var(--cl-pale-red) !important;
+	}
+
+	.red {
+		color: var(--cl-white) !important;
+		border-color: var(--cl-red) !important;
+		background-color: var(--cl-red) !important;
+	}
+
+	.amber {
+		color: var(--cl-black) !important;
+		border-color: var(--cl-amber) !important;
+		background-color: var(--cl-amber) !important;
+	}
+
+	.purple {
+		color: var(--cl-white) !important;
+		border-color: var(--cl-purple) !important;
+		background-color: var(--cl-purple) !important;
 	}
 
 	html {
@@ -457,7 +493,7 @@
 		margin: 16px 0;
 	}
 
-	.log>div>.avatar {
+	.log>div>div:nth-child(1) {
 		flex-shrink: 0;
 		width: 48px;
 		height: 48px;
@@ -472,13 +508,26 @@
 		margin-right: 8px;
 	}
 
-	.log>div>div>.label {
+	.log>div>div:nth-child(2)>div:nth-child(1)>span {
+		display: inline-block;
 		font-size: var(--small);
-		margin-bottom: 6px;
+		background: var(--cl-dark-gray);
+		color: var(--cl-white);
+		padding: 0.1em 8px;
+		text-align: center;
+		margin-right: 2px;
+		user-select: none;
 	}
 
-	.log>div>div>.msg {
+	.log>div>div:nth-child(2)>div:nth-child(2) {
+		font-size: var(--small);
+		font-style: italic;
+		color: var(--cl-gray);
+	}
+
+	.log>div>div:nth-child(2)>div:nth-child(3) {
 		min-width: 120px;
+		margin-top: 6px;
 		padding: 0.5em 16px;
 		background-color: var(--cl-light-gray);
 		border-radius: 0 8px 8px 8px;
@@ -660,17 +709,24 @@
 					<div class="log">
 						<span>322 条活动日志</span>
 						<div>
-							<div class="avatar"></div>
+							<div></div>
 							<div>
-								<div class="label">username, icons <span>timestamp</span></div>
-								<div class="msg">msg</div>
+								<div>username <span>badge1</span><span>badge2</span></div>
+								<div>timestamp</div>
+								<div>msg</div>
 							</div>
 						</div>
 						<div>
-							<div class="avatar"></div>
+							<div></div>
 							<div>
-								<div class="label">username, icons <span>timestamp</span></div>
-								<div class="msg">Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
+								<div>username <span>badge</span><span class="light-gray">badge</span><span
+										class="gray">badge</span><span class="dark-gray">badge</span><span
+										class="black">badge</span><span class="pale-red">badge</span><span
+										class="red">badge</span><span class="amber">badge</span><span
+										class="purple">badge</span>
+								</div>
+								<div>timestamp</div>
+								<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
 									mattis nunc id lorem
 									euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
 									Phasellus sed
@@ -681,10 +737,11 @@
 							</div>
 						</div>
 						<div>
-							<div class="avatar"></div>
+							<div></div>
 							<div>
-								<div class="label">username, icons <span>timestamp</span></div>
-								<div class="msg">Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
+								<div>username <span>badge1</span><span>badge2</span></div>
+								<div>timestamp</div>
+								<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
 									mattis nunc id lorem
 									euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
 									Phasellus sed
@@ -704,17 +761,19 @@
 			<div class="log">
 				<span>322 条活动日志</span>
 				<div>
-					<div class="avatar"></div>
+					<div></div>
 					<div>
-						<div class="label">username, icons <span>timestamp</span></div>
-						<div class="msg">msg</div>
+						<div>username <span>badge1</span><span>badge2</span></div>
+						<div>timestamp</div>
+						<div>msg</div>
 					</div>
 				</div>
 				<div>
-					<div class="avatar"></div>
+					<div></div>
 					<div>
-						<div class="label">username, icons <span>timestamp</span></div>
-						<div class="msg">Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
+						<div>username <span>badge1</span><span>badge2</span><span>badge2</span></div>
+						<div>timestamp</div>
+						<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
 							mattis nunc id lorem
 							euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
 							Phasellus sed
@@ -725,10 +784,11 @@
 					</div>
 				</div>
 				<div>
-					<div class="avatar"></div>
+					<div></div>
 					<div>
-						<div class="label">username, icons <span>timestamp</span></div>
-						<div class="msg">Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
+						<div>username <span>badge1</span><span>badge2</span></div>
+						<div>timestamp</div>
+						<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
 							mattis nunc id lorem
 							euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
 							Phasellus sed
@@ -812,7 +872,7 @@
 			participant: [
 				{ uid: "未明子", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
 				{ uid: "张正午", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
-				{ uid: "username1", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为执行人参与活动" },
+				{ uid: "username1", role: ["参与者", "支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为执行人参与活动" },
 				{ uid: "username2", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为执行人参与活动" },
 				{ uid: "username3", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为媒体组成员参与活动" },
 			],
@@ -825,8 +885,8 @@
 				{ uid: "username3", date: "2022-08-24 12:34", msg: "完成了 a b c d目标进度 +10%：卫生间改造" },
 			],
 			sponsor: [
+				{ uid: "username1", role: ["参与者", "支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
 				{ uid: "username4", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
-				{ uid: "username5", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
 				{ uid: "username6", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
 				{ uid: "username7", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +30" },
 			]
@@ -913,6 +973,12 @@
 		el.appendChild(circle)
 	}
 
+	const crole = new Map([
+		["发起人", "red"],
+		["参与者", "amber"],
+		["支持者", "purple"],
+	]);
+
 	function elog(
 		el, { participant, activity, sponsor }
 	) {
@@ -922,16 +988,58 @@
 		tab.innerHTML = `<button><span>${activity.length}</span> 条活动日志 ❯</button>`
 			+ `<button><span>${participant.length}</span> 名参与者 ❯</button>`
 			+ `<button><span>${sponsor.length}</span> 位支持者 ❯</button>`
+		const logp = document.createElement("div")
+		logp.classList.add("log")
+		logp.innerHTML = `<span>${participant.length} 名参与者</span>`
+		for (const p of participant) {
+			const badge = [
+				...p.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
+				...p.badge.map(r => `<span class="black"}>${r}</span>`)
+			].join("")
+			logp.innerHTML += `<div><div></div><div><div>${p.uid} ${badge}</div><div>${p.date}</div><div>${p.msg}</div></div></div>`
+		}
+		logp.innerHTML += `<span>${participant.length} 名参与者</span>`
+		const loga = document.createElement("div")
+		loga.classList.add("log")
+		loga.innerHTML = `<span>${activity.length} 条活动日志</span>`
+		for (const a of activity) {
+			const p = participant.find(p => p.uid == a.uid)
+			const badge = p == undefined ? "" : [
+				...p.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
+				...p.badge.map(r => `<span class="black"}>${r}</span>`)
+			].join("")
+			loga.innerHTML += `<div><div></div><div><div>${a.uid} ${badge}</div><div>${a.date}</div><div>${a.msg}</div></div></div>`
+		}
+		loga.innerHTML += `<span>${activity.length} 条活动日志</span>`
+		const logs = document.createElement("div")
+		logs.classList.add("log")
+		logs.innerHTML = `<span>${sponsor.length} 位支持者</span>`
+		for (const s of sponsor) {
+			const badge = [
+				...s.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
+				...s.badge.map(r => `<span class="black"}>${r}</span>`)
+			].join("")
+			logs.innerHTML += `<div><div></div><div><div>${s.uid} ${badge}</div><div>${s.date}</div><div>${s.msg}</div></div></div>`
+		}
+		logs.innerHTML += `<span>${sponsor.length} 位支持者</span>`
+		const log = [loga, logp, logs]
 		const toggle = (b, n) => {
-			if (b.classList.contains("dark-gray")) b.classList.remove("dark-gray")
-			else {
+			if (b.classList.contains("dark-gray")) {
+				b.classList.remove("dark-gray")
+				log[n].style.display = "none"
+			} else {
 				for (const c of tab.children) c.classList.remove("dark-gray")
+				log.forEach(l => l.style.display = "none")
 				b.classList.add("dark-gray")
+				log[n].style.display = "block"
+				log[n].scrollTop = log[n].scrollHeight
 			}
 		}
-		let n = 0
-		for (const c of tab.children) c.addEventListener("click", () => toggle(c, n++))
+		tab.children[0].addEventListener("click", () => toggle(tab.children[0], 0))
+		tab.children[1].addEventListener("click", () => toggle(tab.children[1], 1))
+		tab.children[2].addEventListener("click", () => toggle(tab.children[2], 2))
 		el.appendChild(tab)
+		log.forEach(l => { l.style.display = "none"; el.appendChild(l) })
 	}
 
 	function article(
