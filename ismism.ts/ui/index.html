@@ -547,6 +547,10 @@
 		color: var(--cl-amber);
 	}
 
+	.log.recent {
+		max-height: 100%;
+	}
+
 	footer {
 		padding: 32px 16px;
 		margin-top: 16px;
@@ -771,7 +775,7 @@
 		</div>
 
 		<div class="side">
-			<div class="log">
+			<div class="log recent">
 				<span>322 条活动日志</span>
 				<div>
 					<div></div>
@@ -829,30 +833,29 @@
 	let hash = ""
 
 	const tags = [
-		{ tag: "", n: 3 },
-		{ tag: "进行中", n: 3 },
-		{ tag: "已结束", n: 0 },
-		{ tag: "设施建设", n: 1 },
-		{ tag: "物资配给", n: 1 },
-		{ tag: "软件开发", n: 1 },
-		{ tag: "苏州", n: 2 },
-		{ tag: "杭州", n: 1 },
-		{ tag: "成都", n: 1 },
-		{ tag: "星星家园", n: 2 },
-		{ tag: "主义主义网站", n: 1 }
+		"",
+		"进行中",
+		"已结束",
+		"设施建设",
+		"物资配给",
+		"软件开发",
+		"苏州",
+		"杭州",
+		"成都",
+		"星星家园",
+		"主义主义网站"
 	]
 
 	function etag(
-		el, tags
+		el, tags, ct = false
 	) {
 		el.innerHTML = ""
 		for (let t of tags) {
-			if (typeof t == "string") t = { tag: t }
 			const a = document.createElement("a")
-			a.href = `#${t.tag}`
-			if (t.tag == hash) a.classList.add("dark-gray")
-			a.innerHTML = (t.tag.length == 0 ? "全部公示" : t.tag)
-				+ (t.n == undefined ? "" : `<span>${t.n}</span>`)
+			a.href = `#${t}`
+			if (t == hash) a.classList.add("dark-gray")
+			a.innerHTML = t.length == 0 ? "全部公示" : t
+			if (ct) a.innerHTML += `<span>${articles.filter(p => t.length == 0 || p.tag.includes(t)).length}</span>`
 			el.appendChild(a)
 		}
 	}
@@ -874,7 +877,7 @@
 			nimg: 0,
 			stat: {
 				fund: 7000, budget: 7000, expense: 4500,
-				detail: "https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1?tab=BB08J2",
+				detail: "https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1",
 				progress: [
 					{ goal: "淋浴间改造", pct: 0 },
 					{ goal: "卫生间改造", pct: 25 },
@@ -913,7 +916,7 @@
 			date: { pub: "2022-08-04 14:35", update: "2022-08-24 12:34" },
 			stat: {
 				fund: 0, budget: 3000, expense: 0,
-				detail: "https://docs.qq.com/sheet/DZUl1Q1N5aGNGYk9x",
+				detail: "https://docs.qq.com/sheet/DZWVJeVd6V1ZlYklk",
 				progress: [
 					{ goal: "2022九月晚餐", pct: 0 },
 					{ goal: "2022十月晚餐", pct: 0 },
@@ -946,23 +949,31 @@
 			},
 			participant: [
 				{ uid: "川羽", role: ["参与者"], badge: ["主义主义网站"], date: "2022-08-24 12:34", msg: "作为程序员参与活动" },
-				{ uid: "未明子", role: ["发起人"], badge: ["主义主义网站"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
+				{ uid: "未明子", role: ["发起人", "支持者"], badge: ["主义主义网站"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
 				{ uid: "张正午", role: ["发起人"], badge: ["主义主义网站"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
-				{ uid: "万大可", role: ["参与者"], badge: ["主义主义网站"], date: "2022-07-24 12:34", msg: "作为程序员参与活动" },
+				{ uid: "万大可", role: ["参与者", "支持者"], badge: ["主义主义网站"], date: "2022-07-24 12:34", msg: "作为程序员参与活动" },
 			],
 			activity: [
-				{ uid: "川羽", date: "2022-08-24 12:34", msg: "魔怔人论坛上线" },
+				{ uid: "川羽", date: "2022-08-24 12:34", msg: "魔怔人论坛上线<br>目标进度 +100%：魔怔人论坛" },
 				{ uid: "未明子", date: "2022-07-04 01:38", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1if4y1Z7xo" target="_blank" rel="noopener">【实践】我的行动路径——我卖什么货，我开什么店，我成立什么团体，我追求什么理想</a>` },
 				{ uid: "未明子", date: "2022-08-01 01:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1wa411M7jK" target="_blank" rel="noopener">【公告】我们眼下的行动路径</a>` },
-				{ uid: "万大可", date: "2022-08-13 15:45", msg: `上线了网站 ismist.cn` },
+				{ uid: "万大可", date: "2022-08-13 15:45", msg: `上线了网站 ismist.cn<br>目标进度 +15%：主义主义活动公示网站` },
 				{ uid: "未明子", date: "2022-08-14 01:45", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1EG411t7Wh" target="_blank" rel="noopener">【行动计划】我们打算做一个什么样的网站（1）——初步功能</a>` },
 				{ uid: "万大可", date: "2022-08-31 15:45", msg: `更新了网站 ismist.cn` },
 			],
 			sponsor: [
-				{ uid: "未明子", role: ["支持者"], badge: ["主义主义网站"], date: "2022-08-08 12:34", msg: "提供支持 +35 购买域名 ismism.cn" },
-				{ uid: "万大可", role: ["支持者"], badge: ["主义主义网站"], date: "2022-08-11 12:34", msg: "提供支持 +70 购买域名 ismist.cn 与 主义主义.中国" },
+				{ uid: "未明子", role: ["发起人", "支持者"], badge: ["主义主义网站"], date: "2022-08-08 12:34", msg: "提供支持 +35 购买域名 ismism.cn" },
+				{ uid: "万大可", role: ["参与者", "支持者"], badge: ["主义主义网站"], date: "2022-08-11 12:34", msg: "提供支持 +70 购买域名 ismist.cn 与 主义主义.中国" },
 			]
 		}
+	]
+
+	const recent = [
+		{ uid: "username2", role: ["参与者"], badge: ["星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +85%：吊顶改造" },
+		{ uid: "username3", role: ["参与者"], badge: ["星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +75%：墙面改造" },
+		{ uid: "username3", role: ["参与者"], badge: ["星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +25%：卫生间改造" },
+		{ uid: "未明子", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-23 00:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1eB4y1z7Qc" target="_blank" rel="noopener">【项目追踪】晚托班改造计划硬装部分阶段性介绍</a>` },
+		{ uid: "万大可", role: ["参与者"], badge: ["主义主义网站"], date: "2022-08-31 15:45", msg: `更新了网站 ismist.cn` },
 	]
 
 	function etitle(
@@ -1114,11 +1125,16 @@
 		log.forEach(l => { l.style.display = "none"; el.appendChild(l) })
 	}
 
-	function article(
+	function earticle(
 		el
 	) {
 		el.innerHTML = ""
-		for (const d of (hash.length > 0 ? articles.filter(a => a.tag.includes(hash)) : articles)) {
+		const aid = parseInt(hash)
+		console.log(aid)
+		const ds = isNaN(aid)
+			? (hash.length > 0 ? articles.filter(a => a.tag.includes(hash)) : articles)
+			: [articles.find(p => p.aid == aid)]
+		for (const d of ds) {
 			const a = document.createElement("article")
 			let s = document.createElement("section")
 			etitle(s, d)
@@ -1139,13 +1155,33 @@
 		}
 	}
 
+	function erecent(
+		el
+	) {
+		el.innerHTML = ""
+		const log = document.createElement("div")
+		log.classList.add("log")
+		log.classList.add("recent")
+		log.innerHTML = `<span>${recent.length} 条最新动态</span>`
+		for (const r of recent) {
+			const badge = [
+				...r.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
+				...r.badge.map(r => `<span class="black"}>${r}</span>`)
+			].join("")
+			log.innerHTML += `<div><div>${r.uid[0]}</div><div><div>${r.uid} ${badge}</div><div>${r.date}</div><div>${r.msg}</div></div></div>`
+
+		}
+		el.appendChild(log)
+	}
+
 	window.addEventListener("hashchange", () => {
 		hash = decodeURI(window.location.hash).substr(1)
 		etag(
 			document.getElementsByTagName("header")[0].getElementsByClassName("tag")[0],
-			tags, hash.length > 0 ? hash : tags[0].tag
+			tags, true
 		)
-		article(document.getElementsByClassName("main")[0])
+		earticle(document.getElementsByClassName("main")[0])
+		erecent(document.getElementsByClassName("side")[0])
 	})
 
 	function load(
@@ -1153,7 +1189,7 @@
 		window.dispatchEvent(new Event("hashchange"))
 	}
 
-	//load()
+	load()
 </script>
 
 </html>
