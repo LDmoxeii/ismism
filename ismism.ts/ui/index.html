@@ -167,7 +167,7 @@
 		background-color: var(--cl-light-gray);
 	}
 
-	.tag>a>span {
+	.tag>a>span:nth-child(2) {
 		display: inline-block;
 		padding: 0.1em 8px;
 		margin-left: 0.75ch;
@@ -264,14 +264,14 @@
 		margin: 10px 0;
 	}
 
-	.content .title {
+	.content .title>a {
 		display: inline-block;
 		font-size: 24px;
 		font-weight: bold;
 		margin: 10px 0;
 	}
 
-	.content .title code {
+	.content .title>a>code {
 		font-weight: normal;
 		color: var(--cl-light-gray);
 		background-color: var(--cl-dark-gray);
@@ -400,11 +400,11 @@
 		background-color: var(--cl-gray);
 	}
 
-	.content .stat>.bar>div:nth-child(2)>div>span.fund {
+	.content .stat>.bar>div:nth-child(2)>div.fund>span:nth-child(1) {
 		width: calc(var(--fund) / var(--budget) * 100%);
 	}
 
-	.content .stat>.bar>div:nth-child(2)>div>span.expense {
+	.content .stat>.bar>div:nth-child(2)>div.expense>span:nth-child(1) {
 		width: calc(var(--expense) / var(--budget) * 100%);
 	}
 
@@ -634,6 +634,120 @@
 
 </style>
 
+<template id="tag-item">
+	<a><span></span><span></span></a>
+	<a class="dark-gray"><span></span><span></span></a>
+</template>
+
+<template id="circle-item">
+	<div>
+		<div style="--pct: 65">65%</div>
+		<span>目标</span>
+	</div>
+	<div>
+		<div style="--pct: 100; color: var(--cl-gray)">完成</div>
+		<span>目标</span>
+	</div>
+</template>
+
+<template id="article">
+	<article>
+		<section class="title">
+			<a><code>#0</code> <span>标题</span></a>
+			<div class="tag"></div>
+			<div class="date">公示时间：<span></span><br>更新时间：<span></span></div>
+		</section>
+		<section class="photo animate-opacity">
+			<div>
+				<span>图片标题</span>
+				<span><button>上一张</button><button>下一张</button></span>
+				<span>第<span>1</span>张 / 共<span>6</span>张</span>
+			</div>
+			<img />
+		</section>
+		<section class="stat animate-opacity">
+			<div class="bar">
+				<div class="label">
+					<span>收到支持</span>
+					<span>预算(元)</span>
+				</div>
+				<div>
+					<div class="fund">
+						<span>123456</span>
+						<span>50%</span>
+						<span>123456</span>
+					</div>
+					<div class="expense">
+						<span>12345</span>
+						<span>25%</span>
+					</div>
+				</div>
+				<div class="label">
+					<span>当前支出</span>
+					<a target="_blank" rel="noopener" href="https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1">查看明细</a>
+				</div>
+			</div>
+			<div><br>活动目标：</div>
+			<div class="circle"></div>
+		</section>
+
+		<section>
+			<div class="tab">
+				<button><span>332</span> 条活动日志 ❯</button>
+				<button><span>32</span> 名参与者 ❯</button>
+				<button><span>3212</span> 位支持者 ❯</button>
+			</div>
+			<div class="log">
+				<span>322 条活动日志</span>
+				<div>
+					<div>u</div>
+					<div>
+						<div>username <span>badge1</span><span>badge2</span></div>
+						<div>timestamp</div>
+						<div>msg</div>
+					</div>
+				</div>
+				<div>
+					<div>u</div>
+					<div>
+						<div>username <span>badge</span><span class="light-gray">badge</span><span
+								class="gray">badge</span><span class="dark-gray">badge</span><span
+								class="black">badge</span><span class="pale-red">badge</span><span
+								class="red">badge</span><span class="amber">badge</span><span
+								class="purple">badge</span>
+						</div>
+						<div>timestamp</div>
+						<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
+							mattis nunc id lorem
+							euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
+							Phasellus sed
+							ultricies mi non congue ullam corper. Praesent tincidunt sed
+							tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
+							gravida
+							diam non fringilla</div>
+					</div>
+				</div>
+				<div>
+					<div>u</div>
+					<div>
+						<div>username <span>badge1</span><span>badge2</span></div>
+						<div>timestamp</div>
+						<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
+							mattis nunc id lorem
+							euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
+							Phasellus sed
+							ultricies mi non congue ullam corper. Praesent tincidunt sed
+							tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
+							gravida
+							diam non fringilla</div>
+					</div>
+				</div>
+				<span>322 条活动日志</span>
+			</div>
+		</section>
+	</article>
+</template>
+
 <body>
 	<div class="banner dark-gray animate-right">
 		<button onclick="this.parentElement.style.display='none'" class="dark-gray topright">&times;</button>
@@ -854,13 +968,14 @@
 		el, tags, ct = false
 	) {
 		el.innerHTML = ""
+		const item = document.getElementById("tag-item").content.children
 		for (let t of tags) {
-			const a = document.createElement("a")
+			const a = el.appendChild(item[t == hash ? 1 : 0].cloneNode(true))
+			const s = a.getElementsByTagName("span")
 			a.href = `#${t}`
-			if (t == hash) a.classList.add("dark-gray")
-			a.innerHTML = t.length == 0 ? "全部公示" : t
-			if (ct) a.innerHTML += `<span>${articles.filter(p => t.length == 0 || p.tag.includes(t)).length}</span>`
-			el.appendChild(a)
+			s[0].innerText = t.length == 0 ? "全部公示" : t
+			if (ct) s[1].innerText = articles.filter(p => t.length == 0 || p.tag.includes(t)).length
+			else s[1].style.display = "none"
 		}
 	}
 
@@ -983,81 +1098,60 @@
 	function etitle(
 		el, { aid, title, tag, date }
 	) {
-		el.innerHTML = ""
-		const a = document.createElement("a")
+		const a = el.getElementsByTagName("a")[0]
 		a.href = `#${aid}`
+		a.getElementsByTagName("code")[0].innerText = aid
+		a.getElementsByTagName("span")[0].innerText = title
 		a.classList.add("title")
-		a.innerHTML = `<code>#${aid}</code> ${title}`
-		el.appendChild(a)
-		const t = document.createElement("div")
-		t.classList.add("tag")
-		etag(t, tag)
-		el.appendChild(t)
-		const d = document.createElement("div")
-		d.classList.add("date")
-		d.innerHTML = `公示时间：${date.pub}<br>更新时间：${date.update}`
-		el.appendChild(d)
+		etag(el.getElementsByClassName("tag")[0], tag)
+		const d = el.getElementsByClassName("date")[0].getElementsByTagName("span")
+		d[0].innerText = date.pub
+		d[1].innerText = date.update
 	}
 
 	function eimg(
 		el, d
 	) {
-		el.innerHTML = ""
-		if (d.img == undefined || d.img.length == 0) return
-		const img = document.createElement("img")
-		const span = [
-			document.createElement("span"),
-			document.createElement("span"),
-			document.createElement("span"),
-		]
+		if (d.img == undefined || d.img.length == 0) {
+			el.style.display = "none"
+			return
+		}
+		const s = el.getElementsByTagName("div")[0].children
+		const img = el.getElementsByTagName("img")[0]
 		const nimg = dn => {
 			d.nimg = ((d.nimg + dn) % d.img.length + d.img.length) % d.img.length
-			span[0].innerHTML = d.img[d.nimg].title
-			span[2].innerHTML = `第${d.nimg + 1}张 / 共${d.img.length}张`
+			s[0].innerText = d.img[d.nimg].title
+			s[2].children[0].innerHTML = d.nimg + 1
+			s[2].children[1].innerText = d.img.length
 			img.src = d.img[d.nimg].src
 		}
 		nimg(0)
-		const prev = document.createElement("button")
-		prev.innerHTML = "上一张"
-		prev.addEventListener("click", () => nimg(-1))
-		span[1].appendChild(prev)
-		const next = document.createElement("button")
-		next.innerHTML = "下一张"
-		next.addEventListener("click", () => nimg(+1))
-		span[1].appendChild(next)
-		const div = document.createElement("div")
-		span.forEach(s => div.appendChild(s))
-		el.appendChild(div)
-		el.appendChild(img)
+		s[1].children[0].addEventListener("click", () => nimg(-1))
+		s[1].children[1].addEventListener("click", () => nimg(+1))
 	}
 
 	function estat(
 		el, stat
 	) {
-		el.innerHTML = ""
-		const bar = document.createElement("div")
-		bar.classList.add("bar")
-		bar.style.setProperty("--fund", stat.fund)
-		bar.style.setProperty("--budget", stat.budget)
-		bar.style.setProperty("--expense", stat.expense)
-		bar.innerHTML = `<div class="label"><span>收到支持</span><span>预算(元)</span></div>`
-			+ `<div><div><span class="fund">${stat.fund}</span><span>${(stat.fund / stat.budget * 100).toFixed(0)}%</span><span>${stat.budget}</span></div>`
-			+ `<div><span class="expense">${stat.expense}</span><span>${(stat.expense / stat.budget * 100).toFixed(0)}%</span></div></div>`
-			+ `<div class="label"><span>当前支出</span><a target="_blank" rel="noopener"href="${stat.detail}">查看明细</a></div>`
-		el.appendChild(bar)
-		const div = document.createElement("div")
-		div.innerHTML = "<br>活动目标："
-		el.appendChild(div)
-		const circle = document.createElement("div")
-		circle.classList.add("circle")
-		circle.innerHTML = stat.progress
-			.map(({ goal, pct }) => {
-				const c = pct == 0 || pct >= 100 ? "color: var(--cl-gray)" : ""
-				const t = pct >= 100 ? "完成" : `${pct}%`
-				return `<div><div style="--pct: ${pct};${c}">${t}</div><span>${goal}</span></div>`
-			})
-			.join("")
-		el.appendChild(circle)
+		el.style.setProperty("--fund", stat.fund)
+		el.style.setProperty("--budget", stat.budget)
+		el.style.setProperty("--expense", stat.expense)
+		const fund = el.getElementsByClassName("fund")[0].children
+		fund[0].innerText = stat.fund
+		fund[1].innerText = `${(stat.fund / stat.budget * 100).toFixed(0)}%`
+		fund[2].innerText = stat.budget
+		const expense = el.getElementsByClassName("expense")[0].children
+		expense[0].innerText = stat.expense
+		expense[1].innerText = `${(stat.expense / stat.budget * 100).toFixed(0)}%`
+		el.getElementsByTagName("a")[0].href = stat.detail
+		const tg = document.getElementById("circle-item").content.children
+		const circle = el.getElementsByClassName("circle")[0]
+		for (const { goal, pct } of stat.progress) {
+			const c = circle.appendChild(tg[(pct == 0 || pct >= 100) ? 1 : 0].cloneNode(true))
+			c.children[0].style.setProperty("--pct", pct)
+			c.children[0].innerText = pct >= 100 ? "完成" : `${pct}%`
+			c.children[1].innerText = goal
+		}
 	}
 
 	const crole = new Map([
@@ -1134,28 +1228,16 @@
 	) {
 		el.innerHTML = ""
 		const aid = parseInt(hash)
-		console.log(aid)
 		const ds = isNaN(aid)
 			? (hash.length > 0 ? articles.filter(a => a.tag.includes(hash)) : articles)
 			: [articles.find(p => p.aid == aid)]
+		const ta = document.getElementById("article").content.children[0]
 		for (const d of ds) {
-			const a = document.createElement("article")
-			let s = document.createElement("section")
-			etitle(s, d)
-			a.appendChild(s)
-			s = document.createElement("section")
-			s.classList.add("photo")
-			eimg(s, d)
-			a.appendChild(s)
-			el.appendChild(a)
-			s = document.createElement("section")
-			s.classList.add("stat")
-			estat(s, d.stat)
-			a.appendChild(s)
-			s = document.createElement("section")
-			elog(s, d)
-			a.appendChild(s)
-			el.appendChild(a)
+			const a = el.appendChild(ta.cloneNode(true))
+			etitle(a.getElementsByClassName("title")[0], d)
+			eimg(a.getElementsByClassName("photo")[0], d)
+			estat(a.getElementsByClassName("stat")[0], d.stat)
+			// elog(s, d)
 		}
 	}
 
