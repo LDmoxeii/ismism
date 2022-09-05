@@ -664,6 +664,10 @@
 	<span>badge</span>
 </template>
 
+<template id="video-link">
+	<a href="" target="_blank" rel="noopener">标题</a>
+</template>
+
 <template id="log-item">
 	<span>123 条日志</span>
 	<div>
@@ -828,14 +832,14 @@
 			activity: [
 				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-07-24 12:34", msg: "发起了活动" },
 				{ uid: "张正午", badge: ["发起人", "参与者", "星星家园"], date: "2022-07-24 12:34", msg: "发起了活动" },
-				{ uid: "张正午", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-04 14:35", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1zT411L7JP" target="_blank" rel="noopener">工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录</a>` },
-				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-04 22:17", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1xG4y1v7MV" target="_blank" rel="noopener">【现实行动】我们目前的一个行动项目</a>` },
-				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-17 00:37", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1dg41167Y9" target="_blank" rel="noopener">【项目跟踪】晚托班项目硬装计划介绍</a>` },
+				{ uid: "张正午", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-04 14:35", msg: "工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录", video: "https://www.bilibili.com/video/BV1zT411L7JP" },
+				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-04 22:17", msg: "【现实行动】我们目前的一个行动项目", video: "https://www.bilibili.com/video/BV1xG4y1v7MV" },
+				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-17 00:37", msg: "【项目跟踪】晚托班项目硬装计划介绍", video: "https://www.bilibili.com/video/BV1dg41167Y9" },
 				{ uid: "username1", badge: ["参与者", "支持者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +100%：雨棚安装" },
 				{ uid: "username2", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +85%：吊顶改造" },
 				{ uid: "username3", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +75%：墙面改造" },
 				{ uid: "username3", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +25%：卫生间改造" },
-				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-23 00:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1eB4y1z7Qc" target="_blank" rel="noopener">【项目追踪】晚托班改造计划硬装部分阶段性介绍</a>` },
+				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-23 00:46", msg: "【项目追踪】晚托班改造计划硬装部分阶段性介绍", video: "https://www.bilibili.com/video/BV1eB4y1z7Qc" },
 			],
 			sponsor: [
 				{ uid: "username4", badge: ["参与者", "支持者", "星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +3500" },
@@ -861,8 +865,8 @@
 				{ uid: "张正午", badge: ["发起人", "星星家园"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
 			],
 			activity: [
-				{ uid: "张正午", badge: ["发起人", "星星家园"], date: "2022-08-04 14:35", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1zT411L7JP" target="_blank" rel="noopener">工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录</a>` },
-				{ uid: "未明子", badge: ["发起人", "星星家园"], date: "2022-08-04 22:17", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1xG4y1v7MV" target="_blank" rel="noopener">【现实行动】我们目前的一个行动项目</a>` },
+				{ uid: "张正午", badge: ["发起人", "星星家园"], date: "2022-08-04 14:35", msg: "工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录", video: "https://www.bilibili.com/video/BV1zT411L7JP" },
+				{ uid: "未明子", badge: ["发起人", "星星家园"], date: "2022-08-04 22:17", msg: "【现实行动】我们目前的一个行动项目", video: "https://www.bilibili.com/video/BV1xG4y1v7MV" },
 			],
 			sponsor: []
 		}, {
@@ -887,10 +891,10 @@
 			],
 			activity: [
 				{ uid: "川羽", badge: ["参与者", "主义主义网站"], date: "2022-08-24 12:34", msg: "魔怔人论坛上线<br>目标进度 +100%：魔怔人论坛" },
-				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-07-04 01:38", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1if4y1Z7xo" target="_blank" rel="noopener">【实践】我的行动路径——我卖什么货，我开什么店，我成立什么团体，我追求什么理想</a>` },
-				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-08-01 01:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1wa411M7jK" target="_blank" rel="noopener">【公告】我们眼下的行动路径</a>` },
-				{ uid: "万大可", badge: ["参与者", "支持者", "主义主义网站"], date: "2022-08-13 15:45", msg: `上线了网站 ismist.cn<br>目标进度 +15%：主义主义活动公示网站` },
-				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-08-14 01:45", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1EG411t7Wh" target="_blank" rel="noopener">【行动计划】我们打算做一个什么样的网站（1）——初步功能</a>` },
+				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-07-04 01:38", msg: "【实践】我的行动路径——我卖什么货，我开什么店，我成立什么团体，我追求什么理想", video: "https://www.bilibili.com/video/BV1if4y1Z7xo" },
+				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-08-01 01:46", msg: "【公告】我们眼下的行动路径", video: "https://www.bilibili.com/video/BV1wa411M7jK" },
+				{ uid: "万大可", badge: ["参与者", "支持者", "主义主义网站"], date: "2022-08-13 15:45", msg: `上线了网站 ismist.cn\n目标进度 +15%：主义主义活动公示网站` },
+				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-08-14 01:45", msg: "【行动计划】我们打算做一个什么样的网站（1）——初步功能", video: "https://www.bilibili.com/video/BV1EG411t7Wh" },
 				{ uid: "万大可", badge: ["参与者", "支持者", "主义主义网站"], date: "2022-08-31 15:45", msg: `更新了网站 ismist.cn` },
 			],
 			sponsor: [
@@ -904,7 +908,7 @@
 		{ uid: "username2", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +85%：吊顶改造" },
 		{ uid: "username3", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +75%：墙面改造" },
 		{ uid: "username3", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +25%：卫生间改造" },
-		{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-23 00:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1eB4y1z7Qc" target="_blank" rel="noopener">【项目追踪】晚托班改造计划硬装部分阶段性介绍</a>` },
+		{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-23 00:46", msg: "【项目追踪】晚托班改造计划硬装部分阶段性介绍", video: "https://www.bilibili.com/video/BV1eB4y1z7Qc" },
 		{ uid: "万大可", badge: ["参与者", "主义主义网站"], date: "2022-08-31 15:45", msg: `更新了网站 ismist.cn` },
 	]
 
@@ -971,6 +975,8 @@
 		["发起人", "red"],
 		["参与者", "amber"],
 		["支持者", "purple"],
+		["星星家园", "black"],
+		["主义主义网站", "black"],
 	]);
 
 	function ebadge(
@@ -989,18 +995,25 @@
 		el, unit, msg
 	) {
 		el.innerHTML = ""
-		const temp = document.getElementById("log-item").content.children
-		const head = el.appendChild(temp[0].cloneNode(true))
+		const tl = document.getElementById("log-item").content.children
+		const tv = document.getElementById("video-link").content.children[0]
+		const head = el.appendChild(tl[0].cloneNode(true))
 		head.innerText = `${msg.length} ${unit}`
 		for (const m of msg) {
-			const d = el.appendChild(temp[1].cloneNode(true)).children
+			const d = el.appendChild(tl[1].cloneNode(true)).children
 			d[0].innerText = m.uid[0]
 			d[1].children[0].innerText = m.uid
 			ebadge(d[1].children[0], m.badge)
 			d[1].children[1].innerText = m.date
-			d[1].children[2].innerText = m.msg
+			if (m.video) {
+				d[1].children[2].innerText = "发布了视频："
+				const v = d[1].children[2].appendChild(tv.cloneNode(true))
+				v.innerText = m.msg
+				v.href = m.video
+			}
+			else d[1].children[2].innerText = m.msg
 		}
-		const foot = el.appendChild(temp[0].cloneNode(true))
+		const foot = el.appendChild(tl[0].cloneNode(true))
 		foot.innerText = head.innerText
 	}
 
