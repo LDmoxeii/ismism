@@ -424,7 +424,6 @@
 		flex-flow: row wrap;
 		justify-content: center;
 		text-align: center;
-		--pct: 65;
 	}
 
 	.content .stat>.circle>div {
@@ -445,14 +444,24 @@
 		border-radius: 50%;
 		display: grid;
 		place-items: center;
-		background:
-			radial-gradient(closest-side, var(--cl-white) 66%, transparent 0 100%),
-			conic-gradient(var(--cl-gray) calc(var(--pct) * 1%), var(--cl-light-gray) 0);
+		background: radial-gradient(closest-side, var(--cl-white) 66%, var(--cl-light-gray) 66%);
 		font-family: monospace;
 		font-size: calc(var(--size) / 2);
 		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-		color: var(--cl-amber);
+		color: var(--cl-gray);
 		text-shadow: 0 2px 2px var(--cl-light-gray);
+	}
+
+	.content .stat>.circle>div>div.pct {
+		--pct: 65;
+		color: var(--cl-amber);
+		background:
+			radial-gradient(closest-side, var(--cl-white) 66%, transparent 66%),
+			conic-gradient(var(--cl-gray) calc(var(--pct) * 1%), var(--cl-light-gray) 0);
+	}
+
+	.content .stat>.circle>div>div.done {
+		background: radial-gradient(closest-side, var(--cl-white) 66%, var(--cl-gray) 66%);
 	}
 
 	.tab {
@@ -653,11 +662,15 @@
 
 <template id="circle-item">
 	<div>
-		<div style="--pct: 65">65%</div>
+		<div>0%</div>
 		<span>目标</span>
 	</div>
 	<div>
-		<div style="--pct: 100; color: var(--cl-gray)">完成</div>
+		<div class="pct" style="--pct: 65">65%</div>
+		<span>目标</span>
+	</div>
+	<div>
+		<div class="done">完成</div>
 		<span>目标</span>
 	</div>
 </template>
@@ -880,8 +893,8 @@
 				{ date: "2022-08-31", uid: "孙陆钧", badge: ["参与者", "星星家园"], msg: "在八月 22 - 23 日共参与施工 2 天" },
 				{ date: "2022-08-31", uid: "张洲", badge: ["参与者", "星星家园"], msg: "在八月 22 - 25 日共参与施工 4 天" },
 				{ date: "2022-08-31", uid: "刘叙辰", badge: ["参与者", "星星家园"], msg: "在八月 22 - 24 日共参与施工 3 天" },
-				{ date: "2022-08-31", uid: "庞哲昊", badge: ["参与者", "星星家园"], msg: "在八月 21, 27 - 30 日共参与施工 5 天" },
-				{ date: "2022-08-31", uid: "燕少昕", badge: ["参与者", "星星家园"], msg: "在八月 21 - 23,  28 - 29, 30 日共参与施工 6 天" },
+				{ date: "2022-08-31", uid: "庞哲昊", badge: ["参与者", "星星家园"], msg: "在八月 21 - 28, 30 - 31 日共参与施工 10 天" },
+				{ date: "2022-08-31", uid: "燕少昕", badge: ["参与者", "星星家园"], msg: "在八月 21 - 23, 28 - 29, 30 日共参与施工 6 天" },
 				{ date: "2022-08-31", uid: "胡明达", badge: ["参与者", "星星家园"], msg: "在八月 21 日共参与施工 1 天" },
 				{ date: "2022-08-31", uid: "张成昊", badge: ["参与者", "星星家园"], msg: "在八月 21 - 30 日共参与施工 10 天" },
 				{ date: "2022-08-31", uid: "陆毅", badge: ["参与者", "星星家园"], msg: "在八月 21 - 33 日共参与施工 3 天" },
@@ -1029,7 +1042,7 @@
 		const tg = document.getElementById("circle-item").content.children
 		const circle = el.getElementsByClassName("circle")[0]
 		for (const { goal, pct } of stat.progress) {
-			const c = circle.appendChild(tg[(pct == 0 || pct >= 100) ? 1 : 0].cloneNode(true))
+			const c = circle.appendChild(tg[pct == 0 ? 0 : (pct < 100 ? 1 : 2)].cloneNode(true))
 			c.children[0].style.setProperty("--pct", pct)
 			c.children[0].innerText = pct >= 100 ? "完成" : `${pct}%`
 			c.children[1].innerText = goal
