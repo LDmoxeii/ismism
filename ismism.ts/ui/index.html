@@ -517,6 +517,12 @@
 		margin-right: 8px;
 	}
 
+	.log>div>div:nth-child(2)>div:nth-child(1) {
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+	}
+
 	.log>div>div:nth-child(2)>div:nth-child(1)>span {
 		display: inline-block;
 		font-size: var(--small);
@@ -524,8 +530,12 @@
 		color: var(--cl-white);
 		padding: 0.1em 8px;
 		text-align: center;
-		margin-right: 2px;
+		margin-left: 2px;
 		user-select: none;
+	}
+
+	.log>div>div:nth-child(2)>div:nth-child(1)>span:nth-child(1) {
+		margin-left: 1ch;
 	}
 
 	.log>div>div:nth-child(2)>div:nth-child(2) {
@@ -650,6 +660,22 @@
 	</div>
 </template>
 
+<template id="badge-item">
+	<span>badge</span>
+</template>
+
+<template id="log-item">
+	<span>123 条日志</span>
+	<div>
+		<div>u</div>
+		<div>
+			<div>username <span>badge1</span><span>badge2</span></div>
+			<div>timestamp</div>
+			<div>msg</div>
+		</div>
+	</div>
+</template>
+
 <template id="article">
 	<article>
 		<section class="title">
@@ -690,60 +716,15 @@
 			<div><br>活动目标：</div>
 			<div class="circle"></div>
 		</section>
-
-		<section>
+		<section class="msg">
 			<div class="tab">
-				<button><span>332</span> 条活动日志 ❯</button>
-				<button><span>32</span> 名参与者 ❯</button>
-				<button><span>3212</span> 位支持者 ❯</button>
+				<button><span>123</span> 条活动日志 ❯</button>
+				<button><span>123</span> 名参与者 ❯</button>
+				<button><span>123</span> 位支持者 ❯</button>
 			</div>
-			<div class="log">
-				<span>322 条活动日志</span>
-				<div>
-					<div>u</div>
-					<div>
-						<div>username <span>badge1</span><span>badge2</span></div>
-						<div>timestamp</div>
-						<div>msg</div>
-					</div>
-				</div>
-				<div>
-					<div>u</div>
-					<div>
-						<div>username <span>badge</span><span class="light-gray">badge</span><span
-								class="gray">badge</span><span class="dark-gray">badge</span><span
-								class="black">badge</span><span class="pale-red">badge</span><span
-								class="red">badge</span><span class="amber">badge</span><span
-								class="purple">badge</span>
-						</div>
-						<div>timestamp</div>
-						<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
-							mattis nunc id lorem
-							euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
-							Phasellus sed
-							ultricies mi non congue ullam corper. Praesent tincidunt sed
-							tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
-							gravida
-							diam non fringilla</div>
-					</div>
-				</div>
-				<div>
-					<div>u</div>
-					<div>
-						<div>username <span>badge1</span><span>badge2</span></div>
-						<div>timestamp</div>
-						<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
-							mattis nunc id lorem
-							euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
-							Phasellus sed
-							ultricies mi non congue ullam corper. Praesent tincidunt sed
-							tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
-							gravida
-							diam non fringilla</div>
-					</div>
-				</div>
-				<span>322 条活动日志</span>
-			</div>
+			<div class="log"></div>
+			<div class="log"></div>
+			<div class="log"></div>
 		</section>
 	</article>
 </template>
@@ -760,181 +741,13 @@
 			<h1><b>主义主义 <span style="color: var(--cl-red)">活动</span>公示</b></h1>
 		</a>
 		<hr>
-		<div class="tag">
-			<a class="dark-gray" href="#">全部公示<span>2</span></a><a href="#进行中">进行中<span>2</span></a><a
-				href="#已结束">已结束<span>0</span></a><a href="#设施建设">设施建设<span>1</span></a><a
-				href="#设施建设">物资配给<span>1</span></a><a href="#软件开发">软件开发<span>1</span></a><a
-				href="#苏州">苏州<span>1</span></a><a href="#成都">成都<span>1</span></a><a
-				href="#星星家园">星星家园<span>1</span></a><a href="#主义主义网站">主义主义网站<span>1</span></a>
-		</div>
+		<div class="tag"></div>
 	</header>
 
 	<div class="content animate-right">
-		<div class="main">
-			<article>
-				<section>
-					<a href="#1" class="title"><code>#1</code> 星星家园改造</a>
-					<div class="tag">
-						<a href="#进行中">进行中</a><a href="#已结束">已结束</a><a href="#设施建设">设施建设</a><a href="#设施建设">物资配给</a><a
-							href="#软件开发">软件开发</a><a href="#苏州">苏州</a><a href="#成都">成都</a><a href="#星星家园">星星家园</a><a
-							href="#主义主义网站">主义主义网站</a>
-					</div>
-					<div class="date">公示时间：2022-08-12 12:32<br>更新时间：2022-08-12 12:32</div>
-				</section>
-
-				<section class="photo">
-					<div>
-						<span>墙面施工</span>
-						<span><button>上一张</button><button>下一张</button></span>
-						<span>第1张 / 共6张</span>
-					</div>
-					<img src="https://img1.imgtp.com/2022/08/30/kk0PLIlC.jpg" />
-				</section>
-
-				<section class="stat animate-opacity">
-					<div class="bar">
-						<div class="label">
-							<span>收到支持</span>
-							<span>预算(元)</span>
-						</div>
-						<div>
-							<div>
-								<span class="fund">123456</span>
-								<span>50%</span>
-								<span>123456</span>
-							</div>
-							<div>
-								<span class="expense">12345</span>
-								<span>25%</span>
-							</div>
-						</div>
-						<div class="label">
-							<span>当前支出</span>
-							<a target="_blank" rel="noopener"
-								href="https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1">查看明细</a>
-						</div>
-					</div>
-					<div><br>活动目标：</div>
-					<div class="circle">
-						<div>
-							<div style="--pct: 65">65%</div>
-							<span>雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建雨棚扩建</span>
-						</div>
-						<div>
-							<div style="--pct: 65">65%</div>
-							<span>雨棚扩建雨棚扩建</span>
-						</div>
-						<div>
-							<div style="--pct: 100; color: var(--cl-gray)">完成</div>
-							<span>雨棚扩建雨棚扩建</span>
-						</div>
-						<div>
-							<div style="--pct: 0; color: var(--cl-gray)">0%</div>
-							<span>雨棚扩建</span>
-						</div>
-					</div>
-				</section>
-
-				<section>
-					<div class="tab">
-						<button><span>332</span> 条活动日志 ❯</button>
-						<button><span>32</span> 名参与者 ❯</button>
-						<button><span>3212</span> 位支持者 ❯</button>
-					</div>
-					<div class="log">
-						<span>322 条活动日志</span>
-						<div>
-							<div>u</div>
-							<div>
-								<div>username <span>badge1</span><span>badge2</span></div>
-								<div>timestamp</div>
-								<div>msg</div>
-							</div>
-						</div>
-						<div>
-							<div>u</div>
-							<div>
-								<div>username <span>badge</span><span class="light-gray">badge</span><span
-										class="gray">badge</span><span class="dark-gray">badge</span><span
-										class="black">badge</span><span class="pale-red">badge</span><span
-										class="red">badge</span><span class="amber">badge</span><span
-										class="purple">badge</span>
-								</div>
-								<div>timestamp</div>
-								<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
-									mattis nunc id lorem
-									euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
-									Phasellus sed
-									ultricies mi non congue ullam corper. Praesent tincidunt sed
-									tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
-									gravida
-									diam non fringilla</div>
-							</div>
-						</div>
-						<div>
-							<div>u</div>
-							<div>
-								<div>username <span>badge1</span><span>badge2</span></div>
-								<div>timestamp</div>
-								<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
-									mattis nunc id lorem
-									euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
-									Phasellus sed
-									ultricies mi non congue ullam corper. Praesent tincidunt sed
-									tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
-									gravida
-									diam non fringilla</div>
-							</div>
-						</div>
-						<span>322 条活动日志</span>
-					</div>
-				</section>
-			</article>
-		</div>
-
+		<div class="main"></div>
 		<div class="side">
-			<div class="log recent">
-				<span>322 条活动日志</span>
-				<div>
-					<div></div>
-					<div>
-						<div>username <span>badge1</span><span>badge2</span></div>
-						<div>timestamp</div>
-						<div>msg</div>
-					</div>
-				</div>
-				<div>
-					<div></div>
-					<div>
-						<div>username <span>badge1</span><span>badge2</span><span>badge2</span></div>
-						<div>timestamp</div>
-						<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
-							mattis nunc id lorem
-							euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
-							Phasellus sed
-							ultricies mi non congue ullam corper. Praesent tincidunt sed
-							tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
-							gravida
-							diam non fringilla</div>
-					</div>
-				</div>
-				<div>
-					<div></div>
-					<div>
-						<div>username <span>badge1</span><span>badge2</span></div>
-						<div>timestamp</div>
-						<div>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed
-							mattis nunc id lorem
-							euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.
-							Phasellus sed
-							ultricies mi non congue ullam corper. Praesent tincidunt sed
-							tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue
-							gravida
-							diam non fringilla</div>
-					</div>
-				</div>
-				<span>322 条活动日志</span>
-			</div>
+			<div class="log recent"></div>
 		</div>
 	</div>
 
@@ -1006,27 +819,27 @@
 				]
 			},
 			participant: [
-				{ uid: "未明子", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
-				{ uid: "张正午", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
-				{ uid: "username1", role: ["参与者", "支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为施工者参与活动" },
-				{ uid: "username2", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为施工者参与活动" },
-				{ uid: "username3", role: ["参与者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "作为施工者参与活动" },
+				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
+				{ uid: "张正午", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-24 12:34", msg: "作为发起人与负责人参与活动" },
+				{ uid: "username1", badge: ["参与者", "支持者", "星星家园"], date: "2022-08-24 12:34", msg: "作为施工者参与活动" },
+				{ uid: "username2", badge: ["参与者", "星星家园"], date: "2022-08-24 12:34", msg: "作为施工者参与活动" },
+				{ uid: "username3", badge: ["参与者", "星星家园"], date: "2022-08-24 12:34", msg: "作为施工者参与活动" },
 			],
 			activity: [
-				{ uid: "未明子", date: "2022-07-24 12:34", msg: "发起了活动" },
-				{ uid: "张正午", date: "2022-07-24 12:34", msg: "发起了活动" },
-				{ uid: "张正午", date: "2022-08-04 14:35", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1zT411L7JP" target="_blank" rel="noopener">工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录</a>` },
-				{ uid: "未明子", date: "2022-08-04 22:17", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1xG4y1v7MV" target="_blank" rel="noopener">【现实行动】我们目前的一个行动项目</a>` },
-				{ uid: "未明子", date: "2022-08-17 00:37", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1dg41167Y9" target="_blank" rel="noopener">【项目跟踪】晚托班项目硬装计划介绍</a>` },
-				{ uid: "username1", date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +100%：雨棚安装" },
-				{ uid: "username2", date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +85%：吊顶改造" },
-				{ uid: "username3", date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +75%：墙面改造" },
-				{ uid: "username3", date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +25%：卫生间改造" },
-				{ uid: "未明子", date: "2022-08-23 00:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1eB4y1z7Qc" target="_blank" rel="noopener">【项目追踪】晚托班改造计划硬装部分阶段性介绍</a>` },
+				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-07-24 12:34", msg: "发起了活动" },
+				{ uid: "张正午", badge: ["发起人", "参与者", "星星家园"], date: "2022-07-24 12:34", msg: "发起了活动" },
+				{ uid: "张正午", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-04 14:35", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1zT411L7JP" target="_blank" rel="noopener">工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录</a>` },
+				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-04 22:17", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1xG4y1v7MV" target="_blank" rel="noopener">【现实行动】我们目前的一个行动项目</a>` },
+				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-17 00:37", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1dg41167Y9" target="_blank" rel="noopener">【项目跟踪】晚托班项目硬装计划介绍</a>` },
+				{ uid: "username1", badge: ["参与者", "支持者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +100%：雨棚安装" },
+				{ uid: "username2", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +85%：吊顶改造" },
+				{ uid: "username3", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +75%：墙面改造" },
+				{ uid: "username3", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +25%：卫生间改造" },
+				{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-23 00:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1eB4y1z7Qc" target="_blank" rel="noopener">【项目追踪】晚托班改造计划硬装部分阶段性介绍</a>` },
 			],
 			sponsor: [
-				{ uid: "username4", role: ["参与者", "支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +3500" },
-				{ uid: "星星家园徽章买家", role: ["支持者"], badge: ["星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +3500<br>网站开放注册后将邀请徽章买家注册用户名并加入支持者列表" },
+				{ uid: "username4", badge: ["参与者", "支持者", "星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +3500" },
+				{ uid: "星星家园徽章买家", badge: ["支持者", "星星家园"], date: "2022-08-24 12:34", msg: "提供支持 +3500<br>网站开放注册后将邀请徽章买家注册用户名并加入支持者列表" },
 			]
 		}, {
 			aid: 1,
@@ -1044,12 +857,12 @@
 				]
 			},
 			participant: [
-				{ uid: "未明子", role: ["发起人"], badge: ["星星家园"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
-				{ uid: "张正午", role: ["发起人"], badge: ["星星家园"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
+				{ uid: "未明子", badge: ["发起人", "星星家园"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
+				{ uid: "张正午", badge: ["发起人", "星星家园"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
 			],
 			activity: [
-				{ uid: "张正午", date: "2022-08-04 14:35", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1zT411L7JP" target="_blank" rel="noopener">工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录</a>` },
-				{ uid: "未明子", date: "2022-08-04 22:17", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1xG4y1v7MV" target="_blank" rel="noopener">【现实行动】我们目前的一个行动项目</a>` },
+				{ uid: "张正午", badge: ["发起人", "星星家园"], date: "2022-08-04 14:35", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1zT411L7JP" target="_blank" rel="noopener">工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录</a>` },
+				{ uid: "未明子", badge: ["发起人", "星星家园"], date: "2022-08-04 22:17", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1xG4y1v7MV" target="_blank" rel="noopener">【现实行动】我们目前的一个行动项目</a>` },
 			],
 			sponsor: []
 		}, {
@@ -1067,32 +880,32 @@
 				]
 			},
 			participant: [
-				{ uid: "川羽", role: ["参与者"], badge: ["主义主义网站"], date: "2022-08-24 12:34", msg: "作为程序员参与活动" },
-				{ uid: "未明子", role: ["发起人", "支持者"], badge: ["主义主义网站"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
-				{ uid: "张正午", role: ["发起人"], badge: ["主义主义网站"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
-				{ uid: "万大可", role: ["参与者", "支持者"], badge: ["主义主义网站"], date: "2022-07-24 12:34", msg: "作为程序员参与活动" },
+				{ uid: "川羽", badge: ["参与者", "主义主义网站"], date: "2022-08-24 12:34", msg: "作为程序员参与活动" },
+				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
+				{ uid: "张正午", badge: ["发起人", "主义主义网站"], date: "2022-07-04 12:34", msg: "作为发起人参与活动" },
+				{ uid: "万大可", badge: ["参与者", "支持者", "主义主义网站"], date: "2022-07-24 12:34", msg: "作为程序员参与活动" },
 			],
 			activity: [
-				{ uid: "川羽", date: "2022-08-24 12:34", msg: "魔怔人论坛上线<br>目标进度 +100%：魔怔人论坛" },
-				{ uid: "未明子", date: "2022-07-04 01:38", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1if4y1Z7xo" target="_blank" rel="noopener">【实践】我的行动路径——我卖什么货，我开什么店，我成立什么团体，我追求什么理想</a>` },
-				{ uid: "未明子", date: "2022-08-01 01:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1wa411M7jK" target="_blank" rel="noopener">【公告】我们眼下的行动路径</a>` },
-				{ uid: "万大可", date: "2022-08-13 15:45", msg: `上线了网站 ismist.cn<br>目标进度 +15%：主义主义活动公示网站` },
-				{ uid: "未明子", date: "2022-08-14 01:45", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1EG411t7Wh" target="_blank" rel="noopener">【行动计划】我们打算做一个什么样的网站（1）——初步功能</a>` },
-				{ uid: "万大可", date: "2022-08-31 15:45", msg: `更新了网站 ismist.cn` },
+				{ uid: "川羽", badge: ["参与者", "主义主义网站"], date: "2022-08-24 12:34", msg: "魔怔人论坛上线<br>目标进度 +100%：魔怔人论坛" },
+				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-07-04 01:38", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1if4y1Z7xo" target="_blank" rel="noopener">【实践】我的行动路径——我卖什么货，我开什么店，我成立什么团体，我追求什么理想</a>` },
+				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-08-01 01:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1wa411M7jK" target="_blank" rel="noopener">【公告】我们眼下的行动路径</a>` },
+				{ uid: "万大可", badge: ["参与者", "支持者", "主义主义网站"], date: "2022-08-13 15:45", msg: `上线了网站 ismist.cn<br>目标进度 +15%：主义主义活动公示网站` },
+				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-08-14 01:45", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1EG411t7Wh" target="_blank" rel="noopener">【行动计划】我们打算做一个什么样的网站（1）——初步功能</a>` },
+				{ uid: "万大可", badge: ["参与者", "支持者", "主义主义网站"], date: "2022-08-31 15:45", msg: `更新了网站 ismist.cn` },
 			],
 			sponsor: [
-				{ uid: "未明子", role: ["发起人", "支持者"], badge: ["主义主义网站"], date: "2022-08-08 12:34", msg: "提供支持 +35 购买域名 ismism.cn" },
-				{ uid: "万大可", role: ["参与者", "支持者"], badge: ["主义主义网站"], date: "2022-08-11 12:34", msg: "提供支持 +70 购买域名 ismist.cn 与 主义主义.中国" },
+				{ uid: "未明子", badge: ["发起人", "支持者", "主义主义网站"], date: "2022-08-08 12:34", msg: "提供支持 +35 购买域名 ismism.cn" },
+				{ uid: "万大可", badge: ["参与者", "支持者", "主义主义网站"], date: "2022-08-11 12:34", msg: "提供支持 +70 购买域名 ismist.cn 与 主义主义.中国" },
 			]
 		}
 	]
 
 	const recent = [
-		{ uid: "username2", role: ["参与者"], badge: ["星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +85%：吊顶改造" },
-		{ uid: "username3", role: ["参与者"], badge: ["星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +75%：墙面改造" },
-		{ uid: "username3", role: ["参与者"], badge: ["星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +25%：卫生间改造" },
-		{ uid: "未明子", role: ["发起人", "参与者"], badge: ["星星家园"], date: "2022-08-23 00:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1eB4y1z7Qc" target="_blank" rel="noopener">【项目追踪】晚托班改造计划硬装部分阶段性介绍</a>` },
-		{ uid: "万大可", role: ["参与者"], badge: ["主义主义网站"], date: "2022-08-31 15:45", msg: `更新了网站 ismist.cn` },
+		{ uid: "username2", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +85%：吊顶改造" },
+		{ uid: "username3", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +75%：墙面改造" },
+		{ uid: "username3", badge: ["参与者", "星星家园"], date: "2022-08-22 12:34", msg: "完成了 a b c d<br>目标进度 +25%：卫生间改造" },
+		{ uid: "未明子", badge: ["发起人", "参与者", "星星家园"], date: "2022-08-23 00:46", msg: `发布了视频 <a href="https://www.bilibili.com/video/BV1eB4y1z7Qc" target="_blank" rel="noopener">【项目追踪】晚托班改造计划硬装部分阶段性介绍</a>` },
+		{ uid: "万大可", badge: ["参与者", "主义主义网站"], date: "2022-08-31 15:45", msg: `更新了网站 ismist.cn` },
 	]
 
 	function etitle(
@@ -1100,7 +913,7 @@
 	) {
 		const a = el.getElementsByTagName("a")[0]
 		a.href = `#${aid}`
-		a.getElementsByTagName("code")[0].innerText = aid
+		a.getElementsByTagName("code")[0].innerText = `#${aid}`
 		a.getElementsByTagName("span")[0].innerText = title
 		a.classList.add("title")
 		etag(el.getElementsByClassName("tag")[0], tag)
@@ -1121,7 +934,7 @@
 		const nimg = dn => {
 			d.nimg = ((d.nimg + dn) % d.img.length + d.img.length) % d.img.length
 			s[0].innerText = d.img[d.nimg].title
-			s[2].children[0].innerHTML = d.nimg + 1
+			s[2].children[0].innerText = d.nimg + 1
 			s[2].children[1].innerText = d.img.length
 			img.src = d.img[d.nimg].src
 		}
@@ -1154,73 +967,70 @@
 		}
 	}
 
-	const crole = new Map([
+	const cbadge = new Map([
 		["发起人", "red"],
 		["参与者", "amber"],
 		["支持者", "purple"],
 	]);
 
+	function ebadge(
+		el, badge
+	) {
+		const t = document.getElementById("badge-item").content.children[0]
+		for (const b of badge) {
+			const s = el.appendChild(t.cloneNode(true))
+			const c = cbadge.get(b)
+			if (c) s.classList.add(c)
+			s.innerText = b
+		}
+	}
+
 	function elog(
-		el, { participant, activity, sponsor }
+		el, unit, msg
 	) {
 		el.innerHTML = ""
-		const tab = document.createElement("div")
-		tab.classList.add("tab")
-		tab.innerHTML = `<button><span>${activity.length}</span> 条活动日志 ❯</button>`
-			+ `<button><span>${participant.length}</span> 名参与者 ❯</button>`
-			+ `<button><span>${sponsor.length}</span> 位支持者 ❯</button>`
-		const logp = document.createElement("div")
-		logp.classList.add("log")
-		logp.innerHTML = `<span>${participant.length} 名参与者</span>`
-		for (const p of participant) {
-			const badge = [
-				...p.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
-				...p.badge.map(r => `<span class="black"}>${r}</span>`)
-			].join("")
-			logp.innerHTML += `<div><div>${p.uid[0]}</div><div><div>${p.uid} ${badge}</div><div>${p.date}</div><div>${p.msg}</div></div></div>`
+		const temp = document.getElementById("log-item").content.children
+		const head = el.appendChild(temp[0].cloneNode(true))
+		head.innerText = `${msg.length} ${unit}`
+		for (const m of msg) {
+			const d = el.appendChild(temp[1].cloneNode(true)).children
+			d[0].innerText = m.uid[0]
+			d[1].children[0].innerText = m.uid
+			ebadge(d[1].children[0], m.badge)
+			d[1].children[1].innerText = m.date
+			d[1].children[2].innerText = m.msg
 		}
-		logp.innerHTML += `<span>${participant.length} 名参与者</span>`
-		const loga = document.createElement("div")
-		loga.classList.add("log")
-		loga.innerHTML = `<span>${activity.length} 条活动日志</span>`
-		for (const a of activity) {
-			const p = participant.find(p => p.uid == a.uid)
-			const badge = p == undefined ? "" : [
-				...p.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
-				...p.badge.map(r => `<span class="black"}>${r}</span>`)
-			].join("")
-			loga.innerHTML += `<div><div>${a.uid[0]}</div><div><div>${a.uid} ${badge}</div><div>${a.date}</div><div>${a.msg}</div></div></div>`
-		}
-		loga.innerHTML += `<span>${activity.length} 条活动日志</span>`
-		const logs = document.createElement("div")
-		logs.classList.add("log")
-		logs.innerHTML = `<span>${sponsor.length} 位支持者</span>`
-		for (const s of sponsor) {
-			const badge = [
-				...s.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
-				...s.badge.map(r => `<span class="black"}>${r}</span>`)
-			].join("")
-			logs.innerHTML += `<div><div>${s.uid[0]}</div><div><div>${s.uid} ${badge}</div><div>${s.date}</div><div>${s.msg}</div></div></div>`
-		}
-		logs.innerHTML += `<span>${sponsor.length} 位支持者</span>`
-		const log = [loga, logp, logs]
+		const foot = el.appendChild(temp[0].cloneNode(true))
+		foot.innerText = head.innerText
+	}
+
+	function emsg(
+		el, { participant, activity, sponsor }
+	) {
+		const tab = el.getElementsByClassName("tab")[0].children
+		tab[0].children[0].innerText = activity.length
+		tab[1].children[0].innerText = participant.length
+		tab[2].children[0].innerText = sponsor.length
+		const log = [...el.getElementsByClassName("log")]
+		elog(log[0], "条活动日志", activity)
+		elog(log[1], "名参与者", participant)
+		elog(log[2], "位支持者", sponsor)
+		log.forEach(l => l.style.display = "none")
 		const toggle = (b, n) => {
 			if (b.classList.contains("dark-gray")) {
 				b.classList.remove("dark-gray")
 				log[n].style.display = "none"
 			} else {
-				for (const c of tab.children) c.classList.remove("dark-gray")
+				for (const t of tab) t.classList.remove("dark-gray")
 				log.forEach(l => l.style.display = "none")
 				b.classList.add("dark-gray")
 				log[n].style.display = "block"
 				log[n].scrollTop = log[n].scrollHeight
 			}
 		}
-		tab.children[0].addEventListener("click", () => toggle(tab.children[0], 0))
-		tab.children[1].addEventListener("click", () => toggle(tab.children[1], 1))
-		tab.children[2].addEventListener("click", () => toggle(tab.children[2], 2))
-		el.appendChild(tab)
-		log.forEach(l => { l.style.display = "none"; el.appendChild(l) })
+		tab[0].addEventListener("click", () => toggle(tab[0], 0))
+		tab[1].addEventListener("click", () => toggle(tab[1], 1))
+		tab[2].addEventListener("click", () => toggle(tab[2], 2))
 	}
 
 	function earticle(
@@ -1237,7 +1047,7 @@
 			etitle(a.getElementsByClassName("title")[0], d)
 			eimg(a.getElementsByClassName("photo")[0], d)
 			estat(a.getElementsByClassName("stat")[0], d.stat)
-			// elog(s, d)
+			emsg(a.getElementsByClassName("msg")[0], d)
 		}
 	}
 
@@ -1245,19 +1055,7 @@
 		el
 	) {
 		el.innerHTML = ""
-		const log = document.createElement("div")
-		log.classList.add("log")
-		log.classList.add("recent")
-		log.innerHTML = `<span>${recent.length} 条最新动态</span>`
-		for (const r of recent) {
-			const badge = [
-				...r.role.map(r => `<span class=${crole.get(r)}>${r}</span>`),
-				...r.badge.map(r => `<span class="black"}>${r}</span>`)
-			].join("")
-			log.innerHTML += `<div><div>${r.uid[0]}</div><div><div>${r.uid} ${badge}</div><div>${r.date}</div><div>${r.msg}</div></div></div>`
-
-		}
-		el.appendChild(log)
+		elog(el, "条最新动态", recent)
 	}
 
 	window.addEventListener("hashchange", () => {
@@ -1267,7 +1065,7 @@
 			tags, true
 		)
 		earticle(document.getElementsByClassName("main")[0])
-		erecent(document.getElementsByClassName("side")[0])
+		erecent(document.getElementsByClassName("recent")[0])
 	})
 
 	function load(
