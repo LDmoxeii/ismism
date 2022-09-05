@@ -523,7 +523,12 @@
 		align-items: center;
 	}
 
-	.log>div>div:nth-child(2)>div:nth-child(1)>span {
+	.log>div>div:nth-child(2)>div:nth-child(1)>div {
+		display: inline-block;
+		margin-left: 0.6ch;
+	}
+
+	.log>div>div:nth-child(2)>div:nth-child(1)>div>span {
 		display: inline-block;
 		font-size: var(--small);
 		background: var(--cl-dark-gray);
@@ -533,10 +538,6 @@
 		margin: 1px;
 		user-select: none;
 		white-space: nowrap;
-	}
-
-	.log>div>div:nth-child(2)>div:nth-child(1)>span:nth-child(1) {
-		margin-left: 0.8ch;
 	}
 
 	.log>div>div:nth-child(2)>div:nth-child(2) {
@@ -674,7 +675,10 @@
 	<div>
 		<div>u</div>
 		<div>
-			<div>username <span>badge1</span><span>badge2</span></div>
+			<div>
+				<span>username</span>
+				<div><span>badge1</span><span>badge2</span></div>
+			</div>
 			<div>timestamp</div>
 			<div>msg</div>
 		</div>
@@ -966,7 +970,11 @@
 	]
 
 	const recent = [
-
+		{ date: "2022-08-31", uid: "张超培", badge: ["参与者", "星星家园"], msg: "在八月 21 - 30 日共参与施工 10 天" },
+		{ date: "2022-08-31", uid: "谢宇", badge: ["参与者", "星星家园"], msg: "在八月 22, 24 - 25, 27 - 28 日共参与施工 5 天" },
+		{ date: "2022-08-31", uid: "蔡思忘", badge: ["参与者", "星星家园"], msg: "在八月 22 - 24, 26 - 27, 29 日共参与施工 6 天" },
+		{ date: "2022-08-31", uid: "赵贺", badge: ["参与者", "星星家园"], msg: "在八月 27 - 28 日共参与施工 2 天" },
+		{ date: "2022-09-05", uid: "万大可", badge: ["参与者", "支持者", "主义主义网站"], msg: "上线网站 ismist.cn\n目标进度 15%：主义主义活动公示网站" },
 	]
 
 	function etitle(
@@ -1039,6 +1047,7 @@
 	function ebadge(
 		el, badge
 	) {
+		el.innerHTML = ""
 		const t = document.getElementById("badge-item").content.children[0]
 		for (const b of badge) {
 			const s = el.appendChild(t.cloneNode(true))
@@ -1059,8 +1068,8 @@
 		for (const m of msg) {
 			const d = el.appendChild(tl[1].cloneNode(true)).children
 			d[0].innerText = m.uid[0]
-			d[1].children[0].innerText = m.uid
-			ebadge(d[1].children[0], m.badge)
+			d[1].children[0].children[0].innerText = m.uid
+			ebadge(d[1].children[0].children[1], m.badge)
 			d[1].children[1].innerText = m.date
 			if (m.video) {
 				d[1].children[2].innerText = "发布了视频："
