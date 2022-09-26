@@ -798,6 +798,7 @@
 		"苏州",
 		"杭州",
 		"成都",
+		"工益公益",
 		"星星家园",
 		"主义主义网站"
 	]
@@ -819,6 +820,33 @@
 
 	const articles = [
 		{
+			aid: 3,
+			title: "营养星期四",
+			tag: ["进行中", "物资配给", "苏州", "工益公益"],
+			date: { pub: "2022-09-26 08:11", update: "2022-09-26 08:11" },
+			img: [
+				{ title: "吴中区 Geist 店面", src: "https://img1.imgtp.com/2022/09/26/jRmRbNzg.jpg" }
+			],
+			nimg: 0,
+			stat: {
+				fund: 0, budget: 0, expense: 0,
+				detail: "https://docs.qq.com/sheet/DZWNvbXV3S0FDV0Nx?tab=zh23xc",
+				progress: [
+					{ goal: "2022十月营养餐食", pct: 0 },
+					{ goal: "2022十一月营养餐食", pct: 0 },
+					{ goal: "2022十二月营养餐食", pct: 0 },
+				]
+			},
+			participant: [
+				{ date: "2022-07-04 12:34", uid: "未明子", badge: ["发起人", "工益公益"], msg: "作为发起人参与活动" },
+				{ date: "2022-07-04 12:34", uid: "张正午", badge: ["发起人", "工益公益"], msg: "作为发起人参与活动" },
+			],
+			activity: [
+				{ date: "2022-09-18 03:35", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】我们团队的总路线：以工益带动公益；我们的第一个实践计划：工益食堂", video: "https://www.bilibili.com/video/BV1wG4y1B7cK" },
+				{ date: "2022-09-26 08:11", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】接下来的项目：营养星期四，请社会的主人们来做客吃饭", video: "https://www.bilibili.com/video/BV1Fe4y1H7Vy" },
+			],
+			sponsor: []
+		}, {
 			aid: 2,
 			title: "星星家园改造",
 			tag: ["已结束", "设施建设", "苏州", "星星家园"],
@@ -1001,11 +1029,11 @@
 	]
 
 	const recent = [
-		{ date: "2022-08-31", uid: "赵贺", badge: ["参与者", "星星家园"], msg: "在八月 27 - 28 日共参与施工 2 天" },
-		{ date: "2022-09-05", uid: "万大可", badge: ["参与者", "支持者", "主义主义网站"], msg: "上线网站 ismist.cn\n目标进度 15%：主义主义活动公示网站" },
 		{ date: "2022-09-07 02:45", uid: "未明子", badge: ["发起人", "支持者", "星星家园", "主义主义网站"], msg: "【项目追踪】主义主义网站（临时站点）目前的功能：首批项目内容的简单公示", video: "https://www.bilibili.com/video/BV1r14y1s75s" },
 		{ date: "2022-09-09 04:05", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【项目追踪】晚托班环境改造成果展示预览版（直播讲解版）", video: "https://www.bilibili.com/video/BV19d4y1g7Hc" },
 		{ date: "2022-09-13 22:50", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【项目追踪】爱心小屋改造全纪实", video: "https://www.bilibili.com/video/BV1Cd4y1u7Ya" },
+		{ date: "2022-09-18 03:35", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】我们团队的总路线：以工益带动公益；我们的第一个实践计划：工益食堂", video: "https://www.bilibili.com/video/BV1wG4y1B7cK" },
+		{ date: "2022-09-26 08:11", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】接下来的项目：营养星期四，请社会的主人们来做客吃饭", video: "https://www.bilibili.com/video/BV1Fe4y1H7Vy" },
 	]
 
 	function etitle(
@@ -1051,11 +1079,11 @@
 		el.style.setProperty("--expense", stat.expense)
 		const fund = el.getElementsByClassName("fund")[0].children
 		fund[0].innerText = stat.fund
-		fund[1].innerText = `${(stat.fund / stat.budget * 100).toFixed(0)}%`
+		fund[1].innerText = `${stat.budget == 0 ? 0 : (stat.fund / stat.budget * 100).toFixed(0)}%`
 		fund[2].innerText = stat.budget
 		const expense = el.getElementsByClassName("expense")[0].children
 		expense[0].innerText = stat.expense
-		expense[1].innerText = `${(stat.expense / stat.budget * 100).toFixed(0)}%`
+		expense[1].innerText = `${stat.budget == 0 ? 0 : (stat.expense / stat.budget * 100).toFixed(0)}%`
 		el.getElementsByTagName("a")[0].href = stat.detail
 		const tg = document.getElementById("circle-item").content.children
 		const circle = el.getElementsByClassName("circle")[0]
@@ -1071,6 +1099,7 @@
 		["发起人", "red"],
 		["参与者", "amber"],
 		["支持者", "purple"],
+		["工益公益", "black"],
 		["星星家园", "black"],
 		["主义主义网站", "black"],
 	]);
