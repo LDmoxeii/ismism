@@ -23,9 +23,7 @@
 			"include": [
 				"ban-untagged-todo"
 			],
-			"exclude": [
-				"no-unused-vars"
-			]
+			"exclude": []
 		}
 	},
 	"fmt": {
