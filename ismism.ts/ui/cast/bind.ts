@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-window-prefix
 import { init, render } from "../../../../septem.ts/src/septem.ts"
 
 const fps = document.getElementById("fps") as HTMLElement
@@ -90,32 +91,43 @@ function resize(
 	canvas.height = window.innerHeight * pscale
 }
 resize()
-// deno-lint-ignore no-window-prefix
 window.addEventListener("resize", resize)
 
 init(canvas, data)
 
 let tframe = 0
 let nframe = 0
+let pause = false
+let orient: [number, number, number] | null = null
 const dts = new Array<number>(30).fill(0)
 
 function frame(
 	t: DOMHighResTimeStamp
 ) {
 	const dt = t - tframe
-	tframe = t
+	if (pause) t = tframe
+	else tframe = t
 	dts[nframe++ % dts.length] = dt
 	fps.innerText = `fps: ${Math.round(1000 * dts.length / dts.reduceRight((a, b) => a + b))}\n`
 		+ `res: ${canvas.width} x ${canvas.height}\n`
 		+ `pratio: ${window.devicePixelRatio.toFixed(1)}, pscale: ${pscale}\n`
-		+ `t: ${(t / 1000).toFixed(2)}`
+		+ `t: ${(t / 1000).toFixed(1)}\n`
+		+ `orient: ${orient?.map(v => v.toFixed(0))}\n`
+	let x = sw * Math.sin(t / 1500)
+	let zoom = 5 * Math.sin(t / 7000)
+	let ry = t / 4000
+	if (orient) {
+		x = 1.5 * sw * Math.sin(orient[0] / 180 * Math.PI)
+		zoom = 5 * Math.sin((45 - orient[1]) / 180 * Math.PI)
+		ry = -orient[2] / 180 * Math.PI
+	}
 	if (img.complete) render(
-		{ fov: 20 + 5 * Math.sin(t / 7000) }, {
+		{ fov: 20 + zoom }, {
 		obj: [
-			{ xyz: [sw * Math.sin(t / 1500) + 3 * sw, 0, -6], ry: t / 4000, tex },
-			{ xyz: [sw * Math.sin(t / 1500) + sw, 0, -6], ry: t / 4000, tex },
-			{ xyz: [sw * Math.sin(t / 1500) - sw, 0, -6], ry: t / 4000, tex },
-			{ xyz: [sw * Math.sin(t / 1500) - 3 * sw, 0, -6], ry: t / 4000, tex },
+			{ xyz: [x + 3 * sw, 0, -6], ry, tex },
+			{ xyz: [x + sw, 0, -6], ry, tex },
+			{ xyz: [x - sw, 0, -6], ry, tex },
+			{ xyz: [x - 3 * sw, 0, -6], ry, tex },
 		],
 		aether: Math.max(-Math.sin(t / 6000), 0),
 		time: t / 1000,
@@ -124,3 +136,14 @@ function frame(
 	requestAnimationFrame(frame)
 }
 requestAnimationFrame(frame)
+
+// deno-lint-ignore no-explicit-any
+const doe = DeviceOrientationEvent as any
+document.addEventListener("click", () => {
+	if (orient == null && doe.requestPermission) doe.requestPermission()
+	pause = !pause
+})
+window.addEventListener("deviceorientation", e => {
+	if (e.alpha != null && e.beta != null && e.gamma != null)
+		orient = [e.alpha, e.beta, e.gamma]
+})
