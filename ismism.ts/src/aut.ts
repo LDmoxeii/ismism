@@ -6,54 +6,57 @@ const alg = {
 	publicExponent: new Uint8Array([1, 0, 1]),
 	hash: "SHA-256",
 }
-const key = await crypto.subtle.generateKey(alg, true, ["sign", "verify"])
-const jwk = {
-	private: await crypto.subtle.exportKey("jwk", key.privateKey),
-	public: await crypto.subtle.exportKey("jwk", key.publicKey)
-}
-const jwk_url = "./jwk"
-await Deno.writeTextFile(jwk_url, JSON.stringify(jwk))
-const jwk_r: typeof jwk = JSON.parse(await Deno.readTextFile(jwk_url))
-const key_r = {
-	private: await crypto.subtle.importKey("jwk", jwk_r.private, alg, false, ["sign"]),
-	public: await crypto.subtle.importKey("jwk", jwk_r.public, alg, false, ["verify"]),
-}
-console.log(jwk_r)
 
-function json_to_base64url(
-	json: Record<string, string | number | boolean>
-): string {
-	const s = JSON.stringify(json)
-	const a = base64url.encode(s)
-	const b = base64url.encode(new TextEncoder().encode(s))
-	console.log(`base64url-s:\n${s}`)
-	console.log(`base64url-a:\n${a}`)
-	console.log(`base64url-b:\n${b}`)
-	return b
+type Key<T extends CryptoKey | JsonWebKey> = {
+	private: T,
+	public: T
 }
+type Json = Record<string, string | number | boolean>
 
-async function jwt(
-): Promise<string> {
-	const payload = {
-		uid: 728,
-		name: "728",
-		role: "admin",
-		iat: Date.now()
+const jwk_url = "./jwk.json"
+let key: Key<CryptoKey> | null = null
+
+export async function keygen(
+	file = false
+) {
+	const p = await crypto.subtle.generateKey(alg, true, ["sign", "verify"])
+	key = { private: p.privateKey, public: p.publicKey }
+	if (file) {
+		const jwk: Key<JsonWebKey> = {
+			private: await crypto.subtle.exportKey("jwk", key.private),
+			public: await crypto.subtle.exportKey("jwk", key.public)
+		}
+		await Deno.writeTextFile(jwk_url, JSON.stringify(jwk))
 	}
-	const p = json_to_base64url(payload)
-	const d = new TextEncoder().encode(p)
-	const sign = await crypto.subtle.sign(
-		"RSASSA-PKCS1-v1_5", key_r.private,
-		d
-	)
-	const s = base64url.encode(sign)
-	const v = await crypto.subtle.verify(
-		"RSASSA-PKCS1-v1_5", key_r.public,
-		base64url.decode(s), d
-	)
-	console.log(`verified: ${v}`)
-	return `${p}.${s}`
+}
+export async function keyload(
+) {
+	const jwk = JSON.parse(await Deno.readTextFile(jwk_url)) as Key<JsonWebKey>
+	key = {
+		private: await crypto.subtle.importKey("jwk", jwk.private, alg, false, ["sign"]),
+		public: await crypto.subtle.importKey("jwk", jwk.public, alg, false, ["verify"]),
+	}
 }
 
-const t = await jwt()
-console.log(`jwt: ${t}`)
+export async function sign(
+	json: Json
+): Promise<string> {
+	if (!key) return ""
+	const p = base64url.encode(JSON.stringify(json))
+	const s = await crypto.subtle.sign(
+		alg.name, key.private,
+		new TextEncoder().encode(p)
+	)
+	return `${p}.${base64url.encode(s)}`
+}
+export async function verify(
+	token: string
+): Promise<Json | null> {
+	const [p, s] = token.split(".")
+	if (!key || !s) return null
+	const v = await crypto.subtle.verify(
+		alg.name, key.public,
+		base64url.decode(s), new TextEncoder().encode(p)
+	)
+	return v ? JSON.parse(new TextDecoder().decode(base64url.decode(p))) : null
+}

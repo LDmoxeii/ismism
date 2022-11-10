@@ -20,7 +20,7 @@
 		{
 			"label": "test",
 			"type": "shell",
-			"command": "source build.zsh test; sleep 1; http-server --logger -h 0.0.0.0 target",
+			"command": "deno test --allow-read",
 			"group": {
 				"kind": "test",
 				"isDefault": true
