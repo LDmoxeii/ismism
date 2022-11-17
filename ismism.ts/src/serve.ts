@@ -5,6 +5,7 @@ async function handle(
 ): Promise<Response> {
 	const url = new URL(req.url)
 	console.log(req, url.pathname)
+	if (url.pathname == "/quit") Deno.exit()
 	return new Response(
 		`hello world!\nurl: ${url.pathname}, ${url.hash}, ${url.search}`, {
 		status: url.pathname.endsWith("webp") ? 401 : 200,
