@@ -58,6 +58,11 @@ export type Work = {
 	op: "work",
 	aid: number,
 	msg: string
+} | {
+	op: "video",
+	aid: number[],
+	title: string,
+	src: string,
 })
 
 export type Fund = {
