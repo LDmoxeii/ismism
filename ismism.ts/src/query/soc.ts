@@ -13,12 +13,12 @@ async function soc_of_sid(
 
 export async function soc_of_uid(
 	uid: number
-): Promise<Pick<Soc, "name" | "intro">[]> {
+): Promise<Pick<Soc, "_id" | "name">[]> {
 	if (uid === 0) return []
 	return await coll.soc.find(
 		// deno-lint-ignore no-explicit-any
 		{ uid } as any,
-		{ projection: { _id: 1, name: 1, intro: 1 } }
+		{ projection: { _id: 1, name: 1 } }
 	).toArray()
 }
 
