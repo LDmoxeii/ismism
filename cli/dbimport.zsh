@@ -15,3 +15,9 @@ mongoimport --jsonArray -d=ismism -c=fund --file=json/fund.json
 
 echo mongoimport --jsonArray -d=ismism -c=dat --file=json/dat.json
 mongoimport --jsonArray -d=ismism -c=dat --file=json/dat.json
+
+mongosh ismism --eval 'db.getCollectionNames().forEach(coll => { 
+    const idx = db.getCollection(coll).getIndexes()
+    console.log(`${coll}:`)
+    printjson(idx)
+})'

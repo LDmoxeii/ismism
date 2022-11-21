@@ -1,4 +1,4 @@
-import { MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
+import { Collection, MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
 import { Agenda, Fund, Dat, Soc, User, Work } from "./typ.ts"
 
 const uri = "mongodb://127.0.0.1:27017"
@@ -61,4 +61,16 @@ export async function init(
 		}]
 	})
 	return await db.listCollectionNames()
+}
+
+export async function idname(
+	c: Collection<User> | Collection<Soc> | Collection<Agenda>,
+	id: number[],
+): Promise<[number, string][]> {
+	id = [...new Set(id)]
+	const d = await c.find(
+		{ _id: { "$in": id } },
+		{ projection: { _id: 1, name: 1 } }
+	).toArray()
+	return d.map(d => [d._id, d.name])
 }
