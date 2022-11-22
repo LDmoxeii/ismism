@@ -10,6 +10,7 @@ export const coll = {
 	user: db.collection<User>("user"),
 	soc: db.collection<Soc>("soc"),
 	agenda: db.collection<Agenda>("agenda"),
+	worker: db.collection<Work>("worker"),
 	work: db.collection<Work>("work"),
 	fund: db.collection<Fund>("fund"),
 	dat: db.collection<Dat>("dat"),
@@ -35,29 +36,32 @@ export async function init(
 	await coll.agenda.createIndexes({
 		indexes: [{
 			key: { name: 1 }, name: "name", unique: true,
+		}]
+	})
+	await coll.worker.createIndexes({
+		indexes: [{
+			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
 			key: { uid: 1 }, name: "uid"
-		}, {
-			key: { sid: 1 }, name: "sid"
 		}]
 	})
 	await coll.work.createIndexes({
 		indexes: [{
-			key: { uid: 1 }, name: "uid"
+			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
-			key: { aid: 1 }, name: "aid"
+			key: { uid: 1 }, name: "uid"
 		}]
 	})
 	await coll.fund.createIndexes({
 		indexes: [{
-			key: { uid: 1 }, name: "uid"
+			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
-			key: { aid: 1 }, name: "aid"
+			key: { uid: 1 }, name: "uid"
 		}]
 	})
 	await coll.dat.createIndexes({
 		indexes: [{
-			key: { typ: 1, tid: 1, utc: -1 }, name: "typ-tid-utc"
+			key: { "_id.aid": 1, typ: 1, "_id.utc": -1 }, name: "aid-typ-utc"
 		}]
 	})
 	return await db.listCollectionNames()

@@ -2,4 +2,5 @@
 /ui
 /log
 /jwk.json
-/json
+/dbimport
+/dbexport

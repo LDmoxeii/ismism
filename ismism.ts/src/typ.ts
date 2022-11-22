@@ -20,8 +20,6 @@ export const sid_ofs = 10000
 export type Agenda = {
 	_id: number,
 	name: string,
-	uid: number[],
-	sid: number[],
 	budget: number,
 	fund: number,
 	expense: number,
@@ -35,49 +33,37 @@ export type Goal = {
 	pct: number,
 }
 
-export type Work = {
-	_id: number,
+export type Worker = {
+	_id: { aid: number, utc: number },
 	uid: number,
-	utc: number,
-} & ({
-	op: "init",
-	aid: number,
-} | {
-	op: "goal",
-	aid: number,
-	goal: Goal,
-} | {
-	op: "done",
-	aid: number,
-	done: string,
-} | {
-	op: "join",
-	aid: number,
 	role: string,
+}
+
+export type Work = {
+	_id: { aid: number, utc: number },
+	uid: number,
+} & ({
+	op: "goal",
+	goal: Goal[],
 } | {
 	op: "work",
-	aid: number,
 	msg: string
 } | {
 	op: "video",
-	aid: number[],
 	title: string,
 	src: string,
 })
 
 export type Fund = {
-	_id: number,
+	_id: { aid: number, utc: number },
 	uid: number,
-	aid: number,
 	fund: number,
-	utc: number
+	msg: string,
 }
 
 export type Dat = {
-	_id: number,
-	utc: number,
+	_id: { aid: number, utc: number },
 } & ({
-	typ: "imgsrc-aid",
-	tid: number,
+	typ: "imgsrc",
 	img: { title: string, src: string }[]
 })
