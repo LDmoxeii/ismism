@@ -10,11 +10,11 @@ export async function nwork_of_aid(
 	aid: number
 ) {
 	if (aid === 0) return 0
-	return await coll.work.countDocuments({ aid })
+	return await coll.work.countDocuments({ "_id.aid": aid })
 }
 export async function work_of_aid(
 	aid: number
 ) {
 	if (aid === 0) return []
-	return await coll.work.find({ aid }).sort({ utc: -1 }).toArray()
+	return await coll.work.find({ "_id.aid": aid }).sort({ "_id.utc": -1 }).toArray()
 }
