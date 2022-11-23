@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
-import { Agenda, Fund, Dat, Soc, User, Work } from "./typ.ts"
+import { Agenda, Fund, Dat, Soc, User, Work, Worker } from "./typ.ts"
 
 const uri = "mongodb://127.0.0.1:27017"
 const mongo = new MongoClient()
@@ -10,7 +10,7 @@ export const coll = {
 	user: db.collection<User>("user"),
 	soc: db.collection<Soc>("soc"),
 	agenda: db.collection<Agenda>("agenda"),
-	worker: db.collection<Work>("worker"),
+	worker: db.collection<Worker>("worker"),
 	work: db.collection<Work>("work"),
 	fund: db.collection<Fund>("fund"),
 	dat: db.collection<Dat>("dat"),
@@ -73,7 +73,7 @@ export async function idname(
 ): Promise<[number, string][]> {
 	id = [...new Set(id)]
 	const d = await c.find(
-		{ _id: { "$in": id } },
+		{ _id: { $in: id } },
 		{ projection: { _id: 1, name: 1 } }
 	).toArray()
 	return d.map(d => [d._id, d.name])

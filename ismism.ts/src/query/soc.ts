@@ -1,7 +1,8 @@
-import { coll, idname } from "../db.ts";
-import { Soc } from "../typ.ts";
-import { fund_of_uid } from "./fund.ts";
-import { work_of_uid } from "./work.ts";
+import { coll, idname } from "../db.ts"
+import { Soc } from "../typ.ts"
+import { fund_of_uid } from "./fund.ts"
+import { work_of_uid } from "./work.ts"
+import { worker_of_uid } from "./worker.ts"
 
 async function soc_of_sid(
 	sid: number
@@ -28,13 +29,16 @@ export async function soc(
 	if (sid === 0) return null
 	const s = await soc_of_sid(sid)
 	if (s === null) return null
-	const [work, fund] = await Promise.all([
+	const [worker, work, fund] = await Promise.all([
+		worker_of_uid(s.uid),
 		work_of_uid(s.uid),
 		fund_of_uid(s.uid),
 	])
-	const [uidname, aidname] = await Promise.all([
-		idname(coll.user, s.uid), idname(coll.agenda,
-			work.map(w => w.aid).flat().concat(fund.map(f => f.aid))
-		)])
-	return { ...s, work, fund, uidname, aidname }
+	const [uname, aname] = await Promise.all([
+		idname(coll.user, s.uid), idname(coll.agenda, [
+			...worker.map(w => w._id.aid),
+			...work.map(w => w._id.aid),
+			...fund.map(f => f._id.aid),
+		])])
+	return { ...s, worker, work, fund, uname, aname }
 }
