@@ -33,16 +33,14 @@ export type Goal = {
 	pct: number,
 }
 
-export type Worker = {
+export type Rec = {
 	_id: { aid: number, utc: number },
 	uid: number,
+}
+export type Worker = Rec & {
 	role: string,
 }
-
-export type Work = {
-	_id: { aid: number, utc: number },
-	uid: number,
-} & ({
+export type Work = Rec & ({
 	op: "goal",
 	goal: Goal[],
 } | {
@@ -53,10 +51,7 @@ export type Work = {
 	title: string,
 	src: string,
 })
-
-export type Fund = {
-	_id: { aid: number, utc: number },
-	uid: number,
+export type Fund = Rec & {
 	fund: number,
 	msg: string,
 }

@@ -1,17 +1,21 @@
 import { assert } from "https://deno.land/std@0.163.0/testing/asserts.ts"
+import { coll, rec_of_aid, rec_of_uid } from "../src/db.ts"
 import { agenda } from "../src/query/agenda.ts"
-import { fund_of_aid } from "../src/query/fund.ts"
 import { soc } from "../src/query/soc.ts"
 import { user } from "../src/query/user.ts"
-import { work_of_aid } from "../src/query/work.ts"
-import { worker_of_aid } from "../src/query/worker.ts"
 
 Deno.test("user", async () => {
-	const p = await user(728)
-	console.log(p)
-	assert(p && p.name === "万大可")
-	assert(p.work.length === 1 && p.work[0].op === "work")
-	assert(new Map(p.aname).get(p.work[0]._id.aid) === "主义主义网站开发")
+	const u = await user(728)
+	console.log(u)
+	assert(u && u.name === "万大可")
+	assert(u.worker === 1 && u.work === 1 && u.fund === 0)
+	const [worker, work, fund] = await Promise.all([
+		rec_of_uid(coll.worker, [728]),
+		rec_of_uid(coll.work, [728]),
+		rec_of_uid(coll.fund, [728]),
+	])
+	assert(worker.length === 1 && work.length === 1 && fund.length === 0)
+	console.log(worker, work, fund)
 })
 
 Deno.test("soc", async () => {
@@ -19,11 +23,9 @@ Deno.test("soc", async () => {
 	console.log(s)
 	assert(s && s.name === "主义主义软件开发")
 	const uname = new Map(s.uname)
-	const aname = new Map(s.aname)
 	assert(uname.get(s.uid[1]) === "万大可")
-	assert(s.worker.length === 2 && s.worker[1].role === "程序员")
-	assert(s.work.length === 3 && s.work[1].op === "work")
-	assert(aname.get(s.work[1]._id.aid) === "主义主义网站开发")
+	assert(s.worker === 2)
+	assert(s.work === 3)
 })
 
 Deno.test("agenda", async () => {
@@ -31,9 +33,9 @@ Deno.test("agenda", async () => {
 	const a4 = a[a.length - 4]
 	const a1 = a[a.length - 1]
 	const [worker, work, fund] = await Promise.all([
-		worker_of_aid(a1._id),
-		work_of_aid(a1._id),
-		fund_of_aid(a1._id),
+		rec_of_aid(coll.worker, a1._id),
+		rec_of_aid(coll.work, a1._id),
+		rec_of_aid(coll.fund, a1._id),
 	])
 	console.log(a1)
 	console.log(worker, work, fund)

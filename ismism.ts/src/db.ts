@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
-import { Agenda, Fund, Dat, Soc, User, Work, Worker } from "./typ.ts"
+import { Agenda, Fund, Dat, Soc, User, Work, Worker, Rec } from "./typ.ts"
 
 const uri = "mongodb://127.0.0.1:27017"
 const mongo = new MongoClient()
@@ -42,21 +42,21 @@ export async function init(
 		indexes: [{
 			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
-			key: { uid: 1 }, name: "uid"
+			key: { uid: 1, "_id.utc": -1 }, name: "uid-utc"
 		}]
 	})
 	await coll.work.createIndexes({
 		indexes: [{
 			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
-			key: { uid: 1 }, name: "uid"
+			key: { uid: 1, "_id.utc": -1 }, name: "uid-utc"
 		}]
 	})
 	await coll.fund.createIndexes({
 		indexes: [{
 			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
-			key: { uid: 1 }, name: "uid"
+			key: { uid: 1, "_id.utc": -1 }, name: "uid-utc"
 		}]
 	})
 	await coll.dat.createIndexes({
@@ -77,4 +77,43 @@ export async function idname(
 		{ projection: { _id: 1, name: 1 } }
 	).toArray()
 	return d.map(d => [d._id, d.name])
+}
+
+export function nrec_of_uid<T extends Rec>(
+	c: Collection<T>,
+	id: number[],
+) {
+	// deno-lint-ignore no-explicit-any
+	return c.countDocuments({ uid: { $in: id } } as any)
+}
+export function rec_of_uid<T extends Rec>(
+	c: Collection<T>,
+	id: number[],
+) {
+	id = [...new Set(id)]
+	return c.find(
+		// deno-lint-ignore no-explicit-any
+		{ uid: { $in: id } } as any,
+		{ sort: { "_id.utc": -1 } }
+	).toArray()
+}
+
+export async function nrec_of_aid<T extends Rec>(
+	c: Collection<T>,
+	aid: number,
+) {
+	if (aid === 0) return 0
+	// deno-lint-ignore no-explicit-any
+	return await c.countDocuments({ "_id.aid": aid } as any)
+}
+export async function rec_of_aid<T extends Rec>(
+	c: Collection<T>,
+	aid: number,
+) {
+	if (aid === 0) return []
+	return await c.find(
+		// deno-lint-ignore no-explicit-any
+		{ "_id.aid": aid } as any,
+		{ sort: { "_id.utc": -1 } }
+	).toArray()
 }

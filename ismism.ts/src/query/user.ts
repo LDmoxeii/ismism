@@ -1,9 +1,6 @@
-import { coll, idname } from "../db.ts"
+import { coll, nrec_of_uid } from "../db.ts"
 import { User } from "../typ.ts"
-import { fund_of_uid } from "./fund.ts"
 import { soc_of_uid } from "./soc.ts"
-import { work_of_uid } from "./work.ts"
-import { worker_of_uid } from "./worker.ts"
 
 async function user_of_uid(
 	uid: number
@@ -20,15 +17,10 @@ export async function user(
 	const [u, soc, worker, work, fund] = await Promise.all([
 		user_of_uid(uid),
 		soc_of_uid(uid),
-		worker_of_uid([uid]),
-		work_of_uid([uid]),
-		fund_of_uid([uid]),
+		nrec_of_uid(coll.worker, [uid]),
+		nrec_of_uid(coll.work, [uid]),
+		nrec_of_uid(coll.fund, [uid]),
 	])
 	if (u === null) return null
-	const aname = await idname(coll.agenda, [
-		...worker.map(w => w._id.aid),
-		...work.map(w => w._id.aid),
-		...fund.map(f => f._id.aid),
-	])
-	return { ...u, soc, work, fund, aname }
+	return { ...u, soc, worker, work, fund }
 }
