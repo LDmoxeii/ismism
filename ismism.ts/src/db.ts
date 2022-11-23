@@ -78,42 +78,69 @@ export async function idname(
 	).toArray()
 	return d.map(d => [d._id, d.name])
 }
-
-export function nrec_of_uid<T extends Rec>(
-	c: Collection<T>,
-	id: number[],
-) {
-	// deno-lint-ignore no-explicit-any
-	return c.countDocuments({ uid: { $in: id } } as any)
+async function uid_of_sid(
+	sid: number
+): Promise<Pick<Soc, "uid"> | null> {
+	if (sid === 0) return null
+	const projection = { _id: 0, uid: 1 }
+	return await coll.soc.findOne({ _id: sid }, { projection }) ?? null
 }
-export function rec_of_uid<T extends Rec>(
-	c: Collection<T>,
-	id: number[],
+
+export async function nrec_of_uid(
+	uid: number[]
 ) {
-	id = [...new Set(id)]
-	return c.find(
+	const filter = { uid: { $in: uid } }
+	const [worker, work, fund] = await Promise.all([
+		coll.worker.countDocuments(filter),
+		coll.work.countDocuments(filter),
+		coll.fund.countDocuments(filter),
+	])
+	return { worker, work, fund }
+}
+export async function nrec_of_aid(
+	aid: number
+) {
+	if (aid === 0) return { worker: 0, work: 0, fund: 0 }
+	const filter = { "_id.aid": aid }
+	const [worker, work, fund] = await Promise.all([
+		coll.worker.countDocuments(filter),
+		coll.work.countDocuments(filter),
+		coll.fund.countDocuments(filter),
+	])
+	return { worker, work, fund }
+}
+
+export async function rec_of_uid<T extends Rec>(
+	c: Collection<T>,
+	uid: number[],
+) {
+	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
-		{ uid: { $in: id } } as any,
+		{ uid: { $in: uid } } as any,
 		{ sort: { "_id.utc": -1 } }
 	).toArray()
+	const uname = await idname(coll.user, rec.map(r => r.uid))
+	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
+	return { rec, uname, aname }
 }
-
-export async function nrec_of_aid<T extends Rec>(
+export async function rec_of_sid<T extends Rec>(
 	c: Collection<T>,
-	aid: number,
+	sid: number,
 ) {
-	if (aid === 0) return 0
-	// deno-lint-ignore no-explicit-any
-	return await c.countDocuments({ "_id.aid": aid } as any)
+	const uid = (await uid_of_sid(sid))?.uid ?? []
+	return rec_of_uid(c, uid)
 }
 export async function rec_of_aid<T extends Rec>(
 	c: Collection<T>,
 	aid: number,
 ) {
-	if (aid === 0) return []
-	return await c.find(
+	if (aid === 0) return { rec: [], uname: [], aname: [] }
+	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
 		{ "_id.aid": aid } as any,
 		{ sort: { "_id.utc": -1 } }
 	).toArray()
+	const uname = await idname(coll.user, rec.map(r => r.uid))
+	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
+	return { rec, uname, aname }
 }

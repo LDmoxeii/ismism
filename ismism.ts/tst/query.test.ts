@@ -1,5 +1,5 @@
 import { assert } from "https://deno.land/std@0.163.0/testing/asserts.ts"
-import { coll, rec_of_aid, rec_of_uid } from "../src/db.ts"
+import { coll, rec_of_aid, rec_of_sid, rec_of_uid } from "../src/db.ts"
 import { agenda } from "../src/query/agenda.ts"
 import { soc } from "../src/query/soc.ts"
 import { user } from "../src/query/user.ts"
@@ -14,7 +14,7 @@ Deno.test("user", async () => {
 		rec_of_uid(coll.work, [728]),
 		rec_of_uid(coll.fund, [728]),
 	])
-	assert(worker.length === 1 && work.length === 1 && fund.length === 0)
+	assert(worker.rec.length === 1 && work.rec.length === 1 && fund.rec.length === 0)
 	console.log(worker, work, fund)
 })
 
@@ -26,6 +26,12 @@ Deno.test("soc", async () => {
 	assert(uname.get(s.uid[1]) === "万大可")
 	assert(s.worker === 2)
 	assert(s.work === 3)
+	const [worker, work, fund] = await Promise.all([
+		rec_of_sid(coll.worker, 2),
+		rec_of_sid(coll.work, 2),
+		rec_of_sid(coll.fund, 2),
+	])
+	console.log(worker, work, fund)
 })
 
 Deno.test("agenda", async () => {
@@ -41,7 +47,7 @@ Deno.test("agenda", async () => {
 	console.log(worker, work, fund)
 	assert(a.length === 4 && a4._id === 4)
 	assert(a4.dat?.typ === "imgsrc" && a1.dat === null)
-	assert(worker.length === a1.nworker)
-	assert(work.length === a1.nwork)
-	assert(fund.length === a1.nfund)
+	assert(worker.rec.length === a1.worker)
+	assert(work.rec.length === a1.work)
+	assert(fund.rec.length === a1.fund)
 })

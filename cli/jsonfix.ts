@@ -6,7 +6,7 @@ function rand_utc(
 	return utc + Math.round(Math.random() * 10000) - 5000
 }
 
-const user: User[] = JSON.parse(Deno.readTextFileSync("json/user.json"))
+const user: User[] = JSON.parse(Deno.readTextFileSync("dbimport/user.json"))
 const uid_by_name = new Map(user.map(u => [u.name, u._id]))
 
 const activity = [
@@ -114,8 +114,8 @@ const work: Work[] = activity.map(a => {
 	const _id = { aid: a.aid, utc: op === "work" ? rand_utc(utc) : utc }
 	switch (op) {
 		case "work": return { _id, uid, op, msg: a.msg! }
-		case "video": return { _id, uid, op, title: a.msg!, src: a.src! }
+		case "video": return { _id, uid, op, title: a.title!, src: a.src! }
 	}
 })
-Deno.writeTextFileSync("json/work.json", JSON.stringify(work))
+Deno.writeTextFileSync("dbimport/work.json", JSON.stringify(work))
 
