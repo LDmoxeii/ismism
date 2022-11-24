@@ -8,7 +8,7 @@ Deno.test("user", async () => {
 	const u = await user(728)
 	console.log(u)
 	assert(u && u.name === "万大可")
-	assert(u.worker === 1 && u.work === 1 && u.fund === 0)
+	assert(u.rec.worker === 1 && u.rec.work === 1 && u.rec.fund === 0)
 	const [worker, work, fund] = await Promise.all([
 		rec_of_uid(coll.worker, [728]),
 		rec_of_uid(coll.work, [728]),
@@ -24,8 +24,9 @@ Deno.test("soc", async () => {
 	assert(s && s.name === "主义主义软件开发")
 	const uname = new Map(s.uname)
 	assert(uname.get(s.uid[1]) === "万大可")
-	assert(s.worker === 2)
-	assert(s.work === 3)
+	assert(s.rec.worker === 2)
+	assert(s.rec.work === 3)
+	assert(s.rec.fund === 0)
 	const [worker, work, fund] = await Promise.all([
 		rec_of_sid(coll.worker, 2),
 		rec_of_sid(coll.work, 2),
@@ -47,7 +48,7 @@ Deno.test("agenda", async () => {
 	console.log(worker, work, fund)
 	assert(a.length === 4 && a4._id === 4)
 	assert(a4.dat?.typ === "imgsrc" && a1.dat === null)
-	assert(worker.rec.length === a1.worker)
-	assert(work.rec.length === a1.work)
-	assert(fund.rec.length === a1.fund)
+	assert(worker.rec.length === a1.rec.worker)
+	assert(work.rec.length === a1.rec.work)
+	assert(fund.rec.length === a1.rec.fund)
 })

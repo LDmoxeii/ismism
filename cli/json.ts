@@ -19,7 +19,7 @@ await Promise.all(uid.map(async ({ _id }) => {
 		rec_of_uid(coll.fund, [_id]),
 	])
 	await Deno.writeTextFile(`json/u${_id}.json`, JSON.stringify({
-		...u, worker, work, fund
+		...u, rec: { worker, work, fund }
 	}))
 }))
 await Promise.all(sid.map(async ({ _id }) => {
@@ -30,7 +30,7 @@ await Promise.all(sid.map(async ({ _id }) => {
 		rec_of_sid(coll.fund, _id),
 	])
 	await Deno.writeTextFile(`json/s${_id}.json`, JSON.stringify({
-		...s, worker, work, fund
+		...s, rec: { worker, work, fund }
 	}))
 }))
 await Promise.all(a.map(async ({ _id }) => {
@@ -55,5 +55,5 @@ export type Rec = {
 }
 export type Agenda = typeof a[0]
 export type Recent = typeof r
-export type User = Awaited<ReturnType<typeof user>> & Rec
-export type Soc = Awaited<ReturnType<typeof soc>> & Rec
+export type User = Awaited<ReturnType<typeof user>> & { rec: Rec }
+export type Soc = Awaited<ReturnType<typeof soc>> & { rec: Rec }

@@ -5,10 +5,10 @@ export async function agenda(
 ) {
 	const a = await coll.agenda.find().sort({ _id: -1 }).toArray()
 	return Promise.all(a.map(async a => {
-		const [nrec, dat] = await Promise.all([
+		const [rec, dat] = await Promise.all([
 			nrec_of_aid(a._id),
 			dat_of_aid(a._id),
 		])
-		return { ...a, ...nrec, dat }
+		return { ...a, rec, dat }
 	}))
 }

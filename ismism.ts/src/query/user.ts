@@ -14,11 +14,11 @@ export async function user(
 	uid: number
 ) {
 	if (uid === 0) return null
-	const [u, soc, nrec] = await Promise.all([
+	const [u, soc, rec] = await Promise.all([
 		user_of_uid(uid),
 		soc_of_uid(uid),
 		nrec_of_uid([uid]),
 	])
 	if (u === null) return null
-	return { ...u, soc, ...nrec }
+	return { ...u, soc, rec }
 }

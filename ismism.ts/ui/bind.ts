@@ -268,8 +268,10 @@ window.addEventListener("hashchange", () => {
 
 async function load(
 ) {
-	agenda = await json("agenda")
-	recent = await json("recent")
+	[agenda, recent] = await Promise.all([
+		await json("agenda"),
+		await json("recent"),
+	])
 	window.dispatchEvent(new Event("hashchange"))
 }
 

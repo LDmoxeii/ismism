@@ -26,9 +26,9 @@ export async function soc(
 	if (sid === 0) return null
 	const s = await soc_of_sid(sid)
 	if (s === null) return null
-	const [nrec, uname] = await Promise.all([
+	const [rec, uname] = await Promise.all([
 		nrec_of_uid(s.uid),
 		idname(coll.user, s.uid),
 	])
-	return { ...s, ...nrec, uname }
+	return { ...s, rec, uname }
 }
