@@ -50,6 +50,8 @@ export async function init(
 			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
 			key: { uid: 1, "_id.utc": -1 }, name: "uid-utc"
+		}, {
+			key: { "_id.utc": -1 }, name: "utc"
 		}]
 	})
 	await coll.fund.createIndexes({
@@ -140,6 +142,17 @@ export async function rec_of_aid<T extends Rec>(
 		{ "_id.aid": aid } as any,
 		{ sort: { "_id.utc": -1 } }
 	).toArray()
+	const uname = await idname(coll.user, rec.map(r => r.uid))
+	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
+	return { rec, uname, aname }
+}
+export async function work_recent(
+) {
+	const rec = await coll.work.find(
+		{}, {
+		sort: { "_id.utc": -1 },
+		limit: 5
+	}).toArray()
 	const uname = await idname(coll.user, rec.map(r => r.uid))
 	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
 	return { rec, uname, aname }
