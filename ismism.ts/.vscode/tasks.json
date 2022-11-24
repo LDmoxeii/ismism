@@ -4,7 +4,7 @@
 		{
 			"label": "build",
 			"type": "shell",
-			"command": "source build.zsh release",
+			"command": "cd ..; zsh cli/build.zsh",
 			"group": {
 				"kind": "build",
 				"isDefault": true

@@ -2,6 +2,7 @@ import { coll, rec_of_aid, rec_of_sid, rec_of_uid, work_recent } from "../ismism
 import { soc } from "../ismism.ts/src/query/soc.ts"
 import { user } from "../ismism.ts/src/query/user.ts"
 import { agenda } from "../ismism.ts/src/query/agenda.ts"
+import { Fund, Work, Worker } from "../ismism.ts/src/typ.ts"
 
 const [uid, sid, a, r] = await Promise.all([
 	coll.user.find({}, { projection: { _id: 1 } }).toArray(),
@@ -46,3 +47,13 @@ await Promise.all([
 	Deno.writeTextFile(`json/agenda.json`, JSON.stringify(a)),
 	Deno.writeTextFile(`json/recent.json`, JSON.stringify(r)),
 ])
+
+export type Rec = {
+	worker: Awaited<ReturnType<typeof rec_of_uid<Worker>>>,
+	work: Awaited<ReturnType<typeof rec_of_uid<Work>>>,
+	fund: Awaited<ReturnType<typeof rec_of_uid<Fund>>>,
+}
+export type Agenda = typeof a[0]
+export type Recent = typeof r
+export type User = Awaited<ReturnType<typeof user>> & Rec
+export type Soc = Awaited<ReturnType<typeof soc>> & Rec
