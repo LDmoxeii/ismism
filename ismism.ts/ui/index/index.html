@@ -9,12 +9,16 @@
 	<link rel="stylesheet" href="/ismism.css">
 </head>
 
+<template id="tag"><a><span class="tag-name">tag</span><span class="tag-count">99</span></a></template>
+
 <body>
-	<header>
-		<h1>h1 is here</h1>
-		<h2>h2 is here</h2>
-		<h3>h3 is here</h3>
-	</header>
+	<div class="title">
+		<a href="">
+			<h1><b>主义主义 <span style="color: var(--red)">活动</span>公示</b></h1>
+		</a>
+		<hr>
+		<div class="tag"></div>
+	</div>
 	<div class="main">
 		main is here
 		<p>
@@ -56,3 +60,7 @@
 		footer is here
 	</footer>
 </body>
+
+<script src="./bind.js"></script>
+
+</html>

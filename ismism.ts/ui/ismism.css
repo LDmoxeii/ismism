@@ -81,11 +81,14 @@ code {
 	font-size: 1em;
 }
 
-header {
+div.title {
 	padding-top: 32px;
 	padding-bottom: 16px;
 	min-width: var(--w-min);
 	max-width: var(--w-max);
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 div.main {
@@ -97,19 +100,18 @@ div.main {
 
 article {
 	margin: 16px;
+	padding: 8px 16px;
 	background: var(--white);
 	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 article>section {
-	padding: 0.01em 16px;
-	margin: 10px 0;
+	margin: 0;
 }
 
 footer {
 	padding: 32px 16px;
 	margin-top: 16px;
 	color: var(--gray);
-	background: var(--darkgray);
 	text-align: center;
 }
