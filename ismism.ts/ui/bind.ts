@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-window-prefix
-import { Agenda, Recent, Rec } from "../../cli/json.ts"
+import { Agenda, Rec } from "../../cli/json.ts"
 import { } from "../src/typ.ts"
 
 async function json(
@@ -11,7 +11,7 @@ async function json(
 
 let hash = ""
 let agenda: Agenda[]
-let recent: Recent
+let recent: Rec
 
 function from_utc(
 	utc: number
@@ -253,7 +253,7 @@ function erecent(
 	el: HTMLElement
 ) {
 	el.innerHTML = ""
-	elog_work(el, recent)
+	elog_work(el, recent.work)
 }
 
 window.addEventListener("hashchange", () => {
