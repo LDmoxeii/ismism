@@ -12,7 +12,6 @@ cp ui/cast/*.webp ../ui/cast/
 deno bundle ui/cast/bind.ts ../ui/cast/bind.js
 
 mkdir ../ui/index
-cp ui/ismism.css ../ui/
 cp ui/index/index.html ../ui/index/index.html
 deno bundle ui/index/bind.ts ../ui/index/bind.js
 
