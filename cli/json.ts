@@ -1,14 +1,25 @@
-import { coll, rec_of_aid, rec_of_sid, rec_of_uid, work_recent } from "../ismism.ts/src/db.ts"
+import { coll, rec_of_aid, rec_of_sid, rec_of_uid, rec_of_recent } from "../ismism.ts/src/db.ts"
 import { soc } from "../ismism.ts/src/query/soc.ts"
 import { user } from "../ismism.ts/src/query/user.ts"
 import { agenda } from "../ismism.ts/src/query/agenda.ts"
 import { Fund, Work, Worker } from "../ismism.ts/src/typ.ts"
 
+async function recent(
+): Promise<Rec> {
+	const t = Date.now()
+	const [worker, work, fund] = await Promise.all([
+		rec_of_recent(coll.worker, t, 1000),
+		rec_of_recent(coll.work, t, 1000),
+		rec_of_recent(coll.fund, t, 1000),
+	])
+	return { worker, work, fund }
+}
+
 const [uid, sid, a, r] = await Promise.all([
 	coll.user.find({}, { projection: { _id: 1 } }).toArray(),
 	coll.soc.find({}, { projection: { _id: 1 } }).toArray(),
 	agenda(),
-	work_recent(),
+	recent(),
 ])
 
 await Promise.all(uid.map(async ({ _id }) => {
@@ -54,6 +65,5 @@ export type Rec = {
 	fund: Awaited<ReturnType<typeof rec_of_uid<Fund>>>,
 }
 export type Agenda = typeof a[0]
-export type Recent = typeof r
 export type User = Awaited<ReturnType<typeof user>> & { rec: Rec }
 export type Soc = Awaited<ReturnType<typeof soc>> & { rec: Rec }

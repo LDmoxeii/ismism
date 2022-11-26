@@ -17,9 +17,16 @@ export type Soc = {
 }
 export const sid_ofs = 10000
 
+type Tag = ""
+	| "进行中" | "已结束"
+	| "设施建设" | "物资配给" | "软件开发"
+	| "苏州" | "成都"
+	| "工益公益" | "星星家园"
+
 export type Agenda = {
 	_id: number,
 	name: string,
+	tag: Tag[],
 	budget: number,
 	fund: number,
 	expense: number,
