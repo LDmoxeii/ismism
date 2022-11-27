@@ -17,7 +17,7 @@ export type Soc = {
 }
 export const sid_ofs = 10000
 
-type Tag = ""
+export type Tag = ""
 	| "进行中" | "已结束"
 	| "设施建设" | "物资配给" | "软件开发"
 	| "苏州" | "成都"
