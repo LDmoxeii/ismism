@@ -100,7 +100,8 @@
 		font-weight: bold;
 	}
 
-	a.video {
+	a.video,
+	a.detail {
 		text-decoration: underline;
 		text-underline-offset: 4px;
 	}
@@ -141,8 +142,15 @@
 		cursor: pointer;
 	}
 
+	button.photo-prev:focus,
+	button.photo-next:focus {
+		outline: none;
+	}
+
 	@media (hover: hover) {
-		a.video:hover {
+
+		a.video:hover,
+		a.detail:hover {
 			color: var(--amber);
 		}
 
@@ -226,6 +234,75 @@
 		}
 	}
 
+	div.bar {
+		--fund: 7000;
+		--budget: 7000;
+		--expense: 4000;
+		margin-top: 10px;
+	}
+
+	div.bar>div.label {
+		overflow: auto;
+	}
+
+	div.bar>div.label>*:nth-child(1) {
+		float: left;
+	}
+
+	div.bar>div.label>*:nth-child(2) {
+		float: right;
+	}
+
+	div.bar>div:nth-child(2) {
+		margin: 5px 0;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
+	}
+
+	div.bar>div:nth-child(2)>div {
+		position: relative;
+		width: 100%;
+		color: var(--black);
+		background: var(--lightgray);
+		font-family: monospace;
+		overflow: hidden;
+	}
+
+	div.bar>div:nth-child(2)>div>span {
+		display: inline-block;
+		position: absolute;
+		padding: 0.25em 8px;
+		left: 0;
+		top: 0;
+		width: 100%;
+		font-size: var(--normal);
+		margin: -1px 0;
+		min-width: 1ch;
+	}
+
+	div.bar>div:nth-child(2)>div>span:nth-child(1) {
+		position: relative;
+		background: var(--gray);
+	}
+
+	div.bar>div:nth-child(2)>div.fund>span:nth-child(1) {
+		width: calc(var(--fund) / var(--budget) * 100%);
+	}
+
+	div.bar>div:nth-child(2)>div.expense>span:nth-child(1) {
+		width: calc(var(--expense) / var(--budget) * 100%);
+	}
+
+	div.bar>div:nth-child(2)>div>span:nth-child(2) {
+		text-align: center;
+		background: none;
+	}
+
+	div.bar>div:nth-child(2)>div>span:nth-child(3) {
+		text-align: right;
+		background: none;
+		left: -16px;
+	}
+
 	article {
 		margin: 16px;
 		padding: 8px 16px;
@@ -245,6 +322,23 @@
 		text-align: center;
 	}
 
+	.animate-scale {
+		position: relative;
+		animation: animateopacity 0.4s;
+	}
+
+	@keyframes animateopacity {
+		from {
+			transform: scale(0.25);
+			opacity: 0;
+		}
+
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+
 </style>
 
 <template id="tag"><a class="tag"><span class="name">tag</span><span class="count">99</span></a></template>
@@ -255,13 +349,38 @@
 			<div class="tag">tag</div>
 			<div class="date">date</div>
 		</section>
-		<section>
+		<section class="animate-scale">
 			<div class="photo">
 				<span class="photo-title">photo title</span>
 				<span><button class="photo-prev">上一张</button> / <button class="photo-next">下一张</button></span>
 				<span>第<span class="photo-nbr">1</span>张 / 共<span class="photo-total">6</span>张</span>
 			</div>
 			<img class="photo-img">
+		</section>
+		<section class="animate-scale">
+			<div class="bar">
+				<div class="label">
+					<span>收到支持</span>
+					<span>当前预算</span>
+				</div>
+				<div>
+					<div class="fund">
+						<span>123456</span>
+						<span>50%</span>
+						<span>123456</span>
+					</div>
+					<div class="expense">
+						<span>123456</span>
+						<span>50%</span>
+					</div>
+				</div>
+				<div class="label">
+					<span>当前支出</span>
+					<a target="_blank" rel="noopener" href="" class="detail">历史明细</a>
+				</div>
+			</div>
+			<div><br>当前目标：</div>
+			<div class="circle"></div>
 		</section>
 	</article>
 </template>

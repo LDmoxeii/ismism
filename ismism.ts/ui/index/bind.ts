@@ -54,13 +54,15 @@ function eagenda(
 	agenda: Agenda[]
 ) {
 	el.innerHTML = ""
-	for (const { _id, name, tag, utc, dat } of agenda) {
+	for (const { _id, name, tag, utc, dat, fund, budget, expense, detail } of agenda) {
 		const [t, [
 			cidname, cid, cname, ctag, cdate,
 			cphoto, cphoto_title, cphoto_prev, cphoto_next, cphoto_nbr, cphoto_total, cphoto_img,
+			cbar, cfund, cexpense, cdetail,
 		]] = template("agenda", [
 			"idname", "id", "name", "tag", "date",
-			"photo", "photo-title", "photo-prev", "photo-next", "photo-nbr", "photo-total", "photo-img"
+			"photo", "photo-title", "photo-prev", "photo-next", "photo-nbr", "photo-total", "photo-img",
+			"bar", "fund", "expense", "detail",
 		]);
 
 		(cidname as HTMLLinkElement).href = `#a${_id}`
@@ -86,6 +88,22 @@ function eagenda(
 			cphoto_prev.addEventListener("click", () => nimg(-1))
 			cphoto_next.addEventListener("click", () => nimg(1))
 		}
+
+		cbar.style.setProperty("--fund", `${fund}`)
+		cbar.style.setProperty("--budget", `${budget}`)
+		cbar.style.setProperty("--expense", `${expense}`)
+		{
+			const [sfund, spct, sbudget] = [...cfund.children] as HTMLSpanElement[]
+			sfund.innerText = `${fund}`
+			spct.innerText = `${budget == 0 ? 0 : (fund / budget * 100).toFixed(0)}%`
+			sbudget.innerText = `${budget}`
+		} {
+			const [sexpense, spct] = [...cexpense.children] as HTMLSpanElement[]
+			sexpense.innerText = `${expense}`
+			spct.innerText = `${budget == 0 ? 0 : (expense / budget * 100).toFixed(0)}%`
+		}
+		(cdetail as HTMLLinkElement).href = detail
+
 		el.appendChild(t)
 	}
 }
