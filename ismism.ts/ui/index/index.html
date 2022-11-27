@@ -24,7 +24,7 @@
 		--large: 18px;
 		--w-max: 1400px;
 		--w-min: 320px;
-		--w-max-main: 960px;
+		--w-max-main: 1080px;
 	}
 
 	.darkgray {
@@ -84,6 +84,23 @@
 		text-decoration: none;
 	}
 
+	a.idname {
+		display: block;
+		font-size: 24px;
+	}
+
+	a.idname code.id {
+		padding: 0.1em 8px;
+		border-radius: 4px;
+		color: var(--lightgray);
+		background: var(--darkgray);
+		text-align: center;
+	}
+
+	a.idname span.name {
+		font-weight: bold;
+	}
+
 	a.video {
 		text-decoration: underline;
 		text-underline-offset: 4px;
@@ -137,11 +154,23 @@
 		text-align: center;
 	}
 
-	div.main {
+	div#main {
 		min-width: var(--w-min);
 		max-width: var(--w-max-main);
 		margin: 0 auto;
 		padding: 0;
+	}
+
+	div.tag {
+		margin: 10px 0;
+	}
+
+	div.date {
+		color: var(--darkgray);
+		font-size: var(--small);
+		font-family: monospace;
+		font-style: italic;
+		margin: 10px 0;
 	}
 
 	article {
@@ -165,6 +194,15 @@
 </style>
 
 <template id="tag"><a class="tag"><span class="name">tag</span><span class="count">99</span></a></template>
+<template id="agenda">
+	<article>
+		<section>
+			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
+			<div class="tag">tag</div>
+			<div class="date">date</div>
+		</section>
+	</article>
+</template>
 
 <body>
 	<div class="title">
@@ -174,7 +212,8 @@
 		<hr>
 		<div class="tag"></div>
 	</div>
-	<div class="main">
+	<div id="main"></div>
+	<div>
 		main is here
 		<p>
 			p is here
