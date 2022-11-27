@@ -69,20 +69,47 @@ function egoal(
 	}
 }
 
+function erec(
+	b: [HTMLElement, HTMLElement, HTMLElement],
+	d: [HTMLElement, HTMLElement, HTMLElement],
+	{ work, worker, fund }: Agenda["rec"]
+) {
+	const toggle = (btn: HTMLElement, div: HTMLElement) => {
+		const on = btn.classList.contains("darkgray")
+		b.forEach(b => b.classList.remove("darkgray"))
+		d.forEach(d => d.style.display = "none")
+		if (!on) {
+			btn.classList.add("darkgray")
+			div.style.display = "block"
+			div.scrollTop = div.scrollHeight
+		}
+	}
+	const count = [work, worker, fund]
+	b.forEach((btn, n) => {
+		btn.getElementsByTagName("span")[0].innerText = `${count[n]}`
+		d[n].style.display = "none"
+		btn.addEventListener("click", () => toggle(btn, d[n]))
+	})
+}
+
 function eagenda(
 	el: HTMLElement,
 	agenda: Agenda[]
 ) {
 	el.innerHTML = ""
-	for (const { _id, name, tag, utc, dat, fund, budget, expense, detail, goal } of agenda) {
+	for (const {
+		_id, name, tag, utc, dat, fund, budget, expense, detail, goal, rec
+	} of agenda) {
 		const [t, [
 			cidname, cid, cname, ctag, cdate,
 			cphoto, cphoto_title, cphoto_prev, cphoto_next, cphoto_nbr, cphoto_total, cphoto_img,
 			cbar, cfund, cexpense, cdetail, cgoal,
+			bwork, bworker, bfund, dwork, dworker, dfund,
 		]] = template("agenda", [
 			"idname", "id", "name", "tag", "date",
 			"photo", "photo-title", "photo-prev", "photo-next", "photo-nbr", "photo-total", "photo-img",
-			"bar", "fund", "expense", "detail", "goal"
+			"bar", "fund", "expense", "detail", "goal",
+			"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
 		]);
 
 		(cidname as HTMLLinkElement).href = `#a${_id}`
@@ -124,6 +151,8 @@ function eagenda(
 		}
 		(cdetail as HTMLLinkElement).href = detail
 		egoal(cgoal, goal)
+
+		erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
 
 		el.appendChild(t)
 	}
