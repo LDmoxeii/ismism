@@ -54,15 +54,38 @@ function eagenda(
 	agenda: Agenda[]
 ) {
 	el.innerHTML = ""
-	for (const { _id, name, tag, utc } of agenda) {
-		const [t, [a, c, s, et, ed]] = template("agenda", ["idname", "id", "name", "tag", "date"]);
-		(a as HTMLLinkElement).href = `#a${_id}`
-		c.innerText = `a${_id}`
-		if (hash === c.innerText) c.classList.add("darkgray")
-		else c.classList.remove("darkgray")
-		s.innerText = name
-		etag(et, tag)
-		ed.innerText = `公示时间: ${utc_medium(utc)}\n更新时间：${utc_medium(Date.now())}`
+	for (const { _id, name, tag, utc, dat } of agenda) {
+		const [t, [
+			cidname, cid, cname, ctag, cdate,
+			cphoto, cphoto_title, cphoto_prev, cphoto_next, cphoto_nbr, cphoto_total, cphoto_img,
+		]] = template("agenda", [
+			"idname", "id", "name", "tag", "date",
+			"photo", "photo-title", "photo-prev", "photo-next", "photo-nbr", "photo-total", "photo-img"
+		]);
+
+		(cidname as HTMLLinkElement).href = `#a${_id}`
+		cid.innerText = `a${_id}`
+		if (hash === cid.innerText) cid.classList.add("darkgray")
+		else cid.classList.remove("darkgray")
+		cname.innerText = name
+		etag(ctag, tag)
+		cdate.innerText = `公示时间: ${utc_medium(utc)}\n更新时间：${utc_medium(Date.now())}`
+
+		if (dat === null || dat.img.length === 0)
+			cphoto.parentNode?.parentNode?.removeChild(cphoto.parentNode)
+		else {
+			cphoto_total.innerText = `${dat.img.length}`
+			let n = 0
+			const nimg = (d: number) => {
+				n = ((n + d) % dat.img.length + dat.img.length) % dat.img.length
+				cphoto_title.innerText = dat.img[n].title
+				cphoto_nbr.innerText = `${n + 1}`;
+				(cphoto_img as HTMLImageElement).src = dat.img[n].src
+			}
+			nimg(0)
+			cphoto_prev.addEventListener("click", () => nimg(-1))
+			cphoto_next.addEventListener("click", () => nimg(1))
+		}
 		el.appendChild(t)
 	}
 }

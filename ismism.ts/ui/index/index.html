@@ -130,12 +130,25 @@
 		background: var(--black);
 	}
 
+	button.photo-prev,
+	button.photo-next {
+		font-size: 1em;
+		margin: 0;
+		padding: 0;
+		color: var(--darkgray);
+		background: none;
+		border: none;
+		cursor: pointer;
+	}
+
 	@media (hover: hover) {
 		a.video:hover {
 			color: var(--amber);
 		}
 
-		a.tag:hover {
+		a.tag:hover,
+		button.photo-prev:hover,
+		button.photo-next:hover {
 			color: var(--white) !important;
 			border-color: var(--darkgray) !important;
 			background: var(--darkgray) !important;
@@ -172,6 +185,47 @@
 		margin: 10px 0;
 	}
 
+	div.photo {
+		display: flex;
+		width: auto;
+		flex-flow: row wrap;
+		align-items: center;
+		text-align: center;
+		color: var(--darkgray);
+		border-top: 1px dotted var(--darkgray);
+		padding: 10px 0;
+	}
+
+	img.photo-img {
+		width: 100%;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+	}
+
+	@media (max-width: 720px) {
+		div.photo>span {
+			width: 100%;
+		}
+	}
+
+	@media (min-width: 720px) {
+		div.photo>span {
+			flex-basis: 180px;
+			flex-grow: 1;
+		}
+
+		div.photo>span:nth-child(1) {
+			text-align: left;
+		}
+
+		div.photo>span:nth-child(2) {
+			text-align: center;
+		}
+
+		div.photo>span:nth-child(3) {
+			text-align: right;
+		}
+	}
+
 	article {
 		margin: 16px;
 		padding: 8px 16px;
@@ -181,6 +235,7 @@
 
 	article>section {
 		margin: 0;
+		padding: 0;
 	}
 
 	footer {
@@ -199,6 +254,14 @@
 			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
 			<div class="tag">tag</div>
 			<div class="date">date</div>
+		</section>
+		<section>
+			<div class="photo">
+				<span class="photo-title">photo title</span>
+				<span><button class="photo-prev">上一张</button> / <button class="photo-next">下一张</button></span>
+				<span>第<span class="photo-nbr">1</span>张 / 共<span class="photo-total">6</span>张</span>
+			</div>
+			<img class="photo-img">
 		</section>
 	</article>
 </template>
