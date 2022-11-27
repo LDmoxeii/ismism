@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-window-prefix
 import { Agenda, Rec } from "../../../cli/json.ts"
 import { utc_medium } from "../../src/date.ts"
-import { Tag } from "../../src/typ.ts"
+import { Goal, Tag } from "../../src/typ.ts"
 
 let hash = ""
 let agenda: Agenda[]
@@ -49,20 +49,40 @@ function etag(
 	})
 }
 
+function egoal(
+	el: HTMLElement,
+	goal: Goal[],
+) {
+	el.innerHTML = ""
+	for (const { pct, name } of goal) {
+		const [t, [p, n]] = template("goal", ["pct", "name"])
+		if (pct === 100) {
+			p.classList.add("done")
+			p.innerText = "完成"
+		} else if (pct > 0) {
+			p.classList.add("ongoing")
+			p.style.setProperty("--pct", `${pct}`)
+			p.innerText = `${pct}%`
+		}
+		n.innerText = name
+		el.appendChild(t)
+	}
+}
+
 function eagenda(
 	el: HTMLElement,
 	agenda: Agenda[]
 ) {
 	el.innerHTML = ""
-	for (const { _id, name, tag, utc, dat, fund, budget, expense, detail } of agenda) {
+	for (const { _id, name, tag, utc, dat, fund, budget, expense, detail, goal } of agenda) {
 		const [t, [
 			cidname, cid, cname, ctag, cdate,
 			cphoto, cphoto_title, cphoto_prev, cphoto_next, cphoto_nbr, cphoto_total, cphoto_img,
-			cbar, cfund, cexpense, cdetail,
+			cbar, cfund, cexpense, cdetail, cgoal,
 		]] = template("agenda", [
 			"idname", "id", "name", "tag", "date",
 			"photo", "photo-title", "photo-prev", "photo-next", "photo-nbr", "photo-total", "photo-img",
-			"bar", "fund", "expense", "detail",
+			"bar", "fund", "expense", "detail", "goal"
 		]);
 
 		(cidname as HTMLLinkElement).href = `#a${_id}`
@@ -103,6 +123,7 @@ function eagenda(
 			spct.innerText = `${budget == 0 ? 0 : (expense / budget * 100).toFixed(0)}%`
 		}
 		(cdetail as HTMLLinkElement).href = detail
+		egoal(cgoal, goal)
 
 		el.appendChild(t)
 	}
