@@ -378,10 +378,14 @@
 		overflow-y: scroll;
 	}
 
-	.log>div {
+	div.rec>div {
 		display: flex;
 		flex-flow: row nowrap;
 		margin: 16px 0;
+	}
+
+	div.rec div.date {
+		margin: 0;
 	}
 
 	div.rec>div>div:nth-child(1) {
@@ -483,6 +487,7 @@
 		</div>
 	</div>
 </template>
+<template id="video"><a href="" target="_blank" rel="noopener" class="video">title</a></template>
 <template id="agenda">
 	<article>
 		<section>
@@ -525,7 +530,7 @@
 		</section>
 		<section>
 			<div class="rec-tab">
-				<button class="tab work"><span>123</span> 条活动日志 ❯</button>
+				<button class="tab work"><span>123</span> 条工作日志 ❯</button>
 				<button class="tab worker"><span>123</span> 名参与者 ❯</button>
 				<button class="tab fund"><span>123</span> 位支持者 ❯</button>
 			</div>

@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window-prefix
 import { Agenda, Rec } from "../../../cli/json.ts"
-import { utc_medium } from "../../src/date.ts"
+import { utc_medium, utc_short } from "../../src/date.ts"
 import { Goal, Tag } from "../../src/typ.ts"
 
 let hash = ""
@@ -69,10 +69,78 @@ function egoal(
 	}
 }
 
+function ework(
+	d: HTMLElement,
+	work: Rec["work"]
+) {
+	const uname = new Map(work.uname)
+	const aname = new Map(work.aname)
+	for (const w of work.rec.reverse()) {
+		const [t, [cinit, cuname, caname, cdate, cmsg]] = template("rec",
+			["initial", "uname", "aname", "date", "msg"])
+		const n = uname.get(w.uid)!
+		cinit.innerText = n[0]
+		cuname.innerText = n
+		caname.innerText = aname.get(w._id.aid)!
+		cdate.innerText = utc_short(w._id.utc)
+		switch (w.op) {
+			case "goal": cmsg.innerText = `${JSON.stringify(w.goal)}`; break
+			case "work": cmsg.innerText = w.msg; break
+			case "video": {
+				cmsg.innerText = "发布了视频："
+				const [t, [a]] = template("video", ["video"])
+				a.innerText = w.title;
+				(a as HTMLLinkElement).href = w.src
+				cmsg.appendChild(t)
+				break
+			}
+		}
+		d.appendChild(t)
+	}
+}
+
+function eworker(
+	d: HTMLElement,
+	worker: Rec["worker"]
+) {
+	const uname = new Map(worker.uname)
+	const aname = new Map(worker.aname)
+	for (const w of worker.rec.reverse()) {
+		const [t, [cinit, cuname, caname, cdate, cmsg]] = template("rec",
+			["initial", "uname", "aname", "date", "msg"])
+		const n = uname.get(w.uid)!
+		cinit.innerText = n[0]
+		cuname.innerText = n
+		caname.innerText = aname.get(w._id.aid)!
+		cdate.innerText = utc_short(w._id.utc)
+		cmsg.innerText = `作为 ${w.role} 参与工作`
+		d.appendChild(t)
+	}
+}
+
+function efund(
+	d: HTMLElement,
+	fund: Rec["fund"]
+) {
+	const uname = new Map(fund.uname)
+	const aname = new Map(fund.aname)
+	for (const f of fund.rec.reverse()) {
+		const [t, [cinit, cuname, caname, cdate, cmsg]] = template("rec",
+			["initial", "uname", "aname", "date", "msg"])
+		const n = uname.get(f.uid)!
+		cinit.innerText = n[0]
+		cuname.innerText = n
+		caname.innerText = aname.get(f._id.aid)!
+		cdate.innerText = utc_short(f._id.utc)
+		cmsg.innerText = `提供支持: +${f.fund}\n${f.msg}`
+		d.appendChild(t)
+	}
+}
+
 function erec(
 	b: [HTMLElement, HTMLElement, HTMLElement],
 	d: [HTMLElement, HTMLElement, HTMLElement],
-	{ work, worker, fund }: Agenda["rec"]
+	{ work, worker, fund }: Rec
 ) {
 	const toggle = (btn: HTMLElement, div: HTMLElement) => {
 		const on = btn.classList.contains("darkgray")
@@ -84,12 +152,15 @@ function erec(
 			div.scrollTop = div.scrollHeight
 		}
 	}
-	const count = [work, worker, fund]
+	const count = [work.rec.length, worker.rec.length, fund.rec.length]
 	b.forEach((btn, n) => {
 		btn.getElementsByTagName("span")[0].innerText = `${count[n]}`
 		d[n].style.display = "none"
 		btn.addEventListener("click", () => toggle(btn, d[n]))
 	})
+	ework(d[0], work)
+	eworker(d[1], worker)
+	efund(d[2], fund)
 }
 
 function eagenda(
@@ -98,7 +169,7 @@ function eagenda(
 ) {
 	el.innerHTML = ""
 	for (const {
-		_id, name, tag, utc, dat, fund, budget, expense, detail, goal, rec
+		_id, name, tag, utc, dat, fund, budget, expense, detail, goal
 	} of agenda) {
 		const [t, [
 			cidname, cid, cname, ctag, cdate,
@@ -152,7 +223,9 @@ function eagenda(
 		(cdetail as HTMLLinkElement).href = detail
 		egoal(cgoal, goal)
 
-		erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+		json(`a${_id}`).then(rec =>
+			erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+		)
 
 		el.appendChild(t)
 	}
