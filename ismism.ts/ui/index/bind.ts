@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-window-prefix
-import { Agenda, Rec, User } from "../../../cli/json.ts"
+import { Agenda, Rec, Soc, User } from "../../../cli/json.ts"
 import { utc_medium, utc_short } from "../../src/date.ts"
 import { Goal, Tag, Rec as Id } from "../../src/typ.ts"
 
@@ -167,7 +167,6 @@ function erec(
 	const count = [work.rec.length, worker.rec.length, fund.rec.length]
 	b.forEach((btn, n) => {
 		btn.getElementsByTagName("span")[0].innerText = `${count[n]}`
-		d[n].style.display = "none"
 		btn.addEventListener("click", () => toggle(btn, d[n]))
 	})
 	const role = new Map(worker.rec.map(r => [r.uid, r.role]))
@@ -267,10 +266,45 @@ function euser(
 
 	if (soc.length === 0) csoc.innerText += "无"
 	else for (const s of soc) {
-		const [_, [a]] = template("member", ["member"]);
-		(a as HTMLAnchorElement).href = `#s${s._id}`
+		const a = csoc.appendChild(document.createElement("a"))
+		a.classList.add("member-soc")
+		a.href = `#s${s._id}`
 		a.innerText = s.name
-		csoc.appendChild(a)
+	}
+
+	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+
+	el.appendChild(t)
+}
+function esoc(
+	el: HTMLElement,
+	sid: number,
+	{ name, utc, uid, uname, rec }: Soc
+) {
+	el.innerHTML = ""
+	const [t, [
+		cidname, cid, cname, cdate, cuser,
+		bwork, bworker, bfund, dwork, dworker, dfund,
+	]] = template("soc", [
+		"idname", "id", "name", "date", "user",
+		"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
+	]);
+
+	(cidname as HTMLAnchorElement).href = `#s${sid}`
+	cid.innerText = `s${sid}`
+	if (hash === cid.innerText) cid.classList.add("darkgray")
+	else cid.classList.remove("darkgray")
+	cname.innerText = name
+	cdate.innerText = `注册时间: ${utc_medium(utc)}`
+
+	const user = new Map(uname)
+	cuser.innerText = uid.length === 0 ? "社团成员：无" : `社团成员(${uid.length})：`
+	for (const u of uid) {
+		const a = cuser.appendChild(document.createElement("a"))
+		a.classList.add("member-user")
+		a.href = `#u${u}`
+		a.innerText = user.get(u)!
+		cuser.appendChild(a)
 	}
 
 	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
@@ -284,7 +318,7 @@ window.addEventListener("hashchange", () => {
 	const main = document.getElementById("main")!
 	switch (hash[0]) {
 		case "u": json(hash).then(u => euser(main, parseInt(hash.substring(1)), u)); break
-		case "s": break
+		case "s": json(hash).then(s => esoc(main, parseInt(hash.substring(1)), s)); break
 		case "a": eagenda(main, agenda.filter(a =>
 			a._id === parseInt(hash.substring(1))
 		)); break

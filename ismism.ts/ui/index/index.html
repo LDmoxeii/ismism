@@ -149,10 +149,19 @@
 		background: var(--purple);
 	}
 
-	a.member {
+	a.member-soc {
 		color: var(--white);
 		background: var(--black);
+		margin: 0.5ch 0.5ch 0 0;
 		padding: 0.1em 8px;
+	}
+
+	a.member-user::after {
+		content: ", ";
+	}
+
+	a.member-user:last-child:after {
+		content: "";
 	}
 
 	button.photo-prev,
@@ -178,7 +187,8 @@
 		a.video:hover,
 		a.detail:hover,
 		a.initial:hover,
-		a.uname:hover {
+		a.uname:hover,
+		a.member-user:hover {
 			color: var(--amber);
 		}
 
@@ -188,7 +198,7 @@
 
 		a.tag:hover,
 		a.aname:hover,
-		a.member:hover,
+		a.member-soc:hover,
 		button.photo-prev:hover,
 		button.photo-next:hover,
 		button.tab:hover {
@@ -402,6 +412,7 @@
 	}
 
 	div.rec {
+		display: none;
 		background: var(--lightgray);
 		border-radius: 16px;
 		padding: 16px 8px;
@@ -535,7 +546,6 @@
 	</div>
 </template>
 <template id="video"><a href="" target="_blank" rel="noopener" class="video">title</a></template>
-<template id="member"><a class="member">member</a></template>
 <template id="agenda">
 	<article>
 		<section>
@@ -594,6 +604,25 @@
 			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
 			<div class="date">date</div>
 			<div class="soc">所属社团：</div>
+		</section>
+		<section>
+			<div class="rec-tab">
+				<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+				<button class="tab worker"><span>123</span> 次活动参与 ❯</button>
+				<button class="tab fund"><span>123</span> 次活动支持 ❯</button>
+			</div>
+			<div class="rec work"></div>
+			<div class="rec worker"></div>
+			<div class="rec fund"></div>
+		</section>
+	</article>
+</template>
+<template id="soc">
+	<article>
+		<section>
+			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
+			<div class="date">date</div>
+			<div class="user">社团成员：</div>
 		</section>
 		<section>
 			<div class="rec-tab">
