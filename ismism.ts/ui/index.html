@@ -6,87 +6,41 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" type="x-icon" href="https://img.00000.host/2022/10/27/635a7048a7586.png">
-	<link rel="preload" as="fetch" href="/json/agenda.json">
-	<link rel="preload" as="fetch" href="/json/recent.json">
 </head>
 
 <style>
 	:root {
-		--cl-white: #fff;
-		--cl-light-gray: #f1f1f1;
-		--cl-gray: #9e9e9e;
-		--cl-dark-gray: #616161;
-		--cl-black: #000;
-		--cl-pale-red: #ffdddd;
-		--cl-red: #f44336;
-		--cl-amber: #ffc107;
-		--cl-purple: #673ab7;
+		--white: #fff;
+		--lightgray: #f1f1f1;
+		--gray: #9e9e9e;
+		--darkgray: #616161;
+		--black: #000;
+		--palered: #ffdddd;
+		--red: #f44336;
+		--amber: #ffc107;
+		--purple: #673ab7;
 		--small: 12px;
 		--normal: 15px;
 		--large: 18px;
 		--w-max: 1400px;
-		--w-rpd: 720px;
-		--w-max-content: 960px;
-		--w-min-content: 320px;
+		--w-min: 320px;
+		--w-max-main: 1080px;
 	}
 
-	.light-gray {
-		color: var(--cl-black) !important;
-		border-color: var(--cl-black) !important;
-		background-color: var(--cl-light-gray) !important;
-	}
-
-	.gray {
-		color: var(--cl-white) !important;
-		border-color: var(--cl-gray) !important;
-		background-color: var(--cl-gray) !important;
-	}
-
-	.dark-gray {
-		color: var(--cl-white) !important;
-		border-color: var(--cl-dark-gray) !important;
-		background-color: var(--cl-dark-gray) !important;
-	}
-
-	.black {
-		color: var(--cl-white) !important;
-		border-color: var(--cl-black) !important;
-		background-color: var(--cl-black) !important;
-	}
-
-	.pale-red {
-		color: var(--cl-black) !important;
-		border-color: var(--cl-pale-red) !important;
-		background-color: var(--cl-pale-red) !important;
-	}
-
-	.red {
-		color: var(--cl-white) !important;
-		border-color: var(--cl-red) !important;
-		background-color: var(--cl-red) !important;
-	}
-
-	.amber {
-		color: var(--cl-black) !important;
-		border-color: var(--cl-amber) !important;
-		background-color: var(--cl-amber) !important;
-	}
-
-	.purple {
-		color: var(--cl-white) !important;
-		border-color: var(--cl-purple) !important;
-		background-color: var(--cl-purple) !important;
+	.darkgray {
+		color: var(--white) !important;
+		border-color: var(--darkgray) !important;
+		background: var(--darkgray) !important;
 	}
 
 	html {
-		box-sizing: border-box;
 		overflow-x: hidden;
 	}
 
 	body {
 		margin: 0;
-		color: var(--cl-black);
-		background: var(--cl-light-gray);
+		color: var(--black);
+		background: var(--lightgray);
 		font-family: Verdana, sans-serif;
 		font-size: var(--normal);
 		line-height: 1.5;
@@ -94,12 +48,9 @@
 
 	h1,
 	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
+	h3 {
 		font-weight: 400;
-		margin: 10px 0
+		margin: 10px 0;
 	}
 
 	h1 {
@@ -112,18 +63,6 @@
 
 	h3 {
 		font-size: 24px
-	}
-
-	h4 {
-		font-size: 20px
-	}
-
-	h5 {
-		font-size: 18px
-	}
-
-	h6 {
-		font-size: 16px
 	}
 
 	hr {
@@ -145,248 +84,239 @@
 		text-decoration: none;
 	}
 
-	header {
-		padding-top: 32px;
-		padding-bottom: 16px;
-		max-width: var(--w-max);
-		margin-left: auto;
-		margin-right: auto;
-		text-align: center;
+	a.idname {
+		display: block;
+		font-size: 24px;
 	}
 
-	header>.tag {
-		margin: 16px 32px;
-	}
-
-	.tag>a {
-		border-width: 1px;
-		border-style: solid;
-		border-radius: 6px;
-		margin-right: 6px;
-		margin-bottom: 6px;
-		color: var(--cl-black);
-		border-color: var(--cl-black);
-		background-color: var(--cl-light-gray);
-	}
-
-	.tag>a>span:nth-child(2) {
-		display: inline-block;
+	a.idname code.id {
 		padding: 0.1em 8px;
-		margin-left: 0.75ch;
-		text-align: center;
-		border-radius: 50%;
-		font-size: var(--small);
-		color: var(--cl-white);
-		background-color: var(--cl-black);
+		border: 1px solid var(--black);
+		border-radius: 4px;
+		color: var(--black);
 	}
 
-	.tag>a,
-	button {
+	a.idname span.name {
+		font-weight: bold;
+	}
+
+	a.video,
+	a.detail {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+
+	a.tag {
 		display: inline-block;
 		padding: 5px 10px;
+		margin: 0 6px 6px 0;
+		border: 1px solid var(--black);
+		border-radius: 6px;
+		color: var(--black);
+		background: none;
+		text-align: center;
 		vertical-align: middle;
 		overflow: hidden;
-		text-decoration: none;
-		text-align: center;
-		cursor: pointer;
 		white-space: nowrap;
 		user-select: none;
-		color: inherit;
-		background-color: inherit;
 	}
 
-	button {
+	a.tag>span.count,
+	a.role,
+	a.aname {
+		display: inline-block;
+		padding: 0.1em 8px;
+		margin-left: 0.5ch;
+		font-size: var(--small);
+		color: var(--white);
+		background: var(--black);
+	}
+
+	a.tag>span.count {
+		border-radius: 50%;
+	}
+
+	a.role.red {
+		background: var(--red);
+	}
+
+	a.role.amber {
+		color: var(--black);
+		background: var(--amber);
+	}
+
+	a.role.purple {
+		background: var(--purple);
+	}
+
+	a.member-soc {
+		color: var(--white);
+		background: var(--black);
+		margin: 0.5ch 0.5ch 0 0;
+		padding: 0.1em 8px;
+	}
+
+	a.member-user::after {
+		content: ", ";
+	}
+
+	a.member-user:last-child:after {
+		content: "";
+	}
+
+	button.photo-prev,
+	button.photo-next,
+	button.tab {
+		font-size: 1em;
+		margin: 0;
+		padding: 0;
+		color: var(--darkgray);
+		background: none;
 		border: none;
+		cursor: pointer;
 	}
 
-	button:hover,
-	.tag>a:hover {
-		color: var(--cl-white) !important;
-		border-color: var(--cl-dark-gray) !important;
-		background-color: var(--cl-dark-gray) !important;
-		opacity: 0.7;
+	button.photo-prev:focus,
+	button.photo-next:focus,
+	button.tab:focus {
+		outline: none;
 	}
 
-	.banner {
-		display: none;
-		position: relative;
-		padding: 0.01em 16px;
-		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
+	@media (hover: hover) {
+
+		a.video:hover,
+		a.detail:hover,
+		a.initial:hover,
+		a.uname:hover,
+		a.member-user:hover {
+			color: var(--amber);
+		}
+
+		a.role:hover {
+			opacity: 0.7;
+		}
+
+		a.tag:hover,
+		a.aname:hover,
+		a.member-soc:hover,
+		button.photo-prev:hover,
+		button.photo-next:hover,
+		button.tab:hover {
+			color: var(--white) !important;
+			border-color: var(--darkgray) !important;
+			background: var(--darkgray) !important;
+			opacity: 0.7;
+		}
 	}
 
-	.banner>button {
-		font-size: var(--large);
-	}
-
-	.topright {
-		position: absolute;
-		right: 0;
-		top: 0
-	}
-
-	.content {
-		display: flex;
-		flex-flow: row wrap;
-		justify-content: center;
+	div.title {
+		padding-top: 32px;
+		padding-bottom: 16px;
+		min-width: var(--w-min);
+		max-width: var(--w-max);
 		margin-left: auto;
 		margin-right: auto;
-		max-width: var(--w-max);
-		min-width: var(--w-min-content);
+		text-align: center;
 	}
 
-	@media (max-width: 960px) {
-
-		.content>.main,
-		.content>.side {
-			width: 100%;
-		}
+	div#main {
+		min-width: var(--w-min);
+		max-width: var(--w-max-main);
+		margin: 0 auto;
+		padding: 0;
 	}
 
-	@media (min-width:960px) {
-		.content>.main {
-			flex-basis: var(--w-rpd);
-			flex-grow: 3;
-		}
-
-		.content>.side {
-			flex-basis: var(--w-min-content);
-			flex-grow: 1;
-		}
-	}
-
-	.content>.main>article {
-		margin: 16px !important;
-		padding-bottom: 10px;
-		color: var(--cl-black);
-		background: var(--cl-white);
-		box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
-	}
-
-	.content>.main>article>section {
-		padding: 0.01em 16px;
+	div.tag {
 		margin: 10px 0;
 	}
 
-	.content .title>a {
-		display: inline-block;
-		font-size: 24px;
-		font-weight: bold;
-		margin: 10px 0;
-	}
-
-	.content .title>a>code {
-		font-weight: normal;
-		color: var(--cl-light-gray);
-		background-color: var(--cl-dark-gray);
-		padding: 0.1em 8px;
-		border-radius: 4px;
-		text-align: center
-	}
-
-	.content .date {
-		color: var(--cl-dark-gray);
+	div.date {
+		color: var(--darkgray);
 		font-size: var(--small);
 		font-family: monospace;
 		font-style: italic;
 		margin: 10px 0;
 	}
 
-	.content .photo {
-		color: var(--cl-dark-gray);
-		text-align: center;
-		width: auto;
+	div.intro {
+		margin: 10px 0;
 	}
 
-	.content .photo>div {
+	div.photo {
 		display: flex;
+		width: auto;
 		flex-flow: row wrap;
 		align-items: center;
 		text-align: center;
-		border-top: 1px dotted var(--cl-dark-gray);
+		color: var(--darkgray);
+		border-top: 1px dotted var(--darkgray);
 		padding: 10px 0;
 	}
 
+	img.photo-img {
+		width: 100%;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+	}
+
 	@media (max-width: 720px) {
-		.content .photo>div>span {
+		div.photo>span {
 			width: 100%;
 		}
 	}
 
 	@media (min-width: 720px) {
-		.content .photo>div>span {
+		div.photo>span {
 			flex-basis: 180px;
 			flex-grow: 1;
 		}
 
-		.content .photo>div>span:nth-child(1) {
+		div.photo>span:nth-child(1) {
 			text-align: left;
 		}
 
-		.content .photo>div>span:nth-child(2) {
+		div.photo>span:nth-child(2) {
 			text-align: center;
 		}
 
-		.content .photo>div>span:nth-child(3) {
+		div.photo>span:nth-child(3) {
 			text-align: right;
 		}
 	}
 
-	.content .photo button {
-		padding: 0;
-		font-size: 1em;
-	}
-
-	.content .photo button:nth-child(1):after {
-		content: "/";
-		margin: 0 5px;
-	}
-
-	.content .photo img {
-		width: 100%;
-		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-	}
-
-	.content .stat {
+	div.bar {
 		--fund: 7000;
 		--budget: 7000;
-		--expense: 3500;
+		--expense: 4000;
+		margin-top: 10px;
 	}
 
-	.content .stat>.bar>.label {
+	div.bar>div.label {
 		overflow: auto;
 	}
 
-	.content .stat>.bar>.label>*:nth-child(1) {
+	div.bar>div.label>*:nth-child(1) {
 		float: left;
 	}
 
-	.content .stat>.bar>.label>*:nth-child(2) {
+	div.bar>div.label>*:nth-child(2) {
 		float: right;
 	}
 
-	.content .stat>.bar>.label>a {
-		text-decoration: underline;
-	}
-
-	.content .stat>.bar>.label>a:hover {
-		color: var(--cl-amber);
-	}
-
-	.content .stat>.bar>div:nth-child(2) {
+	div.bar>div:nth-child(2) {
 		margin: 5px 0;
 		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
 	}
 
-	.content .stat>.bar>div:nth-child(2)>div {
+	div.bar>div:nth-child(2)>div {
 		position: relative;
 		width: 100%;
-		color: var(--cl-black);
-		background-color: var(--cl-light-gray);
+		color: var(--black);
+		background: var(--lightgray);
 		font-family: monospace;
 		overflow: hidden;
 	}
 
-	.content .stat>.bar>div:nth-child(2)>div>span {
+	div.bar>div:nth-child(2)>div>span {
 		display: inline-block;
 		position: absolute;
 		padding: 0.25em 8px;
@@ -398,38 +328,38 @@
 		min-width: 1ch;
 	}
 
-	.content .stat>.bar>div:nth-child(2)>div>span:nth-child(1) {
+	div.bar>div:nth-child(2)>div>span:nth-child(1) {
 		position: relative;
-		background-color: var(--cl-gray);
+		background: var(--gray);
 	}
 
-	.content .stat>.bar>div:nth-child(2)>div.fund>span:nth-child(1) {
+	div.bar>div:nth-child(2)>div.fund>span:nth-child(1) {
 		width: calc(var(--fund) / var(--budget) * 100%);
 	}
 
-	.content .stat>.bar>div:nth-child(2)>div.expense>span:nth-child(1) {
+	div.bar>div:nth-child(2)>div.expense>span:nth-child(1) {
 		width: calc(var(--expense) / var(--budget) * 100%);
 	}
 
-	.content .stat>.bar>div:nth-child(2)>div>span:nth-child(2) {
+	div.bar>div:nth-child(2)>div>span:nth-child(2) {
 		text-align: center;
 		background: none;
 	}
 
-	.content .stat>.bar>div:nth-child(2)>div>span:nth-child(3) {
+	div.bar>div:nth-child(2)>div>span:nth-child(3) {
 		text-align: right;
 		background: none;
 		left: -16px;
 	}
 
-	.content .stat>.circle {
+	div.goal {
 		display: flex;
 		flex-flow: row wrap;
 		justify-content: center;
 		text-align: center;
 	}
 
-	.content .stat>.circle>div {
+	div.goal>div {
 		flex-basis: 1px;
 		flex-grow: 1;
 		display: flex;
@@ -439,7 +369,7 @@
 		font-size: var(--large);
 	}
 
-	.content .stat>.circle>div>div {
+	div.goal>div>div.pct {
 		--size: 4em;
 		width: var(--size);
 		height: var(--size);
@@ -447,47 +377,51 @@
 		border-radius: 50%;
 		display: grid;
 		place-items: center;
-		background: radial-gradient(closest-side, var(--cl-white) 66%, var(--cl-light-gray) 66%);
+		background: radial-gradient(closest-side, var(--white) 66%, var(--lightgray) 66%);
 		font-family: monospace;
 		font-size: calc(var(--size) / 2);
 		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-		color: var(--cl-gray);
-		text-shadow: 0 2px 2px var(--cl-light-gray);
+		color: var(--gray);
+		text-shadow: 0 2px 2px var(--lightgray);
 	}
 
-	.content .stat>.circle>div>div.pct {
+	div.goal>div>div.pct.ongoing {
 		--pct: 65;
-		color: var(--cl-amber);
+		color: var(--amber);
 		background:
-			radial-gradient(closest-side, var(--cl-white) 66%, transparent 66%),
-			conic-gradient(var(--cl-gray) calc(var(--pct) * 1%), var(--cl-light-gray) 0);
+			radial-gradient(closest-side, var(--white) 66%, transparent 66%),
+			conic-gradient(var(--gray) calc(var(--pct) * 1%), var(--lightgray) 0);
 	}
 
-	.content .stat>.circle>div>div.done {
-		background: radial-gradient(closest-side, var(--cl-white) 66%, var(--cl-gray) 66%);
+	div.goal>div>div.pct.done {
+		background: radial-gradient(closest-side, var(--white) 66%, var(--gray) 66%);
 	}
 
-	.tab {
+	div.rec-tab {
 		display: flex;
 		flex-flow: row wrap;
 		justify-content: center;
+		margin-top: 10px;
 	}
 
-	.tab>button {
-		margin: 0 3px;
-		font-size: var(--normal);
+	div.rec-tab.recent {
+		margin-top: 0;
 	}
 
-	.tab>button>span {
-		display: inline-block;
-		background: var(--cl-black);
-		color: var(--cl-white);
+	div.rec-tab>button {
+		padding: 8px;
+		color: var(--black);
+	}
+
+	div.rec-tab>button>span {
+		background: var(--black);
+		color: var(--white);
 		padding: 0.1em 8px;
-		text-align: center
 	}
 
-	.log {
-		background: var(--cl-light-gray);
+	div.rec {
+		display: none;
+		background: var(--lightgray);
 		border-radius: 16px;
 		padding: 16px 8px;
 		margin-top: 16px;
@@ -495,95 +429,79 @@
 		overflow-y: scroll;
 	}
 
-	.log>span {
-		display: block;
-		width: 100%;
-		margin: 8px 0;
-		color: var(--cl-gray);
-		text-align: center;
-	}
-
-	.log>div {
+	div.rec>div {
 		display: flex;
 		flex-flow: row nowrap;
 		margin: 16px 0;
 	}
 
-	.log>div>div:nth-child(1) {
+	div.rec div.date {
+		margin: 0;
+	}
+
+	div.rec>div>div:nth-child(1) {
 		display: flex;
 		flex-shrink: 0;
 		width: 48px;
 		height: 48px;
-		color: var(--cl-white);
-		background: var(--cl-gray);
+		color: var(--white);
+		background: var(--gray);
 		border-radius: 50%;
 		font-size: 24px;
 		justify-content: center;
 		align-items: center;
 	}
 
-	.log>div>div:nth-child(2) {
+	div.rec>div>div:nth-child(2) {
 		display: flex;
 		flex-flow: column nowrap;
 		margin-left: 16px;
 		margin-right: 8px;
 	}
 
-	.log>div>div:nth-child(2)>div:nth-child(1) {
+	div.rec>div>div:nth-child(2)>div:nth-child(1) {
 		display: flex;
 		flex-flow: row wrap;
 		align-items: center;
 	}
 
-	.log>div>div:nth-child(2)>div:nth-child(1)>div {
-		display: inline-block;
-		margin-left: 0.6ch;
-	}
-
-	.log>div>div:nth-child(2)>div:nth-child(1)>div>span {
-		display: inline-block;
-		font-size: var(--small);
-		background: var(--cl-dark-gray);
-		color: var(--cl-white);
-		padding: 0.1em 8px;
-		text-align: center;
-		margin: 1px;
-		user-select: none;
-		white-space: nowrap;
-	}
-
-	.log>div>div:nth-child(2)>div:nth-child(2) {
+	div.rec>div>div:nth-child(2)>div:nth-child(2) {
 		font-size: var(--small);
 		font-style: italic;
-		color: var(--cl-gray);
+		color: var(--gray);
 	}
 
-	.log>div>div:nth-child(2)>div:nth-child(3) {
+	div.rec>div>div:nth-child(2)>div:nth-child(3) {
 		min-width: 120px;
 		margin-top: 6px;
 		padding: 0.5em 16px;
-		background-color: var(--cl-light-gray);
+		background-color: var(--lightgray);
 		border-radius: 0 8px 8px 8px;
 		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 	}
 
-	.log>div>div:nth-child(2)>div:nth-child(3)>a {
-		text-decoration: underline;
+	section.recent {
+		padding: 8px 16px;
+		margin: auto;
+		max-width: 640px;
 	}
 
-	.log>div>div:nth-child(2)>div:nth-child(3)>a:hover {
-		color: var(--cl-amber);
+	article {
+		margin: 16px;
+		padding: 8px 16px;
+		background: var(--white);
+		box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 	}
 
-	.log.recent {
-		max-height: 100%;
+	article>section {
+		margin: 0;
+		padding: 0;
 	}
 
 	footer {
 		padding: 32px 16px;
-		margin-top: 16px;
-		color: var(--cl-gray);
-		background: var(--cl-dark-gray);
+		margin-top: 32px;
+		color: var(--gray);
 		text-align: center;
 	}
 
@@ -605,41 +523,7 @@
 		font-family: monospace;
 	}
 
-	.animate-left {
-		position: relative;
-		animation: animateleft 0.4s
-	}
-
-	@keyframes animateleft {
-		from {
-			left: -300px;
-			opacity: 0
-		}
-
-		to {
-			left: 0;
-			opacity: 1
-		}
-	}
-
-	.animate-right {
-		position: relative;
-		animation: animateright 0.4s
-	}
-
-	@keyframes animateright {
-		from {
-			right: -300px;
-			opacity: 0
-		}
-
-		to {
-			right: 0;
-			opacity: 1
-		}
-	}
-
-	.animate-opacity {
+	.animate-scale {
 		position: relative;
 		animation: animateopacity 0.4s;
 	}
@@ -658,69 +542,56 @@
 
 </style>
 
-<template id="tag-item">
-	<a><span></span><span></span></a>
-	<a class="dark-gray"><span></span><span></span></a>
-</template>
-
-<template id="circle-item">
+<template id="tag"><a class="tag"><span class="name">tag</span><span class="count">99</span></a></template>
+<template id="goal">
 	<div>
-		<div>0%</div>
-		<span>目标</span>
-	</div>
-	<div>
-		<div class="pct" style="--pct: 65">65%</div>
-		<span>目标</span>
-	</div>
-	<div>
-		<div class="done">完成</div>
-		<span>目标</span>
+		<div class="pct">0%</div>
+		<span class="name">目标</span>
 	</div>
 </template>
-
-<template id="badge-item">
-	<span>badge</span>
-</template>
-
-<template id="video-link">
-	<a href="" target="_blank" rel="noopener">标题</a>
-</template>
-
-<template id="log-item">
-	<span>123 条日志</span>
+<template id="rec">
 	<div>
-		<div>u</div>
+		<div><a class="initial">u</a></div>
 		<div>
-			<div>
-				<span>username</span>
-				<div><span>badge1</span><span>badge2</span></div>
-			</div>
-			<div>timestamp</div>
-			<div>msg</div>
+			<div><a class="uname">uname</a><a class="role">role</a><a class="aname">aname</a></div>
+			<div class="date">timestamp</div>
+			<div class="msg">msg</div>
 		</div>
 	</div>
 </template>
-
-<template id="article">
+<template id="video"><a href="" target="_blank" rel="noopener" class="video">title</a></template>
+<template id="recent">
+	<section class="recent">
+		<div class="rec-tab recent">
+			<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+			<button class="tab worker"><span>123</span> 次活动参与 ❯</button>
+			<button class="tab fund"><span>123</span> 次活动支持 ❯</button>
+		</div>
+		<div class="rec work"></div>
+		<div class="rec worker"></div>
+		<div class="rec fund"></div>
+	</section>
+</template>
+<template id="agenda">
 	<article>
-		<section class="title">
-			<a><code>#0</code> <span>标题</span></a>
-			<div class="tag"></div>
-			<div class="date">公示时间：<span></span><br>更新时间：<span></span></div>
+		<section>
+			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
+			<div class="tag">tag</div>
+			<div class="date">date</div>
 		</section>
-		<section class="photo animate-opacity">
-			<div>
-				<span>图片标题</span>
-				<span><button>上一张</button><button>下一张</button></span>
-				<span>第<span>1</span>张 / 共<span>6</span>张</span>
+		<section class="animate-scale">
+			<div class="photo">
+				<span class="photo-title">photo title</span>
+				<span><button class="photo-prev">上一张</button> / <button class="photo-next">下一张</button></span>
+				<span>第<span class="photo-nbr">1</span>张 / 共<span class="photo-total">6</span>张</span>
 			</div>
-			<img />
+			<img class="photo-img">
 		</section>
-		<section class="stat animate-opacity">
+		<section class="animate-scale">
 			<div class="bar">
 				<div class="label">
 					<span>收到支持</span>
-					<span>预算(元)</span>
+					<span>当前预算</span>
 				</div>
 				<div>
 					<div class="fund">
@@ -729,500 +600,90 @@
 						<span>123456</span>
 					</div>
 					<div class="expense">
-						<span>12345</span>
-						<span>25%</span>
+						<span>123456</span>
+						<span>50%</span>
 					</div>
 				</div>
 				<div class="label">
 					<span>当前支出</span>
-					<a target="_blank" rel="noopener" href="https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1">查看明细</a>
+					<a target="_blank" rel="noopener" href="" class="detail">历史明细</a>
 				</div>
 			</div>
-			<div><br>活动目标：</div>
-			<div class="circle"></div>
+			<div><br>当前目标：</div>
+			<div class="goal"></div>
 		</section>
-		<section class="msg">
-			<div class="tab">
-				<button><span>123</span> 条活动日志 ❯</button>
-				<button><span>123</span> 名参与者 ❯</button>
-				<button><span>123</span> 位支持者 ❯</button>
+		<section>
+			<div class="rec-tab">
+				<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+				<button class="tab worker"><span>123</span> 名参与者 ❯</button>
+				<button class="tab fund"><span>123</span> 位支持者 ❯</button>
 			</div>
-			<div class="log"></div>
-			<div class="log"></div>
-			<div class="log"></div>
+			<div class="rec work"></div>
+			<div class="rec worker"></div>
+			<div class="rec fund"></div>
+		</section>
+	</article>
+</template>
+<template id="user">
+	<article>
+		<section>
+			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
+			<div class="date">date</div>
+			<div class="soc">所属社团：</div>
+		</section>
+		<section>
+			<div class="rec-tab">
+				<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+				<button class="tab worker"><span>123</span> 次活动参与 ❯</button>
+				<button class="tab fund"><span>123</span> 次活动支持 ❯</button>
+			</div>
+			<div class="rec work"></div>
+			<div class="rec worker"></div>
+			<div class="rec fund"></div>
+		</section>
+	</article>
+</template>
+<template id="soc">
+	<article>
+		<section>
+			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
+			<div class="date">date</div>
+			<div class="intro">社团简介：</div>
+			<div class="user">社团成员：</div>
+		</section>
+		<section>
+			<div class="rec-tab">
+				<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+				<button class="tab worker"><span>123</span> 次活动参与 ❯</button>
+				<button class="tab fund"><span>123</span> 次活动支持 ❯</button>
+			</div>
+			<div class="rec work"></div>
+			<div class="rec worker"></div>
+			<div class="rec fund"></div>
 		</section>
 	</article>
 </template>
 
 <body>
-	<div class="banner dark-gray animate-right">
-		<button onclick="this.parentElement.style.display='none'" class="dark-gray topright">&times;</button>
-		<h3>提示!</h3>
-		<p>网站开发中。当前页面皆为测试内容。</p>
-	</div>
-
-	<header class="animate-left">
+	<div class="title">
 		<a href="">
-			<h1><b>主义主义 <span style="color: var(--cl-red)">活动</span>公示</b></h1>
+			<h1><b>主义主义 <span style="color: var(--red)">活动</span>公示</b></h1>
 		</a>
 		<hr>
 		<div class="tag"></div>
-	</header>
-
-	<div class="content animate-right">
-		<div class="main"></div>
-		<div class="side">
-			<div class="log recent"></div>
-		</div>
 	</div>
-
-	<footer class="animate-left">
+	<div id="main"></div>
+	<footer>
 		<a href="https://space.bilibili.com/23191782" target="_blank" rel="noopener"><img
 				src="https://www.bilibili.com/favicon.ico">未明子</a> ·
 		<a href="https://space.bilibili.com/19147010" target="_blank" rel="noopener"><img
-				src="https://www.bilibili.com/favicon.ico">张正午</a>
+				src="https://www.bilibili.com/favicon.ico">张正午</a><br>
 		<span>网站维护：seven.two.eight@outlook.com</span><br>
 		<a href="https://chitchatter.im/public/9e70deaa-d0dd-4a90-8020-4a572d1e2635" target="_blank" rel="noopener"><img
 				src="https://chitchatter.im/favicon.ico">聊天室</a>
 	</footer>
 </body>
 
-<!-- <script>
-	let hash = ""
-
-	const tags = [
-		"",
-		"进行中",
-		"已结束",
-		"设施建设",
-		"物资配给",
-		"软件开发",
-		"苏州",
-		"杭州",
-		"成都",
-		"工益公益",
-		"星星家园",
-		"主义主义网站"
-	]
-
-	function etag(
-		el, tags, ct = false
-	) {
-		el.innerHTML = ""
-		const item = document.getElementById("tag-item").content.children
-		for (let t of tags) {
-			const a = el.appendChild(item[t == hash ? 1 : 0].cloneNode(true))
-			const s = a.getElementsByTagName("span")
-			a.href = `#${t}`
-			s[0].innerText = t.length == 0 ? "全部公示" : t
-			if (ct) s[1].innerText = articles.filter(p => t.length == 0 || p.tag.includes(t)).length
-			else s[1].style.display = "none"
-		}
-	}
-
-	const articles = [
-		{
-			aid: 3,
-			title: "工益公益营养星期四",
-			tag: ["进行中", "物资配给", "苏州", "工益公益"],
-			date: { pub: "2022-09-26 08:11", update: "2022-11-16 04:56" },
-			img: [
-				{ title: "吴中区 Geist 店面", src: "https://img.00000.host/2022/10/27/635a6fd35ddcc.jpg" }
-			],
-			nimg: 0,
-			stat: {
-				fund: 0, budget: 0, expense: 0,
-				detail: "https://docs.qq.com/sheet/DZWNvbXV3S0FDV0Nx",
-				progress: [
-					{ goal: "厨房改造", pct: 5 },
-					{ goal: "2022十一月营养餐食", pct: 0 },
-					{ goal: "2022十二月营养餐食", pct: 0 },
-				]
-			},
-			participant: [
-				{ date: "2022-09-26 08:11", uid: "未明子", badge: ["发起人", "工益公益"], msg: "作为发起人参与活动" },
-				{ date: "2022-09-26 08:11", uid: "张正午", badge: ["发起人", "工益公益"], msg: "作为发起人参与活动" },
-			],
-			activity: [
-				{ date: "2022-09-18 03:35", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】我们团队的总路线：以工益带动公益；我们的第一个实践计划：工益食堂", video: "https://www.bilibili.com/video/BV1wG4y1B7cK" },
-				{ date: "2022-09-26 08:11", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】接下来的项目：营养星期四，请社会的主人们来做客吃饭", video: "https://www.bilibili.com/video/BV1Fe4y1H7Vy" },
-				{ date: "2022-09-30 23:42", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】我们目前工作发展的瓶颈和困境", video: "https://www.bilibili.com/video/BV1tN4y1P742" },
-				{ date: "2022-10-01 00:18", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】工益是最大的公益", video: "https://www.bilibili.com/video/BV1xe411T7Fb" },
-				{ date: "2022-10-09 01:52", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【项目追踪】营养星期四项目准备期的第一个问题以及一些其他情况的介绍", video: "https://www.bilibili.com/video/BV18m4y1A77W" },
-				{ date: "2022-10-20 01:53", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】营养星期四项目跟踪之厨房改造", video: "https://www.bilibili.com/video/BV1FR4y197U8" },
-				{ date: "2022-11-16 04:56", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【行动路线】我们的道路（近-中-远），以及我两年来的财务状况", video: "https://www.bilibili.com/video/BV1FW4y1x792" },
-			],
-			sponsor: []
-		}, {
-			aid: 2,
-			title: "星星家园改造",
-			tag: ["已结束", "设施建设", "苏州", "星星家园"],
-			date: { pub: "2022-09-05 07:28", update: "2022-09-13 22:50" },
-			img: [
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e19ea386.jpg" },
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e2ceda0d.jpg" },
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e1be1fc9.jpg" },
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e1d2f26d.jpg" },
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e1dd05bc.jpg" },
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e1f7cc9f.jpg" },
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e2142563.jpg" },
-				{ title: "庭院改造施工", src: "https://img.00000.host/2022/10/27/635a6e2265252.jpg" },
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e2e91945.jpg" },
-				{ title: "卫生间改造施工", src: "https://img.00000.host/2022/10/27/635a6e2f44377.jpg" },
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e29e9d39.jpg" },
-				{ title: "教室改造施工", src: "https://img.00000.host/2022/10/27/635a6e29eaa11.jpg" },
-				{ title: "防水涂层示意图", src: "https://img.00000.host/2022/10/27/635a6e2c5ec88.jpg" },
-				{ title: "堆放点示意图", src: "https://img.00000.host/2022/10/27/635a6e3069c72.jpg" },
-				{ title: "平面图", src: "https://img.00000.host/2022/10/27/635a6e29ea46e.jpg" },
-			],
-			nimg: 0,
-			stat: {
-				fund: 9214, budget: 9214, expense: 9214,
-				detail: "https://docs.qq.com/sheet/DZU1qaWRsUnJJU1Z1",
-				progress: [
-					{ goal: "卫生间改造", pct: 100 },
-					{ goal: "教室改造", pct: 100 },
-					{ goal: "庭院改造", pct: 100 },
-				]
-			},
-			participant: [
-				{ date: "2022-07-24", uid: "未明子", badge: ["发起人", "星星家园"], msg: "作为发起人参与活动" },
-				{ date: "2022-07-24", uid: "张正午", badge: ["发起人", "星星家园"], msg: "作为发起人参与活动" },
-				{ date: "2022-08-21", uid: "张东冬", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "盛航航", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "刘源", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "许沛洋", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "张恒光", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "李思源", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "朱宏基", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "郑昊", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "应一楷", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "田浩楠", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "孙陆钧", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "张洲", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "刘叙辰", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "庞哲昊", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "燕少昕", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "胡明达", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "张成昊", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "陆毅", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "辛子豪", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "马琳娜", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "梁卫天", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "沙名轩", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "纪培煜", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "斯通", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "陆一帜", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "张济达", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "曹子函", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "张明明", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "张超培", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "谢宇", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "蔡思忘", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "**匿名用户**", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-				{ date: "2022-08-21", uid: "赵贺", badge: ["参与者", "星星家园"], msg: "作为施工者参与活动" },
-			],
-			activity: [
-				{ date: "2022-08-04 14:35", uid: "张正午", badge: ["发起人", "星星家园"], msg: "工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录", video: "https://www.bilibili.com/video/BV1zT411L7JP" },
-				{ date: "2022-08-04 22:17", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【现实行动】我们目前的一个行动项目", video: "https://www.bilibili.com/video/BV1xG4y1v7MV" },
-				{ date: "2022-08-17 00:37", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【项目跟踪】晚托班项目硬装计划介绍", video: "https://www.bilibili.com/video/BV1dg41167Y9" },
-				{ date: "2022-08-23 00:46", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【项目追踪】晚托班改造计划硬装部分阶段性介绍", video: "https://www.bilibili.com/video/BV1eB4y1z7Qc" },
-				{ date: "2022-08-31", uid: "张东冬", badge: ["参与者", "星星家园"], msg: "在八月 27 - 28 日共参与施工 2 天" },
-				{ date: "2022-08-31", uid: "盛航航", badge: ["参与者", "星星家园"], msg: "在八月 26 - 31 日共参与施工 6 天" },
-				{ date: "2022-08-31", uid: "刘源", badge: ["参与者", "星星家园"], msg: "在八月 24 日共参与施工 1 天" },
-				{ date: "2022-08-31", uid: "许沛洋", badge: ["参与者", "星星家园"], msg: "在八月 23 日共参与施工 1 天" },
-				{ date: "2022-08-31", uid: "张恒光", badge: ["参与者", "星星家园"], msg: "在八月 23 - 30 日共参与施工 8 天" },
-				{ date: "2022-08-31", uid: "李思源", badge: ["参与者", "星星家园"], msg: "在八月 23 - 24 日共参与施工 2 天" },
-				{ date: "2022-08-31", uid: "朱宏基", badge: ["参与者", "星星家园"], msg: "在八月 23 - 25 日共参与施工 3 天" },
-				{ date: "2022-08-31", uid: "郑昊", badge: ["参与者", "星星家园"], msg: "在八月 23 - 24 日共参与施工 2 天" },
-				{ date: "2022-08-31", uid: "应一楷", badge: ["参与者", "星星家园"], msg: "在八月 22 - 24 日共参与施工 3 天" },
-				{ date: "2022-08-31", uid: "田浩楠", badge: ["参与者", "星星家园"], msg: "在八月 22 - 26, 28 日共参与施工 6 天" },
-				{ date: "2022-08-31", uid: "孙陆钧", badge: ["参与者", "星星家园"], msg: "在八月 22 - 23 日共参与施工 2 天" },
-				{ date: "2022-08-31", uid: "张洲", badge: ["参与者", "星星家园"], msg: "在八月 22 - 25 日共参与施工 4 天" },
-				{ date: "2022-08-31", uid: "刘叙辰", badge: ["参与者", "星星家园"], msg: "在八月 22 - 24 日共参与施工 3 天" },
-				{ date: "2022-08-31", uid: "庞哲昊", badge: ["参与者", "星星家园"], msg: "在八月 21 - 28, 30 - 31 日共参与施工 10 天" },
-				{ date: "2022-08-31", uid: "燕少昕", badge: ["参与者", "星星家园"], msg: "在八月 21 - 23, 28 - 29, 30 日共参与施工 6 天" },
-				{ date: "2022-08-31", uid: "胡明达", badge: ["参与者", "星星家园"], msg: "在八月 21 日共参与施工 1 天" },
-				{ date: "2022-08-31", uid: "张成昊", badge: ["参与者", "星星家园"], msg: "在八月 21 - 30 日共参与施工 10 天" },
-				{ date: "2022-08-31", uid: "陆毅", badge: ["参与者", "星星家园"], msg: "在八月 21 - 33 日共参与施工 3 天" },
-				{ date: "2022-08-31", uid: "辛子豪", badge: ["参与者", "星星家园"], msg: "在八月 21 - 22 日共参与施工 2 天" },
-				{ date: "2022-08-31", uid: "马琳娜", badge: ["参与者", "星星家园"], msg: "在八月 21, 27 日共参与施工 2 天" },
-				{ date: "2022-08-31", uid: "梁卫天", badge: ["参与者", "星星家园"], msg: "在八月 21 - 28 日共参与施工 8 天" },
-				{ date: "2022-08-31", uid: "沙名轩", badge: ["参与者", "星星家园"], msg: "在八月 21, 23 - 25 日共参与施工 4 天" },
-				{ date: "2022-08-31", uid: "纪培煜", badge: ["参与者", "星星家园"], msg: "在八月 21, 27 日共参与施工 2 天" },
-				{ date: "2022-08-31", uid: "斯通", badge: ["参与者", "星星家园"], msg: "在八月 21 日共参与施工 1 天" },
-				{ date: "2022-08-31", uid: "陆一帜", badge: ["参与者", "星星家园"], msg: "在八月 21 日共参与施工 1 天" },
-				{ date: "2022-08-31", uid: "张济达", badge: ["参与者", "星星家园"], msg: "在八月 21, 28 日共参与施工 2 天" },
-				{ date: "2022-08-31", uid: "曹子函", badge: ["参与者", "星星家园"], msg: "在八月 21 - 22 日共参与施工 2 天" },
-				{ date: "2022-08-31", uid: "张明明", badge: ["参与者", "星星家园"], msg: "在八月 21, 23, 25 日共参与施工 3 天" },
-				{ date: "2022-08-31", uid: "张超培", badge: ["参与者", "星星家园"], msg: "在八月 21 - 30 日共参与施工 10 天" },
-				{ date: "2022-08-31", uid: "谢宇", badge: ["参与者", "星星家园"], msg: "在八月 22, 24 - 25, 27 - 28 日共参与施工 5 天" },
-				{ date: "2022-08-31", uid: "蔡思忘", badge: ["参与者", "星星家园"], msg: "在八月 22 - 24, 26 - 27, 29 日共参与施工 6 天" },
-				{ date: "2022-08-31", uid: "**匿名用户**", badge: ["参与者", "星星家园"], msg: "在八月 27 日共参与施工 1 天" },
-				{ date: "2022-08-31", uid: "赵贺", badge: ["参与者", "星星家园"], msg: "在八月 27 - 28 日共参与施工 2 天" },
-				{ date: "2022-09-07 02:45", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【项目追踪】主义主义网站（临时站点）目前的功能：首批项目内容的简单公示", video: "https://www.bilibili.com/video/BV1r14y1s75s" },
-				{ date: "2022-09-09 04:05", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【项目追踪】晚托班环境改造成果展示预览版（直播讲解版）", video: "https://www.bilibili.com/video/BV19d4y1g7Hc" },
-				{ date: "2022-09-13 22:50", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【项目追踪】爱心小屋改造全纪实", video: "https://www.bilibili.com/video/BV1Cd4y1u7Ya" },
-			],
-			sponsor: [
-				{ date: "2022-08-04", uid: "以太假说星星家园徽章的买家", badge: ["支持者", "星星家园"], msg: "提供支持：+9130.46\n属 1000 枚徽章销售的部分收入。\n网站开放用户注册功能后将邀请徽章买家注册用户名，并在此显示支持者用户名。" }
-			]
-		}, {
-			aid: 1,
-			title: "星星家园伙食改善",
-			tag: ["进行中", "物资配给", "苏州", "星星家园"],
-			date: { pub: "2022-09-05 07:28", update: "2022-11-16 17:43" },
-			stat: {
-				fund: 7186, budget: 7186, expense: 2616,
-				detail: "https://docs.qq.com/sheet/DZWVJeVd6V1ZlYklk",
-				progress: [
-					{ goal: "2022九月伙食改善", pct: 100 },
-					{ goal: "2022十月伙食改善", pct: 100 },
-					{ goal: "2022十一月伙食改善", pct: 55 },
-					{ goal: "2022十二月伙食改善", pct: 0 },
-				]
-			},
-			participant: [
-				{ date: "2022-07-04 12:34", uid: "未明子", badge: ["发起人", "星星家园"], msg: "作为发起人参与活动" },
-				{ date: "2022-07-04 12:34", uid: "张正午", badge: ["发起人", "星星家园"], msg: "作为发起人参与活动" },
-			],
-			activity: [
-				{ date: "2022-08-04 14:35", uid: "张正午", badge: ["发起人", "星星家园"], msg: "工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录", video: "https://www.bilibili.com/video/BV1zT411L7JP" },
-				{ date: "2022-08-04 22:17", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【现实行动】我们目前的一个行动项目", video: "https://www.bilibili.com/video/BV1xG4y1v7MV" },
-				{ date: "2022-09-07 02:45", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【项目追踪】主义主义网站（临时站点）目前的功能：首批项目内容的简单公示", video: "https://www.bilibili.com/video/BV1r14y1s75s" },
-				{ date: "2022-09-09 04:05", uid: "未明子", badge: ["发起人", "星星家园"], msg: "【项目追踪】晚托班环境改造成果展示预览版（直播讲解版）", video: "https://www.bilibili.com/video/BV19d4y1g7Hc" },
-			],
-			sponsor: [
-				{ date: "2022-08-04", uid: "以太假说星星家园徽章的买家", badge: ["支持者", "星星家园"], msg: "提供支持：+7269.54\n属 1000 枚徽章销售的部分收入。\n网站开放用户注册功能后将邀请徽章买家注册用户名，并在此显示支持者用户名。" }
-			]
-		}, {
-			aid: 0,
-			title: "主义主义网站开发",
-			tag: ["进行中", "软件开发", "杭州", "成都", "主义主义网站"],
-			date: { pub: "2022-09-05 07:28", update: "2022-11-16 09:30" },
-			stat: {
-				fund: 547, budget: 547, expense: 547,
-				detail: "https://docs.qq.com/sheet/DZUl1Q1N5aGNGYk9x",
-				progress: [
-					{ goal: "主义主义活动公示网站", pct: 65 },
-					{ goal: "国际主义者网站", pct: 55 },
-					{ goal: "主义主义卡片重铸网站", pct: 45 },
-					{ goal: "魔怔人论坛", pct: 100 },
-				]
-			},
-			participant: [
-				{ date: "2021-04-03", uid: "zzy", badge: ["参与者", "主义主义网站"], msg: "作为程序员参与活动" },
-				{ date: "2021-04-03", uid: "laofan", badge: ["参与者", "主义主义网站"], msg: "作为程序员参与活动" },
-				{ date: "2021-04-03", uid: "川羽", badge: ["参与者", "主义主义网站"], msg: "作为程序员参与活动" },
-				{ date: "2022-07-04", uid: "未明子", badge: ["发起人", "主义主义网站"], msg: "作为发起人参与活动" },
-				{ date: "2022-07-04", uid: "张正午", badge: ["发起人", "主义主义网站"], msg: "作为发起人参与活动" },
-				{ date: "2022-07-24", uid: "万大可", badge: ["参与者", "主义主义网站"], msg: "作为程序员参与活动" },
-			],
-			activity: [
-				{ date: "2021-04-03", uid: "川羽", badge: ["参与者", "主义主义网站"], msg: "魔怔人论坛上线" },
-				{ date: "2021-05-28", uid: "川羽", badge: ["参与者", "主义主义网站"], msg: "魔怔人论坛内测结束\n目标进度 100%：魔怔人论坛" },
-				{ date: "2022-07-04 01:38", uid: "未明子", badge: ["发起人", "主义主义网站"], msg: "【实践】我的行动路径——我卖什么货，我开什么店，我成立什么团体，我追求什么理想", video: "https://www.bilibili.com/video/BV1if4y1Z7xo" },
-				{ date: "2022-08-01 01:46", uid: "未明子", badge: ["发起人", "主义主义网站"], msg: "【公告】我们眼下的行动路径", video: "https://www.bilibili.com/video/BV1wa411M7jK" },
-				{ date: "2022-08-14 01:45", uid: "未明子", badge: ["发起人", "主义主义网站"], msg: "【行动计划】我们打算做一个什么样的网站（1）——初步功能", video: "https://www.bilibili.com/video/BV1EG411t7Wh" },
-				{ date: "2022-09-05", uid: "万大可", badge: ["参与者", "主义主义网站"], msg: "上线网站 ismist.cn\n目标进度 15%：主义主义活动公示网站" },
-				{ date: "2022-09-07 02:45", uid: "未明子", badge: ["发起人", "主义主义网站"], msg: "【项目追踪】主义主义网站（临时站点）目前的功能：首批项目内容的简单公示", video: "https://www.bilibili.com/video/BV1r14y1s75s" },
-			],
-			sponsor: [
-				{ date: "2021-04-03", uid: "张正午", badge: ["发起人", "主义主义网站"], msg: "提供支持：+379\n服务器费用2月份" },
-				{ date: "2021-05-12", uid: "YOOSON", badge: ["支持者", "主义主义网站"], msg: "提供支持：+35\nismism.club 域名费用1年份" },
-				{ date: "2022-08-08", uid: "未明子", badge: ["发起人", "主义主义网站"], msg: "提供支持：+35\nismism.cn 域名费用1年份" },
-				{ date: "2022-08-11", uid: "万大可", badge: ["参与者", "主义主义网站"], msg: "提供支持：+70\nismist.cn 与 主义主义.中国 域名费用1年份" },
-				{ date: "2022-10-27", uid: "万大可", badge: ["参与者", "主义主义网站"], msg: "提供支持：+28\ninternationalist.life 域名费用1年份" },
-			]
-		}
-	]
-
-	const recent = [
-		{ date: "2022-10-01 00:18", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】工益是最大的公益", video: "https://www.bilibili.com/video/BV1xe411T7Fb" },
-		{ date: "2022-10-09 01:52", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【项目追踪】营养星期四项目准备期的第一个问题以及一些其他情况的介绍", video: "https://www.bilibili.com/video/BV18m4y1A77W" },
-		{ date: "2022-10-20 01:53", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【工益公益】营养星期四项目跟踪之厨房改造", video: "https://www.bilibili.com/video/BV1FR4y197U8" },
-		{ date: "2022-10-27", uid: "万大可", badge: ["参与者", "主义主义网站"], msg: "提供支持：+28\ninternationalist.life 域名费用1年份" },
-		{ date: "2022-11-16 04:56", uid: "未明子", badge: ["发起人", "工益公益"], msg: "【行动路线】我们的道路（近-中-远），以及我两年来的财务状况", video: "https://www.bilibili.com/video/BV1FW4y1x792" },
-	]
-
-	function etitle(
-		el, { aid, title, tag, date }
-	) {
-		const a = el.getElementsByTagName("a")[0]
-		a.href = `#${aid}`
-		a.getElementsByTagName("code")[0].innerText = `#${aid}`
-		a.getElementsByTagName("span")[0].innerText = title
-		a.classList.add("title")
-		etag(el.getElementsByClassName("tag")[0], tag)
-		const d = el.getElementsByClassName("date")[0].getElementsByTagName("span")
-		d[0].innerText = date.pub
-		d[1].innerText = date.update
-	}
-
-	function eimg(
-		el, d
-	) {
-		if (d.img == undefined || d.img.length == 0) {
-			el.style.display = "none"
-			return
-		}
-		const s = el.getElementsByTagName("div")[0].children
-		const img = el.getElementsByTagName("img")[0]
-		const nimg = dn => {
-			d.nimg = ((d.nimg + dn) % d.img.length + d.img.length) % d.img.length
-			img.alt = s[0].innerText = d.img[d.nimg].title
-			s[2].children[0].innerText = d.nimg + 1
-			s[2].children[1].innerText = d.img.length
-			img.src = d.img[d.nimg].src
-		}
-		nimg(0)
-		s[1].children[0].addEventListener("click", () => nimg(-1))
-		s[1].children[1].addEventListener("click", () => nimg(+1))
-	}
-
-	function estat(
-		el, stat
-	) {
-		el.style.setProperty("--fund", stat.fund)
-		el.style.setProperty("--budget", stat.budget)
-		el.style.setProperty("--expense", stat.expense)
-		const fund = el.getElementsByClassName("fund")[0].children
-		fund[0].innerText = stat.fund
-		fund[1].innerText = `${stat.budget == 0 ? 0 : (stat.fund / stat.budget * 100).toFixed(0)}%`
-		fund[2].innerText = stat.budget
-		const expense = el.getElementsByClassName("expense")[0].children
-		expense[0].innerText = stat.expense
-		expense[1].innerText = `${stat.budget == 0 ? 0 : (stat.expense / stat.budget * 100).toFixed(0)}%`
-		el.getElementsByTagName("a")[0].href = stat.detail
-		const tg = document.getElementById("circle-item").content.children
-		const circle = el.getElementsByClassName("circle")[0]
-		for (const { goal, pct } of stat.progress) {
-			const c = circle.appendChild(tg[pct == 0 ? 0 : (pct < 100 ? 1 : 2)].cloneNode(true))
-			c.children[0].style.setProperty("--pct", pct)
-			c.children[0].innerText = pct >= 100 ? "完成" : `${pct}%`
-			c.children[1].innerText = goal
-		}
-	}
-
-	const cbadge = new Map([
-		["发起人", "red"],
-		["参与者", "amber"],
-		["支持者", "purple"],
-		["工益公益", "black"],
-		["星星家园", "black"],
-		["主义主义网站", "black"],
-	]);
-
-	function ebadge(
-		el, badge
-	) {
-		el.innerHTML = ""
-		const t = document.getElementById("badge-item").content.children[0]
-		for (const b of badge) {
-			const s = el.appendChild(t.cloneNode(true))
-			const c = cbadge.get(b)
-			if (c) s.classList.add(c)
-			s.innerText = b
-		}
-	}
-
-	function elog(
-		el, unit, msg
-	) {
-		el.innerHTML = ""
-		const tl = document.getElementById("log-item").content.children
-		const tv = document.getElementById("video-link").content.children[0]
-		const head = el.appendChild(tl[0].cloneNode(true))
-		head.innerText = `${msg.length} ${unit}`
-		for (const m of msg) {
-			const d = el.appendChild(tl[1].cloneNode(true)).children
-			d[0].innerText = m.uid[0]
-			d[1].children[0].children[0].innerText = m.uid
-			ebadge(d[1].children[0].children[1], m.badge)
-			d[1].children[1].innerText = m.date
-			if (m.video) {
-				d[1].children[2].innerText = "发布了视频："
-				const v = d[1].children[2].appendChild(tv.cloneNode(true))
-				v.innerText = m.msg
-				v.href = m.video
-			}
-			else d[1].children[2].innerText = m.msg
-		}
-		const foot = el.appendChild(tl[0].cloneNode(true))
-		foot.innerText = head.innerText
-	}
-
-	function emsg(
-		el, { participant, activity, sponsor }
-	) {
-		const tab = el.getElementsByClassName("tab")[0].children
-		tab[0].children[0].innerText = activity.length
-		tab[1].children[0].innerText = participant.length
-		tab[2].children[0].innerText = sponsor.length
-		const log = [...el.getElementsByClassName("log")]
-		elog(log[0], "条活动日志", activity)
-		elog(log[1], "名参与者", participant)
-		elog(log[2], "位支持者", sponsor)
-		log.forEach(l => l.style.display = "none")
-		const toggle = (b, n) => {
-			if (b.classList.contains("dark-gray")) {
-				b.classList.remove("dark-gray")
-				log[n].style.display = "none"
-			} else {
-				for (const t of tab) t.classList.remove("dark-gray")
-				log.forEach(l => l.style.display = "none")
-				b.classList.add("dark-gray")
-				log[n].style.display = "block"
-				log[n].scrollTop = log[n].scrollHeight
-			}
-		}
-		tab[0].addEventListener("click", () => toggle(tab[0], 0))
-		tab[1].addEventListener("click", () => toggle(tab[1], 1))
-		tab[2].addEventListener("click", () => toggle(tab[2], 2))
-	}
-
-	function earticle(
-		el
-	) {
-		el.innerHTML = ""
-		const aid = parseInt(hash)
-		const ds = isNaN(aid)
-			? (hash.length > 0 ? articles.filter(a => a.tag.includes(hash)) : articles)
-			: [articles.find(p => p.aid == aid)]
-		const ta = document.getElementById("article").content.children[0]
-		for (const d of ds) {
-			const a = el.appendChild(ta.cloneNode(true))
-			etitle(a.getElementsByClassName("title")[0], d)
-			eimg(a.getElementsByClassName("photo")[0], d)
-			estat(a.getElementsByClassName("stat")[0], d.stat)
-			emsg(a.getElementsByClassName("msg")[0], d)
-		}
-	}
-
-	function erecent(
-		el
-	) {
-		el.innerHTML = ""
-		elog(el, "条最新动态", recent)
-	}
-
-	window.addEventListener("hashchange", () => {
-		hash = decodeURI(window.location.hash).substr(1)
-		etag(
-			document.getElementsByTagName("header")[0].getElementsByClassName("tag")[0],
-			tags, true
-		)
-		earticle(document.getElementsByClassName("main")[0])
-		erecent(document.getElementsByClassName("recent")[0])
-	})
-
-	function load(
-	) {
-		window.dispatchEvent(new Event("hashchange"))
-	}
-
-	load()
-</script> -->
 <script src="./bind.js"></script>
 
 </html>

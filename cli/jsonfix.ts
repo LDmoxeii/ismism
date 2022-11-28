@@ -17,6 +17,7 @@ const activity = [
 	{ aid: 1, date: "2022-08-14 01:45", uid: "未明子", op: "video", title: "【行动计划】我们打算做一个什么样的网站（1）——初步功能", src: "https://www.bilibili.com/video/BV1EG411t7Wh" },
 	{ aid: 1, date: "2022-09-05 12:00", uid: "万大可", op: "work", msg: "主义主义活动公示网站上线" },
 	{ aid: 1, date: "2022-09-07 02:45", uid: "未明子", op: "video", title: "【项目追踪】主义主义网站（临时站点）目前的功能：首批项目内容的简单公示", src: "https://www.bilibili.com/video/BV1r14y1s75s" },
+	{ aid: 1, date: "2022-11-28 14:00", uid: "万大可", op: "work", msg: "网站更新：用户与社团页面" },
 
 	{ aid: 2, date: "2022-08-04 14:35", uid: "张正午", op: "video", title: "工人子弟晚托班苏州星星家园环境改造/伙食改善公益项目工作记录", src: "https://www.bilibili.com/video/BV1zT411L7JP" },
 	{ aid: 2, date: "2022-08-04 22:17", uid: "未明子", op: "video", title: "【现实行动】我们目前的一个行动项目", src: "https://www.bilibili.com/video/BV1xG4y1v7MV" },
@@ -64,6 +65,15 @@ const activity = [
 	{ aid: 3, date: "2022-09-07 20:00", uid: "未明子", op: "video", title: "【项目追踪】主义主义网站（临时站点）目前的功能：首批项目内容的简单公示", src: "https://www.bilibili.com/video/BV1r14y1s75s" },
 	{ aid: 3, date: "2022-09-09 20:00", uid: "未明子", op: "video", title: "【项目追踪】晚托班环境改造成果展示预览版（直播讲解版）", src: "https://www.bilibili.com/video/BV19d4y1g7Hc" },
 	{ aid: 3, date: "2022-09-13 20:00", uid: "未明子", op: "video", title: "【项目追踪】爱心小屋改造全纪实", src: "https://www.bilibili.com/video/BV1Cd4y1u7Ya" },
+
+	{ aid: 4, date: "2022-09-18 03:35", uid: "未明子", op: "video", title: "【工益公益】我们团队的总路线：以工益带动公益；我们的第一个实践计划：工益食堂", src: "https://www.bilibili.com/video/BV1wG4y1B7cK" },
+	{ aid: 4, date: "2022-09-26 08:11", uid: "未明子", op: "video", title: "【工益公益】接下来的项目：营养星期四，请社会的主人们来做客吃饭", src: "https://www.bilibili.com/video/BV1Fe4y1H7Vy" },
+	{ aid: 4, date: "2022-09-30 23:42", uid: "未明子", op: "video", title: "【工益公益】我们目前工作发展的瓶颈和困境", src: "https://www.bilibili.com/video/BV1tN4y1P742" },
+	{ aid: 4, date: "2022-10-01 00:18", uid: "未明子", op: "video", title: "【工益公益】工益是最大的公益", src: "https://www.bilibili.com/video/BV1xe411T7Fb" },
+	{ aid: 4, date: "2022-10-09 01:52", uid: "未明子", op: "video", title: "【项目追踪】营养星期四项目准备期的第一个问题以及一些其他情况的介绍", src: "https://www.bilibili.com/video/BV18m4y1A77W" },
+	{ aid: 4, date: "2022-10-20 01:53", uid: "未明子", op: "video", title: "【工益公益】营养星期四项目跟踪之厨房改造", src: "https://www.bilibili.com/video/BV1FR4y197U8" },
+	{ aid: 4, date: "2022-11-16 04:56", uid: "未明子", op: "video", title: "【行动路线】我们的道路（近-中-远），以及我两年来的财务状况", src: "https://www.bilibili.com/video/BV1FW4y1x792" },
+
 
 	{ aid: 4, date: "2022-10-19 20:00", uid: "盛航航", op: "work", msg: "本日工作内容：拆墙面（全天）" },
 	{ aid: 4, date: "2022-10-20 20:00", uid: "盛航航", op: "work", msg: "本日工作内容：油烟机清洗（全天）" },

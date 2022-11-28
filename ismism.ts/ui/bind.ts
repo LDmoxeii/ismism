@@ -1,6 +1,18 @@
 // deno-lint-ignore-file no-window-prefix
-import { Agenda, Rec } from "../../cli/json.ts"
-import { } from "../src/typ.ts"
+import { Agenda, Rec, Soc, User } from "../../cli/json.ts"
+import { utc_medium, utc_short } from "../src/date.ts"
+import { Goal, Tag, Rec as Id } from "../src/typ.ts"
+
+let hash = ""
+let agenda: Agenda[]
+let recent: Rec
+const tags_all: Tag[] = [
+	"", "进行中", "已结束",
+	"设施建设", "物资配给", "软件开发",
+	"苏州", "成都",
+	"工益公益", "星星家园"
+]
+const tags_count: number[] = []
 
 async function json(
 	name: string
@@ -9,270 +21,339 @@ async function json(
 	return JSON.parse(await r.text())
 }
 
-let hash = ""
-let agenda: Agenda[]
-let recent: Rec
-
-function from_utc(
-	utc: number
-) {
-	return new Date(utc).toLocaleString("zh-CN", { dateStyle: "medium", timeStyle: "short" })
-}
-// function etag(
-// 	el: HTMLElement,
-// 	tags: string[],
-// 	ct = false
-// ) {
-// 	el.innerHTML = ""
-// 	const item = (document.getElementById("tag-item") as HTMLTemplateElement).content.children
-// 	for (const t of tags) {
-// 		const a = el.appendChild(item[t == hash ? 1 : 0].cloneNode(true)) as HTMLLinkElement
-// 		const s = a.getElementsByTagName("span")
-// 		a.href = `#${t}`
-// 		s[0].innerText = t.length == 0 ? "全部公示" : t
-// 		if (ct) s[1].innerText = agenda.filter(p => t.length == 0 || p.tag.includes(t)).length
-// 		else s[1].style.display = "none"
-// 	}
-// }
-
-function etitle(
-	el: HTMLElement,
-	{ _id, name, utc }: Agenda,
-) {
-	const a = el.getElementsByTagName("a")[0]
-	a.href = `#${_id}`
-	a.getElementsByTagName("code")[0].innerText = `#${_id}`
-	a.getElementsByTagName("span")[0].innerText = name
-	a.classList.add("title")
-	//etag(el.getElementsByClassName("tag")[0], tag)
-	const d = el.getElementsByClassName("date")[0].getElementsByTagName("span")
-	const t = from_utc(utc)
-	d[0].innerText = t
-	d[1].innerText = t
+function template(
+	tid: string,
+	fclass: string[]
+): [DocumentFragment, HTMLElement[]] {
+	const temp = document.getElementById(tid) as HTMLTemplateElement
+	const t = temp.content.cloneNode(true) as DocumentFragment
+	return [t, fclass.map(f => t.querySelector(`.${f}`)!)]
 }
 
-function eimg(
+function etag(
 	el: HTMLElement,
-	{ dat }: Agenda
+	tags: string[],
+	count: number[] = []
 ) {
-	if (dat === null || dat.img.length === 0) {
-		el.style.display = "none"
-		return
-	}
-	const s = el.getElementsByTagName("div")[0].children
-	const img = el.getElementsByTagName("img")[0]
-	let nimg = 0
-	const uimg = (dn: number) => {
-		nimg = ((nimg + dn) % dat.img.length + dat.img.length) % dat.img.length
-		img.alt = (s[0] as HTMLElement).innerText = dat.img[nimg].title;
-		(s[2].children[0] as HTMLElement).innerText = `${nimg + 1}`;
-		(s[2].children[1] as HTMLElement).innerText = `${dat.img.length}`
-		img.src = dat.img[nimg].src
-	}
-	uimg(0)
-	s[1].children[0].addEventListener("click", () => uimg(-1))
-	s[1].children[1].addEventListener("click", () => uimg(+1))
-}
-
-function estat(
-	el: HTMLElement,
-	a: Agenda
-) {
-	el.style.setProperty("--fund", `${a.fund}`)
-	el.style.setProperty("--budget", `${a.budget}`)
-	el.style.setProperty("--expense", `${a.expense}`)
-	const fund = el.getElementsByClassName("fund")[0].children;
-	(fund[0] as HTMLElement).innerText = a.fund.toString();
-	(fund[1] as HTMLElement).innerText = `${a.budget == 0 ? 0 : (a.fund / a.budget * 100).toFixed(0)}%`;
-	(fund[2] as HTMLElement).innerText = a.budget.toString()
-	const expense = el.getElementsByClassName("expense")[0].children;
-	(expense[0] as HTMLElement).innerText = a.expense.toString();
-	(expense[1] as HTMLElement).innerText = `${a.budget == 0 ? 0 : (a.expense / a.budget * 100).toFixed(0)}%`
-	el.getElementsByTagName("a")[0].href = a.detail
-	const tg = (document.getElementById("circle-item") as HTMLTemplateElement).content.children
-	const circle = el.getElementsByClassName("circle")[0]
-	for (const { name, pct } of a.goal) {
-		const c = circle.appendChild(tg[pct == 0 ? 0 : (pct < 100 ? 1 : 2)].cloneNode(true)) as HTMLElement;
-		(c.children[0] as HTMLElement).style.setProperty("--pct", `${pct}`);
-		(c.children[0] as HTMLElement).innerText = pct >= 100 ? "完成" : `${pct}%`;
-		(c.children[1] as HTMLElement).innerText = name
-	}
-}
-
-// const cbadge = new Map([
-// 	["发起人", "red"],
-// 	["参与者", "amber"],
-// 	["支持者", "purple"],
-// 	["工益公益", "black"],
-// 	["星星家园", "black"],
-// 	["主义主义网站", "black"],
-// ]);
-
-// function ebadge(
-// 	el, badge
-// ) {
-// 	el.innerHTML = ""
-// 	const t = document.getElementById("badge-item").content.children[0]
-// 	for (const b of badge) {
-// 		const s = el.appendChild(t.cloneNode(true))
-// 		const c = cbadge.get(b)
-// 		if (c) s.classList.add(c)
-// 		s.innerText = b
-// 	}
-// }
-
-function elog_worker(
-	el: HTMLElement,
-	worker: Rec["worker"]
-) {
-	const uname = new Map(worker.uname)
-	const aname = new Map(worker.aname)
 	el.innerHTML = ""
-	const tl = (document.getElementById("log-item") as HTMLTemplateElement).content.children
-	const head = el.appendChild(tl[0].cloneNode(true)) as HTMLElement
-	head.innerText = `${worker.rec.length} 名参与者`
-	for (const w of worker.rec) {
-		const d = (el.appendChild(tl[1].cloneNode(true)) as HTMLElement).children;
-		const name = uname.get(w.uid)!;
-		(d[0] as HTMLElement).innerText = name[0];
-		((d[1] as HTMLElement).children[0].children[0] as HTMLElement).innerText = name;
-		//ebadge(d[1].children[0].children[1], m.badge)
-		(d[1].children[1] as HTMLElement).innerText = from_utc(w._id.utc);
-		(d[1].children[2] as HTMLElement).innerText = `作为 ${w.role} 参与 ${aname.get(w._id.aid)}`
-	}
-	const foot = el.appendChild(tl[0].cloneNode(true)) as HTMLElement
-	foot.innerText = head.innerText
+	const [t, [a, n, c]] = template("tag", ["tag", "name", "count"])
+	const ct = tags.length === count.length
+	if (!ct) c.parentNode?.removeChild(c)
+	tags.forEach((tag, i) => {
+		(a as HTMLAnchorElement).href = `#${tag}`
+		n.innerText = tag.length === 0 ? "全部公示" : tag
+		if (hash === tag) a.classList.add("darkgray")
+		else a.classList.remove("darkgray")
+		if (ct) c.innerText = `${count[i]}`
+		el.appendChild(t.cloneNode(true))
+	})
 }
-function elog_work(
+
+function egoal(
 	el: HTMLElement,
-	work: Rec["work"]
+	goal: Goal[],
+) {
+	el.innerHTML = ""
+	for (const { pct, name } of goal) {
+		const [t, [p, n]] = template("goal", ["pct", "name"])
+		if (pct === 100) {
+			p.classList.add("done")
+			p.innerText = "完成"
+		} else if (pct > 0) {
+			p.classList.add("ongoing")
+			p.style.setProperty("--pct", `${pct}`)
+			p.innerText = `${pct}%`
+		}
+		n.innerText = name
+		el.appendChild(t)
+	}
+}
+
+const roleclr = new Map([
+	["发起人", "red"],
+	["支持者", "purple"],
+])
+
+function eid(
+	id: Id,
+	uname: Map<number, string>,
+	aname: Map<number, string>,
+	role: string | Map<number, string>
+) {
+	const [t, [cinit, cuname, crole, caname, cdate, cmsg]] = template("rec",
+		["initial", "uname", "role", "aname", "date", "msg"])
+	const n = uname.get(id.uid)!
+	cinit.innerText = n[0];
+	(cinit as HTMLAnchorElement).href = `#u${id.uid}`
+	cuname.innerText = n;
+	(cuname as HTMLAnchorElement).href = `#u${id.uid}`
+	const r = typeof role === "string" ? role : role.get(id.uid)!
+	crole.innerText = r;
+	(crole as HTMLAnchorElement).href = `#u${id.uid}`
+	crole.classList.add(roleclr.get(r) ?? "amber")
+	caname.innerText = aname.get(id._id.aid)!;
+	(caname as HTMLAnchorElement).href = `#a${id._id.aid}`
+	cdate.innerText = utc_short(id._id.utc)
+	return { t, cmsg }
+}
+
+function ework(
+	d: HTMLElement,
+	work: Rec["work"],
+	role: Map<number, string>,
 ) {
 	const uname = new Map(work.uname)
 	const aname = new Map(work.aname)
-	el.innerHTML = ""
-	const tl = (document.getElementById("log-item") as HTMLTemplateElement).content.children
-	const tv = (document.getElementById("video-link") as HTMLTemplateElement).content.children[0] as HTMLElement
-	const head = el.appendChild(tl[0].cloneNode(true)) as HTMLElement
-	head.innerText = `${work.rec.length} 条工作日志`
-	for (const w of work.rec) {
-		const d = (el.appendChild(tl[1].cloneNode(true)) as HTMLElement).children;
-		const name = uname.get(w.uid)!;
-		(d[0] as HTMLElement).innerText = name[0];
-		((d[1] as HTMLElement).children[0].children[0] as HTMLElement).innerText = name;
-		//ebadge(d[1].children[0].children[1], m.badge)
-		(d[1].children[1] as HTMLElement).innerText = from_utc(w._id.utc)
+	for (const w of work.rec.slice().reverse()) {
+		const { t, cmsg } = eid(w, uname, aname, role)
 		switch (w.op) {
-			case "goal": (d[1].children[2] as HTMLElement).innerText =
-				`更新 ${aname.get(w._id.aid)} 目标进度 ${w.goal.map(g => `${g.name}: ${g.pct}%`).join(",")}`; break
-			case "work": (d[1].children[2] as HTMLElement).innerText = w.msg; break
+			case "goal": cmsg.innerText = `${JSON.stringify(w.goal)}`; break
+			case "work": cmsg.innerText = w.msg; break
 			case "video": {
-				(d[1].children[2] as HTMLElement).innerText = "发布了视频："
-				const v = d[1].children[2].appendChild(tv.cloneNode(true)) as HTMLLinkElement
-				v.innerText = w.title
-				v.href = w.src
+				cmsg.innerText = "发布了视频："
+				const [t, [a]] = template("video", ["video"])
+				a.innerText = w.title;
+				(a as HTMLAnchorElement).href = w.src
+				cmsg.appendChild(t)
 				break
 			}
 		}
-
+		d.appendChild(t)
 	}
-	const foot = el.appendChild(tl[0].cloneNode(true)) as HTMLElement
-	foot.innerText = head.innerText
 }
-function elog_fund(
-	el: HTMLElement,
+
+function eworker(
+	d: HTMLElement,
+	worker: Rec["worker"],
+	role: Map<number, string>,
+) {
+	const uname = new Map(worker.uname)
+	const aname = new Map(worker.aname)
+	for (const w of worker.rec.slice().reverse()) {
+		const { t, cmsg } = eid(w, uname, aname, role)
+		cmsg.innerText = `作为 ${w.role} 参与工作`
+		d.appendChild(t)
+	}
+}
+
+function efund(
+	d: HTMLElement,
 	fund: Rec["fund"]
 ) {
 	const uname = new Map(fund.uname)
 	const aname = new Map(fund.aname)
-	el.innerHTML = ""
-	const tl = (document.getElementById("log-item") as HTMLTemplateElement).content.children
-	const head = el.appendChild(tl[0].cloneNode(true)) as HTMLElement
-	head.innerText = `${fund.rec.length} 名支持者`
-	for (const f of fund.rec) {
-		const d = (el.appendChild(tl[1].cloneNode(true)) as HTMLElement).children;
-		const name = uname.get(f.uid)!;
-		(d[0] as HTMLElement).innerText = name[0];
-		((d[1] as HTMLElement).children[0].children[0] as HTMLElement).innerText = name;
-		//ebadge(d[1].children[0].children[1], m.badge)
-		(d[1].children[1] as HTMLElement).innerText = from_utc(f._id.utc);
-		(d[1].children[2] as HTMLElement).innerText = `${f.msg} 支持 ${aname.get(f._id.aid)}`
+	for (const f of fund.rec.slice().reverse()) {
+		const { t, cmsg } = eid(f, uname, aname, "支持者")
+		cmsg.innerText = `提供支持: +${f.fund}\n${f.msg}`
+		d.appendChild(t)
 	}
-	const foot = el.appendChild(tl[0].cloneNode(true)) as HTMLElement
-	foot.innerText = head.innerText
-}
-function erec(
-	el: HTMLElement,
-	{ worker, work, fund }: Rec
-) {
-	const tab = el.getElementsByClassName("tab")[0].children;
-	(tab[0].children[0] as HTMLElement).innerText = work.rec.length.toString();
-	(tab[1].children[0] as HTMLElement).innerText = worker.rec.length.toString();
-	(tab[2].children[0] as HTMLElement).innerText = fund.rec.length.toString();
-	const log = [...el.getElementsByClassName("log")]
-	elog_work(log[0] as HTMLElement, work)
-	elog_worker(log[1] as HTMLElement, worker)
-	elog_fund(log[2] as HTMLElement, fund)
-	log.forEach(l => (l as HTMLElement).style.display = "none")
-	const toggle = (b: HTMLElement, n: number) => {
-		if (b.classList.contains("dark-gray")) {
-			b.classList.remove("dark-gray");
-			(log[n] as HTMLElement).style.display = "none"
-		} else {
-			for (const t of tab) t.classList.remove("dark-gray")
-			log.forEach(l => (l as HTMLElement).style.display = "none")
-			b.classList.add("dark-gray");
-			(log[n] as HTMLElement).style.display = "block"
-			log[n].scrollTop = log[n].scrollHeight
-		}
-	}
-	tab[0].addEventListener("click", () => toggle(tab[0] as HTMLElement, 0))
-	tab[1].addEventListener("click", () => toggle(tab[1] as HTMLElement, 1))
-	tab[2].addEventListener("click", () => toggle(tab[2] as HTMLElement, 2))
 }
 
-async function eagenda(
-	el: HTMLElement
+function erec(
+	b: [HTMLElement, HTMLElement, HTMLElement],
+	d: [HTMLElement, HTMLElement, HTMLElement],
+	{ work, worker, fund }: Rec
 ) {
-	el.innerHTML = ""
-	const aid = parseInt(hash)
-	const ds = isNaN(aid)
-		//? (hash.length > 0 ? agenda.filter(a => a.tag.includes(hash)) : articles)
-		? agenda
-		: agenda.filter(p => p._id === aid)
-	const ta = (document.getElementById("article") as HTMLTemplateElement).content.children[0]
-	for (const d of ds) {
-		const a = el.appendChild(ta.cloneNode(true)) as HTMLElement
-		etitle(a.getElementsByClassName("title")[0] as HTMLElement, d)
-		eimg(a.getElementsByClassName("photo")[0] as HTMLElement, d)
-		estat(a.getElementsByClassName("stat")[0] as HTMLElement, d)
-		erec(a.getElementsByClassName("msg")[0] as HTMLElement, await json(`a${d._id}`))
+	const toggle = (btn: HTMLElement, div: HTMLElement) => {
+		const on = btn.classList.contains("darkgray")
+		b.forEach(b => b.classList.remove("darkgray"))
+		d.forEach(d => d.style.display = "none")
+		if (!on) {
+			btn.classList.add("darkgray")
+			div.style.display = "block"
+			div.scrollTop = div.scrollHeight
+		}
 	}
+	const count = [work.rec.length, worker.rec.length, fund.rec.length]
+	b.forEach((btn, n) => {
+		btn.getElementsByTagName("span")[0].innerText = `${count[n]}`
+		btn.addEventListener("click", () => toggle(btn, d[n]))
+	})
+	const role = new Map(worker.rec.map(r => [r.uid, r.role]))
+	ework(d[0], work, role)
+	eworker(d[1], worker, role)
+	efund(d[2], fund)
 }
 
 function erecent(
-	el: HTMLElement
+	el: HTMLElement,
+	rec: Rec
+) {
+	const [t, [
+		bwork, bworker, bfund, dwork, dworker, dfund,
+	]] = template("recent", [
+		"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
+	])
+
+	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+
+	el.appendChild(t)
+}
+
+function eagenda(
+	el: HTMLElement,
+	agenda: Agenda[],
+	recent?: Rec,
 ) {
 	el.innerHTML = ""
-	elog_work(el, recent.work)
+
+	if (recent) erecent(el, recent)
+
+	for (const {
+		_id, name, tag, utc, dat, fund, budget, expense, detail, goal
+	} of agenda) {
+		const [t, [
+			cidname, cid, cname, ctag, cdate,
+			cphoto, cphoto_title, cphoto_prev, cphoto_next, cphoto_nbr, cphoto_total, cphoto_img,
+			cbar, cfund, cexpense, cdetail, cgoal,
+			bwork, bworker, bfund, dwork, dworker, dfund,
+		]] = template("agenda", [
+			"idname", "id", "name", "tag", "date",
+			"photo", "photo-title", "photo-prev", "photo-next", "photo-nbr", "photo-total", "photo-img",
+			"bar", "fund", "expense", "detail", "goal",
+			"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
+		]);
+
+		(cidname as HTMLAnchorElement).href = `#a${_id}`
+		cid.innerText = `a${_id}`
+		if (hash === cid.innerText) cid.classList.add("darkgray")
+		else cid.classList.remove("darkgray")
+		cname.innerText = name
+		etag(ctag, tag)
+		cdate.innerText = `公示时间: ${utc_medium(utc)}\n更新时间：${utc_medium(Date.now())}`
+
+		if (dat === null || dat.img.length === 0)
+			cphoto.parentNode?.parentNode?.removeChild(cphoto.parentNode)
+		else {
+			cphoto_total.innerText = `${dat.img.length}`
+			let n = 0
+			const nimg = (d: number) => {
+				n = ((n + d) % dat.img.length + dat.img.length) % dat.img.length
+				cphoto_title.innerText = dat.img[n].title
+				cphoto_nbr.innerText = `${n + 1}`;
+				(cphoto_img as HTMLImageElement).src = dat.img[n].src
+			}
+			nimg(0)
+			cphoto_prev.addEventListener("click", () => nimg(-1))
+			cphoto_next.addEventListener("click", () => nimg(1))
+		}
+
+		cbar.style.setProperty("--fund", `${fund}`)
+		cbar.style.setProperty("--budget", `${budget}`)
+		cbar.style.setProperty("--expense", `${expense}`)
+		{
+			const [sfund, spct, sbudget] = [...cfund.children] as HTMLSpanElement[]
+			sfund.innerText = `${fund}`
+			spct.innerText = `${budget == 0 ? 0 : (fund / budget * 100).toFixed(0)}%`
+			sbudget.innerText = `${budget}`
+		} {
+			const [sexpense, spct] = [...cexpense.children] as HTMLSpanElement[]
+			sexpense.innerText = `${expense}`
+			spct.innerText = `${budget == 0 ? 0 : (expense / budget * 100).toFixed(0)}%`
+		}
+		(cdetail as HTMLAnchorElement).href = detail
+		egoal(cgoal, goal)
+
+		json(`a${_id}`).then(rec =>
+			erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+		)
+
+		el.appendChild(t)
+	}
+}
+
+function euser(
+	el: HTMLElement,
+	uid: number,
+	{ name, utc, soc, rec }: User
+) {
+	el.innerHTML = ""
+	const [t, [
+		cidname, cid, cname, cdate, csoc,
+		bwork, bworker, bfund, dwork, dworker, dfund,
+	]] = template("user", [
+		"idname", "id", "name", "date", "soc",
+		"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
+	]);
+
+	(cidname as HTMLAnchorElement).href = `#u${uid}`
+	cid.innerText = `u${uid}`
+	if (hash === cid.innerText) cid.classList.add("darkgray")
+	else cid.classList.remove("darkgray")
+	cname.innerText = name
+	cdate.innerText = `注册时间: ${utc_medium(utc)}`
+
+	if (soc.length === 0) csoc.innerText += "无"
+	else for (const s of soc) {
+		const a = csoc.appendChild(document.createElement("a"))
+		a.classList.add("member-soc")
+		a.href = `#s${s._id}`
+		a.innerText = s.name
+	}
+
+	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+
+	el.appendChild(t)
+}
+function esoc(
+	el: HTMLElement,
+	sid: number,
+	{ name, utc, intro, uid, uname, rec }: Soc
+) {
+	el.innerHTML = ""
+	const [t, [
+		cidname, cid, cname, cdate, cintro, cuser,
+		bwork, bworker, bfund, dwork, dworker, dfund,
+	]] = template("soc", [
+		"idname", "id", "name", "date", "intro", "user",
+		"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
+	]);
+
+	(cidname as HTMLAnchorElement).href = `#s${sid}`
+	cid.innerText = `s${sid}`
+	if (hash === cid.innerText) cid.classList.add("darkgray")
+	else cid.classList.remove("darkgray")
+	cname.innerText = name
+	cdate.innerText = `注册时间: ${utc_medium(utc)}`
+	cintro.innerText += intro
+
+	const user = new Map(uname)
+	cuser.innerText = uid.length === 0 ? "社团成员：无" : `社团成员(${uid.length})：`
+	for (const u of uid) {
+		const a = cuser.appendChild(document.createElement("a"))
+		a.classList.add("member-user")
+		a.href = `#u${u}`
+		a.innerText = user.get(u)!
+		cuser.appendChild(a)
+	}
+
+	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+
+	el.appendChild(t)
 }
 
 window.addEventListener("hashchange", () => {
-	hash = decodeURI(window.location.hash).substr(1)
-	// etag(
-	// 	document.getElementsByTagName("header")[0].getElementsByClassName("tag")[0],
-	// 	tags, true
-	// )
-	eagenda(document.getElementsByClassName("main")[0] as HTMLElement)
-	erecent(document.getElementsByClassName("recent")[0] as HTMLElement)
+	hash = decodeURI(window.location.hash).substring(1)
+	etag(document.querySelector(".title div.tag")!, tags_all, tags_count)
+	const main = document.getElementById("main")!
+	switch (hash[0]) {
+		case undefined: eagenda(main, agenda, recent); break
+		case "u": json(hash).then(u => euser(main, parseInt(hash.substring(1)), u)); break
+		case "s": json(hash).then(s => esoc(main, parseInt(hash.substring(1)), s)); break
+		case "a": eagenda(main, agenda.filter(a => a._id === parseInt(hash.substring(1)))); break
+		default: eagenda(main, agenda.filter(a => a.tag.includes(hash as Tag))); break
+	}
 })
 
 async function load(
 ) {
 	[agenda, recent] = await Promise.all([
-		await json("agenda"),
-		await json("recent"),
+		json("agenda"), json("recent"),
 	])
+	console.log(`loaded ${agenda.length} agenda`)
+	tags_count.push(agenda.length, ...tags_all.slice(1).map(
+		t => agenda.filter(a => a.tag.includes(t)).length)
+	)
 	window.dispatchEvent(new Event("hashchange"))
 }
-
 load()
