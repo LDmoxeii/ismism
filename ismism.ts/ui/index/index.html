@@ -121,14 +121,32 @@
 		user-select: none;
 	}
 
-	a.tag>span.count {
+	a.tag>span.count,
+	a.role,
+	a.aname {
 		display: inline-block;
 		padding: 0.1em 8px;
-		margin-left: 0.75ch;
-		border-radius: 50%;
+		margin-left: 0.5ch;
 		font-size: var(--small);
 		color: var(--white);
 		background: var(--black);
+	}
+
+	a.role.red {
+		background: var(--red);
+	}
+
+	a.role.amber {
+		color: var(--black);
+		background: var(--amber);
+	}
+
+	a.role.purple {
+		background: var(--purple);
+	}
+
+	a.tag>span.count {
+		border-radius: 50%;
 	}
 
 	button.photo-prev,
@@ -152,11 +170,18 @@
 	@media (hover: hover) {
 
 		a.video:hover,
-		a.detail:hover {
+		a.detail:hover,
+		a.initial:hover,
+		a.uname:hover {
 			color: var(--amber);
 		}
 
+		a.role:hover {
+			opacity: 0.7;
+		}
+
 		a.tag:hover,
+		a.aname:hover,
 		button.photo-prev:hover,
 		button.photo-next:hover,
 		button.tab:hover {
@@ -476,12 +501,9 @@
 </template>
 <template id="rec">
 	<div>
-		<div class="initial">u</div>
+		<div><a class="initial">u</a></div>
 		<div>
-			<div>
-				<span class="uname">uname</span>
-				<span class="aname">aname</span>
-			</div>
+			<div><a class="uname">uname</a><a class="role">role</a><a class="aname">aname</a></div>
 			<div class="date">timestamp</div>
 			<div class="msg">msg</div>
 		</div>

@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-window-prefix
 import { Agenda, Rec } from "../../../cli/json.ts"
 import { utc_medium, utc_short } from "../../src/date.ts"
-import { Goal, Tag } from "../../src/typ.ts"
+import { Goal, Tag, Rec as Id } from "../../src/typ.ts"
 
 let hash = ""
 let agenda: Agenda[]
@@ -69,20 +69,43 @@ function egoal(
 	}
 }
 
+const roleclr = new Map([
+	["发起人", "red"],
+	["支持者", "purple"],
+])
+
+function eid(
+	id: Id,
+	uname: Map<number, string>,
+	aname: Map<number, string>,
+	role: string | Map<number, string>
+) {
+	const [t, [cinit, cuname, crole, caname, cdate, cmsg]] = template("rec",
+		["initial", "uname", "role", "aname", "date", "msg"])
+	const n = uname.get(id.uid)!
+	cinit.innerText = n[0];
+	(cinit as HTMLLinkElement).href = `#u${id.uid}`
+	cuname.innerText = n;
+	(cuname as HTMLLinkElement).href = `#u${id.uid}`
+	const r = typeof role === "string" ? role : role.get(id.uid)!
+	crole.innerText = r;
+	(crole as HTMLLinkElement).href = `#u${id.uid}`
+	crole.classList.add(roleclr.get(r) ?? "amber")
+	caname.innerText = aname.get(id._id.aid)!;
+	(caname as HTMLLinkElement).href = `#a${id._id.aid}`
+	cdate.innerText = utc_short(id._id.utc)
+	return { t, cmsg }
+}
+
 function ework(
 	d: HTMLElement,
-	work: Rec["work"]
+	work: Rec["work"],
+	role: Map<number, string>,
 ) {
 	const uname = new Map(work.uname)
 	const aname = new Map(work.aname)
 	for (const w of work.rec.reverse()) {
-		const [t, [cinit, cuname, caname, cdate, cmsg]] = template("rec",
-			["initial", "uname", "aname", "date", "msg"])
-		const n = uname.get(w.uid)!
-		cinit.innerText = n[0]
-		cuname.innerText = n
-		caname.innerText = aname.get(w._id.aid)!
-		cdate.innerText = utc_short(w._id.utc)
+		const { t, cmsg } = eid(w, uname, aname, role)
 		switch (w.op) {
 			case "goal": cmsg.innerText = `${JSON.stringify(w.goal)}`; break
 			case "work": cmsg.innerText = w.msg; break
@@ -101,18 +124,13 @@ function ework(
 
 function eworker(
 	d: HTMLElement,
-	worker: Rec["worker"]
+	worker: Rec["worker"],
+	role: Map<number, string>,
 ) {
 	const uname = new Map(worker.uname)
 	const aname = new Map(worker.aname)
 	for (const w of worker.rec.reverse()) {
-		const [t, [cinit, cuname, caname, cdate, cmsg]] = template("rec",
-			["initial", "uname", "aname", "date", "msg"])
-		const n = uname.get(w.uid)!
-		cinit.innerText = n[0]
-		cuname.innerText = n
-		caname.innerText = aname.get(w._id.aid)!
-		cdate.innerText = utc_short(w._id.utc)
+		const { t, cmsg } = eid(w, uname, aname, role)
 		cmsg.innerText = `作为 ${w.role} 参与工作`
 		d.appendChild(t)
 	}
@@ -125,13 +143,7 @@ function efund(
 	const uname = new Map(fund.uname)
 	const aname = new Map(fund.aname)
 	for (const f of fund.rec.reverse()) {
-		const [t, [cinit, cuname, caname, cdate, cmsg]] = template("rec",
-			["initial", "uname", "aname", "date", "msg"])
-		const n = uname.get(f.uid)!
-		cinit.innerText = n[0]
-		cuname.innerText = n
-		caname.innerText = aname.get(f._id.aid)!
-		cdate.innerText = utc_short(f._id.utc)
+		const { t, cmsg } = eid(f, uname, aname, "支持者")
 		cmsg.innerText = `提供支持: +${f.fund}\n${f.msg}`
 		d.appendChild(t)
 	}
@@ -158,8 +170,9 @@ function erec(
 		d[n].style.display = "none"
 		btn.addEventListener("click", () => toggle(btn, d[n]))
 	})
-	ework(d[0], work)
-	eworker(d[1], worker)
+	const role = new Map(worker.rec.map(r => [r.uid, r.role]))
+	ework(d[0], work, role)
+	eworker(d[1], worker, role)
 	efund(d[2], fund)
 }
 
