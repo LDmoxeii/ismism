@@ -400,6 +400,10 @@
 		margin-top: 10px;
 	}
 
+	div.rec-tab.recent {
+		margin-top: 0;
+	}
+
 	div.rec-tab>button {
 		padding: 8px;
 		color: var(--black);
@@ -470,6 +474,12 @@
 		background-color: var(--lightgray);
 		border-radius: 0 8px 8px 8px;
 		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+	}
+
+	section.recent {
+		padding: 8px 16px;
+		margin: auto;
+		max-width: 640px;
 	}
 
 	article {
@@ -546,6 +556,18 @@
 	</div>
 </template>
 <template id="video"><a href="" target="_blank" rel="noopener" class="video">title</a></template>
+<template id="recent">
+	<section class="recent">
+		<div class="rec-tab recent">
+			<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+			<button class="tab worker"><span>123</span> 次活动参与 ❯</button>
+			<button class="tab fund"><span>123</span> 次活动支持 ❯</button>
+		</div>
+		<div class="rec work"></div>
+		<div class="rec worker"></div>
+		<div class="rec fund"></div>
+	</section>
+</template>
 <template id="agenda">
 	<article>
 		<section>

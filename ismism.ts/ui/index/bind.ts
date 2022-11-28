@@ -175,11 +175,30 @@ function erec(
 	efund(d[2], fund)
 }
 
+function erecent(
+	el: HTMLElement,
+	rec: Rec
+) {
+	const [t, [
+		bwork, bworker, bfund, dwork, dworker, dfund,
+	]] = template("recent", [
+		"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
+	])
+
+	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+
+	el.appendChild(t)
+}
+
 function eagenda(
 	el: HTMLElement,
-	agenda: Agenda[]
+	agenda: Agenda[],
+	recent?: Rec,
 ) {
 	el.innerHTML = ""
+
+	if (recent) erecent(el, recent)
+
 	for (const {
 		_id, name, tag, utc, dat, fund, budget, expense, detail, goal
 	} of agenda) {
@@ -317,14 +336,11 @@ window.addEventListener("hashchange", () => {
 	etag(document.querySelector(".title div.tag")!, tags_all, tags_count)
 	const main = document.getElementById("main")!
 	switch (hash[0]) {
+		case undefined: eagenda(main, agenda, recent); break
 		case "u": json(hash).then(u => euser(main, parseInt(hash.substring(1)), u)); break
 		case "s": json(hash).then(s => esoc(main, parseInt(hash.substring(1)), s)); break
-		case "a": eagenda(main, agenda.filter(a =>
-			a._id === parseInt(hash.substring(1))
-		)); break
-		default: eagenda(main, agenda.filter(a =>
-			hash === "" || a.tag.includes(hash as Tag)
-		)); break
+		case "a": eagenda(main, agenda.filter(a => a._id === parseInt(hash.substring(1)))); break
+		default: eagenda(main, agenda.filter(a => a.tag.includes(hash as Tag))); break
 	}
 })
 
