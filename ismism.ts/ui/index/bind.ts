@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-window-prefix
-import { Agenda, Rec } from "../../../cli/json.ts"
+import { Agenda, Rec, User } from "../../../cli/json.ts"
 import { utc_medium, utc_short } from "../../src/date.ts"
 import { Goal, Tag, Rec as Id } from "../../src/typ.ts"
 
@@ -40,7 +40,7 @@ function etag(
 	const ct = tags.length === count.length
 	if (!ct) c.parentNode?.removeChild(c)
 	tags.forEach((tag, i) => {
-		(a as HTMLLinkElement).href = `#${tag}`
+		(a as HTMLAnchorElement).href = `#${tag}`
 		n.innerText = tag.length === 0 ? "全部公示" : tag
 		if (hash === tag) a.classList.add("darkgray")
 		else a.classList.remove("darkgray")
@@ -84,15 +84,15 @@ function eid(
 		["initial", "uname", "role", "aname", "date", "msg"])
 	const n = uname.get(id.uid)!
 	cinit.innerText = n[0];
-	(cinit as HTMLLinkElement).href = `#u${id.uid}`
+	(cinit as HTMLAnchorElement).href = `#u${id.uid}`
 	cuname.innerText = n;
-	(cuname as HTMLLinkElement).href = `#u${id.uid}`
+	(cuname as HTMLAnchorElement).href = `#u${id.uid}`
 	const r = typeof role === "string" ? role : role.get(id.uid)!
 	crole.innerText = r;
-	(crole as HTMLLinkElement).href = `#u${id.uid}`
+	(crole as HTMLAnchorElement).href = `#u${id.uid}`
 	crole.classList.add(roleclr.get(r) ?? "amber")
 	caname.innerText = aname.get(id._id.aid)!;
-	(caname as HTMLLinkElement).href = `#a${id._id.aid}`
+	(caname as HTMLAnchorElement).href = `#a${id._id.aid}`
 	cdate.innerText = utc_short(id._id.utc)
 	return { t, cmsg }
 }
@@ -113,7 +113,7 @@ function ework(
 				cmsg.innerText = "发布了视频："
 				const [t, [a]] = template("video", ["video"])
 				a.innerText = w.title;
-				(a as HTMLLinkElement).href = w.src
+				(a as HTMLAnchorElement).href = w.src
 				cmsg.appendChild(t)
 				break
 			}
@@ -196,7 +196,7 @@ function eagenda(
 			"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
 		]);
 
-		(cidname as HTMLLinkElement).href = `#a${_id}`
+		(cidname as HTMLAnchorElement).href = `#a${_id}`
 		cid.innerText = `a${_id}`
 		if (hash === cid.innerText) cid.classList.add("darkgray")
 		else cid.classList.remove("darkgray")
@@ -233,7 +233,7 @@ function eagenda(
 			sexpense.innerText = `${expense}`
 			spct.innerText = `${budget == 0 ? 0 : (expense / budget * 100).toFixed(0)}%`
 		}
-		(cdetail as HTMLLinkElement).href = detail
+		(cdetail as HTMLAnchorElement).href = detail
 		egoal(cgoal, goal)
 
 		json(`a${_id}`).then(rec =>
@@ -244,16 +244,51 @@ function eagenda(
 	}
 }
 
+function euser(
+	el: HTMLElement,
+	uid: number,
+	{ name, utc, soc, rec }: User
+) {
+	el.innerHTML = ""
+	const [t, [
+		cidname, cid, cname, cdate, csoc,
+		bwork, bworker, bfund, dwork, dworker, dfund,
+	]] = template("user", [
+		"idname", "id", "name", "date", "soc",
+		"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
+	]);
+
+	(cidname as HTMLAnchorElement).href = `#u${uid}`
+	cid.innerText = `u${uid}`
+	if (hash === cid.innerText) cid.classList.add("darkgray")
+	else cid.classList.remove("darkgray")
+	cname.innerText = name
+	cdate.innerText = `注册时间: ${utc_medium(utc)}`
+
+	if (soc.length === 0) csoc.innerText += "无"
+	else for (const s of soc) {
+		const [_, [a]] = template("member", ["member"]);
+		(a as HTMLAnchorElement).href = `#s${s._id}`
+		a.innerText = s.name
+		csoc.appendChild(a)
+	}
+
+	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+
+	el.appendChild(t)
+}
+
 window.addEventListener("hashchange", () => {
 	hash = decodeURI(window.location.hash).substring(1)
 	etag(document.querySelector(".title div.tag")!, tags_all, tags_count)
+	const main = document.getElementById("main")!
 	switch (hash[0]) {
-		case "u": break
+		case "u": json(hash).then(u => euser(main, parseInt(hash.substring(1)), u)); break
 		case "s": break
-		case "a": eagenda(document.getElementById("main")!, agenda.filter(a =>
+		case "a": eagenda(main, agenda.filter(a =>
 			a._id === parseInt(hash.substring(1))
 		)); break
-		default: eagenda(document.getElementById("main")!, agenda.filter(a =>
+		default: eagenda(main, agenda.filter(a =>
 			hash === "" || a.tag.includes(hash as Tag)
 		)); break
 	}

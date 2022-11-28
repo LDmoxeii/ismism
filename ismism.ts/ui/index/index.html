@@ -132,6 +132,10 @@
 		background: var(--black);
 	}
 
+	a.tag>span.count {
+		border-radius: 50%;
+	}
+
 	a.role.red {
 		background: var(--red);
 	}
@@ -145,8 +149,10 @@
 		background: var(--purple);
 	}
 
-	a.tag>span.count {
-		border-radius: 50%;
+	a.member {
+		color: var(--white);
+		background: var(--black);
+		padding: 0.1em 8px;
 	}
 
 	button.photo-prev,
@@ -182,6 +188,7 @@
 
 		a.tag:hover,
 		a.aname:hover,
+		a.member:hover,
 		button.photo-prev:hover,
 		button.photo-next:hover,
 		button.tab:hover {
@@ -468,9 +475,27 @@
 
 	footer {
 		padding: 32px 16px;
-		margin-top: 16px;
+		margin-top: 32px;
 		color: var(--gray);
 		text-align: center;
+	}
+
+	footer>a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	footer>a>img {
+		height: 1.2em;
+		margin-right: 0.2em;
+	}
+
+	footer>span {
+		display: block;
+		margin-top: 8px;
+		font-size: var(--small);
+		font-family: monospace;
 	}
 
 	.animate-scale {
@@ -510,6 +535,7 @@
 	</div>
 </template>
 <template id="video"><a href="" target="_blank" rel="noopener" class="video">title</a></template>
+<template id="member"><a class="member">member</a></template>
 <template id="agenda">
 	<article>
 		<section>
@@ -562,6 +588,25 @@
 		</section>
 	</article>
 </template>
+<template id="user">
+	<article>
+		<section>
+			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
+			<div class="date">date</div>
+			<div class="soc">所属社团：</div>
+		</section>
+		<section>
+			<div class="rec-tab">
+				<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+				<button class="tab worker"><span>123</span> 次活动参与 ❯</button>
+				<button class="tab fund"><span>123</span> 次活动支持 ❯</button>
+			</div>
+			<div class="rec work"></div>
+			<div class="rec worker"></div>
+			<div class="rec fund"></div>
+		</section>
+	</article>
+</template>
 
 <body>
 	<div class="title">
@@ -573,7 +618,13 @@
 	</div>
 	<div id="main"></div>
 	<footer>
-		footer is here
+		<a href="https://space.bilibili.com/23191782" target="_blank" rel="noopener"><img
+				src="https://www.bilibili.com/favicon.ico">未明子</a> ·
+		<a href="https://space.bilibili.com/19147010" target="_blank" rel="noopener"><img
+				src="https://www.bilibili.com/favicon.ico">张正午</a><br>
+		<span>网站维护：seven.two.eight@outlook.com</span><br>
+		<a href="https://chitchatter.im/public/9e70deaa-d0dd-4a90-8020-4a572d1e2635" target="_blank" rel="noopener"><img
+				src="https://chitchatter.im/favicon.ico">聊天室</a>
 	</footer>
 </body>
 
