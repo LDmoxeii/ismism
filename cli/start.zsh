@@ -1,8 +1,6 @@
 rm -rf log; mkdir log
 
 if systemctl > /dev/null; then
-	chown -R root:root /var/lib/mongodb
-	chown root:root /tmp/mongodb-27017.sock
 	cp -f mongod.service /lib/systemd/system/
 	systemctl daemon-reload
 	systemctl start mongod
