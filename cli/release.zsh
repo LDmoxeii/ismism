@@ -5,6 +5,9 @@ rm -rf release/.git
 zsh cli/build.zsh
 cp -r ui release
 
+mv release/nginx.ssl.conf release/nginx.conf
+cp -r ssl release
+
 if [ "$1" = "dbimport" ]; then 
 	echo "cp -r dbimport release"
 	cp -r dbimport release
