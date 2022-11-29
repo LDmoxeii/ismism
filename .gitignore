@@ -5,3 +5,5 @@
 /dbimport
 /dbexport
 /json
+/release
+*.zip
