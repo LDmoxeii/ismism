@@ -5,4 +5,4 @@ rm -rf ismism/ui
 sleep 1
 unzip -o ismism.zip -d ismism
 
-rm ismism.zip deploy.zsh
+rm ismism.zip
