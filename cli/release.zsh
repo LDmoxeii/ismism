@@ -7,7 +7,6 @@ zsh cli/build.zsh
 cp -r ui release
 cp -r ssl release
 cp jwk.json release
-mv release/nginx.ssl.conf release/nginx.conf
 
 if [ "$1" = "dbimport" ]; then 
 	echo "cp -r dbimport release"
