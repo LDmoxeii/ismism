@@ -13,7 +13,8 @@
 		"files": {
 			"include": [
 				"src/",
-				"ui/"
+				"ui/",
+				"tst/"
 			]
 		},
 		"rules": {
@@ -30,7 +31,8 @@
 		"files": {
 			"include": [
 				"src/",
-				"ui/"
+				"ui/",
+				"tst/"
 			]
 		},
 		"options": {

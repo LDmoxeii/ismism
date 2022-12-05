@@ -5,4 +5,5 @@ rm -rf ismism/ui
 sleep 1
 unzip -o ismism.zip -d ismism
 
-rm ismism.zip
+mkdir -p ismism-old
+mv ismism.zip  "ismism-old/ismism-$(date +%Y%m%d-%H%M).zip"

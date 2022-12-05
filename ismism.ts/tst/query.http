@@ -1,0 +1,43 @@
+### 
+POST http://localhost:728/q HTTP/1.1
+
+### 
+POST http://localhost:728/q HTTP/1.1
+
+{"query": "recent"}
+
+### 
+POST http://localhost:728/q HTTP/1.1
+
+{"query": "agenda"}
+
+### 
+POST http://localhost:728/q HTTP/1.1
+
+{"query": "user", "uid": 728}
+
+### 
+POST http://localhost:728/q HTTP/1.1
+
+{"query": "soc", "sid": 2}
+
+### recent p0
+POST http://localhost:728/q HTTP/1.1
+
+{"query": "rec_of_recent", "coll": "work", "utc": 1670219915330}
+
+### recent p1
+POST http://localhost:728/q HTTP/1.1
+
+{"query": "rec_of_recent", "coll": "work", "utc": 1668254401244}
+
+###
+POST http://localhost:728/q HTTP/1.1
+
+{"query": "rec_of_uid", "coll": "work", "uid": 728}
+
+###
+POST http://localhost:728/q HTTP/1.1
+
+{"query": "rec_of_sid", "coll": "work", "sid": 2}
+###

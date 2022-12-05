@@ -16,6 +16,19 @@ export const coll = {
 	dat: db.collection<Dat>("dat"),
 }
 
+export type CollRec = "work" | "worker" | "fund"
+
+export function coll_rec(
+	s: CollRec | string
+): Collection<Rec> | null {
+	switch (s) {
+		case "work": return coll.work
+		case "worker": return coll.worker
+		case "fund": return coll.fund
+	}
+	return null
+}
+
 export async function init(
 ) {
 	try { await db.dropDatabase() } catch (e) { console.error(e) }
@@ -92,6 +105,15 @@ async function uid_of_sid(
 	return await coll.soc.findOne({ _id: sid }, { projection }) ?? null
 }
 
+export async function nrec_of_recent(
+) {
+	const [worker, work, fund] = await Promise.all([
+		coll.worker.estimatedDocumentCount(),
+		coll.work.estimatedDocumentCount(),
+		coll.fund.estimatedDocumentCount(),
+	])
+	return { worker, work, fund }
+}
 export async function nrec_of_uid(
 	uid: number[]
 ) {
@@ -116,6 +138,21 @@ export async function nrec_of_aid(
 	return { worker, work, fund }
 }
 
+export async function rec_of_recent<T extends Rec>(
+	c: Collection<T>,
+	utc_lt: number,
+	limit: number
+) {
+	const rec = await c.find(
+		// deno-lint-ignore no-explicit-any
+		{ "_id.utc": { $lt: utc_lt } } as any, {
+		sort: { "_id.utc": -1 },
+		limit
+	}).toArray()
+	const uname = await idname(coll.user, rec.map(r => r.uid))
+	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
+	return { rec, uname, aname }
+}
 export async function rec_of_uid<T extends Rec>(
 	c: Collection<T>,
 	uid: number[],
@@ -150,18 +187,4 @@ export async function rec_of_aid<T extends Rec>(
 	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
 	return { rec, uname, aname }
 }
-export async function rec_of_recent<T extends Rec>(
-	c: Collection<T>,
-	utc_lt: number,
-	limit: number
-) {
-	const rec = await c.find(
-		// deno-lint-ignore no-explicit-any
-		{ "_id.utc": { $lt: utc_lt } } as any, {
-		sort: { "_id.utc": -1 },
-		limit
-	}).toArray()
-	const uname = await idname(coll.user, rec.map(r => r.uid))
-	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
-	return { rec, uname, aname }
-}
+

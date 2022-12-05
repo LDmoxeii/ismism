@@ -21,6 +21,15 @@ async function json(
 	return JSON.parse(await r.text())
 }
 
+// async function query(
+// ) {
+// 	const res = await fetch("/q", {
+// 		method: "POST",
+// 		body: '{"query": "rec_of_sid", "coll": "work", "sid": 2}'
+// 	})
+// 	return res.json()
+// }
+
 function template(
 	tid: string,
 	fclass: string[]
@@ -355,5 +364,6 @@ async function load(
 		t => agenda.filter(a => a.tag.includes(t)).length)
 	)
 	window.dispatchEvent(new Event("hashchange"))
+	//console.log(JSON.stringify(await query()))
 }
 load()

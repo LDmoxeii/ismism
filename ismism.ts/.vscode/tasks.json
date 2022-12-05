@@ -20,7 +20,7 @@
 		{
 			"label": "test",
 			"type": "shell",
-			"command": "cd ..; deno test --allow-all",
+			"command": "cd ..; deno test --allow-all ismism.ts/tst",
 			"group": {
 				"kind": "test",
 				"isDefault": true
