@@ -8,7 +8,7 @@ else
 	nohup mongod --config mongod.yaml > log/mongod.log &
 fi
 
-sleep 0.5
+sleep 3.0
 
 nohup deno run --allow-net --allow-read ismism.ts/src/serve.ts > log/ismism.log &
 nohup nginx -p . -c nginx.conf > log/nginx.log &
