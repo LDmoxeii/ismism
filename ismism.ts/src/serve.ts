@@ -9,7 +9,6 @@ async function route(
 ): Promise<Response> {
 	const url = new URL(req.url)
 	const [_, p, q] = url.pathname.split("/")
-	console.log(req.headers)
 	switch (p) {
 		case "quit": {
 			Deno.exit(); break
