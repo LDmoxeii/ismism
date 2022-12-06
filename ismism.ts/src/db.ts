@@ -86,11 +86,22 @@ export async function init(
 	return await db.listCollectionNames()
 }
 
+export function is_id(
+	id: number
+) {
+	return id > 0
+}
+export function not_id(
+	id: number
+) {
+	return !(id > 0)
+}
+
 export async function idname(
 	c: Collection<User> | Collection<Soc> | Collection<Agenda>,
 	id: number[],
 ): Promise<[number, string][]> {
-	id = [...new Set(id)]
+	id = [...new Set(id.filter(is_id))]
 	const d = await c.find(
 		{ _id: { $in: id } },
 		{ projection: { _id: 1, name: 1 } }
@@ -100,7 +111,7 @@ export async function idname(
 async function uid_of_sid(
 	sid: number
 ): Promise<Pick<Soc, "uid"> | null> {
-	if (sid === 0) return null
+	if (not_id(sid)) return null
 	const projection = { _id: 0, uid: 1 }
 	return await coll.soc.findOne({ _id: sid }, { projection }) ?? null
 }
@@ -117,7 +128,7 @@ export async function nrec_of_recent(
 export async function nrec_of_uid(
 	uid: number[]
 ) {
-	const filter = { uid: { $in: uid } }
+	const filter = { uid: { $in: uid.filter(is_id) } }
 	const [worker, work, fund] = await Promise.all([
 		coll.worker.countDocuments(filter),
 		coll.work.countDocuments(filter),
@@ -128,7 +139,7 @@ export async function nrec_of_uid(
 export async function nrec_of_aid(
 	aid: number
 ) {
-	if (aid === 0) return { worker: 0, work: 0, fund: 0 }
+	if (not_id(aid)) return { worker: 0, work: 0, fund: 0 }
 	const filter = { "_id.aid": aid }
 	const [worker, work, fund] = await Promise.all([
 		coll.worker.countDocuments(filter),
@@ -159,7 +170,7 @@ export async function rec_of_uid<T extends Rec>(
 ) {
 	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
-		{ uid: { $in: uid } } as any,
+		{ uid: { $in: uid.filter(is_id) } } as any,
 		{ sort: { "_id.utc": -1 } }
 	).toArray()
 	const uname = await idname(coll.user, rec.map(r => r.uid))
@@ -177,7 +188,7 @@ export async function rec_of_aid<T extends Rec>(
 	c: Collection<T>,
 	aid: number,
 ) {
-	if (aid === 0) return { rec: [], uname: [], aname: [] }
+	if (not_id(aid)) return { rec: [], uname: [], aname: [] }
 	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
 		{ "_id.aid": aid } as any,

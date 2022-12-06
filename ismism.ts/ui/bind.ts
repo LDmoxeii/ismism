@@ -21,14 +21,17 @@ async function json(
 	return JSON.parse(await r.text())
 }
 
-// async function query(
-// ) {
-// 	const res = await fetch("/q", {
-// 		method: "POST",
-// 		body: '{"query": "rec_of_sid", "coll": "work", "sid": 2}'
-// 	})
-// 	return res.json()
-// }
+async function query(
+) {
+	fetch("/quit").catch(console.log)
+	const res = await fetch("/q/rec_of_sid?coll=work&sid=2")
+	return res.json()
+}
+async function query2(
+) {
+	const res = await fetch("/q/soc?sid=2")
+	return res.json()
+}
 
 function template(
 	tid: string,
@@ -341,7 +344,7 @@ function esoc(
 	el.appendChild(t)
 }
 
-window.addEventListener("hashchange", () => {
+window.addEventListener("hashchange", async () => {
 	hash = decodeURI(window.location.hash).substring(1)
 	etag(document.querySelector(".title div.tag")!, tags_all, tags_count)
 	const main = document.getElementById("main")!
@@ -352,6 +355,7 @@ window.addEventListener("hashchange", () => {
 		case "a": eagenda(main, agenda.filter(a => a._id === parseInt(hash.substring(1)))); break
 		default: eagenda(main, agenda.filter(a => a.tag.includes(hash as Tag))); break
 	}
+	console.log(JSON.stringify(await query2()))
 })
 
 async function load(
@@ -364,6 +368,6 @@ async function load(
 		t => agenda.filter(a => a.tag.includes(t)).length)
 	)
 	window.dispatchEvent(new Event("hashchange"))
-	//console.log(JSON.stringify(await query()))
+	console.log(JSON.stringify(await query()))
 }
 load()

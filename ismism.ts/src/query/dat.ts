@@ -1,9 +1,9 @@
-import { coll } from "../db.ts"
+import { coll, not_id } from "../db.ts"
 
 export async function dat_of_aid(
 	aid: number
 ) {
-	if (aid === 0) return null
+	if (not_id(aid)) return null
 	return await coll.dat.findOne(
 		{ "_id.aid": aid },
 		{

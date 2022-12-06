@@ -2,31 +2,31 @@ import { serve } from "https://deno.land/std@0.163.0/http/server.ts"
 import { utc_short } from "./date.ts"
 import { query } from "./query/query.ts"
 
+const etag = `W/"${Date.now()}"`
+
 async function route(
 	req: Request
 ): Promise<Response> {
 	const url = new URL(req.url)
-	switch (url.pathname) {
-		case "/quit": {
+	const [_, p, q] = url.pathname.split("/")
+	console.log(req.headers)
+	switch (p) {
+		case "quit": {
 			Deno.exit(); break
-		} case "/q": {
-			const q = await req.json()
-			console.log(`${utc_short(Date.now())} - ${q.query}`)
+		} case "q": {
+			if (req.headers.get("if-none-match")?.includes(etag)) {
+				console.log(`${utc_short(Date.now())} - ${q}${url.search} - 304 - ${etag}`)
+				return new Response(null, { status: 304, headers: { etag } })
+			}
+			console.log(`${utc_short(Date.now())} - ${q}${url.search} - 200 - ${etag}`)
 			return new Response(
-				JSON.stringify(await query(q)), {
-				status: 200
+				JSON.stringify(await query(q, url.searchParams)), {
+				status: 200,
+				headers: { etag }
 			})
 		}
 	}
-	console.log(req, url.pathname)
-	if (url.pathname == "/quit") Deno.exit()
-	return new Response(
-		`hello world!\nurl: ${url.pathname}, ${url.hash}, ${url.search}\n${Deno.readTextFileSync("ui/index.html")}`, {
-		status: url.pathname.endsWith("webp") ? 401 : 200,
-		headers: {
-			"content-type": "text/plain",
-		}
-	})
+	return new Response(null, { status: 400 })
 }
 
 serve(route, { port: 728 })

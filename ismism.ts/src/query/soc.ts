@@ -1,10 +1,10 @@
-import { coll, idname, nrec_of_uid } from "../db.ts"
+import { coll, idname, not_id, nrec_of_uid } from "../db.ts"
 import { Soc } from "../typ.ts"
 
 async function soc_of_sid(
 	sid: number
 ): Promise<Omit<Soc, "_id"> | null> {
-	if (sid === 0) return null
+	if (not_id(sid)) return null
 	const projection = { _id: 0 }
 	return await coll.soc.findOne({ _id: sid }, { projection }) ?? null
 }
@@ -12,7 +12,7 @@ async function soc_of_sid(
 export async function soc_of_uid(
 	uid: number
 ): Promise<Pick<Soc, "_id" | "name">[]> {
-	if (uid === 0) return []
+	if (not_id(uid)) return []
 	return await coll.soc.find(
 		// deno-lint-ignore no-explicit-any
 		{ uid } as any,
@@ -23,7 +23,7 @@ export async function soc_of_uid(
 export async function soc(
 	sid: number
 ) {
-	if (sid === 0) return null
+	if (not_id(sid)) return null
 	const s = await soc_of_sid(sid)
 	if (s === null) return null
 	const [rec, uname] = await Promise.all([
