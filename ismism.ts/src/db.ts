@@ -116,8 +116,14 @@ async function uid_of_sid(
 	return await coll.soc.findOne({ _id: sid }, { projection }) ?? null
 }
 
+export type NRec = {
+	worker: number,
+	work: number,
+	fund: number
+}
+
 export async function nrec_of_recent(
-) {
+): Promise<NRec> {
 	const [worker, work, fund] = await Promise.all([
 		coll.worker.estimatedDocumentCount(),
 		coll.work.estimatedDocumentCount(),
@@ -127,7 +133,7 @@ export async function nrec_of_recent(
 }
 export async function nrec_of_uid(
 	uid: number[]
-) {
+): Promise<NRec> {
 	const filter = { uid: { $in: uid.filter(is_id) } }
 	const [worker, work, fund] = await Promise.all([
 		coll.worker.countDocuments(filter),
@@ -138,7 +144,7 @@ export async function nrec_of_uid(
 }
 export async function nrec_of_aid(
 	aid: number
-) {
+): Promise<NRec> {
 	if (not_id(aid)) return { worker: 0, work: 0, fund: 0 }
 	const filter = { "_id.aid": aid }
 	const [worker, work, fund] = await Promise.all([
@@ -149,11 +155,17 @@ export async function nrec_of_aid(
 	return { worker, work, fund }
 }
 
+export type RecOf<T extends Rec> = {
+	rec: T[],
+	uname: [number, string][],
+	aname: [number, string][],
+}
+
 export async function rec_of_recent<T extends Rec>(
 	c: Collection<T>,
 	utc_lt: number,
 	limit: number
-) {
+): Promise<RecOf<T>> {
 	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
 		{ "_id.utc": { $lt: utc_lt } } as any, {
@@ -167,7 +179,7 @@ export async function rec_of_recent<T extends Rec>(
 export async function rec_of_uid<T extends Rec>(
 	c: Collection<T>,
 	uid: number[],
-) {
+): Promise<RecOf<T>> {
 	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
 		{ uid: { $in: uid.filter(is_id) } } as any,
@@ -180,14 +192,14 @@ export async function rec_of_uid<T extends Rec>(
 export async function rec_of_sid<T extends Rec>(
 	c: Collection<T>,
 	sid: number,
-) {
+): Promise<RecOf<T>> {
 	const uid = (await uid_of_sid(sid))?.uid ?? []
 	return rec_of_uid(c, uid)
 }
 export async function rec_of_aid<T extends Rec>(
 	c: Collection<T>,
 	aid: number,
-) {
+): Promise<RecOf<T>> {
 	if (not_id(aid)) return { rec: [], uname: [], aname: [] }
 	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any

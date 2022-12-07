@@ -1,11 +1,12 @@
 // deno-lint-ignore-file no-window-prefix
-import { Agenda, Rec, Soc, User } from "../../cli/json.ts"
 import { utc_medium, utc_short } from "../src/date.ts"
-import { Goal, Tag, Rec as Id } from "../src/typ.ts"
+import type { Agenda, Recent, Soc, User } from "../src/query/query.ts"
+import type { Goal, Tag, Rec, Work, Worker, Fund } from "../src/typ.ts"
+import type { NRec, RecOf } from "../src/db.ts"
 
 let hash = ""
-let agenda: Agenda[]
-let recent: Rec
+let recent: Recent
+let agenda: Agenda
 const tags_all: Tag[] = [
 	"", "进行中", "已结束",
 	"设施建设", "物资配给", "软件开发",
@@ -13,23 +14,14 @@ const tags_all: Tag[] = [
 	"工益公益", "星星家园"
 ]
 const tags_count: number[] = []
-
-async function json(
-	name: string
-) {
-	const r = await fetch(`/json/${name}.json`)
-	return JSON.parse(await r.text())
-}
+let utc_etag = Date.now()
 
 async function query(
+	q: string
 ) {
-	fetch("/quit").catch(console.log)
-	const res = await fetch("/q/rec_of_sid?coll=work&sid=2")
-	return res.json()
-}
-async function query2(
-) {
-	const res = await fetch("/q/soc?sid=2")
+	const res = await fetch(`/q/${q}`)
+	const etag = res.headers.get("etag")?.substring(3)
+	if (etag) utc_etag = parseInt(etag)
 	return res.json()
 }
 
@@ -86,38 +78,38 @@ const roleclr = new Map([
 	["支持者", "purple"],
 ])
 
-function eid(
-	id: Id,
+function erec(
+	rec: Rec,
 	uname: Map<number, string>,
 	aname: Map<number, string>,
 	role: string | Map<number, string>
 ) {
 	const [t, [cinit, cuname, crole, caname, cdate, cmsg]] = template("rec",
 		["initial", "uname", "role", "aname", "date", "msg"])
-	const n = uname.get(id.uid)!
+	const n = uname.get(rec.uid)!
 	cinit.innerText = n[0];
-	(cinit as HTMLAnchorElement).href = `#u${id.uid}`
+	(cinit as HTMLAnchorElement).href = `#u${rec.uid}`
 	cuname.innerText = n;
-	(cuname as HTMLAnchorElement).href = `#u${id.uid}`
-	const r = typeof role === "string" ? role : role.get(id.uid)!
+	(cuname as HTMLAnchorElement).href = `#u${rec.uid}`
+	const r = typeof role === "string" ? role : role.get(rec.uid)!
 	crole.innerText = r;
-	(crole as HTMLAnchorElement).href = `#u${id.uid}`
+	(crole as HTMLAnchorElement).href = `#u${rec.uid}`
 	crole.classList.add(roleclr.get(r) ?? "amber")
-	caname.innerText = aname.get(id._id.aid)!;
-	(caname as HTMLAnchorElement).href = `#a${id._id.aid}`
-	cdate.innerText = utc_short(id._id.utc)
+	caname.innerText = aname.get(rec._id.aid)!;
+	(caname as HTMLAnchorElement).href = `#a${rec._id.aid}`
+	cdate.innerText = utc_short(rec._id.utc)
 	return { t, cmsg }
 }
 
 function ework(
 	d: HTMLElement,
-	work: Rec["work"],
+	work: RecOf<Work>,
 	role: Map<number, string>,
 ) {
 	const uname = new Map(work.uname)
 	const aname = new Map(work.aname)
 	for (const w of work.rec.slice().reverse()) {
-		const { t, cmsg } = eid(w, uname, aname, role)
+		const { t, cmsg } = erec(w, uname, aname, role)
 		switch (w.op) {
 			case "goal": cmsg.innerText = `${JSON.stringify(w.goal)}`; break
 			case "work": cmsg.innerText = w.msg; break
@@ -136,13 +128,13 @@ function ework(
 
 function eworker(
 	d: HTMLElement,
-	worker: Rec["worker"],
+	worker: RecOf<Worker>,
 	role: Map<number, string>,
 ) {
 	const uname = new Map(worker.uname)
 	const aname = new Map(worker.aname)
 	for (const w of worker.rec.slice().reverse()) {
-		const { t, cmsg } = eid(w, uname, aname, role)
+		const { t, cmsg } = erec(w, uname, aname, role)
 		cmsg.innerText = `作为 ${w.role} 参与工作`
 		d.appendChild(t)
 	}
@@ -150,69 +142,82 @@ function eworker(
 
 function efund(
 	d: HTMLElement,
-	fund: Rec["fund"]
+	fund: RecOf<Fund>
 ) {
 	const uname = new Map(fund.uname)
 	const aname = new Map(fund.aname)
 	for (const f of fund.rec.slice().reverse()) {
-		const { t, cmsg } = eid(f, uname, aname, "支持者")
+		const { t, cmsg } = erec(f, uname, aname, "支持者")
 		cmsg.innerText = `提供支持: +${f.fund}\n${f.msg}`
 		d.appendChild(t)
 	}
 }
 
-function erec(
+function erecof(
 	b: [HTMLElement, HTMLElement, HTMLElement],
 	d: [HTMLElement, HTMLElement, HTMLElement],
-	{ work, worker, fund }: Rec
+	nrec: [number, number, number],
+	recof: () => Promise<[RecOf<Work>, RecOf<Worker>, RecOf<Fund>]>
 ) {
-	const toggle = (btn: HTMLElement, div: HTMLElement) => {
-		const on = btn.classList.contains("darkgray")
+	let loaded = false
+	const toggle = (n: number) => {
+		const on = b[n].classList.contains("darkgray")
 		b.forEach(b => b.classList.remove("darkgray"))
 		d.forEach(d => d.style.display = "none")
+		if (!loaded) recof().then(([work, worker, fund]) => {
+			const role = new Map(worker.rec.map(r => [r.uid, r.role]))
+			ework(d[0], work, role)
+			eworker(d[1], worker, role)
+			efund(d[2], fund)
+			d[n].scrollTop = d[n].scrollHeight
+			loaded = true
+		})
 		if (!on) {
-			btn.classList.add("darkgray")
-			div.style.display = "block"
-			div.scrollTop = div.scrollHeight
+			b[n].classList.add("darkgray")
+			d[n].style.display = "block"
+			d[n].scrollTop = d[n].scrollHeight
 		}
 	}
-	const count = [work.rec.length, worker.rec.length, fund.rec.length]
 	b.forEach((btn, n) => {
-		btn.getElementsByTagName("span")[0].innerText = `${count[n]}`
-		btn.addEventListener("click", () => toggle(btn, d[n]))
+		btn.getElementsByTagName("span")[0].innerText = `${nrec[n]}`
+		btn.addEventListener("click", () => toggle(n))
 	})
-	const role = new Map(worker.rec.map(r => [r.uid, r.role]))
-	ework(d[0], work, role)
-	eworker(d[1], worker, role)
-	efund(d[2], fund)
 }
 
 function erecent(
 	el: HTMLElement,
-	rec: Rec
+	nrec: NRec
 ) {
 	const [t, [
 		bwork, bworker, bfund, dwork, dworker, dfund,
 	]] = template("recent", [
 		"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
 	])
-
-	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
-
+	const utc = Date.now()
+	erecof(
+		[bwork, bworker, bfund],
+		[dwork, dworker, dfund],
+		[nrec.work, nrec.worker, nrec.fund], () => {
+			return Promise.all([
+				query(`rec_of_recent?coll=work&utc=${utc}`),
+				query(`rec_of_recent?coll=worker&utc=${utc}`),
+				query(`rec_of_recent?coll=fund&utc=${utc}`),
+			])
+		})
 	el.appendChild(t)
 }
 
 function eagenda(
 	el: HTMLElement,
-	agenda: Agenda[],
-	recent?: Rec,
+	agenda: Agenda,
+	recent?: Recent,
 ) {
 	el.innerHTML = ""
 
 	if (recent) erecent(el, recent)
 
 	for (const {
-		_id, name, tag, utc, dat, fund, budget, expense, detail, goal
+		_id, name, tag, utc, dat, fund, budget, expense, detail, goal, rec
 	} of agenda) {
 		const [t, [
 			cidname, cid, cname, ctag, cdate,
@@ -232,7 +237,7 @@ function eagenda(
 		else cid.classList.remove("darkgray")
 		cname.innerText = name
 		etag(ctag, tag)
-		cdate.innerText = `公示时间: ${utc_medium(utc)}\n更新时间：${utc_medium(Date.now())}`
+		cdate.innerText = `公示时间: ${utc_medium(utc)}\n更新时间：${utc_medium(utc_etag)}`
 
 		if (dat === null || dat.img.length === 0)
 			cphoto.parentNode?.parentNode?.removeChild(cphoto.parentNode)
@@ -266,9 +271,16 @@ function eagenda(
 		(cdetail as HTMLAnchorElement).href = detail
 		egoal(cgoal, goal)
 
-		json(`a${_id}`).then(rec =>
-			erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
-		)
+		erecof(
+			[bwork, bworker, bfund],
+			[dwork, dworker, dfund],
+			[rec.work, rec.worker, rec.fund], () => {
+				return Promise.all([
+					query(`rec_of_aid?coll=work&aid=${_id}`),
+					query(`rec_of_aid?coll=worker&aid=${_id}`),
+					query(`rec_of_aid?coll=fund&aid=${_id}`),
+				])
+			})
 
 		el.appendChild(t)
 	}
@@ -277,9 +289,14 @@ function eagenda(
 function euser(
 	el: HTMLElement,
 	uid: number,
-	{ name, utc, soc, rec }: User
+	u: User
 ) {
-	el.innerHTML = ""
+	if (!u) {
+		el.innerHTML = `无效用户: u${uid}`
+		return
+	} else el.innerHTML = ""
+
+	const { name, utc, soc, rec } = u
 	const [t, [
 		cidname, cid, cname, cdate, csoc,
 		bwork, bworker, bfund, dwork, dworker, dfund,
@@ -303,16 +320,30 @@ function euser(
 		a.innerText = s.name
 	}
 
-	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+	erecof(
+		[bwork, bworker, bfund],
+		[dwork, dworker, dfund],
+		[rec.work, rec.worker, rec.fund], () => {
+			return Promise.all([
+				query(`rec_of_uid?coll=work&uid=${uid}`),
+				query(`rec_of_uid?coll=worker&uid=${uid}`),
+				query(`rec_of_uid?coll=fund&uid=${uid}`),
+			])
+		})
 
 	el.appendChild(t)
 }
 function esoc(
 	el: HTMLElement,
 	sid: number,
-	{ name, utc, intro, uid, uname, rec }: Soc
+	s: Soc
 ) {
-	el.innerHTML = ""
+	if (!s) {
+		el.innerHTML = `无效团体: s${sid}`
+		return
+	} else el.innerHTML = ""
+	const { name, utc, intro, uid, uname, rec } = s
+
 	const [t, [
 		cidname, cid, cname, cdate, cintro, cuser,
 		bwork, bworker, bfund, dwork, dworker, dfund,
@@ -339,7 +370,16 @@ function esoc(
 		cuser.appendChild(a)
 	}
 
-	erec([bwork, bworker, bfund], [dwork, dworker, dfund], rec)
+	erecof(
+		[bwork, bworker, bfund],
+		[dwork, dworker, dfund],
+		[rec.work, rec.worker, rec.fund], () => {
+			return Promise.all([
+				query(`rec_of_sid?coll=work&sid=${sid}`),
+				query(`rec_of_sid?coll=worker&sid=${sid}`),
+				query(`rec_of_sid?coll=fund&sid=${sid}`),
+			])
+		})
 
 	el.appendChild(t)
 }
@@ -350,24 +390,33 @@ window.addEventListener("hashchange", async () => {
 	const main = document.getElementById("main")!
 	switch (hash[0]) {
 		case undefined: eagenda(main, agenda, recent); break
-		case "u": json(hash).then(u => euser(main, parseInt(hash.substring(1)), u)); break
-		case "s": json(hash).then(s => esoc(main, parseInt(hash.substring(1)), s)); break
-		case "a": eagenda(main, agenda.filter(a => a._id === parseInt(hash.substring(1)))); break
-		default: eagenda(main, agenda.filter(a => a.tag.includes(hash as Tag))); break
+		case "u": {
+			const uid = parseInt(hash.substring(1))
+			const u = uid > 0 ? await query(`user?uid=${uid}`) : null
+			euser(main, uid, u)
+			break
+		} case "s": {
+			const sid = parseInt(hash.substring(1))
+			const s = sid > 0 ? await query(`soc?sid=${sid}`) : null
+			esoc(main, sid, s)
+			break
+		} case "a": {
+			const aid = parseInt(hash.substring(1))
+			eagenda(main, agenda.filter(a => a._id === aid))
+			break
+		} default: eagenda(main, agenda.filter(a => a.tag.includes(hash as Tag))); break
 	}
-	console.log(JSON.stringify(await query2()))
 })
 
 async function load(
 ) {
 	[agenda, recent] = await Promise.all([
-		json("agenda"), json("recent"),
+		query("agenda"), query("recent"),
 	])
 	console.log(`loaded ${agenda.length} agenda`)
 	tags_count.push(agenda.length, ...tags_all.slice(1).map(
 		t => agenda.filter(a => a.tag.includes(t)).length)
 	)
 	window.dispatchEvent(new Event("hashchange"))
-	console.log(JSON.stringify(await query()))
 }
 load()

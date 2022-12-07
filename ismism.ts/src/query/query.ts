@@ -5,7 +5,11 @@ import { soc } from "./soc.ts"
 import { user } from "./user.ts"
 
 // deno-lint-ignore no-explicit-any
-export type Return<T extends (...args: any) => Promise<any>> = Awaited<ReturnType<T>>
+type Return<T extends (...args: any) => Promise<any>> = Awaited<ReturnType<T>>
+export type Recent = Return<typeof recent>
+export type Agenda = Return<typeof agenda>
+export type User = Return<typeof user>
+export type Soc = Return<typeof soc>
 
 export async function query(
 	q: string, p: URLSearchParams
@@ -24,7 +28,7 @@ export async function query(
 		} case "rec_of_recent": {
 			const coll = coll_rec(p.get("coll") ?? "")
 			const utc = parseFloat(p.get("utc") ?? "")
-			if (coll && utc > 0) return await rec_of_recent(coll, utc, 10)
+			if (coll && utc > 0) return await rec_of_recent(coll, utc, 1000)
 			break
 		} case "rec_of_aid": {
 			const coll = coll_rec(p.get("coll") ?? "")
