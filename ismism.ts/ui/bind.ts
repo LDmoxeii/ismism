@@ -193,15 +193,14 @@ function erecent(
 	]] = template("recent", [
 		"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
 	])
-	const utc = Date.now()
 	erecof(
 		[bwork, bworker, bfund],
 		[dwork, dworker, dfund],
 		[nrec.work, nrec.worker, nrec.fund], () => {
 			return Promise.all([
-				query(`rec_of_recent?coll=work&utc=${utc}`),
-				query(`rec_of_recent?coll=worker&utc=${utc}`),
-				query(`rec_of_recent?coll=fund&utc=${utc}`),
+				query(`rec_of_recent?coll=work&utc=${utc_etag}`),
+				query(`rec_of_recent?coll=worker&utc=${utc_etag}`),
+				query(`rec_of_recent?coll=fund&utc=${utc_etag}`),
 			])
 		})
 	el.appendChild(t)

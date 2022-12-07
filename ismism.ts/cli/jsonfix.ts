@@ -1,4 +1,4 @@
-import { User, Work } from "../ismism.ts/src/typ.ts";
+import { User, Work } from "../src/typ.ts";
 
 function rand_utc(
 	utc: number

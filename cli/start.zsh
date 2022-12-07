@@ -10,7 +10,7 @@ fi
 
 sleep 3.0
 
-nohup deno run --allow-net --allow-read ismism.ts/src/serve.ts > log/ismism.log &
+nohup deno run --allow-net --allow-read cli/serve.js > log/ismism.log &
 nohup nginx -p . -c nginx.conf > log/nginx.log &
 
 sleep 0.5

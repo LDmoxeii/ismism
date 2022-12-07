@@ -1,5 +1,4 @@
 rm -rf ismism/cli
-rm -rf ismism/ismism.ts
 rm -rf ismism/ui
 
 sleep 1
