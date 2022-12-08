@@ -1,8 +1,8 @@
-import { coll_rec, rec_of_aid, rec_of_recent, rec_of_sid, rec_of_uid } from "../db.ts"
-import { agenda } from "./agenda.ts"
-import { recent } from "./recent.ts"
-import { soc } from "./soc.ts"
-import { user } from "./user.ts"
+import { coll_rec, rec_of_aid, rec_of_recent, rec_of_sid, rec_of_uid } from "./db.ts"
+import { agenda } from "./query/agenda.ts"
+import { recent } from "./query/recent.ts"
+import { soc } from "./query/soc.ts"
+import { user } from "./query/user.ts"
 
 // deno-lint-ignore no-explicit-any
 type Return<T extends (...args: any) => Promise<any>> = Awaited<ReturnType<T>>

@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.163.0/http/server.ts"
 import { utc_short } from "./date.ts"
-import { query } from "./query/query.ts"
+import { query } from "./query.ts"
 
 const etag = `W/"${Date.now()}"`
 

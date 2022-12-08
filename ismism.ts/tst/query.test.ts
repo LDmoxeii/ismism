@@ -1,6 +1,6 @@
 import { assert } from "https://deno.land/std@0.154.0/testing/asserts.ts";
 import type { RecOf } from "../src/db.ts"
-import { Agenda, query, Recent, Soc, User } from "../src/query/query.ts"
+import { Agenda, query, Recent, Soc, User } from "../src/query.ts"
 import type { Work, Worker, Fund } from "../src/typ.ts"
 
 

@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window-prefix
 import { utc_medium, utc_short } from "../src/date.ts"
-import type { Agenda, Recent, Soc, User } from "../src/query/query.ts"
+import type { Agenda, Recent, Soc, User } from "../src/query.ts"
 import type { Goal, Tag, Rec, Work, Worker, Fund } from "../src/typ.ts"
 import type { NRec, RecOf } from "../src/db.ts"
 
@@ -412,6 +412,8 @@ async function load(
 	[agenda, recent] = await Promise.all([
 		query("agenda"), query("recent"),
 	])
+	console.log(`\n主义主义开发小组！成员招募中！\n\n发送自我介绍至网站维护邮箱，或微信联系 728 万大可\n \n`)
+	console.log("ismism-0.0.2-2022128")
 	console.log(`loaded ${agenda.length} agenda`)
 	tags_count.push(agenda.length, ...tags_all.slice(1).map(
 		t => agenda.filter(a => a.tag.includes(t)).length)
