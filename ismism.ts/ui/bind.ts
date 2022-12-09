@@ -92,6 +92,7 @@ function erec(
 	(cinit as HTMLAnchorElement).href = `#u${rec.uid}`
 	cuname.innerText = n;
 	(cuname as HTMLAnchorElement).href = `#u${rec.uid}`
+	if (n.includes("被除名")) cuname.classList.add("expel")
 	const r = typeof role === "string" ? role : role.get(rec.uid)?.get(rec._id.aid)!
 	crole.innerText = r;
 	(crole as HTMLAnchorElement).href = `#u${rec.uid}`
@@ -305,6 +306,7 @@ function euser(
 	if (hash === cid.innerText) cid.classList.add("darkgray")
 	else cid.classList.remove("darkgray")
 	cname.innerText = name
+	if (name.includes("被除名")) cname.classList.add("expel")
 	cdate.innerText = `注册时间: ${utc_medium(utc)}`
 
 	if (soc.length === 0) csoc.innerText += "无"
