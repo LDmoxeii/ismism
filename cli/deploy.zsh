@@ -1,5 +1,6 @@
 rm -rf ismism/cli
 rm -rf ismism/ui
+rm -rf ismism/dbimport
 
 sleep 1
 unzip -o ismism.zip -d ismism
