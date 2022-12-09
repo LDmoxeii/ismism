@@ -87,12 +87,15 @@ function erec(
 ) {
 	const [t, [cinit, cuname, crole, caname, cdate, cmsg]] = template("rec",
 		["initial", "uname", "role", "aname", "date", "msg"])
-	const n = uname.get(rec.uid)!
-	cinit.innerText = n[0];
-	(cinit as HTMLAnchorElement).href = `#u${rec.uid}`
-	cuname.innerText = n;
+	const n = uname.get(rec.uid)!;
+	(cinit as HTMLAnchorElement).href = `#u${rec.uid}`;
 	(cuname as HTMLAnchorElement).href = `#u${rec.uid}`
-	if (n.includes("被除名")) cuname.classList.add("expel")
+	cinit.innerText = n[0]
+	cuname.innerText = n
+	if (n.includes("被除名")) {
+		cinit.innerText = " "
+		cuname.classList.add("expel")
+	}
 	const r = typeof role === "string" ? role : role.get(rec.uid)?.get(rec._id.aid)!
 	crole.innerText = r;
 	(crole as HTMLAnchorElement).href = `#u${rec.uid}`
