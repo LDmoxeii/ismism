@@ -6,6 +6,7 @@ import type { NRec, RecOf } from "../src/db.ts"
 
 let hash = ""
 let agenda: Agenda
+const role = new Map<number, Map<number, string>>()
 const tags_all: Tag[] = [
 	"", "进行中", "已结束",
 	"设施建设", "物资配给", "软件开发",
@@ -76,12 +77,13 @@ const roleclr = new Map([
 	["发起人", "red"],
 	["支持者", "purple"],
 ])
+const roleclr_default = "amber"
 
 function erec(
 	rec: Rec,
 	uname: Map<number, string>,
 	aname: Map<number, string>,
-	role: string | Map<number, string>
+	role: string | Map<number, Map<number, string>>
 ) {
 	const [t, [cinit, cuname, crole, caname, cdate, cmsg]] = template("rec",
 		["initial", "uname", "role", "aname", "date", "msg"])
@@ -90,10 +92,10 @@ function erec(
 	(cinit as HTMLAnchorElement).href = `#u${rec.uid}`
 	cuname.innerText = n;
 	(cuname as HTMLAnchorElement).href = `#u${rec.uid}`
-	const r = typeof role === "string" ? role : role.get(rec.uid)!
+	const r = typeof role === "string" ? role : role.get(rec.uid)?.get(rec._id.aid)!
 	crole.innerText = r;
 	(crole as HTMLAnchorElement).href = `#u${rec.uid}`
-	crole.classList.add(roleclr.get(r) ?? "amber")
+	crole.classList.add(roleclr.get(r) ?? roleclr_default)
 	caname.innerText = aname.get(rec._id.aid)!;
 	(caname as HTMLAnchorElement).href = `#a${rec._id.aid}`
 	cdate.innerText = utc_short(rec._id.utc)
@@ -103,10 +105,10 @@ function erec(
 function ework(
 	d: HTMLElement,
 	work: RecOf<Work>,
-	role: Map<number, string>,
 ) {
 	const uname = new Map(work.uname)
 	const aname = new Map(work.aname)
+	work.role.map(([uid, r]) => role.set(uid, new Map(r)))
 	for (const w of work.rec.slice().reverse()) {
 		const { t, cmsg } = erec(w, uname, aname, role)
 		switch (w.op) {
@@ -128,10 +130,10 @@ function ework(
 function eworker(
 	d: HTMLElement,
 	worker: RecOf<Worker>,
-	role: Map<number, string>,
 ) {
 	const uname = new Map(worker.uname)
 	const aname = new Map(worker.aname)
+	worker.role.map(([uid, r]) => role.set(uid, new Map(r)))
 	for (const w of worker.rec.slice().reverse()) {
 		const { t, cmsg } = erec(w, uname, aname, role)
 		cmsg.innerText = `作为 ${w.role} 参与工作`
@@ -156,20 +158,17 @@ function erecof(
 	b: [HTMLElement, HTMLElement, HTMLElement],
 	d: [HTMLElement, HTMLElement, HTMLElement],
 	nrec: [number, number, number],
-	recof: () => Promise<[RecOf<Work>, RecOf<Worker>, RecOf<Fund>]>
+	lrec: [() => Promise<void>, () => Promise<void>, () => Promise<void>]
 ) {
-	let loaded = false
+	const loaded = [false, false, false]
 	const toggle = (n: number) => {
 		const on = b[n].classList.contains("darkgray")
 		b.forEach(b => b.classList.remove("darkgray"))
 		d.forEach(d => d.style.display = "none")
-		if (!loaded) recof().then(([work, worker, fund]) => {
-			const role = new Map(worker.rec.map(r => [r.uid, r.role]))
-			ework(d[0], work, role)
-			eworker(d[1], worker, role)
-			efund(d[2], fund)
+		if (!loaded[n]) lrec[n]().then(() => {
 			d[n].scrollTop = d[n].scrollHeight
-			loaded = true
+			d[n].scrollIntoView(false)
+			loaded[n] = true
 		})
 		if (!on) {
 			b[n].classList.add("darkgray")
@@ -183,6 +182,8 @@ function erecof(
 	})
 }
 
+
+
 function esum(
 	el: HTMLElement,
 	nrec: NRec
@@ -195,13 +196,11 @@ function esum(
 	erecof(
 		[bwork, bworker, bfund],
 		[dwork, dworker, dfund],
-		[nrec.work, nrec.worker, nrec.fund], () => {
-			return Promise.all([
-				query(`rec_of_recent?coll=work&utc=${utc_etag}`),
-				query(`rec_of_recent?coll=worker&utc=${utc_etag}`),
-				query(`rec_of_recent?coll=fund&utc=${utc_etag}`),
-			])
-		})
+		[nrec.work, nrec.worker, nrec.fund], [
+		async () => ework(dwork, await query(`rec_of_recent?coll=work&utc=${utc_etag}`)),
+		async () => eworker(dworker, await query(`rec_of_recent?coll=worker&utc=${utc_etag}`)),
+		async () => efund(dfund, await query(`rec_of_recent?coll=fund&utc=${utc_etag}`)),
+	])
 	el.appendChild(t)
 }
 
@@ -272,13 +271,11 @@ function eagenda(
 		erecof(
 			[bwork, bworker, bfund],
 			[dwork, dworker, dfund],
-			[rec.work, rec.worker, rec.fund], () => {
-				return Promise.all([
-					query(`rec_of_aid?coll=work&aid=${_id}`),
-					query(`rec_of_aid?coll=worker&aid=${_id}`),
-					query(`rec_of_aid?coll=fund&aid=${_id}`),
-				])
-			})
+			[rec.work, rec.worker, rec.fund], [
+			async () => ework(dwork, await query(`rec_of_aid?coll=work&aid=${_id}`)),
+			async () => eworker(dworker, await query(`rec_of_aid?coll=worker&aid=${_id}`)),
+			async () => efund(dfund, await query(`rec_of_aid?coll=fund&aid=${_id}`)),
+		])
 
 		el.appendChild(t)
 	}
@@ -321,13 +318,11 @@ function euser(
 	erecof(
 		[bwork, bworker, bfund],
 		[dwork, dworker, dfund],
-		[rec.work, rec.worker, rec.fund], () => {
-			return Promise.all([
-				query(`rec_of_uid?coll=work&uid=${uid}`),
-				query(`rec_of_uid?coll=worker&uid=${uid}`),
-				query(`rec_of_uid?coll=fund&uid=${uid}`),
-			])
-		})
+		[rec.work, rec.worker, rec.fund], [
+		async () => ework(dwork, await query(`rec_of_uid?coll=work&uid=${uid}`)),
+		async () => eworker(dworker, await query(`rec_of_uid?coll=worker&uid=${uid}`)),
+		async () => efund(dfund, await query(`rec_of_uid?coll=fund&uid=${uid}`)),
+	])
 
 	el.appendChild(t)
 }
@@ -371,13 +366,11 @@ function esoc(
 	erecof(
 		[bwork, bworker, bfund],
 		[dwork, dworker, dfund],
-		[rec.work, rec.worker, rec.fund], () => {
-			return Promise.all([
-				query(`rec_of_sid?coll=work&sid=${sid}`),
-				query(`rec_of_sid?coll=worker&sid=${sid}`),
-				query(`rec_of_sid?coll=fund&sid=${sid}`),
-			])
-		})
+		[rec.work, rec.worker, rec.fund], [
+		async () => ework(dwork, await query(`rec_of_sid?coll=work&sid=${sid}`)),
+		async () => eworker(dworker, await query(`rec_of_sid?coll=worker&sid=${sid}`)),
+		async () => efund(dfund, await query(`rec_of_sid?coll=fund&sid=${sid}`)),
+	])
 
 	el.appendChild(t)
 }

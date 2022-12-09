@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.163.0/http/server.ts"
 import { utc_short } from "./date.ts"
 import { query } from "./query.ts"
 
-const etag = `W/"${Date.now()}"`
+let etag = `W/"${Date.now()}"`
 
 async function route(
 	req: Request
@@ -12,6 +12,10 @@ async function route(
 	switch (p) {
 		case "quit": {
 			Deno.exit(); break
+		} case "update": {
+			etag = `W/"${Date.now()}"`
+			console.log(`${utc_short(Date.now())} - etag updated - ${etag}`)
+			break
 		} case "q": {
 			if (req.headers.get("if-none-match")?.includes(etag)) {
 				console.log(`${utc_short(Date.now())} - ${q}${url.search} - 304 - ${etag}`)

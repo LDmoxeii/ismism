@@ -108,12 +108,26 @@ export async function idname(
 	).toArray()
 	return d.map(d => [d._id, d.name])
 }
+
 async function uid_of_sid(
 	sid: number
 ): Promise<Pick<Soc, "uid"> | null> {
 	if (not_id(sid)) return null
 	const projection = { _id: 0, uid: 1 }
 	return await coll.soc.findOne({ _id: sid }, { projection }) ?? null
+}
+
+export type Role = [number, [number, string][]][]
+async function role_of_uid(
+	uid: number[]
+): Promise<Role> {
+	const r = await coll.worker.aggregate([{
+		$match: { uid: { $in: uid.filter(is_id) } }
+	}, {
+		$group: { _id: "$uid", r: { $push: { aid: "$_id.aid", role: "$role" } } }
+	}]).toArray()
+	return (r as unknown as { _id: number, r: { aid: number, role: string }[] }[])
+		.map(({ _id, r }) => [_id, r.map(r => [r.aid, r.role])])
 }
 
 export type NRec = {
@@ -159,6 +173,7 @@ export type RecOf<T extends Rec> = {
 	rec: T[],
 	uname: [number, string][],
 	aname: [number, string][],
+	role: Role,
 }
 
 export async function rec_of_recent<T extends Rec>(
@@ -172,22 +187,30 @@ export async function rec_of_recent<T extends Rec>(
 		sort: { "_id.utc": -1 },
 		limit
 	}).toArray()
-	const uname = await idname(coll.user, rec.map(r => r.uid))
-	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
-	return { rec, uname, aname }
+	const uid = rec.map(r => r.uid)
+	const [uname, aname, role] = await Promise.all([
+		idname(coll.user, uid),
+		idname(coll.agenda, rec.map(r => r._id.aid)),
+		role_of_uid(uid),
+	])
+	return { rec, uname, aname, role }
 }
 export async function rec_of_uid<T extends Rec>(
 	c: Collection<T>,
 	uid: number[],
 ): Promise<RecOf<T>> {
+	uid = uid.filter(is_id)
 	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
-		{ uid: { $in: uid.filter(is_id) } } as any,
+		{ uid: { $in: uid } } as any,
 		{ sort: { "_id.utc": -1 } }
 	).toArray()
-	const uname = await idname(coll.user, rec.map(r => r.uid))
-	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
-	return { rec, uname, aname }
+	const [uname, aname, role] = await Promise.all([
+		idname(coll.user, uid),
+		idname(coll.agenda, rec.map(r => r._id.aid)),
+		role_of_uid(uid),
+	])
+	return { rec, uname, aname, role }
 }
 export async function rec_of_sid<T extends Rec>(
 	c: Collection<T>,
@@ -200,14 +223,18 @@ export async function rec_of_aid<T extends Rec>(
 	c: Collection<T>,
 	aid: number,
 ): Promise<RecOf<T>> {
-	if (not_id(aid)) return { rec: [], uname: [], aname: [] }
+	if (not_id(aid)) return { rec: [], uname: [], aname: [], role: [] }
 	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
 		{ "_id.aid": aid } as any,
 		{ sort: { "_id.utc": -1 } }
 	).toArray()
-	const uname = await idname(coll.user, rec.map(r => r.uid))
-	const aname = await idname(coll.agenda, rec.map(r => r._id.aid))
-	return { rec, uname, aname }
+	const uid = rec.map(r => r.uid)
+	const [uname, aname, role] = await Promise.all([
+		idname(coll.user, uid),
+		idname(coll.agenda, [aid]),
+		role_of_uid(uid),
+	])
+	return { rec, uname, aname, role }
 }
 
