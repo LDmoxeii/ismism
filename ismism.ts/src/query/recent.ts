@@ -1,7 +1,7 @@
-import { nrec_of_recent } from "../db.ts";
+import { nrec } from "../db.ts";
 
 export async function recent(
 ) {
-	const rec = await nrec_of_recent()
+	const rec = await nrec()
 	return rec
 }

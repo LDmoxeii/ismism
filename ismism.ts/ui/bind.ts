@@ -1,11 +1,10 @@
 // deno-lint-ignore-file no-window-prefix
 import { utc_medium, utc_short } from "../src/date.ts"
-import type { Agenda, Recent, Soc, User } from "../src/query.ts"
+import type { Agenda, Soc, User } from "../src/query.ts"
 import type { Goal, Tag, Rec, Work, Worker, Fund } from "../src/typ.ts"
 import type { NRec, RecOf } from "../src/db.ts"
 
 let hash = ""
-let recent: Recent
 let agenda: Agenda
 const tags_all: Tag[] = [
 	"", "进行中", "已结束",
@@ -184,13 +183,13 @@ function erecof(
 	})
 }
 
-function erecent(
+function esum(
 	el: HTMLElement,
 	nrec: NRec
 ) {
 	const [t, [
 		bwork, bworker, bfund, dwork, dworker, dfund,
-	]] = template("recent", [
+	]] = template("sum", [
 		"tab.work", "tab.worker", "tab.fund", "rec.work", "rec.worker", "rec.fund",
 	])
 	erecof(
@@ -208,12 +207,12 @@ function erecent(
 
 function eagenda(
 	el: HTMLElement,
-	agenda: Agenda,
-	recent?: Recent,
+	agenda: Agenda["agenda"],
+	rec?: Agenda["rec"],
 ) {
 	el.innerHTML = ""
 
-	if (recent) erecent(el, recent)
+	if (rec) esum(el, rec)
 
 	for (const {
 		_id, name, tag, utc, dat, fund, budget, expense, detail, goal, rec
@@ -388,7 +387,7 @@ window.addEventListener("hashchange", async () => {
 	etag(document.querySelector(".title div.tag")!, tags_all, tags_count)
 	const main = document.getElementById("main")!
 	switch (hash[0]) {
-		case undefined: eagenda(main, agenda, recent); break
+		case undefined: eagenda(main, agenda.agenda, agenda.rec); break
 		case "u": {
 			const uid = parseInt(hash.substring(1))
 			const u = uid > 0 ? await query(`user?uid=${uid}`) : null
@@ -401,22 +400,20 @@ window.addEventListener("hashchange", async () => {
 			break
 		} case "a": {
 			const aid = parseInt(hash.substring(1))
-			eagenda(main, agenda.filter(a => a._id === aid))
+			eagenda(main, agenda.agenda.filter(a => a._id === aid))
 			break
-		} default: eagenda(main, agenda.filter(a => a.tag.includes(hash as Tag))); break
+		} default: eagenda(main, agenda.agenda.filter(a => a.tag.includes(hash as Tag))); break
 	}
 })
 
 async function load(
 ) {
-	[agenda, recent] = await Promise.all([
-		query("agenda"), query("recent"),
-	])
+	agenda = await query("agenda")
 	console.log(`\n主义主义开发小组！成员招募中！\n\n发送自我介绍至网站维护邮箱，或微信联系 728 万大可\n \n`)
 	console.log("ismism-0.0.2-20221209")
-	console.log(`loaded ${agenda.length} agenda`)
-	tags_count.push(agenda.length, ...tags_all.slice(1).map(
-		t => agenda.filter(a => a.tag.includes(t)).length)
+	console.log(`loaded ${agenda.agenda.length} agenda`)
+	tags_count.push(agenda.agenda.length, ...tags_all.slice(1).map(
+		t => agenda.agenda.filter(a => a.tag.includes(t)).length)
 	)
 	window.dispatchEvent(new Event("hashchange"))
 }

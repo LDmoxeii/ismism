@@ -122,7 +122,7 @@ export type NRec = {
 	fund: number
 }
 
-export async function nrec_of_recent(
+export async function nrec(
 ): Promise<NRec> {
 	const [worker, work, fund] = await Promise.all([
 		coll.worker.estimatedDocumentCount(),
