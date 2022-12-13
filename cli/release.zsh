@@ -6,7 +6,7 @@ mkdir release
 cp -r cli release
 cp -r ui release
 cp -r ssl release
-cp jwk.json mongod.service mongod.yaml nginx.conf release
+cp jwk.json tc.json mongod.service mongod.yaml nginx.conf release
 
 if [ "$1" = "dbimport" ]; then 
 	echo "cp -r dbimport release"
