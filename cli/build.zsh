@@ -9,7 +9,7 @@ cd ismism.ts
 
 deno bundle src/serve.ts ../cli/serve.js
 deno bundle cli/dbinit.ts ../cli/dbinit.js
-deno bundle cli/keygen.ts ../cli/keygen.js
+deno bundle cli/smstst.ts ../cli/smstst.js
 
 cp ui/index.html ../ui/index.html
 deno bundle ui/bind.ts ../ui/bind.js

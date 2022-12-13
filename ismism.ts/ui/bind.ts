@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-window-prefix
-import { utc_medium, utc_short } from "../src/date.ts"
+import { utc_medium, utc_short } from "../src/ontic/utc.ts"
 import type { Agenda, Soc, User } from "../src/query.ts"
 import type { Goal, Tag, Rec, Work, Worker, Fund } from "../src/typ.ts"
 import type { NRec, RecOf } from "../src/db.ts"

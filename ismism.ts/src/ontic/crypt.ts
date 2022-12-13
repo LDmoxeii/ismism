@@ -6,16 +6,17 @@ const alg = {
 }
 
 export function key(
-	k: string
+	k: string | ArrayBuffer
 ): Promise<CryptoKey> {
-	return crypto.subtle.importKey("raw", to_u8(k), alg, false, ["sign", "verify"])
+	if (typeof k === "string") k = to_u8(k)
+	return crypto.subtle.importKey("raw", k, alg, false, ["sign", "verify"])
 }
 
 export function sign(
 	key: CryptoKey,
-	str: string,
+	data: string,
 ) {
-	return crypto.subtle.sign(alg.name, key, to_u8(str))
+	return crypto.subtle.sign(alg.name, key, to_u8(data))
 }
 
 export function verify(

@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.163.0/http/server.ts"
-import { utc_short } from "./date.ts"
+import { utc_short } from "./ontic/utc.ts"
 import { query } from "./query.ts"
 
 let etag = `W/"${Date.now()}"`

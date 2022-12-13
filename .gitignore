@@ -2,6 +2,7 @@
 /ui
 /log
 /jwk.json
+/tc.json
 /dbimport
 /dbexport
 /json
