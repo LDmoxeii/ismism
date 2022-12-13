@@ -1,62 +1,35 @@
-import * as base64url from "https://deno.land/std@0.162.0/encoding/base64url.ts"
+import { from_base64, from_u8, to_base64, to_u8 } from "./ontic/base.ts"
+import { key, sign, verify } from "./ontic/crypt.ts"
 
-const alg = {
-	name: "RSASSA-PKCS1-v1_5",
-	modulusLength: 2048,
-	publicExponent: new Uint8Array([1, 0, 1]),
-	hash: "SHA-256",
-}
-
-type Key<T extends CryptoKey | JsonWebKey> = {
-	private: T,
-	public: T
-}
 type Json = Record<string, string | number | boolean>
 
 const jwk_url = "./jwk.json"
-let key: Key<CryptoKey> | null = null
+let jwk: CryptoKey | null = null
 
-export async function keygen(
-	file = false
+export async function jwk_set(
+	k: string
 ) {
-	const p = await crypto.subtle.generateKey(alg, true, ["sign", "verify"])
-	key = { private: p.privateKey, public: p.publicKey }
-	if (file) {
-		const jwk: Key<JsonWebKey> = {
-			private: await crypto.subtle.exportKey("jwk", key.private),
-			public: await crypto.subtle.exportKey("jwk", key.public)
-		}
-		await Deno.writeTextFile(jwk_url, JSON.stringify(jwk))
-	}
+	jwk = await key(k)
 }
-export async function keyload(
+export async function jwk_load(
 ) {
-	const jwk = JSON.parse(await Deno.readTextFile(jwk_url)) as Key<JsonWebKey>
-	key = {
-		private: await crypto.subtle.importKey("jwk", jwk.private, alg, false, ["sign"]),
-		public: await crypto.subtle.importKey("jwk", jwk.public, alg, false, ["verify"]),
-	}
+	jwk_set(await Deno.readTextFile(jwk_url))
 }
 
-export async function sign(
+export async function jwt_sign(
 	json: Json
 ): Promise<string> {
-	if (!key) return ""
-	const p = base64url.encode(JSON.stringify(json))
-	const s = await crypto.subtle.sign(
-		alg.name, key.private,
-		new TextEncoder().encode(p)
-	)
-	return `${p}.${base64url.encode(s)}`
+	if (!jwk) return ""
+	const p = to_base64(to_u8(JSON.stringify(json)))
+	const s = to_base64(await sign(jwk, p))
+	return `${p}.${s}`
 }
-export async function verify(
-	token: string
+
+export async function jwt_verify(
+	jwt: string
 ): Promise<Json | null> {
-	const [p, s] = token.split(".")
-	if (!key || !s) return null
-	const v = await crypto.subtle.verify(
-		alg.name, key.public,
-		base64url.decode(s), new TextEncoder().encode(p)
-	)
-	return v ? JSON.parse(new TextDecoder().decode(base64url.decode(p))) : null
+	const [p, s] = jwt.split(".")
+	if (!jwk || !s) return null
+	const v = await verify(jwk, p, from_base64(s))
+	return v ? JSON.parse(from_u8(from_base64(p))) : null
 }
