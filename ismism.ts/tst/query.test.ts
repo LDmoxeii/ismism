@@ -51,7 +51,7 @@ Deno.test("agenda", async () => {
 		await query("rec_of_aid", p({ coll: "fund", aid: a1._id })) as RecOf<Fund>,
 	])
 	assert(worker.rec.length === 6 && work.rec.length === 8 && fund.rec.length === 6)
-	assert(a4.dat?.typ === "imgsrc" && a4.dat.img.length === 5 && a1.dat === null)
+	assert(a4.dat?.typ === "imgsrc" && a4.dat.img.length === 4 && a1.dat === null)
 	assert(worker.role.length === worker.rec.length)
 })
 
