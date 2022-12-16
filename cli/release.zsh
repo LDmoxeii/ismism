@@ -19,6 +19,4 @@ zip -r ../ismism.zip .
 cd ..
 scp ismism.zip i:
 
-ssh i zsh < cli/deploy.zsh
-
-
+ssh i zsh < cli/remote/deploy.zsh

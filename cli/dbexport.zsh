@@ -1,20 +1,8 @@
-echo mongoexport --jsonArray -d=ismism -c=user -o=dbexport/user.json
-mongoexport --jsonArray -d=ismism -c=user -o=dbexport/user.json
+rm -rf dbexport
 
-echo mongoexport --jsonArray -d=ismism -c=soc -o=dbexport/soc.json
-mongoexport --jsonArray -d=ismism -c=soc -o=dbexport/soc.json
+coll=(user soc agenda worker work fund dat)
 
-echo mongoexport --jsonArray -d=ismism -c=agenda -o=dbexport/agenda.json
-mongoexport --jsonArray -d=ismism -c=agenda -o=dbexport/agenda.json
-
-echo mongoexport --jsonArray -d=ismism -c=worker -o=dbexport/worker.json
-mongoexport --jsonArray -d=ismism -c=worker -o=dbexport/worker.json
-
-echo mongoexport --jsonArray -d=ismism -c=work -o=dbexport/work.json
-mongoexport --jsonArray -d=ismism -c=work -o=dbexport/work.json
-
-echo mongoexport --jsonArray -d=ismism -c=fund -o=dbexport/fund.json
-mongoexport --jsonArray -d=ismism -c=fund -o=dbexport/fund.json
-
-echo mongoexport --jsonArray -d=ismism -c=dat -o=dbexport/dat.json
-mongoexport --jsonArray -d=ismism -c=dat -o=dbexport/dat.json
+for c in $coll; do
+	echo exporting ismism.$c to dbexport/$c.json
+	mongoexport --jsonArray -d=ismism -c=$c -o=dbexport/$c.json
+done
