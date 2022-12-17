@@ -13,30 +13,34 @@ function p(
 
 Deno.test("user", async () => {
 	const u = await query("user", p({ uid: 728 })) as User
-	assert(u && u.name === "万大可")
-	assert(u.rec.worker === 1 && u.rec.work === 2 && u.rec.fund === 3)
+	assert(u && u.name === "万大可" && u.intro == "")
+	assertEquals(u.referer, [1, 2])
+	const uname = new Map(u.uname)
+	assert(uname.get(u.referer[0]) === "未明子")
 	const [worker, work, fund] = await Promise.all([
 		await query("rec_of_uid", p({ coll: "worker", uid: 728 })) as RecOf<Worker>,
 		await query("rec_of_uid", p({ coll: "work", uid: 728 })) as RecOf<Work>,
 		await query("rec_of_uid", p({ coll: "fund", uid: 728 })) as RecOf<Fund>,
 	])
 	assert(worker.rec.length === 1 && work.rec.length === 2 && fund.rec.length === 3)
-	assertEquals(work.role, [[728, [[1, "程序员"]]]])
+	assertEquals(work.urole, [[728, [[1, "志愿者"]]]])
 })
 
 Deno.test("soc", async () => {
 	const s = await query("soc", p({ sid: 2 })) as Soc
-	assert(s && s.name === "主义主义软件开发小组")
+	assert(s && s.name === "主义主义软件开发小组" && s.uid_max === 128)
+	assertEquals(s.referer, [1, 2])
+	assertEquals(s.sec, [728])
 	const uname = new Map(s.uname)
-	assert(uname.get(s.uid[1]) === "万大可")
-	assert(s.rec.worker === 2 && s.rec.work === 4 && s.rec.fund === 3)
+	assert(uname.get(s.uid[1]) === "万大可" && uname.get(s.referer[0]) === "未明子")
+	assert(s.nrec.worker === 2 && s.nrec.work === 4 && s.nrec.fund === 3)
 	const [worker, work, fund] = await Promise.all([
 		await query("rec_of_sid", p({ coll: "worker", sid: 2 })) as RecOf<Worker>,
 		await query("rec_of_sid", p({ coll: "work", sid: 2 })) as RecOf<Work>,
 		await query("rec_of_sid", p({ coll: "fund", sid: 2 })) as RecOf<Fund>,
 	])
 	assert(worker.rec.length === 2 && work.rec.length === 4 && fund.rec.length === 3)
-	assertEquals(work.role.sort(), [[137, [[1, "程序员"]]], [728, [[1, "程序员"]]]].sort())
+	assertEquals(work.urole.sort(), [[137, [[1, "志愿者"]]], [728, [[1, "志愿者"]]]].sort())
 })
 
 Deno.test("agenda", async () => {
@@ -44,19 +48,21 @@ Deno.test("agenda", async () => {
 	const a4 = a[a.length - 4]
 	const a1 = a[a.length - 1]
 	assert(a.length === 4 && a4._id === 4)
-	assert(a1.rec.worker === 6 && a1.rec.work === 8 && a1.rec.fund === 6)
+	assert(a1.nrec.worker === 6 && a1.nrec.work === 8 && a1.nrec.fund === 6)
+	assertEquals(a1.referer, [1, 2])
+	assertEquals(a4.referer, [1, 2])
 	const [worker, work, fund] = await Promise.all([
 		await query("rec_of_aid", p({ coll: "worker", aid: a1._id })) as RecOf<Worker>,
 		await query("rec_of_aid", p({ coll: "work", aid: a1._id })) as RecOf<Work>,
 		await query("rec_of_aid", p({ coll: "fund", aid: a1._id })) as RecOf<Fund>,
 	])
 	assert(worker.rec.length === 6 && work.rec.length === 8 && fund.rec.length === 6)
-	assert(a4.dat?.typ === "imgsrc" && a4.dat.img.length === 4 && a1.dat === null)
-	assert(worker.role.length === worker.rec.length)
+	assert(a4.imgsrc && a4.imgsrc.img.length === 4 && a1.imgsrc === undefined)
+	assert(worker.urole.length === worker.rec.length)
 })
 
 Deno.test("recent", async () => {
-	const { rec: r } = await query("agenda", p({})) as Agenda
+	const { nrec: r } = await query("agenda", p({})) as Agenda
 	const [worker, work, fund] = await Promise.all([
 		await query("rec_of_recent", p({ coll: "worker", utc: Date.now() })) as RecOf<Worker>,
 		await query("rec_of_recent", p({ coll: "work", utc: Date.now() })) as RecOf<Work>,

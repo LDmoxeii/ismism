@@ -1,4 +1,4 @@
-coll=(user soc agenda worker work fund dat)
+coll=(user soc agenda worker work fund imgsrc txt)
 
 for c in $coll; do
 	echo importing $1/$c.json to ismism.$c 

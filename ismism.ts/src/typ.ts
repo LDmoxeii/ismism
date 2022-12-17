@@ -1,58 +1,58 @@
-export type User = {
+export type Id = {
 	_id: number,
-	nbr: string,
 	name: string,
 	utc: number,
-}
-export const uid_ofs = 10000
-
-export type Soc = {
-	_id: number,
-	name: string,
-	uid: number[],
-	admin: number[],
+	referer: number[],
 	intro: string,
-	uid_max: number,
-	utc: number,
 }
-export const sid_ofs = 10000
+
+export type User = Id & {
+	nbr?: string,
+	pcode?: { code: number, utc: number },
+	jws?: string
+}
+
+export type Soc = Id & {
+	sec: number[],
+	uid_max: number,
+	uid: number[],
+}
 
 export type Tag = ""
 	| "进行中" | "已结束"
 	| "设施建设" | "物资配给" | "软件开发"
 	| "苏州" | "成都"
 	| "工益公益" | "星星家园"
+export type Goal = { name: string, pct: number, }
 
-export type Agenda = {
-	_id: number,
-	name: string,
+export type Agenda = Id & {
+	sec: number[],
 	tag: Tag[],
+	detail: string,
+	apply?: string,
+	imgsrc?: Dat["_id"],
 	budget: number,
 	fund: number,
 	expense: number,
-	detail: string,
 	goal: Goal[],
-	done: string[],
-	utc: number,
-}
-export type Goal = {
-	name: string,
-	pct: number,
 }
 
+export type Role = "发起人" | "书记" | "志愿者"
+
 export type Rec = {
-	_id: { aid: number, utc: number },
-	uid: number,
+	_id: { uid: number, aid: number, utc: number },
+	referer: number[],
 }
 export type Worker = Rec & {
-	role: string,
+	role: Role,
 }
 export type Work = Rec & ({
-	op: "goal",
-	goal: Goal[],
-} | {
 	op: "work",
-	msg: string
+	msg: string,
+} | {
+	op: "txt",
+	title: string,
+	src: string,
 } | {
 	op: "video",
 	title: string,
@@ -64,8 +64,13 @@ export type Fund = Rec & {
 }
 
 export type Dat = {
-	_id: { aid: number, utc: number },
-} & ({
-	typ: "imgsrc",
-	img: { title: string, src: string }[]
-})
+	_id: { uid: number, utc: number },
+}
+export type Imgsrc = Dat & {
+	img: { title: string, src: string }[],
+}
+export type Txt = Dat & {
+	utc_last: number,
+	title: string,
+	txt: string,
+}

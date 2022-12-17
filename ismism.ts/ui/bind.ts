@@ -1,12 +1,13 @@
 // deno-lint-ignore-file no-window-prefix
 import { utc_medium, utc_short } from "../src/ontic/utc.ts"
 import type { Agenda, Soc, User } from "../src/query.ts"
-import type { Goal, Tag, Rec, Work, Worker, Fund } from "../src/typ.ts"
+import type { Goal, Tag, Rec, Work, Worker, Fund, Role } from "../src/typ.ts"
 import type { NRec, RecOf } from "../src/db.ts"
 
+const ver = "ismism-0.0.3-20221217"
 let hash = ""
 let agenda: Agenda
-const role = new Map<number, Map<number, string>>()
+const role = new Map<number, Map<number, Role>>()
 const tags_all: Tag[] = [
 	"", "进行中", "已结束",
 	"设施建设", "物资配给", "软件开发",
@@ -80,29 +81,29 @@ const roleclr = new Map([
 const roleclr_default = "amber"
 
 function erec(
-	rec: Rec,
+	{ _id: { uid, aid, utc } }: Rec,
 	uname: Map<number, string>,
 	aname: Map<number, string>,
 	role: string | Map<number, Map<number, string>>
 ) {
 	const [t, [cinit, cuname, crole, caname, cdate, cmsg]] = template("rec",
 		["initial", "uname", "role", "aname", "date", "msg"])
-	const n = uname.get(rec.uid)!;
-	(cinit as HTMLAnchorElement).href = `#u${rec.uid}`;
-	(cuname as HTMLAnchorElement).href = `#u${rec.uid}`
+	const n = uname.get(uid)!;
+	(cinit as HTMLAnchorElement).href = `#u${uid}`;
+	(cuname as HTMLAnchorElement).href = `#u${uid}`
 	cinit.innerText = n[0]
 	cuname.innerText = n
 	if (n.includes("被除名")) {
 		cinit.innerText = " "
 		cuname.classList.add("expel")
 	}
-	const r = typeof role === "string" ? role : role.get(rec.uid)?.get(rec._id.aid)!
+	const r = typeof role === "string" ? role : role.get(uid)?.get(aid)!
 	crole.innerText = r;
-	(crole as HTMLAnchorElement).href = `#u${rec.uid}`
+	(crole as HTMLAnchorElement).href = `#u${uid}`
 	crole.classList.add(roleclr.get(r) ?? roleclr_default)
-	caname.innerText = aname.get(rec._id.aid)!;
-	(caname as HTMLAnchorElement).href = `#a${rec._id.aid}`
-	cdate.innerText = utc_short(rec._id.utc)
+	caname.innerText = aname.get(aid)!;
+	(caname as HTMLAnchorElement).href = `#a${aid}`
+	cdate.innerText = utc_short(utc)
 	return { t, cmsg }
 }
 
@@ -112,11 +113,10 @@ function ework(
 ) {
 	const uname = new Map(work.uname)
 	const aname = new Map(work.aname)
-	work.role.map(([uid, r]) => role.set(uid, new Map(r)))
+	work.urole.map(([uid, r]) => role.set(uid, new Map(r)))
 	for (const w of work.rec.slice().reverse()) {
 		const { t, cmsg } = erec(w, uname, aname, role)
 		switch (w.op) {
-			case "goal": cmsg.innerText = `${JSON.stringify(w.goal)}`; break
 			case "work": cmsg.innerText = w.msg; break
 			case "video": {
 				cmsg.innerText = "发布了视频："
@@ -137,7 +137,7 @@ function eworker(
 ) {
 	const uname = new Map(worker.uname)
 	const aname = new Map(worker.aname)
-	worker.role.map(([uid, r]) => role.set(uid, new Map(r)))
+	worker.urole.map(([uid, r]) => role.set(uid, new Map(r)))
 	for (const w of worker.rec.slice().reverse()) {
 		const { t, cmsg } = erec(w, uname, aname, role)
 		cmsg.innerText = `作为 ${w.role} 参与工作`
@@ -211,14 +211,14 @@ function esum(
 function eagenda(
 	el: HTMLElement,
 	agenda: Agenda["agenda"],
-	rec?: Agenda["rec"],
+	rec?: Agenda["nrec"],
 ) {
 	el.innerHTML = ""
 
 	if (rec) esum(el, rec)
 
 	for (const {
-		_id, name, tag, utc, dat, fund, budget, expense, detail, goal, rec
+		_id, name, tag, utc, imgsrc, fund, budget, expense, detail, goal, nrec
 	} of agenda) {
 		const [t, [
 			cidname, cid, cname, ctag, cdate,
@@ -240,16 +240,16 @@ function eagenda(
 		etag(ctag, tag)
 		cdate.innerText = `公示时间: ${utc_medium(utc)}\n更新时间：${utc_medium(utc_etag)}`
 
-		if (dat === null || dat.img.length === 0)
+		if (!imgsrc || imgsrc.img.length === 0)
 			cphoto.parentNode?.parentNode?.removeChild(cphoto.parentNode)
 		else {
-			cphoto_total.innerText = `${dat.img.length}`
+			cphoto_total.innerText = `${imgsrc.img.length}`
 			let n = 0
 			const nimg = (d: number) => {
-				n = ((n + d) % dat.img.length + dat.img.length) % dat.img.length
-				cphoto_title.innerText = dat.img[n].title
+				n = ((n + d) % imgsrc.img.length + imgsrc.img.length) % imgsrc.img.length
+				cphoto_title.innerText = imgsrc.img[n].title
 				cphoto_nbr.innerText = `${n + 1}`;
-				(cphoto_img as HTMLImageElement).src = dat.img[n].src
+				(cphoto_img as HTMLImageElement).src = imgsrc.img[n].src
 			}
 			nimg(0)
 			cphoto_prev.addEventListener("click", () => nimg(-1))
@@ -275,7 +275,7 @@ function eagenda(
 		erecof(
 			[bwork, bworker, bfund],
 			[dwork, dworker, dfund],
-			[rec.work, rec.worker, rec.fund], [
+			[nrec.work, nrec.worker, nrec.fund], [
 			async () => ework(dwork, await query(`rec_of_aid?coll=work&aid=${_id}`)),
 			async () => eworker(dworker, await query(`rec_of_aid?coll=worker&aid=${_id}`)),
 			async () => efund(dfund, await query(`rec_of_aid?coll=fund&aid=${_id}`)),
@@ -295,7 +295,7 @@ function euser(
 		return
 	} else el.innerHTML = ""
 
-	const { name, utc, soc, rec } = u
+	const { name, utc, soc, nrec } = u
 	const [t, [
 		cidname, cid, cname, cdate, csoc,
 		bwork, bworker, bfund, dwork, dworker, dfund,
@@ -323,7 +323,7 @@ function euser(
 	erecof(
 		[bwork, bworker, bfund],
 		[dwork, dworker, dfund],
-		[rec.work, rec.worker, rec.fund], [
+		[nrec.work, nrec.worker, nrec.fund], [
 		async () => ework(dwork, await query(`rec_of_uid?coll=work&uid=${uid}`)),
 		async () => eworker(dworker, await query(`rec_of_uid?coll=worker&uid=${uid}`)),
 		async () => efund(dfund, await query(`rec_of_uid?coll=fund&uid=${uid}`)),
@@ -340,7 +340,7 @@ function esoc(
 		el.innerHTML = `无效团体: s${sid}`
 		return
 	} else el.innerHTML = ""
-	const { name, utc, intro, uid, uname, rec } = s
+	const { name, utc, intro, uid, uname, nrec } = s
 
 	const [t, [
 		cidname, cid, cname, cdate, cintro, cuser,
@@ -371,7 +371,7 @@ function esoc(
 	erecof(
 		[bwork, bworker, bfund],
 		[dwork, dworker, dfund],
-		[rec.work, rec.worker, rec.fund], [
+		[nrec.work, nrec.worker, nrec.fund], [
 		async () => ework(dwork, await query(`rec_of_sid?coll=work&sid=${sid}`)),
 		async () => eworker(dworker, await query(`rec_of_sid?coll=worker&sid=${sid}`)),
 		async () => efund(dfund, await query(`rec_of_sid?coll=fund&sid=${sid}`)),
@@ -385,7 +385,7 @@ window.addEventListener("hashchange", async () => {
 	etag(document.querySelector(".title div.tag")!, tags_all, tags_count)
 	const main = document.getElementById("main")!
 	switch (hash[0]) {
-		case undefined: eagenda(main, agenda.agenda, agenda.rec); break
+		case undefined: eagenda(main, agenda.agenda, agenda.nrec); break
 		case "u": {
 			const uid = parseInt(hash.substring(1))
 			const u = uid > 0 ? await query(`user?uid=${uid}`) : null
@@ -408,7 +408,7 @@ async function load(
 ) {
 	agenda = await query("agenda")
 	console.log(`\n主义主义开发小组！成员招募中！\n\n发送自我介绍至网站维护邮箱，或微信联系 728 万大可\n \n`)
-	console.log("ismism-0.0.2-20221209")
+	console.log(ver)
 	console.log(`loaded ${agenda.agenda.length} agenda`)
 	tags_count.push(agenda.agenda.length, ...tags_all.slice(1).map(
 		t => agenda.agenda.filter(a => a.tag.includes(t)).length)

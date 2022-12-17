@@ -1,43 +1,39 @@
-### 
-POST http://localhost:728/q HTTP/1.1
+GET http://localhost:728/quit
 
 ### 
-POST http://localhost:728/q HTTP/1.1
-
-{"query": "recent"}
+GET http://localhost:728/q HTTP/1.1
 
 ### 
-POST http://localhost:728/q HTTP/1.1
-
-{"query": "agenda"}
-
+GET http://localhost:728/q/agenda HTTP/1.1
 ### 
-POST http://localhost:728/q HTTP/1.1
-
-{"query": "user", "uid": 728}
-
+GET http://localhost:728/q/user?uid=728 HTTP/1.1
 ### 
-POST http://localhost:728/q HTTP/1.1
-
-{"query": "soc", "sid": 2}
-
-### recent p0
-POST http://localhost:728/q HTTP/1.1
-
-{"query": "rec_of_recent", "coll": "work", "utc": 1670219915330}
-
-### recent p1
-POST http://localhost:728/q HTTP/1.1
-
-{"query": "rec_of_recent", "coll": "work", "utc": 1668254401244}
+GET http://localhost:728/q/soc?sid=2 HTTP/1.1
 
 ###
-POST http://localhost:728/q HTTP/1.1
-
-{"query": "rec_of_uid", "coll": "work", "uid": 728}
+GET http://localhost:728/q/rec_of_recent?coll=work&utc=1660667820000 HTTP/1.1
+###
+GET http://localhost:728/q/rec_of_recent?coll=worker&utc=1660667820000 HTTP/1.1
+###
+GET http://localhost:728/q/rec_of_recent?coll=fund&utc=1660667820000 HTTP/1.1
 
 ###
-POST http://localhost:728/q HTTP/1.1
-
-{"query": "rec_of_sid", "coll": "work", "sid": 2}
+GET http://localhost:728/q/rec_of_aid?coll=work&aid=1 HTTP/1.1
 ###
+GET http://localhost:728/q/rec_of_aid?coll=worker&aid=1 HTTP/1.1
+###
+GET http://localhost:728/q/rec_of_aid?coll=fund&aid=1 HTTP/1.1
+
+###
+GET http://localhost:728/q/rec_of_uid?coll=work&uid=728 HTTP/1.1
+###
+GET http://localhost:728/q/rec_of_uid?coll=worker&uid=728 HTTP/1.1
+###
+GET http://localhost:728/q/rec_of_uid?coll=fund&uid=728 HTTP/1.1
+
+###
+GET http://localhost:728/q/rec_of_sid?coll=work&sid=2 HTTP/1.1
+###
+GET http://localhost:728/q/rec_of_sid?coll=worker&sid=2 HTTP/1.1
+###
+GET http://localhost:728/q/rec_of_sid?coll=fund&sid=2 HTTP/1.1

@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
-import { Agenda, Fund, Dat, Soc, User, Work, Worker, Rec } from "./typ.ts"
+import { Agenda, Fund, Dat, Soc, User, Work, Worker, Rec, Id, Role, Imgsrc, Txt } from "./typ.ts"
 
 const uri = "mongodb://127.0.0.1:27017"
 const mongo = new MongoClient()
@@ -13,12 +13,13 @@ export const coll = {
 	worker: db.collection<Worker>("worker"),
 	work: db.collection<Work>("work"),
 	fund: db.collection<Fund>("fund"),
-	dat: db.collection<Dat>("dat"),
+	imgsrc: db.collection<Imgsrc>("imgsrc"),
+	txt: db.collection<Txt>("txt"),
 }
 
 export type CollRec = "work" | "worker" | "fund"
 
-export function coll_rec(
+export function collrec(
 	s: CollRec | string
 ): Collection<Rec> | null {
 	switch (s) {
@@ -34,9 +35,10 @@ export async function init(
 	try { await db.dropDatabase() } catch (e) { console.error(e) }
 	await coll.user.createIndexes({
 		indexes: [{
-			key: { nbr: 1 }, name: "nbr", unique: true,
-		}, {
 			key: { name: 1 }, name: "name", unique: true,
+		}, {
+			key: { nbr: 1 }, name: "nbr", unique: true,
+			partialFilterExpression: { nbr: { $exists: true } }
 		}]
 	})
 	await coll.soc.createIndexes({
@@ -55,7 +57,7 @@ export async function init(
 		indexes: [{
 			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
-			key: { uid: 1, "_id.utc": -1 }, name: "uid-utc"
+			key: { "_id.uid": 1, "_id.utc": -1 }, name: "uid-utc"
 		}, {
 			key: { "_id.utc": -1 }, name: "utc"
 		}]
@@ -64,7 +66,7 @@ export async function init(
 		indexes: [{
 			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
-			key: { uid: 1, "_id.utc": -1 }, name: "uid-utc"
+			key: { "_id.uid": 1, "_id.utc": -1 }, name: "uid-utc"
 		}, {
 			key: { "_id.utc": -1 }, name: "utc"
 		}]
@@ -73,14 +75,19 @@ export async function init(
 		indexes: [{
 			key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 		}, {
-			key: { uid: 1, "_id.utc": -1 }, name: "uid-utc"
+			key: { "_id.uid": 1, "_id.utc": -1 }, name: "uid-utc"
 		}, {
 			key: { "_id.utc": -1 }, name: "utc"
 		}]
 	})
-	await coll.dat.createIndexes({
+	await coll.imgsrc.createIndexes({
 		indexes: [{
-			key: { "_id.aid": 1, typ: 1, "_id.utc": -1 }, name: "aid-typ-utc"
+			key: { uid: 1, utc: -1 }, name: "uid-utc"
+		}]
+	})
+	await coll.txt.createIndexes({
+		indexes: [{
+			key: { uid: 1, utc: -1 }, name: "uid-utc"
 		}]
 	})
 	return await db.listCollectionNames()
@@ -98,7 +105,7 @@ export function not_id(
 }
 
 export async function idname(
-	c: Collection<User> | Collection<Soc> | Collection<Agenda>,
+	c: Collection<Id>,
 	id: number[],
 ): Promise<[number, string][]> {
 	id = [...new Set(id.filter(is_id))]
@@ -117,17 +124,17 @@ async function uid_of_sid(
 	return await coll.soc.findOne({ _id: sid }, { projection }) ?? null
 }
 
-export type Role = [number, [number, string][]][]
-async function role_of_uid(
+export type URole = [number, [number, Role][]][]
+
+async function urole(
 	uid: number[]
-): Promise<Role> {
+): Promise<URole> {
 	const r = await coll.worker.aggregate([{
-		$match: { uid: { $in: uid.filter(is_id) } }
+		$match: { "_id.uid": { $in: uid.filter(is_id) } }
 	}, {
-		$group: { _id: "$uid", r: { $push: { aid: "$_id.aid", role: "$role" } } }
-	}]).toArray()
-	return (r as unknown as { _id: number, r: { aid: number, role: string }[] }[])
-		.map(({ _id, r }) => [_id, r.map(r => [r.aid, r.role])])
+		$group: { _id: "$_id.uid", r: { $push: { aid: "$_id.aid", role: "$role" } } }
+	}]).toArray() as unknown as { _id: number, r: { aid: number, role: Role }[] }[]
+	return r.map(({ _id, r }) => [_id, r.map(r => [r.aid, r.role])])
 }
 
 export type NRec = {
@@ -148,7 +155,7 @@ export async function nrec(
 export async function nrec_of_uid(
 	uid: number[]
 ): Promise<NRec> {
-	const filter = { uid: { $in: uid.filter(is_id) } }
+	const filter = { "_id.uid": { $in: uid.filter(is_id) } }
 	const [worker, work, fund] = await Promise.all([
 		coll.worker.countDocuments(filter),
 		coll.work.countDocuments(filter),
@@ -173,7 +180,7 @@ export type RecOf<T extends Rec> = {
 	rec: T[],
 	uname: [number, string][],
 	aname: [number, string][],
-	role: Role,
+	urole: URole,
 }
 
 export async function rec_of_recent<T extends Rec>(
@@ -187,13 +194,13 @@ export async function rec_of_recent<T extends Rec>(
 		sort: { "_id.utc": -1 },
 		limit
 	}).toArray()
-	const uid = rec.map(r => r.uid)
-	const [uname, aname, role] = await Promise.all([
+	const uid = rec.flatMap(r => [r._id.uid, ...r.referer])
+	const [uname, aname, ur] = await Promise.all([
 		idname(coll.user, uid),
 		idname(coll.agenda, rec.map(r => r._id.aid)),
-		role_of_uid(uid),
+		urole(uid),
 	])
-	return { rec, uname, aname, role }
+	return { rec, uname, aname, urole: ur }
 }
 export async function rec_of_uid<T extends Rec>(
 	c: Collection<T>,
@@ -202,15 +209,15 @@ export async function rec_of_uid<T extends Rec>(
 	uid = uid.filter(is_id)
 	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
-		{ uid: { $in: uid } } as any,
+		{ "_id.uid": { $in: uid } } as any,
 		{ sort: { "_id.utc": -1 } }
 	).toArray()
-	const [uname, aname, role] = await Promise.all([
-		idname(coll.user, uid),
+	const [uname, aname, ur] = await Promise.all([
+		idname(coll.user, [...uid, ...rec.flatMap(r => r.referer)]),
 		idname(coll.agenda, rec.map(r => r._id.aid)),
-		role_of_uid(uid),
+		urole(uid),
 	])
-	return { rec, uname, aname, role }
+	return { rec, uname, aname, urole: ur }
 }
 export async function rec_of_sid<T extends Rec>(
 	c: Collection<T>,
@@ -223,18 +230,25 @@ export async function rec_of_aid<T extends Rec>(
 	c: Collection<T>,
 	aid: number,
 ): Promise<RecOf<T>> {
-	if (not_id(aid)) return { rec: [], uname: [], aname: [], role: [] }
+	if (not_id(aid)) return { rec: [], uname: [], aname: [], urole: [] }
 	const rec = await c.find(
 		// deno-lint-ignore no-explicit-any
 		{ "_id.aid": aid } as any,
 		{ sort: { "_id.utc": -1 } }
 	).toArray()
-	const uid = rec.map(r => r.uid)
-	const [uname, aname, role] = await Promise.all([
+	const uid = rec.flatMap(r => [r._id.uid, ...r.referer])
+	const [uname, aname, ur] = await Promise.all([
 		idname(coll.user, uid),
 		idname(coll.agenda, [aid]),
-		role_of_uid(uid),
+		urole(uid),
 	])
-	return { rec, uname, aname, role }
+	return { rec, uname, aname, urole: ur }
 }
 
+export async function dat<T extends Dat>(
+	c: Collection<T>,
+	_id?: Dat["_id"]
+): Promise<T | undefined> {
+	if (!_id) return undefined
+	return await c.findOne({ _id }, { projection: { _id: 0 } })
+}
