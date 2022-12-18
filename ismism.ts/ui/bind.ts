@@ -1,10 +1,10 @@
 // deno-lint-ignore-file no-window-prefix
 import { utc_medium, utc_short } from "../src/ontic/utc.ts"
 import type { Agenda, Soc, User } from "../src/query.ts"
+import { NRec, RecOf } from "../src/query/rec.ts"
 import type { Goal, Tag, Rec, Work, Worker, Fund, Role } from "../src/typ.ts"
-import type { NRec, RecOf } from "../src/db.ts"
 
-const ver = "ismism-0.0.3-20221217"
+const ver = "ismism-0.0.3-20221218"
 let hash = ""
 let agenda: Agenda
 const role = new Map<number, Map<number, Role>>()
@@ -185,8 +185,6 @@ function erecof(
 		btn.addEventListener("click", () => toggle(n))
 	})
 }
-
-
 
 function esum(
 	el: HTMLElement,

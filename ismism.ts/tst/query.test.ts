@@ -1,12 +1,16 @@
-import { assert, assertEquals } from "https://deno.land/std@0.154.0/testing/asserts.ts";
-import type { RecOf } from "../src/db.ts"
+import { assert, assertEquals } from "https://deno.land/std@0.163.0/testing/asserts.ts"
+import type { CollRec, RecOf } from "../src/query/rec.ts"
 import { Agenda, query, Soc, User } from "../src/query.ts"
-import type { Work, Worker, Fund } from "../src/typ.ts"
-
+import type * as T from "../src/typ.ts"
 
 function p(
-	// deno-lint-ignore no-explicit-any
-	obj: any
+	obj: {
+		coll?: CollRec,
+		uid?: T.User["_id"],
+		sid?: T.Soc["_id"],
+		aid?: T.Agenda["_id"],
+		utc?: T.Id["utc"],
+	}
 ) {
 	return new URLSearchParams(Object.entries(obj).map(([k, v]) => [k, `${v}`]))
 }
@@ -18,9 +22,9 @@ Deno.test("user", async () => {
 	const uname = new Map(u.uname)
 	assert(uname.get(u.referer[0]) === "未明子")
 	const [worker, work, fund] = await Promise.all([
-		await query("rec_of_uid", p({ coll: "worker", uid: 728 })) as RecOf<Worker>,
-		await query("rec_of_uid", p({ coll: "work", uid: 728 })) as RecOf<Work>,
-		await query("rec_of_uid", p({ coll: "fund", uid: 728 })) as RecOf<Fund>,
+		await query("rec_of_uid", p({ coll: "worker", uid: 728 })) as RecOf<T.Worker>,
+		await query("rec_of_uid", p({ coll: "work", uid: 728 })) as RecOf<T.Work>,
+		await query("rec_of_uid", p({ coll: "fund", uid: 728 })) as RecOf<T.Fund>,
 	])
 	assert(worker.rec.length === 1 && work.rec.length === 2 && fund.rec.length === 3)
 	assertEquals(work.urole, [[728, [[1, "志愿者"]]]])
@@ -35,9 +39,9 @@ Deno.test("soc", async () => {
 	assert(uname.get(s.uid[1]) === "万大可" && uname.get(s.referer[0]) === "未明子")
 	assert(s.nrec.worker === 2 && s.nrec.work === 4 && s.nrec.fund === 3)
 	const [worker, work, fund] = await Promise.all([
-		await query("rec_of_sid", p({ coll: "worker", sid: 2 })) as RecOf<Worker>,
-		await query("rec_of_sid", p({ coll: "work", sid: 2 })) as RecOf<Work>,
-		await query("rec_of_sid", p({ coll: "fund", sid: 2 })) as RecOf<Fund>,
+		await query("rec_of_sid", p({ coll: "worker", sid: 2 })) as RecOf<T.Worker>,
+		await query("rec_of_sid", p({ coll: "work", sid: 2 })) as RecOf<T.Work>,
+		await query("rec_of_sid", p({ coll: "fund", sid: 2 })) as RecOf<T.Fund>,
 	])
 	assert(worker.rec.length === 2 && work.rec.length === 4 && fund.rec.length === 3)
 	assertEquals(work.urole.sort(), [[137, [[1, "志愿者"]]], [728, [[1, "志愿者"]]]].sort())
@@ -52,9 +56,9 @@ Deno.test("agenda", async () => {
 	assertEquals(a1.referer, [1, 2])
 	assertEquals(a4.referer, [1, 2])
 	const [worker, work, fund] = await Promise.all([
-		await query("rec_of_aid", p({ coll: "worker", aid: a1._id })) as RecOf<Worker>,
-		await query("rec_of_aid", p({ coll: "work", aid: a1._id })) as RecOf<Work>,
-		await query("rec_of_aid", p({ coll: "fund", aid: a1._id })) as RecOf<Fund>,
+		await query("rec_of_aid", p({ coll: "worker", aid: a1._id })) as RecOf<T.Worker>,
+		await query("rec_of_aid", p({ coll: "work", aid: a1._id })) as RecOf<T.Work>,
+		await query("rec_of_aid", p({ coll: "fund", aid: a1._id })) as RecOf<T.Fund>,
 	])
 	assert(worker.rec.length === 6 && work.rec.length === 8 && fund.rec.length === 6)
 	assert(a4.imgsrc && a4.imgsrc.img.length === 4 && a1.imgsrc === undefined)
@@ -64,9 +68,9 @@ Deno.test("agenda", async () => {
 Deno.test("recent", async () => {
 	const { nrec: r } = await query("agenda", p({})) as Agenda
 	const [worker, work, fund] = await Promise.all([
-		await query("rec_of_recent", p({ coll: "worker", utc: Date.now() })) as RecOf<Worker>,
-		await query("rec_of_recent", p({ coll: "work", utc: Date.now() })) as RecOf<Work>,
-		await query("rec_of_recent", p({ coll: "fund", utc: Date.now() })) as RecOf<Fund>,
+		await query("rec_of_recent", p({ coll: "worker", utc: Date.now() })) as RecOf<T.Worker>,
+		await query("rec_of_recent", p({ coll: "work", utc: Date.now() })) as RecOf<T.Work>,
+		await query("rec_of_recent", p({ coll: "fund", utc: Date.now() })) as RecOf<T.Fund>,
 	])
 	assert(worker.rec.length === r.worker && work.rec.length == r.work && fund.rec.length == r.fund)
 })

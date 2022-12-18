@@ -1,5 +1,7 @@
-import { coll, idname, not_id, nrec_of_uid } from "../db.ts"
+import { nrec_of_uid } from "./rec.ts"
 import { Soc } from "../typ.ts"
+import { idname, not_id } from "./id.ts"
+import { coll } from "../db.ts"
 
 async function soc_of_sid(
 	sid: number

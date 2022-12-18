@@ -1,4 +1,4 @@
-import { nrec } from "../db.ts";
+import { nrec } from "./rec.ts"
 
 export async function recent(
 ) {

@@ -1,4 +1,6 @@
-import { coll, nrec_of_aid, nrec, dat } from "../db.ts"
+import { coll } from "../db.ts"
+import { dat } from "./dat.ts"
+import { nrec, nrec_of_aid } from "./rec.ts"
 
 export async function agenda(
 ) {

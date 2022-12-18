@@ -1,3 +1,4 @@
+zsh cli/dbpull.zsh
 zsh cli/build.zsh
 
 rm -rf release

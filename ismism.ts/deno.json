@@ -14,6 +14,7 @@
 			"include": [
 				"src/",
 				"ui/",
+				"cli/",
 				"tst/"
 			]
 		},
@@ -32,6 +33,7 @@
 			"include": [
 				"src/",
 				"ui/",
+				"cli/",
 				"tst/"
 			]
 		},

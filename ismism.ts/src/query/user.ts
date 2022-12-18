@@ -1,5 +1,7 @@
-import { coll, idname, not_id, nrec_of_uid } from "../db.ts"
+import { coll } from "../db.ts"
 import { User } from "../typ.ts"
+import { idname, not_id } from "./id.ts"
+import { nrec_of_uid } from "./rec.ts"
 import { soc_of_uid } from "./soc.ts"
 
 async function user_of_uid(

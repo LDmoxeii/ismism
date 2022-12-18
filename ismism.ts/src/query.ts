@@ -1,5 +1,5 @@
-import { collrec, rec_of_aid, rec_of_recent, rec_of_sid, rec_of_uid } from "./db.ts"
 import { agenda } from "./query/agenda.ts"
+import { collrec, rec_of_aid, rec_of_recent, rec_of_sid, rec_of_uid } from "./query/rec.ts"
 import { soc } from "./query/soc.ts"
 import { user } from "./query/user.ts"
 
