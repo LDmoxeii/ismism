@@ -20,15 +20,15 @@ type SendResponse = {
 
 export async function smssend(
 	nbr: string,
-	code: number,
-	hr: number
+	code: string,
+	hour: string,
 ) {
 	const body = JSON.stringify({
 		PhoneNumberSet: [nbr],
 		SmsSdkAppId: tc.appid,
 		SignName: tc.sign,
 		TemplateId: tc.template,
-		TemplateParamSet: [`${code}`, `${hr}`],
+		TemplateParamSet: [code, hour],
 	})
 	const alg = "TC3-HMAC-SHA256"
 	const t = Math.round(Date.now() / 1000)

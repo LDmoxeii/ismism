@@ -37,3 +37,24 @@ GET http://localhost:728/q/rec_of_sid?coll=work&sid=2 HTTP/1.1
 GET http://localhost:728/q/rec_of_sid?coll=worker&sid=2 HTTP/1.1
 ###
 GET http://localhost:728/q/rec_of_sid?coll=fund&sid=2 HTTP/1.1
+
+###
+POST https://localhost/p/userpass HTTP/1.1
+###
+POST https://localhost/p/userpass_code HTTP/1.1
+Content-Type: application/json
+
+{
+	"nbr": "11111111111",
+	"code": 111111,
+	"sms": false
+}
+###
+POST https://localhost/p/userpass_issue HTTP/1.1
+Content-Type: application/json
+
+{
+	"nbr": "11111111111",
+	"code": 111111,
+	"renew": false
+}

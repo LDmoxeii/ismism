@@ -1,5 +1,5 @@
 import { Coll, coll } from "../db.ts"
-import { Agenda, Id, Rec, User } from "../typ.ts"
+import { Agenda, Id, Rec, User } from "../dbtyp.ts"
 import { idname, is_id, not_id, uid_of_sid, urole, URole } from "./id.ts"
 
 export type NRec = {

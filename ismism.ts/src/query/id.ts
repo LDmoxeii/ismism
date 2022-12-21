@@ -1,5 +1,5 @@
 import { coll, CollId } from "../db.ts"
-import { Agenda, Id, Role, Soc, User } from "../typ.ts"
+import { Agenda, Id, Role, Soc, User } from "../dbtyp.ts"
 
 export function is_id(
 	id: Id["_id"]

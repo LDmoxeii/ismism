@@ -1,5 +1,5 @@
 import * as base64 from "https://deno.land/std@0.162.0/encoding/base64url.ts"
-import * as hex from "https://deno.land/std@0.162.0/encoding/hex.ts"
+import * as hex from "https://deno.land/std@0.167.0/encoding/hex.ts"
 
 const te = new TextEncoder()
 const td = new TextDecoder()

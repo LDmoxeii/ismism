@@ -1,4 +1,4 @@
-// import { Agenda, Dat, Fund, Soc, User, Work, Worker } from "../src/typ-pre.ts"
+// import { Agenda, Dat, Fund, Soc, User, Work, Worker } from "../src/dbtyp-pre.ts"
 export type User = {
 	_id: number,
 	nbr: string,
@@ -71,7 +71,7 @@ export type Dat = {
 	img: { title: string, src: string }[]
 })
 
-import * as T from "../src/typ.ts"
+import * as T from "../src/dbtyp.ts"
 
 const dfrom = "dbexport"
 const dto = "dbimport"

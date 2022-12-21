@@ -9,7 +9,7 @@ export type Id = {
 export type User = Id & {
 	nbr?: string,
 	pcode?: { code: number, utc: number },
-	jws?: string
+	ptoken?: string
 }
 
 export type Soc = Id & {

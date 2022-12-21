@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
-import { Agenda, Fund, Soc, User, Work, Worker, Imgsrc, Txt } from "./typ.ts"
+import { Agenda, Fund, Soc, User, Work, Worker, Imgsrc, Txt } from "./dbtyp.ts"
 
 const uri = "mongodb://127.0.0.1:27017"
 const mongo = new MongoClient()

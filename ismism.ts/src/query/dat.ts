@@ -1,5 +1,5 @@
 import { Coll } from "../db.ts"
-import { Dat } from "../typ.ts"
+import { Dat } from "../dbtyp.ts"
 
 export async function dat<T extends Dat>(
 	c: Coll<T>,

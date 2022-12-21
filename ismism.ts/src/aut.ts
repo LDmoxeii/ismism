@@ -15,6 +15,7 @@ export async function jwk_load(
 ) {
 	jwk_set(await Deno.readTextFile(jwk_url))
 }
+await jwk_load()
 
 export async function jwt_sign(
 	json: Json
@@ -25,9 +26,9 @@ export async function jwt_sign(
 	return `${p}.${s}`
 }
 
-export async function jwt_verify(
+export async function jwt_verify<T extends Json>(
 	jwt: string
-): Promise<Json | null> {
+): Promise<T | null> {
 	const [p, s] = jwt.split(".")
 	if (!jwk || !s) return null
 	const v = await verify(jwk, p, from_base64(s))

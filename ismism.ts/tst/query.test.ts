@@ -1,7 +1,7 @@
 import { assert, assertEquals } from "https://deno.land/std@0.163.0/testing/asserts.ts"
 import type { CollRec, RecOf } from "../src/query/rec.ts"
 import { Agenda, query, Soc, User } from "../src/query.ts"
-import type * as T from "../src/typ.ts"
+import type * as T from "../src/dbtyp.ts"
 
 function p(
 	obj: {

@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.163.0/http/server.ts"
 import { utc_short } from "./ontic/utc.ts"
-import { query } from "./query.ts"
+import { post, PostPass, query } from "./query.ts"
 
 let etag = `W/"${Date.now()}"`
 
@@ -8,8 +8,8 @@ async function route(
 	req: Request
 ): Promise<Response> {
 	const url = new URL(req.url)
-	const [_, p, q] = url.pathname.split("/")
-	switch (p) {
+	const [_, r, f] = url.pathname.split("/")
+	switch (r) {
 		case "quit": {
 			Deno.exit(); break
 		} case "update": {
@@ -18,15 +18,26 @@ async function route(
 			break
 		} case "q": {
 			if (req.headers.get("if-none-match")?.includes(etag)) {
-				console.log(`${utc_short(Date.now())} - ${q}${url.search} - 304 - ${etag}`)
+				console.log(`${utc_short(Date.now())} - ${f}${url.search} - 304 - ${etag}`)
 				return new Response(null, { status: 304, headers: { etag } })
 			}
-			console.log(`${utc_short(Date.now())} - ${q}${url.search} - 200 - ${etag}`)
+			console.log(`${utc_short(Date.now())} - ${f}${url.search} - 200 - ${etag}`)
 			return new Response(
-				JSON.stringify(await query(q, url.searchParams)), {
+				JSON.stringify(await query(f, url.searchParams)), {
 				status: 200,
 				headers: { etag }
 			})
+		} case "p": {
+			const cookie = req.headers.get("cookie")
+			const p: PostPass = {}
+			if (cookie && cookie.startsWith("pp=")) p.jwt = cookie.substring(3)
+			const b = await req.text()
+			const r = JSON.stringify(await post(f, p, b))
+			console.log(`${utc_short(Date.now())} - p - ${p.u?.uid} - ${b} - ${r}`)
+			const headers: Headers = new Headers()
+			if (!p.u) headers.set("set-cookie", `pp=""; Path=/p; Secure; HttpOnly; Max-Age=0`)
+			else if (p.jwt) headers.set("set-cookie", `pp=${p.jwt}; Path=/p; Secure; HttpOnly; Max-Age=31728728`)
+			return new Response(r, { status: 200, headers })
 		}
 	}
 	return new Response(null, { status: 400 })

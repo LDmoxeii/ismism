@@ -1,5 +1,5 @@
 import { nrec_of_uid } from "./rec.ts"
-import { Soc } from "../typ.ts"
+import { Soc } from "../dbtyp.ts"
 import { idname, not_id } from "./id.ts"
 import { coll } from "../db.ts"
 
