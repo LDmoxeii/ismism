@@ -15,7 +15,6 @@ export async function jwk_load(
 ) {
 	jwk_set(await Deno.readTextFile(jwk_url))
 }
-await jwk_load()
 
 export async function jwt_sign(
 	json: Json

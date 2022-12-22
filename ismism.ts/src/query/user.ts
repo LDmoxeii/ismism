@@ -56,12 +56,12 @@ export type UserPass = {
 
 export async function userpass(
 	jwt: string
-) {
+): Promise<UserPass | null> {
 	const u = await jwt_verify<UserPass>(jwt)
 	if (u) {
 		const p = await pass_of_uid(u.uid)
 		if (p && p.pcode && p.pcode.utc > utc_pass_valid && p.ptoken && p.ptoken === jwt)
-			return u
+			return { uid: u.uid, utc: Date.now() }
 	}
 	return null
 }
@@ -75,7 +75,7 @@ export async function userpass_issue(
 	if (p && p.pcode && p.pcode.code === code && utc - p.pcode.utc < pcode_expire_h * utc_h) {
 		const u: UserPass = { uid: p._id, utc }
 		if (renew && p.ptoken) return { u, jwt: p.ptoken }
-		const jwt = await jwt_sign({ uid: p._id, utc } as UserPass)
+		const jwt = await jwt_sign(u)
 		const { modifiedCount } = await coll.user.updateOne({ _id: u.uid }, { $set: { ptoken: jwt } })
 		if (modifiedCount > 0) return { u, jwt }
 	}
