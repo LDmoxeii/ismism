@@ -43,6 +43,13 @@ export async function user(
 	return { ...u, soc, uname, nrec }
 }
 
+export function user_set(
+	uid: User["_id"],
+	user: Partial<User>,
+) {
+	return coll.user.updateOne({ _id: uid }, { $set: user }, { upsert: true })
+}
+
 const utc_pass_valid = new Date("2022-10-05").getTime()
 const utc_h = 60 * 60 * 1000
 const utc_d = 24 * utc_h
@@ -81,7 +88,7 @@ export async function userpass_issue(
 	}
 	return null
 }
-const uid_tst = 100
+export const uid_tst = 100
 export async function userpass_code(
 	nbr: string,
 	code: number,

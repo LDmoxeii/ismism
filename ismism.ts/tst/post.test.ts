@@ -1,7 +1,7 @@
 import { assert } from "https://deno.land/std@0.163.0/testing/asserts.ts"
 import { jwk_set } from "../src/aut.ts";
 import { post, PostPass, SmsCode } from "../src/query.ts"
-import { UserPass } from "../src/query/user.ts"
+import { uid_tst, UserPass, user_set } from "../src/query/user.ts"
 
 function b(json: {
 	nbr?: string,
@@ -15,6 +15,15 @@ function b(json: {
 Deno.test("userpass", async () => {
 	const nbr = "11111111111"
 	const code = 111111
+	const rset = await user_set(uid_tst, {
+		name: "测试",
+		utc: Date.now(),
+		referer: [728],
+		intro: "this is a test",
+		nbr,
+	})
+	assert(rset.matchedCount === 1)
+
 	await jwk_set("anotherkey")
 
 	const p = {} as PostPass

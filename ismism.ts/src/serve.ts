@@ -36,8 +36,8 @@ async function route(
 			const r = JSON.stringify(await post(f, p, b))
 			console.log(`${utc_short(Date.now())} - ${f}#${p.u?.uid ?? ""} - ${b} - ${r}`)
 			const headers: Headers = new Headers()
-			if (!p.u) headers.set("set-cookie", `pp=""; Path=/p; Secure; HttpOnly; Max-Age=0`)
-			else if (p.jwt) headers.set("set-cookie", `pp=${p.jwt}; Path=/p; Secure; HttpOnly; Max-Age=31728728`)
+			if (!p.u) headers.set("set-cookie", `pp=""; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=0`)
+			else if (p.jwt) headers.set("set-cookie", `pp=${p.jwt}; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=31728728`)
 			return new Response(r, { status: 200, headers })
 		}
 	}
