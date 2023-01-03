@@ -1,4 +1,1 @@
-/target
-/gen
-/registries
-jwk.json
+/cli/dbfill.ts
