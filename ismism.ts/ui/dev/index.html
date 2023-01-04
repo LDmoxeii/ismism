@@ -54,105 +54,152 @@
 	}
 
 	nav {
-		display: flex;
-		font-size: 0;
-		padding: 0;
-		justify-content: center;
+		overflow: scroll;
+		scrollbar-width: none;
+		scroll-snap-type: x mandatory;
 	}
 
-	nav a {
+	nav::-webkit-scrollbar {
+		display: none;
+	}
+
+	nav>menu {
+		position: relative;
+		display: flex;
+		width: max-content;
+		list-style: none;
+		padding: 0;
+		margin: 0 auto;
+		white-space: nowrap;
+		gap: 3px;
+	}
+
+	nav>menu>li:first-child,
+	nav>menu>li:last-child {
+		display: block;
+		white-space: pre;
+		position: sticky;
+		min-width: 1ch;
+		box-shadow: 0 0 1ch 1ch var(--lightgray);
+		background: var(--lightgray);
+		z-index: 2;
+	}
+
+	nav>menu>li:first-child {
+		left: 0;
+		margin-right: 2ch;
+	}
+
+	nav>menu>li:last-child {
+		right: 0;
+		margin-left: 2ch;
+	}
+
+	nav>menu>li>a {
+		scroll-snap-align: start;
+		scroll-margin-left: 2ch;
+		display: inline-flex;
+		white-space: nowrap;
+		overflow: hidden;
+		user-select: none;
+		background: none;
+		z-index: 1;
+	}
+
+	nav.main {
+		margin-bottom: 16px;
+	}
+
+	nav.main>menu {
+		border-bottom: 1px dotted var(--gray);
+	}
+
+	nav.main a {
+		scroll-padding-left: -4ch;
 		display: inline-block;
 		font-size: var(--large);
 		color: var(--gray);
-		padding: 0.1ch 0.5ch;
+		padding: 0 0.5ch;
 	}
 
-	nav a.active {
+	nav.main li.active>a {
 		color: var(--black);
 	}
 
-	nav a.active>em {
+	nav.main li.active>a>em {
 		color: var(--red);
 	}
 
 	@media (hover: hover) {
 
-		nav a:hover {
+		nav.main a:hover {
 			color: var(--black);
 			opacity: 0.65;
 		}
 
-		nav a:hover>em {
+		nav.main a:hover>em {
 			color: var(--red);
 		}
 	}
 
-	nav>a {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		flex: 0 0 content;
-		z-index: 2;
-		box-shadow: 0 0 1ch 1ch var(--lightgray);
+	nav.agenda a {
+		padding: 0px 12px;
+		border-radius: 16px;
+		border: 1px solid var(--darkgray);
+		color: var(--darkgray);
 	}
 
-	nav>div {
-		flex: 0 1 content;
-		overflow: scroll;
-		white-space: nowrap;
-		scrollbar-width: none;
-		scroll-snap-type: x mandatory;
-		border-bottom: 1px dotted var(--gray);
-	}
-
-	nav>div::-webkit-scrollbar {
-		display: none;
-	}
-
-	nav>div>a {
-		scroll-snap-align: start;
-		scroll-margin-left: 1.75ch;
-	}
-
-	nav>div>a:first-child {
-		margin-left: 1ch;
-	}
-
-	nav>div>a:last-child {
-		margin-right: 1ch;
+	nav.agenda li.active>a {
+		color: var(--lightgray);
+		background: var(--darkgray);
 	}
 
 </style>
 
 <body>
-	<nav>
-		<a href="">主义主义</a>
-		<div>
-			<a onclick="nav(this)" class="active" href="#agenda"><em>活动</em>公示</a>
-			<a onclick="nav(this)" href="#soc">同城<em>社团</em></a>
-			<a onclick="nav(this)" href="#la">法律<em>援助</em></a>
-			<a onclick="nav(this)" href="#li">理论<em>学习</em></a>
-		</div>
-		<a href="#up">用户登录</a>
+	<nav class="main">
+		<menu>
+			<li><a href="">主义主义</a></li>
+			<li class="active"><a onclick="nav(this, false)" href="#agenda"><em>活动</em>公示</a></li>
+			<li><a onclick="nav(this)" href="#soc">同城<em>社团</em></a></li>
+			<li><a onclick="nav(this)" href="#la">法律<em>援助</em></a></li>
+			<li><a onclick="nav(this)" href="#li">理论<em>学习</em></a></li>
+			<li><a href="#up">用户登录</a></li>
+		</menu>
+	</nav>
+	<nav class="agenda">
+		<menu>
+			<li> </li>
+			<li class="active"><a onclick="nav(this)" href="#">全部</a></li>
+			<li><a onclick="nav(this)" href="#进行中">进行中</a></li>
+			<li><a onclick="nav(this)" href="#已结束">已结束</a> </li>
+			<li><a onclick="nav(this)" href="#设施建设">设施建设</a></li>
+			<li><a onclick="nav(this)" href="#物资配给">物资配给</a></li>
+			<li><a onclick="nav(this)" href="#工具开发">工具开发</a></li>
+			<li><a onclick="nav(this)" href="#苏州">苏州</a></li>
+			<li><a onclick="nav(this)" href="#成都">成都</a></li>
+			<li><a onclick="nav(this)" href="#工益公益">工益公益</a></li>
+			<li><a onclick="nav(this)" href="#星星家园">星星家园</a></li>
+			<li> </li>
+		</menu>
 	</nav>
 </body>
 
 <script>
-	const dnav = document.querySelector("nav>div")
-	dnav.addEventListener("wheel", e => {
-		if (e.deltaX != 0) return
-		const s = document.querySelector("nav>div>a").scrollWidth
-		if (e.deltaY > 0) dnav.scrollLeft += s
-		if (e.deltaY < 0) dnav.scrollLeft -= s
-	})
-
 	function nav(
-		t
+		t, scroll = true
 	) {
-		for (const e of t.parentElement.children) e.classList.remove("active")
-		t.classList.add("active")
-		t.scrollIntoView({ behavior: "smooth" })
+		for (const e of t.parentElement.parentElement.children) e.classList.remove("active")
+		t.parentElement.classList.add("active")
+		if (scroll) t.scrollIntoView({ behavior: "smooth" })
 	}
+
+	for (const n of document.getElementsByTagName("nav")) n.addEventListener("wheel", e => {
+		if (e.deltaX != 0) return
+		const s = n.querySelector("li.active").scrollWidth
+		if (e.deltaY > 0) n.scrollLeft -= s
+		if (e.deltaY < 0) n.scrollLeft += s
+	})
 </script>
 
 
