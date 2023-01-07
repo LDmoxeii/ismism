@@ -184,6 +184,12 @@
 		}
 	}
 
+	div#main {
+		max-width: var(--w-max-main);
+		margin: 0 auto;
+		padding: 0;
+	}
+
 	article {
 		margin: 16px;
 		padding: 8px 16px;
@@ -191,15 +197,22 @@
 		box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 	}
 
+	header {
+		padding-bottom: 8px;
+		margin-bottom: 8px;
+		border-bottom: 1px dotted var(--black);
+	}
+
 	section {
 		display: block;
-		margin-bottom: 0px;
+		margin: 0px;
 		padding: 0;
 	}
 
 	section.flex {
 		display: flex;
 		flex-wrap: wrap;
+		justify-content: center;
 		align-items: center;
 	}
 
@@ -208,13 +221,13 @@
 	section>button {
 		box-sizing: border-box;
 		display: inline-block;
-		margin-top: 6px;
+		margin-bottom: 6px;
 		padding: 1ch;
 	}
 
 	section>label {
 		text-align: right;
-		flex: 1 0 8ch;
+		flex: 1 0 10ch;
 	}
 
 	section>button {
@@ -225,6 +238,7 @@
 		flex: 10 1 10ch;
 		border: none;
 		border-bottom: 1px dotted var(--black);
+		text-align: center;
 	}
 
 	section>input:focus {
@@ -294,24 +308,38 @@
 			<li> </li>
 		</menu>
 	</nav>
-	<article>
-		<section>
-			<a class="idname" href="#u"><code class="id">u</code> <span class="name">用户登录</span></a>
-		</section>
-		<section class="flex">
-			<label>手机号：</label>
-			<input class="nbr" type="text" inputmode="numeric" pattern="\d{11}" placeholder="十一位手机号（中国大陆）"
-				minlength="11" maxlength="11" />
-			<button class="button send">发送验证码</button>
-		</section>
-		<section class="flex">
-			<label>验证码：</label>
-			<input class="code issue" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
-				maxlength="6" readonly />
-			<button class="button issue" disabled>登录</button>
-
-		</section>
-	</article>
+	<div id="main">
+		<article>
+			<header>
+				<a class="idname" href="#u"><code class="id">u</code> <span class="name">用户登录</span></a>
+			</header>
+			<section class="flex">
+				<label>手机号：</label>
+				<input class="nbr" type="text" inputmode="numeric" pattern="\d{11}" placeholder="十一位手机号（中国大陆）"
+					minlength="11" maxlength="11" />
+				<button class="send">发送验证码</button>
+			</section>
+			<section class="flex">
+				<label>验证码：</label>
+				<input class="code" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
+					maxlength="6" readonly />
+				<button class="issue" disabled>登录</button>
+			</section>
+		</article>
+		<article>
+			<header>
+				<a class="idname" href="#uid"><code class="id">uid</code> <span class="name">name</span></a>
+				<div>meta</div>
+			</header>
+			<section>
+				<div>intro</div>
+				<div>soc</div>
+			</section>
+			<section>
+				work
+			</section>
+		</article>
+	</div>
 </body>
 
 <script>
