@@ -25,7 +25,7 @@
 		--normal: 15px;
 		--large: 18px;
 		--w-max: 1400px;
-		--w-min: 320px;
+		--w-min: 360px;
 		--w-max-main: 1080px;
 	}
 
@@ -48,15 +48,37 @@
 		font-style: normal;
 	}
 
+	code {
+		font-family: monospace;
+		font-size: 1em;
+	}
+
 	a {
 		color: inherit;
 		text-decoration: none;
+	}
+
+	a.idname {
+		display: block;
+		font-size: 24px;
+	}
+
+	a.idname code.id {
+		padding: 0.1em 8px;
+		border: 1px solid var(--black);
+		border-radius: 4px;
+		color: var(--black);
+	}
+
+	a.idname span.name {
+		font-weight: bold;
 	}
 
 	nav {
 		overflow: scroll;
 		scrollbar-width: none;
 		scroll-snap-type: x mandatory;
+		margin-bottom: 12px;
 	}
 
 	nav::-webkit-scrollbar {
@@ -106,10 +128,6 @@
 		z-index: 1;
 	}
 
-	nav.main {
-		margin-bottom: 16px;
-	}
-
 	nav.main>menu {
 		border-bottom: 1px dotted var(--gray);
 	}
@@ -142,16 +160,100 @@
 		}
 	}
 
-	nav.agenda a {
+	nav.agenda a,
+	nav.soc a {
 		padding: 0px 12px;
 		border-radius: 16px;
 		border: 1px solid var(--darkgray);
 		color: var(--darkgray);
 	}
 
-	nav.agenda li.active>a {
+	nav.agenda li.active>a,
+	nav.soc li.active>a {
 		color: var(--lightgray);
 		background: var(--darkgray);
+	}
+
+	@media (hover: hover) {
+
+		nav.agenda a:hover,
+		nav.soc a:hover {
+			color: var(--lightgray);
+			background: var(--darkgray);
+			opacity: 0.65;
+		}
+	}
+
+	article {
+		margin: 16px;
+		padding: 8px 16px;
+		background: var(--white);
+		box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+	}
+
+	section {
+		display: block;
+		margin-bottom: 0px;
+		padding: 0;
+	}
+
+	section.flex {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+
+	section>label,
+	section>input,
+	section>button {
+		box-sizing: border-box;
+		display: inline-block;
+		margin-top: 6px;
+		padding: 1ch;
+	}
+
+	section>label {
+		text-align: right;
+		flex: 1 0 8ch;
+	}
+
+	section>button {
+		flex: 1 0 10ch;
+	}
+
+	section>input {
+		flex: 10 1 10ch;
+		border: none;
+		border-bottom: 1px dotted var(--black);
+	}
+
+	section>input:focus {
+		outline: none;
+		border-bottom: 1px solid var(--black);
+	}
+
+	section>input:read-only {
+		background: var(--lightgray);
+		border: none;
+	}
+
+	section>button {
+		margin-left: 1ch;
+		color: var(--lightgray);
+		background: var(--darkgray);
+		border: none;
+		border-radius: 8px;
+	}
+
+	@media (hover: hover) {
+		section>button:enabled:hover {
+			opacity: 0.65;
+		}
+	}
+
+	section>button:disabled {
+		color: var(--darkgray);
+		background: var(--lightgray);
 	}
 
 </style>
@@ -164,7 +266,7 @@
 			<li><a onclick="nav(this)" href="#soc">同城<em>社团</em></a></li>
 			<li><a onclick="nav(this)" href="#la">法律<em>援助</em></a></li>
 			<li><a onclick="nav(this)" href="#li">理论<em>学习</em></a></li>
-			<li><a href="#up">用户登录</a></li>
+			<li><a href="#u">用户登录</a></li>
 		</menu>
 	</nav>
 	<nav class="agenda">
@@ -183,6 +285,33 @@
 			<li> </li>
 		</menu>
 	</nav>
+	<nav class="soc">
+		<menu>
+			<li> </li>
+			<li class="active"><a onclick="nav(this)" href="#soc">全国</a></li>
+			<li><a onclick="nav(this)" href="#soc苏州">苏州</a></li>
+			<li><a onclick="nav(this)" href="#soc成都">成都</a></li>
+			<li> </li>
+		</menu>
+	</nav>
+	<article>
+		<section>
+			<a class="idname" href="#u"><code class="id">u</code> <span class="name">用户登录</span></a>
+		</section>
+		<section class="flex">
+			<label>手机号：</label>
+			<input class="nbr" type="text" inputmode="numeric" pattern="\d{11}" placeholder="十一位手机号（中国大陆）"
+				minlength="11" maxlength="11" />
+			<button class="button send">发送验证码</button>
+		</section>
+		<section class="flex">
+			<label>验证码：</label>
+			<input class="code issue" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
+				maxlength="6" readonly />
+			<button class="button issue" disabled>登录</button>
+
+		</section>
+	</article>
 </body>
 
 <script>
