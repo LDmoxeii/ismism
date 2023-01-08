@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>主义主义 活动公示</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="refresh" content="3600">
+	<link rel="icon" type="x-icon" href="https://img.00000.host/2022/10/27/635a7048a7586.png">
+	<link rel="apple-touch-icon" href="https://img.00000.host/2022/10/27/635a7048a7586.png">
+</head>
+
+<style>
+	:root {
+		--white: #fff;
+		--lightgray: #f1f1f1;
+		--gray: #9e9e9e;
+		--darkgray: #616161;
+		--black: #000;
+		--palered: #ffdddd;
+		--red: #f44336;
+		--amber: #ffc107;
+		--purple: #673ab7;
+		--small: 12px;
+		--normal: 15px;
+		--large: 18px;
+		--w-max: 1400px;
+		--w-min: 320px;
+		--w-max-main: 1080px;
+	}
+
+	.darkgray {
+		color: var(--white) !important;
+		border-color: var(--darkgray) !important;
+		background: var(--darkgray) !important;
+	}
+
+	html {
+		overflow-x: hidden;
+	}
+
+	body {
+		margin: 0;
+		color: var(--black);
+		background: var(--lightgray);
+		font-family: Verdana, sans-serif;
+		font-size: var(--normal);
+		line-height: 1.5;
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-weight: 400;
+		margin: 10px 0;
+	}
+
+	h1 {
+		font-size: 36px
+	}
+
+	h2 {
+		font-size: 30px
+	}
+
+	h3 {
+		font-size: 24px
+	}
+
+	hr {
+		box-sizing: content-box;
+		height: 0;
+		border: 0;
+		border-top: 1px solid #eee;
+		overflow: visible;
+		margin: 20px 0;
+	}
+
+	code {
+		font-family: monospace;
+		font-size: 1em;
+	}
+
+	span.badge {
+		display: inline-block;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.expel {
+		text-decoration-line: line-through
+	}
+
+	a.idname {
+		display: block;
+		font-size: 24px;
+	}
+
+	a.idname code.id {
+		padding: 0.1em 8px;
+		border: 1px solid var(--black);
+		border-radius: 4px;
+		color: var(--black);
+	}
+
+	a.idname span.name {
+		font-weight: bold;
+	}
+
+	a.video,
+	a.detail {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+
+	a.tag {
+		display: inline-block;
+		padding: 5px 10px;
+		margin: 0 6px 6px 0;
+		border: 1px solid var(--black);
+		border-radius: 6px;
+		color: var(--black);
+		background: none;
+		text-align: center;
+		vertical-align: middle;
+		overflow: hidden;
+		white-space: nowrap;
+		user-select: none;
+	}
+
+	a.tag>span.count,
+	a.role,
+	a.aname {
+		display: inline-block;
+		padding: 0.1em 8px;	
+		margin-left: 0.5ch;
+		font-size: var(--small);
+		color: var(--white);
+		background: var(--black);
+	}
+
+	a.tag>span.count {
+		border-radius: 50%;
+	}
+
+	a.role.red {
+		background: var(--red);
+	}
+
+	a.role.amber {
+		color: var(--black);
+		background: var(--amber);
+	}
+
+	a.role.purple {
+		background: var(--purple);
+	}
+
+	a.member-soc {
+		color: var(--white);
+		background: var(--black);
+		margin: 0.5ch 0.5ch 0 0;
+		padding: 0.1em 8px;
+	}
+
+	a.member-user::after {
+		content: ", ";
+	}
+
+	a.member-user:last-child:after {
+		content: "";
+	}
+
+	button.photo-prev,
+	button.photo-next,
+	button.tab {
+		font-size: 1em;
+		margin: 0;
+		padding: 0;
+		color: var(--darkgray);
+		background: none;
+		border: none;
+		cursor: pointer;
+	}
+
+	button.photo-prev:focus,
+	button.photo-next:focus,
+	button.tab:focus {
+		outline: none;
+	}
+
+	@media (hover: hover) {
+
+		a.video:hover,
+		a.detail:hover,
+		a.initial:hover,
+		a.uname:hover,
+		a.member-user:hover {
+			color: var(--amber);
+		}
+
+		a.role:hover {
+			opacity: 0.7;
+		}
+
+		a.tag:hover,
+		a.aname:hover,
+		a.member-soc:hover,
+		button.photo-prev:hover,
+		button.photo-next:hover,
+		button.tab:hover {
+			color: var(--white) !important;
+			border-color: var(--darkgray) !important;
+			background: var(--darkgray) !important;
+			opacity: 0.7;
+		}
+	}
+
+	div.title {
+		padding-top: 32px;
+		padding-bottom: 16px;
+		min-width: var(--w-min);
+		max-width: var(--w-max);
+		margin-left: auto;
+		margin-right: auto;
+		text-align: center;
+	}
+
+	div#main {
+		min-width: var(--w-min);
+		max-width: var(--w-max-main);
+		margin: 0 auto;
+		padding: 0;
+	}
+
+	div.tag {
+		margin: 10px 0;
+	}
+
+	div.date {
+		color: var(--darkgray);
+		font-size: var(--small);
+		font-family: monospace;
+		font-style: italic;
+		margin: 10px 0;
+	}
+
+	div.intro {
+		margin: 10px 0;
+	}
+
+	div.photo {
+		display: flex;
+		width: auto;
+		flex-flow: row wrap;
+		align-items: center;
+		text-align: center;
+		color: var(--darkgray);
+		border-top: 1px dotted var(--darkgray);
+		padding: 10px 0;
+	}
+
+	img.photo-img {
+		width: 100%;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+	}
+
+	@media (max-width: 720px) {
+		div.photo>span {
+			width: 100%;
+		}
+	}
+
+	@media (min-width: 720px) {
+		div.photo>span {
+			flex-basis: 180px;
+			flex-grow: 1;
+		}
+
+		div.photo>span:nth-child(1) {
+			text-align: left;
+		}
+
+		div.photo>span:nth-child(2) {
+			text-align: center;
+		}
+
+		div.photo>span:nth-child(3) {
+			text-align: right;
+		}
+	}
+
+	div.bar {
+		--fund: 7000;
+		--budget: 7000;
+		--expense: 4000;
+		margin-top: 10px;
+	}
+
+	div.bar>div.label {
+		overflow: auto;
+	}
+
+	div.bar>div.label>*:nth-child(1) {
+		float: left;
+	}
+
+	div.bar>div.label>*:nth-child(2) {
+		float: right;
+	}
+
+	div.bar>div:nth-child(2) {
+		margin: 5px 0;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
+	}
+
+	div.bar>div:nth-child(2)>div {
+		position: relative;
+		width: 100%;
+		color: var(--black);
+		background: var(--lightgray);
+		font-family: monospace;
+		overflow: hidden;
+	}
+
+	div.bar>div:nth-child(2)>div>span {
+		display: inline-block;
+		position: absolute;
+		padding: 0.25em 8px;
+		left: 0;
+		top: 0;
+		width: 100%;
+		font-size: var(--normal);
+		margin: -1px 0;
+		min-width: 1ch;
+	}
+
+	div.bar>div:nth-child(2)>div>span:nth-child(1) {
+		position: relative;
+		background: var(--gray);
+	}
+
+	div.bar>div:nth-child(2)>div.fund>span:nth-child(1) {
+		width: calc(var(--fund) / var(--budget) * 100%);
+	}
+
+	div.bar>div:nth-child(2)>div.expense>span:nth-child(1) {
+		width: calc(var(--expense) / var(--budget) * 100%);
+	}
+
+	div.bar>div:nth-child(2)>div>span:nth-child(2) {
+		text-align: center;
+		background: none;
+	}
+
+	div.bar>div:nth-child(2)>div>span:nth-child(3) {
+		text-align: right;
+		background: none;
+		left: -16px;
+	}
+
+	div.goal {
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: center;
+		text-align: center;
+	}
+
+	div.goal>div {
+		flex-basis: 1px;
+		flex-grow: 1;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+		margin: 10px;
+		font-size: var(--large);
+	}
+
+	div.goal>div>div.pct {
+		--size: 4em;
+		width: var(--size);
+		height: var(--size);
+		margin-bottom: 10px;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		background: radial-gradient(closest-side, var(--white) 66%, var(--lightgray) 66%);
+		font-family: monospace;
+		font-size: calc(var(--size) / 2);
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+		color: var(--gray);
+		text-shadow: 0 2px 2px var(--lightgray);
+	}
+
+	div.goal>div>div.pct.ongoing {
+		--pct: 65;
+		color: var(--amber);
+		background:
+			radial-gradient(closest-side, var(--white) 66%, transparent 66%),
+			conic-gradient(var(--gray) calc(var(--pct) * 1%), var(--lightgray) 0);
+	}
+
+	div.goal>div>div.pct.done {
+		background: radial-gradient(closest-side, var(--white) 66%, var(--gray) 66%);
+	}
+
+	div.rec-tab {
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: center;
+		margin-top: 10px;
+	}
+
+	div.rec-tab.sum {
+		margin-top: 0;
+	}
+
+	div.rec-tab>button {
+		padding: 8px;
+		color: var(--black);
+	}
+
+	div.rec-tab>button>span {
+		background: var(--black);
+		color: var(--white);
+		padding: 0.1em 8px;
+	}
+
+	div.rec {
+		display: none;
+		background: var(--lightgray);
+		border-radius: 16px;
+		padding: 16px 8px;
+		margin-top: 16px;
+		max-height: 480px;
+		overflow-y: scroll;
+	}
+
+	div.rec>div {
+		display: flex;
+		flex-flow: row nowrap;
+		margin: 16px 0;
+	}
+
+	div.rec div.date {
+		margin: 0;
+	}
+
+	div.rec>div>div:nth-child(1) {
+		display: flex;
+		flex-shrink: 0;
+		width: 48px;
+		height: 48px;
+		color: var(--white);
+		background: var(--gray);
+		border-radius: 50%;
+		font-size: 24px;
+		justify-content: center;
+		align-items: center;
+	}
+
+	div.rec>div>div:nth-child(2) {
+		display: flex;
+		flex-flow: column nowrap;
+		margin-left: 16px;
+		margin-right: 8px;
+	}
+
+	div.rec>div>div:nth-child(2)>div:nth-child(1) {
+		display: flex;
+		flex-flow: row wrap;
+		align-items: center;
+	}
+
+	div.rec>div>div:nth-child(2)>div:nth-child(2) {
+		font-size: var(--small);
+		font-style: italic;
+		color: var(--gray);
+	}
+
+	div.rec>div>div:nth-child(2)>div:nth-child(3) {
+		min-width: 120px;
+		margin-top: 6px;
+		padding: 0.5em 16px;
+		background-color: var(--lightgray);
+		border-radius: 0 8px 8px 8px;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+	}
+
+	section.sum {
+		padding: 8px 16px;
+		margin: auto;
+		max-width: 640px;
+	}
+
+	section.userpass {
+		position: relative;
+		padding-top: 32px;
+		padding-bottom: 16px;
+		text-align: right;
+	}
+
+	section.userpass .form {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		right: 0;
+		width: var(--w-min);
+	}
+
+	article {
+		margin: 16px;
+		padding: 8px 16px;
+		background: var(--white);
+		box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+	}
+
+	article>section {
+		margin: 0;
+		padding: 0;
+	}
+
+	footer {
+		padding: 32px 16px;
+		margin-top: 32px;
+		color: var(--gray);
+		text-align: center;
+	}
+
+	footer>a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	footer>a>img {
+		height: 1.2em;
+		margin-right: 0.2em;
+	}
+
+	footer>span {
+		display: block;
+		margin-top: 8px;
+		font-size: var(--small);
+		font-family: monospace;
+	}
+
+	.animate-scale {
+		position: relative;
+		animation: animateopacity 0.4s;
+	}
+
+	@keyframes animateopacity {
+		from {
+			transform: scale(0.25);
+			opacity: 0;
+		}
+
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+
+</style>
+
+<template id="tag"><a class="tag"><span class="name">tag</span><span class="count">99</span></a></template>
+<template id="goal">
+	<div>
+		<div class="pct">0%</div>
+		<span class="name">目标</span>
+	</div>
+</template>
+<template id="rec">
+	<div>
+		<div><a class="initial">u</a></div>
+		<div>
+			<div><a class="uname">uname</a>
+				<div class="badge"><a class="role">role</a><a class="aname">aname</a></div>
+			</div>
+			<div class="date">timestamp</div>
+			<div class="msg">msg</div>
+		</div>
+	</div>
+</template>
+<template id="video"><a href="" target="_blank" rel="noopener" class="video">title</a></template>
+<template id="sum">
+	<section class="sum">
+		<div class="rec-tab sum">
+			<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+			<button class="tab worker"><span>123</span> 次活动参与 ❯</button>
+			<button class="tab fund"><span>123</span> 次活动支持 ❯</button>
+		</div>
+		<div class="rec work"></div>
+		<div class="rec worker"></div>
+		<div class="rec fund"></div>
+	</section>
+</template>
+<template id="userpass">
+	<section class="userpass">
+		<button class="tab user">登录</button>
+		<div class="form pass">
+			<label>手机号</label>
+			<input class="nbr" type="text" inputmode="numeric" pattern="\d{11}" placeholder="十一位手机号（中国大陆）"
+				minlength="11" maxlength="11" />
+			<label>上一个验证码（首次登录留空）</label>
+			<input class="code send" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
+				maxlength="6" />
+			<button class="button send">发送验证码</button>
+			<label>验证码</label>
+			<input class="code issue" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
+				maxlength="6" />
+			<button class="button issue">登录</button>
+		</div>
+		<div class="form setting">
+			<button class="button uname">申请更改用户名</button>
+			<button class="button logout">登出</button>
+		</div>
+	</section>
+</template>
+<template id="agenda">
+	<article>
+		<section>
+			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
+			<div class="tag">tag</div>
+			<div class="date">date</div>
+		</section>
+		<section class="animate-scale">
+			<div class="photo">
+				<span class="photo-title">photo title</span>
+				<span><button class="photo-prev">上一张</button> / <button class="photo-next">下一张</button></span>
+				<span>第<span class="photo-nbr">1</span>张 / 共<span class="photo-total">6</span>张</span>
+			</div>
+			<img class="photo-img">
+		</section>
+		<section class="animate-scale">
+			<div class="bar">
+				<div class="label">
+					<span>收到支持</span>
+					<span>当前预算</span>
+				</div>
+				<div>
+					<div class="fund">
+						<span>123456</span>
+						<span>50%</span>
+						<span>123456</span>
+					</div>
+					<div class="expense">
+						<span>123456</span>
+						<span>50%</span>
+					</div>
+				</div>
+				<div class="label">
+					<span>当前支出</span>
+					<a target="_blank" rel="noopener" href="" class="detail">历史明细</a>
+				</div>
+			</div>
+			<div><br>当前目标：</div>
+			<div class="goal"></div>
+		</section>
+		<section>
+			<div class="rec-tab">
+				<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+				<button class="tab worker"><span>123</span> 名参与者 ❯</button>
+				<button class="tab fund"><span>123</span> 位支持者 ❯</button>
+			</div>
+			<div class="rec work"></div>
+			<div class="rec worker"></div>
+			<div class="rec fund"></div>
+		</section>
+	</article>
+</template>
+<template id="user">
+	<article>
+		<section>
+			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
+			<div class="date">date</div>
+			<div class="soc">所属社团：</div>
+		</section>
+		<section>
+			<div class="rec-tab">
+				<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+				<button class="tab worker"><span>123</span> 次活动参与 ❯</button>
+				<button class="tab fund"><span>123</span> 次活动支持 ❯</button>
+			</div>
+			<div class="rec work"></div>
+			<div class="rec worker"></div>
+			<div class="rec fund"></div>
+		</section>
+	</article>
+</template>
+<template id="soc">
+	<article>
+		<section>
+			<a class="idname"><code class="id">id</code> <span class="name">name</span></a>
+			<div class="date">date</div>
+			<div class="intro">社团简介：</div>
+			<div class="user">社团成员：</div>
+		</section>
+		<section>
+			<div class="rec-tab">
+				<button class="tab work"><span>123</span> 条工作日志 ❯</button>
+				<button class="tab worker"><span>123</span> 次活动参与 ❯</button>
+				<button class="tab fund"><span>123</span> 次活动支持 ❯</button>
+			</div>
+			<div class="rec work"></div>
+			<div class="rec worker"></div>
+			<div class="rec fund"></div>
+		</section>
+	</article>
+</template>
+
+<body>
+	<div class="title">
+		<a href="">
+			<h1><b>主义主义 <span style="color: var(--red)">活动</span>公示</b></h1>
+		</a>
+		<hr>
+		<div class="tag"></div>
+		<div class="userpass"></div>
+	</div>
+	<div id="main"></div>
+	<footer>
+		<a href="https://space.bilibili.com/23191782" target="_blank" rel="noopener"><img
+				src="https://www.bilibili.com/favicon.ico">未明子</a> ·
+		<a href="https://space.bilibili.com/19147010" target="_blank" rel="noopener"><img
+				src="https://www.bilibili.com/favicon.ico">张正午</a><br>
+		<span>网站维护：seven.two.eight@outlook.com</span><br>
+		<a href="https://chitchatter.im/public/9e70deaa-d0dd-4a90-8020-4a572d1e2635" target="_blank" rel="noopener"><img
+				src="https://chitchatter.im/favicon.ico">聊天室</a>
+	</footer>
+</body>
+
+<script src="./bind.js"></script>
+
+</html>
