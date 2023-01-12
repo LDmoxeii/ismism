@@ -29,6 +29,10 @@
 		--w-max-main: 1080px;
 	}
 
+	.none {
+		display: none !important;
+	}
+
 	html {
 		overflow-x: hidden;
 	}
@@ -305,6 +309,25 @@
 
 </style>
 
+<template id="login">
+	<article>
+		<header>
+			<a class="idname" href="#u"><code class="id">u</code> <span class="name">用户登录</span></a>
+		</header>
+		<section class="flex">
+			<label>手机号：</label>
+			<input class="nbr" type="text" inputmode="numeric" pattern="\d{11}" placeholder="十一位手机号（中国大陆）"
+				minlength="11" maxlength="11" required />
+			<button class="send">发送验证码</button>
+		</section>
+		<section class="flex">
+			<label>验证码：</label>
+			<input class="code" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
+				maxlength="6" required readonly />
+			<button class="issue" disabled>登录</button>
+		</section>
+	</article>
+</template>
 <template id="user-0">
 	<article>
 		<header>
@@ -320,8 +343,8 @@
 		<header>
 			<section class="flex">
 				<a class="idname" href="#uid"><code class="id">uid</code> <span class="name">name</span></a>
-				<button class="edit">编辑</button>
-				<button class="quit">登出</button>
+				<button class="edit none">编辑</button>
+				<button class="quit none">登出</button>
 			</section>
 			<section class="meta"></section>
 		</header>
@@ -368,23 +391,6 @@
 		</menu>
 	</nav>
 	<div id="main">
-		<article>
-			<header>
-				<a class="idname" href="#u"><code class="id">u</code> <span class="name">用户登录</span></a>
-			</header>
-			<section class="flex">
-				<label>手机号：</label>
-				<input class="nbr" type="text" inputmode="numeric" pattern="\d{11}" placeholder="十一位手机号（中国大陆）"
-					minlength="11" maxlength="11" />
-				<button class="send">发送验证码</button>
-			</section>
-			<section class="flex">
-				<label>验证码：</label>
-				<input class="code" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
-					maxlength="6" readonly />
-				<button class="issue" disabled>登录</button>
-			</section>
-		</article>
 	</div>
 </body>
 
