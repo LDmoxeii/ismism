@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>主义主义 法律援助</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="refresh" content="3600">
+	<link rel="icon" type="x-icon" href="https://img.zyku.club/2023/01/03/63b3eb7b90bf4.png">
+	<link rel="apple-touch-icon" href="https://img.zyku.club/2023/01/03/63b3eb7b90bf4.png">
+</head>
+
+<style>
+	:root {
+		--white: #fff;
+		--lightgray: #f1f1f1;
+		--gray: #9e9e9e;
+		--darkgray: #616161;
+		--black: #000;
+		--palered: #ffdddd;
+		--red: #f44336;
+		--amber: #ffc107;
+		--purple: #673ab7;
+		--small: 12px;
+		--normal: 15px;
+		--large: 18px;
+		--w-max: 1400px;
+		--w-min: 360px;
+		--w-max-main: 1080px;
+	}
+
+	html {
+		overflow-x: hidden;
+	}
+
+	body {
+		min-width: var(--w-min);
+		margin: 0;
+		padding: 0;
+		color: var(--black);
+		background: var(--lightgray);
+		font-family: Verdana, sans-serif;
+		font-size: var(--normal);
+		line-height: 1.5;
+	}
+
+	hr {
+		border: none;
+		margin: 6px;
+	}
+
+	em {
+		font-style: normal;
+	}
+
+	code {
+		font-family: monospace;
+		font-size: 1em;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	a.idname {
+		display: block;
+		font-size: 24px;
+	}
+
+	a.idname code.id {
+		padding: 0.1em 8px;
+		border: 1px solid var(--black);
+		border-radius: 4px;
+		color: var(--black);
+	}
+
+	a.idname span.name {
+		font-weight: bold;
+	}
+
+	nav {
+		overflow: scroll;
+		scrollbar-width: none;
+		scroll-snap-type: x mandatory;
+		margin-bottom: 12px;
+	}
+
+	nav::-webkit-scrollbar {
+		display: none;
+	}
+
+	nav>menu {
+		position: relative;
+		display: flex;
+		width: max-content;
+		list-style: none;
+		padding: 0;
+		margin: 0 auto;
+		white-space: nowrap;
+		gap: 3px;
+	}
+
+	nav>menu>li:first-child,
+	nav>menu>li:last-child {
+		display: block;
+		white-space: pre;
+		position: sticky;
+		min-width: 1ch;
+		box-shadow: 0 0 1ch 1ch var(--lightgray);
+		background: var(--lightgray);
+		z-index: 2;
+	}
+
+	nav>menu>li:first-child {
+		left: 0;
+		margin-right: 2ch;
+	}
+
+	nav>menu>li:last-child {
+		right: 0;
+		margin-left: 2ch;
+	}
+
+	nav>menu>li>a {
+		scroll-snap-align: start;
+		scroll-margin-left: 2ch;
+		display: inline-flex;
+		white-space: nowrap;
+		overflow: hidden;
+		user-select: none;
+		background: none;
+		z-index: 1;
+	}
+
+	nav.main>menu {
+		border-bottom: 1px dotted var(--gray);
+	}
+
+	nav.main a {
+		scroll-padding-left: -4ch;
+		display: inline-block;
+		font-size: var(--large);
+		color: var(--gray);
+		padding: 0 0.5ch;
+	}
+
+	nav.main li.active>a {
+		color: var(--black);
+	}
+
+	nav.main li.active>a>em {
+		color: var(--red);
+	}
+
+	@media (hover: hover) {
+
+		nav.main a:hover {
+			color: var(--black);
+			opacity: 0.65;
+		}
+
+		nav.main a:hover>em {
+			color: var(--red);
+		}
+	}
+
+	nav.agenda a,
+	nav.soc a {
+		padding: 0px 12px;
+		border-radius: 16px;
+		border: 1px solid var(--darkgray);
+		color: var(--darkgray);
+	}
+
+	nav.agenda li.active>a,
+	nav.soc li.active>a {
+		color: var(--lightgray);
+		background: var(--darkgray);
+	}
+
+	@media (hover: hover) {
+
+		nav.agenda a:hover,
+		nav.soc a:hover {
+			color: var(--lightgray);
+			background: var(--darkgray);
+			opacity: 0.65;
+		}
+	}
+
+	div#main {
+		max-width: var(--w-max-main);
+		margin: 0 auto;
+		padding: 0;
+	}
+
+	article {
+		margin: 16px;
+		padding: 8px 16px;
+		background: var(--white);
+		box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+	}
+
+	header {
+		padding-bottom: 8px;
+		margin-bottom: 8px;
+		border-bottom: 1px dotted var(--black);
+	}
+
+	section {
+		display: block;
+		margin: 0;
+		padding: 0;
+	}
+
+	section.flex {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+	}
+
+	section>a {
+		flex: 10 1 content;
+	}
+
+	section>a.sep::before {
+		content: ", ";
+	}
+
+	section>label,
+	section>input,
+	section>button {
+		box-sizing: border-box;
+		display: inline-block;
+		margin-bottom: 6px;
+		padding: 1ch;
+	}
+
+	section>label {
+		text-align: right;
+		flex: 1 0 10ch;
+	}
+
+	section>button {
+		flex: 1 0 10ch;
+	}
+
+	section>button {
+		margin-left: 1ch;
+		color: var(--lightgray);
+		background: var(--darkgray);
+		border: none;
+		border-radius: 8px;
+	}
+
+	section>button:disabled {
+		color: var(--darkgray);
+		background: var(--lightgray);
+	}
+
+	header>section>button {
+		flex: 1 0 6ch;
+	}
+
+	@media (hover: hover) {
+		section>button:enabled:hover {
+			opacity: 0.65;
+		}
+	}
+
+	section>input {
+		flex: 10 1 10ch;
+		border: none;
+		border-bottom: 1px dotted var(--black);
+		text-align: center;
+	}
+
+	section>input:focus {
+		outline: none;
+		border-bottom: 1px solid var(--black);
+	}
+
+	section>input:read-only {
+		background: var(--lightgray);
+		border: none;
+	}
+
+	section.meta {
+		color: var(--darkgray);
+	}
+
+	section.soc>a {
+		padding: 0.1em 8px;
+		color: var(--white);
+		background: var(--black);
+	}
+
+	section.pdf>object {
+		width: 100%;
+		height: 640px;
+	}
+
+	@media (hover: hover) {
+		section>a:hover {
+			opacity: 0.65;
+		}
+	}
+
+</style>
+
+<body>
+	<div class="title">
+		<a href="/" style="text-align: center;">
+			<h1><b>主义主义 <span style="color: var(--red)">活动</span>公示</b></h1>
+		</a>
+	</div>
+	<div id="main">
+		<article>
+			<header>
+				<a class="idname" href=""><code class="id">54</code> <span class="name">劳动法学习实操手册</span></a>
+				<section class="meta">更新时间：2023年1月11日 20:00<br>电子书发布：五年四班劳动委员<br><a href="/54/v1.pdf"
+						style="display: block; text-align: right;">下载链接</a></section>
+			</header>
+			<details open>
+				<summary>简介</summary>
+				<section class="intro">
+					《劳动法学习实操手册》由志愿者团队“五年四班劳动委员”编写，手册中汇总了各个类型的劳动争议问题，为劳动者提供劳动仲裁和诉讼的有效建议，帮助大家在争议的各个阶段都有办法应对公司的违法行为。
+					<hr>
+					争议期间如何取证？仲裁诉讼怎么走程序？各种补偿赔偿该如何主张？……
+					<hr>
+					拿到这本手册，你就可以找到有用的建议！
+					<hr>
+					本手册完全站在劳动者的立场和视角上，专门针对劳动者提出建议，而且你可以免费获取本手册，欢迎各位将手册分享给更多劳动者。
+					<hr>
+					更欢迎大家给手册提改进意见和纠错。这本手册将会吸取大家的批评建议进行改进，后续版本也将加入劳动者们的投稿。欢迎大家分享经验，一起参与撰写！（投稿详情请看本书第一章第四节）
+					<hr>
+					意见反馈、投稿以及进一步的咨询与援助，请关注公众号“五年四班劳动委员”。
+				</section>
+			</details>
+			<hr>
+			<section class="pdf">
+				<object type="application/pdf" data="/54/v1.pdf"></object>
+			</section>
+		</article>
+	</div>
+</body>
+
+
+</html>
