@@ -17,7 +17,7 @@ function p(
 
 Deno.test("user", async () => {
 	const u = await query("user", p({ uid: 728 })) as User
-	assert(u && u.name === "万大可" && u.intro == "")
+	assert(u && u.name === "万大可" && u.intro.length > 0)
 	assertEquals(u.referer, [1, 2])
 	const uname = new Map(u.uname)
 	assert(uname.get(u.referer[0]) === "未明子")

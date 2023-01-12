@@ -1,7 +1,7 @@
 import { agenda } from "./query/agenda.ts"
 import { collrec, rec_of_aid, rec_of_recent, rec_of_sid, rec_of_uid } from "./query/rec.ts"
 import { soc } from "./query/soc.ts"
-import { user, UserPass, userpass, userpass_code, userpass_issue } from "./query/user.ts"
+import { user, UserPass, userpass, userpass_clear, userpass_code, userpass_issue } from "./query/user.ts"
 
 // deno-lint-ignore no-explicit-any
 type Return<T extends (...args: any) => Promise<any>> = Awaited<ReturnType<T>>
@@ -48,7 +48,8 @@ export async function query(
 }
 
 export type PostPass = { jwt?: string | null, u?: UserPass | null }
-export type SmsCode = Return<typeof userpass_code>
+export type UserPassCode = Return<typeof userpass_code>
+export type UserPassClear = Return<typeof userpass_clear>
 
 export async function post(
 	f: string,
@@ -63,6 +64,14 @@ export async function post(
 		case "userpass": {
 			if (p.u) return p.u
 			break
+		} case "userpass_clear": {
+			p.jwt = undefined
+			if (p.u) {
+				const uid = p.u.uid
+				p.u = undefined
+				return userpass_clear(uid)
+			}
+			break
 		} case "userpass_issue": {
 			const { nbr, code, renew } = JSON.parse(b)
 			if (typeof nbr === "string" && typeof code === "number" && typeof renew === "boolean") {
@@ -72,13 +81,15 @@ export async function post(
 					p.u = u.u
 					return u.u
 				}
-			} break
+			}
+			break
 		} case "userpass_code": {
-			const { nbr, code, sms } = JSON.parse(b)
-			if (typeof nbr === "string" && typeof code === "number" && typeof sms === "boolean") {
-				const u = await userpass_code(nbr, code, sms)
+			const { nbr, sms } = JSON.parse(b)
+			if (typeof nbr === "string" && typeof sms === "boolean") {
+				const u = await userpass_code(nbr, sms)
 				if (u) return u
-			} break
+			}
+			break
 		}
 	}
 	return null

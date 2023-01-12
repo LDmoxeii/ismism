@@ -286,9 +286,21 @@
 		border-bottom: 1px solid var(--black);
 	}
 
+	section>input:focus::placeholder {
+		color: transparent;
+	}
+
 	section>input:read-only {
 		background: var(--lightgray);
 		border: none;
+	}
+
+	section.codeissue>p {
+		width: 100%;
+		margin: 0;
+		color: var(--gray);
+		text-align: center;
+		white-space: pre-line;
 	}
 
 	section.meta {
@@ -320,11 +332,14 @@
 				minlength="11" maxlength="11" required />
 			<button class="send">发送验证码</button>
 		</section>
-		<section class="flex">
+		<section class="flex codeissue none">
 			<label>验证码：</label>
 			<input class="code" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
-				maxlength="6" required readonly />
-			<button class="issue" disabled>登录</button>
+				maxlength="6" required />
+			<button class="issue">登录</button>
+			<p>验证码已发送，可多次使用</p>
+			<p>一小时内不再重复发送</p>
+			<p class="sent"></p>
 		</section>
 	</article>
 </template>
@@ -362,7 +377,7 @@
 			<li><a onclick="nav(this)" href="#soc">同城<em>社团</em></a></li>
 			<li><a onclick="nav(this)" href="#la">法律<em>援助</em></a></li>
 			<li><a onclick="nav(this)" href="#li">理论<em>学习</em></a></li>
-			<li><a href="#u">用户登录</a></li>
+			<li><a id="userpass" href="#u">用户登录</a></li>
 		</menu>
 	</nav>
 	<nav class="agenda">

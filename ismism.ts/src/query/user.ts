@@ -52,7 +52,6 @@ export function user_set(
 
 const utc_pass_valid = new Date("2022-10-05").getTime()
 const utc_h = 60 * 60 * 1000
-const utc_d = 24 * utc_h
 export const pcode_expire_h = 1
 export const pcode_digit = 6
 
@@ -70,6 +69,14 @@ export async function userpass(
 		if (p && p.pcode && p.pcode.utc > utc_pass_valid && p.ptoken && p.ptoken === jwt)
 			return { uid: u.uid, utc: Date.now() }
 	}
+	return null
+}
+export async function userpass_clear(
+	uid: number
+) {
+	if (not_id(uid)) return null
+	const { modifiedCount } = await coll.user.updateOne({ _id: uid }, { $unset: { ptoken: "" } })
+	if (modifiedCount) return { cleared: true }
 	return null
 }
 export async function userpass_issue(
@@ -91,13 +98,13 @@ export async function userpass_issue(
 export const uid_tst = 100
 export async function userpass_code(
 	nbr: string,
-	code: number,
 	sms: boolean,
 ) {
 	const p = await pass_of_nbr(nbr)
 	const utc = Date.now()
-	if (p && (!p.pcode || utc - p.pcode.utc > utc_d || code == p.pcode.code)) {
-		code = p._id === uid_tst ? 111111 : Math.round(Math.random() * 1000000)
+	if (p) {
+		if (p.pcode && utc - p.pcode.utc < pcode_expire_h * utc_h) return { sent: false, utc: p.pcode.utc }
+		const code = p._id === uid_tst ? 111111 : Math.round(Math.random() * 1000000)
 		const { modifiedCount } = await coll.user.updateOne({ _id: p._id }, { $set: { pcode: { code, utc } } })
 		if (modifiedCount > 0 && sms) {
 			const { sent } = await smssend(nbr, `${code}`.padStart(pcode_digit, "0"), `${pcode_expire_h}`)

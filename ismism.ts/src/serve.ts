@@ -30,8 +30,8 @@ async function route(
 			})
 		} case "p": {
 			const p: PostPass = {}
-			const cookie = req.headers.get("cookie")
-			if (cookie && cookie.startsWith("pp=")) p.jwt = cookie.substring(3)
+			const [cookie] = req.headers.get("cookie")?.split(";").filter(c => c.startsWith("pp=")) ?? []
+			if (cookie) p.jwt = cookie.substring(3)
 			const b = await req.text()
 			const r = JSON.stringify(await post(f, p, b))
 			console.log(`${utc_short(Date.now())} - ${f}#${p.u?.uid ?? ""} - ${b} - ${r}`)

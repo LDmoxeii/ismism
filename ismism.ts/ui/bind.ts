@@ -1,11 +1,12 @@
 // deno-lint-ignore-file no-window-prefix
 import { utc_medium } from "../src/ontic/utc.ts"
-import { User } from "../src/query.ts"
+import { User, UserPassCode } from "../src/query.ts"
 import type { UserPass } from "../src/query/user.ts"
 
 const ver = "ismism-0.0.3-20230112"
 let hash = ""
-const main = document.getElementById("main")!
+const main_e = document.getElementById("main")!
+const userpass_e = document.getElementById("userpass")!
 let utc_etag = Date.now()
 let userpass: UserPass | null = null
 
@@ -37,31 +38,32 @@ function template(
 	return [t, elc.map(c => t.querySelector(`.${c}`)!)]
 }
 
-async function login(
+function login(
 ) {
 	userpass = null
 	const [login_t, [
-		nbr_e, send_e, code_e, issue_e
-	]] = template("login", ["nbr", "send", "code", "issue"]) as [DocumentFragment, [
-		HTMLInputElement, HTMLButtonElement, HTMLInputElement, HTMLButtonElement
+		nbr_e, send_e, sent_e, codeissue_e, code_e, issue_e
+	]] = template("login", ["nbr", "send", "sent", "codeissue", "code", "issue"]) as [DocumentFragment, [
+		HTMLInputElement, HTMLButtonElement, HTMLParagraphElement, HTMLSelectElement, HTMLInputElement, HTMLButtonElement
 	]]
-	send_e.addEventListener("click", () => {
+	send_e.addEventListener("click", async () => {
 		if (!nbr_e.checkValidity()) { alert("无效手机号"); return }
 		nbr_e.readOnly = send_e.disabled = true
 		send_e.innerText = "已发送"
-		post("userpass_code", { nbr: nbr_e.value, code: 0, sms: true }).then(console.log)
-		code_e.readOnly = issue_e.disabled = false
+		const sent = await post("userpass_code", { nbr: nbr_e.value, code: 0, sms: true }) as UserPassCode
+		if (sent?.utc) sent_e.innerText += `上次发送：${utc_medium(sent.utc)}`
+		codeissue_e.classList.remove("none")
 	})
 	issue_e.addEventListener("click", () => {
 		if (!code_e.checkValidity()) { alert("无效验证码"); return }
 		code_e.readOnly = issue_e.disabled = true
 		post("userpass_issue", { nbr: nbr_e.value, code: parseInt(code_e.value), renew: true }).then(u => {
 			userpass = u as UserPass
+			userpass_e.innerText = `用户#${userpass.uid}`
 			window.location.hash = `#${userpass.uid}`
-			console.log(userpass)
 		})
 	})
-	main.appendChild(login_t)
+	main_e.appendChild(login_t)
 }
 
 async function user(
@@ -71,7 +73,7 @@ async function user(
 	if (!u) {
 		const [user_t, [id_e]] = template("user-0", ["id"])
 		id_e.innerText = `${uid}`
-		main.appendChild(user_t)
+		main_e.appendChild(user_t)
 		return
 	}
 	const uname = new Map(u.uname)
@@ -83,7 +85,13 @@ async function user(
 	name_e.innerText = u.name
 	if (userpass && userpass.uid == uid) {
 		eidt_e.addEventListener("click", () => alert("edit"))
-		quit_e.addEventListener("click", () => alert("quit"))
+		quit_e.addEventListener("click", () => {
+			post("userpass_clear", {}).then(() => {
+				userpass = null
+				userpass_e.innerText = "用户登录"
+				window.location.hash = "#u"
+			})
+		})
 		eidt_e.classList.remove("none")
 		quit_e.classList.remove("none")
 	}
@@ -102,7 +110,7 @@ async function user(
 		a.innerText = s.name
 		if (n > 0) a.classList.add("sep")
 	})
-	main.appendChild(user_t)
+	main_e.appendChild(user_t)
 }
 
 window.addEventListener("hashchange", () => {
@@ -122,7 +130,7 @@ async function load(
 	console.log(`\n主义主义开发小组！成员招募中！\n\n发送自我介绍至网站维护邮箱，或微信联系 728 万大可\n \n`)
 	console.log(ver)
 	userpass = await post("userpass", {})
-	console.log(userpass)
+	if (userpass?.uid) userpass_e.innerText = `用户#${userpass.uid}`
 	window.dispatchEvent(new Event("hashchange"))
 }
 load()
