@@ -1,7 +1,7 @@
 import { agenda } from "./query/agenda.ts"
 import { collrec, rec_of_aid, rec_of_recent, rec_of_sid, rec_of_uid } from "./query/rec.ts"
 import { soc } from "./query/soc.ts"
-import { user, UserPass, userpass, userpass_clear, userpass_code, userpass_issue } from "./query/user.ts"
+import { user, UserPass, userpass, userpass_clear, userpass_code, userpass_issue, user_new } from "./query/user.ts"
 
 // deno-lint-ignore no-explicit-any
 type Return<T extends (...args: any) => Promise<any>> = Awaited<ReturnType<T>>
@@ -61,7 +61,13 @@ export async function post(
 		p.jwt = undefined
 	}
 	switch (f) {
-		case "userpass": {
+		case "usernew": {
+			const { act, nbr } = JSON.parse(b)
+			if (typeof act == "string" && typeof nbr == "string" ) {
+				return user_new(act, nbr)
+			}
+			break
+		} case "userpass": {
 			if (p.u) return p.u
 			break
 		} case "userpass_clear": {

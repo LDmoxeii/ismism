@@ -2,6 +2,7 @@ import { jwt_sign, jwt_verify } from "../aut.ts"
 import { coll } from "../db.ts"
 import { User } from "../dbtyp.ts"
 import { smssend } from "../sms.ts"
+import { act } from "./act.ts"
 import { idname, not_id } from "./id.ts"
 import { nrec_of_uid } from "./rec.ts"
 import { soc_of_uid } from "./soc.ts"
@@ -43,11 +44,42 @@ export async function user(
 	return { ...u, soc, uname, nrec }
 }
 
+export async function user_new(
+	actid: string, nbr: string,
+): Promise<{ uid: User["_id"] } | null> {
+	const a = await act(actid)
+	if (a) switch (a.act) {
+		case "usernew": {
+			const projection = { _id: 1 }
+			const [u] = await coll.user.find({}, { projection }).sort({ _id: -1 }).limit(1).toArray()
+			if (u) {
+				const _id = u._id + 1
+				const uid = await coll.user.insertOne({
+					_id, nbr,
+					utc: a.exp,
+					name: `${_id}`,
+					referer: a.referer,
+					intro: ""
+				}) as User["_id"]
+				return { uid }
+			} break
+		} case "usernbr": {
+			const { modifiedCount } = await user_set(a.uid, { nbr })
+			if (modifiedCount > 0) return { uid: a.uid }
+		}
+	}
+	return null
+}
+export function user_del(
+	uid: number
+) {
+	return coll.user.deleteOne({ _id: uid })
+}
 export function user_set(
 	uid: User["_id"],
 	user: Partial<User>,
 ) {
-	return coll.user.updateOne({ _id: uid }, { $set: user }, { upsert: true })
+	return coll.user.updateOne({ _id: uid }, { $set: user })
 }
 
 const utc_pass_valid = new Date("2022-10-05").getTime()
@@ -113,5 +145,3 @@ export async function userpass_code(
 	}
 	return null
 }
-
-

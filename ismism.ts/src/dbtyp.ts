@@ -74,3 +74,14 @@ export type Txt = Dat & {
 	title: string,
 	txt: string,
 }
+
+export type Act = {
+	_id: string,
+	exp: number,
+} & ({
+	act: "usernew",
+	referer: number[],
+} | {
+	act: "usernbr",
+	uid: number,
+})

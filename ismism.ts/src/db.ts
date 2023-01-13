@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
-import { Agenda, Fund, Soc, User, Work, Worker, Imgsrc, Txt } from "./dbtyp.ts"
+import { Agenda, Fund, Soc, User, Work, Worker, Imgsrc, Txt, Act } from "./dbtyp.ts"
 
 const uri = "mongodb://127.0.0.1:27017"
 const mongo = new MongoClient()
@@ -16,6 +16,7 @@ export const coll = {
 	fund: db.collection<Fund>("fund"),
 	imgsrc: db.collection<Imgsrc>("imgsrc"),
 	txt: db.collection<Txt>("txt"),
+	act: db.collection<Act>("act"),
 }
 export type Coll<T> = Collection<T>
 export type CollId = (typeof coll)["user" | "soc" | "agenda"]

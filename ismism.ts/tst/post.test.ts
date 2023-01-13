@@ -1,9 +1,12 @@
 import { assert } from "https://deno.land/std@0.163.0/testing/asserts.ts"
-import { jwk_set } from "../src/aut.ts";
+import { jwk_set } from "../src/aut.ts"
+import type { Act } from "../src/dbtyp.ts"
 import { post, PostPass, UserPassCode, UserPassClear } from "../src/query.ts"
-import { uid_tst, UserPass, user_set } from "../src/query/user.ts"
+import { act_del, act_new } from "../src/query/act.ts"
+import { uid_tst, UserPass, user_del, user_set } from "../src/query/user.ts"
 
 function b(json: {
+	act?: string,
 	nbr?: string,
 	code?: number,
 	sms?: boolean,
@@ -11,6 +14,32 @@ function b(json: {
 }): string {
 	return JSON.stringify(json)
 }
+
+Deno.test("usernew", async () => {
+	const nbr = "11111111112"
+	const a_new: Act = {
+		_id: "tstusernew",
+		exp: 0,
+		act: "usernew",
+		referer: [728],
+	}
+	await act_new(a_new)
+	const p: PostPass = {}
+	const { uid } = await post("usernew", p, b({ nbr, act: a_new._id })) as { uid: number }
+	assert(uid > 0)
+	const a_nbr: Act = {
+		_id: "tstusernbr",
+		exp: 0,
+		act: "usernbr",
+		uid
+	}
+	await act_new(a_nbr)
+	const r = await post("usernew", p, b({ nbr: "11111111113", act: a_nbr._id })) as { uid: number }
+	assert(r.uid === uid)
+	await act_del(a_new._id)
+	await act_del(a_nbr._id)
+	await user_del(uid)
+})
 
 Deno.test("userpass", async () => {
 	const nbr = "11111111111"

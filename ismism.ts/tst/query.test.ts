@@ -3,7 +3,7 @@ import type { CollRec, RecOf } from "../src/query/rec.ts"
 import { Agenda, query, Soc, User } from "../src/query.ts"
 import type * as T from "../src/dbtyp.ts"
 
-function p(
+export function p(
 	obj: {
 		coll?: CollRec,
 		uid?: T.User["_id"],
