@@ -49,6 +49,7 @@
 	}
 
 	hr {
+		width: 100%;
 		border: none;
 		margin: 6px;
 	}
@@ -295,9 +296,8 @@
 		border: none;
 	}
 
-	section.codeissue>p {
-		width: 100%;
-		margin: 0;
+	section.hint {
+		margin: 1ch 0;
 		color: var(--gray);
 		text-align: center;
 		white-space: pre-line;
@@ -332,15 +332,18 @@
 				minlength="11" maxlength="11" required />
 			<button class="send">发送验证码</button>
 		</section>
+		<section class="flex usernew none">
+			<label>激活码：</label>
+			<input class="act" type="text" placeholder="激活码" minlength="6" maxlength="12" required />
+			<button class="activate">激活</button>
+		</section>
 		<section class="flex codeissue none">
 			<label>验证码：</label>
 			<input class="code" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
 				maxlength="6" required />
 			<button class="issue">登录</button>
-			<p>验证码已发送，可多次使用</p>
-			<p>一小时内不再重复发送</p>
-			<p class="sent"></p>
 		</section>
+		<section class="hint"></section>
 	</article>
 </template>
 <template id="user-0">

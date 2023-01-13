@@ -42,17 +42,43 @@ function login(
 ) {
 	userpass = null
 	const [login_t, [
-		nbr_e, send_e, sent_e, codeissue_e, code_e, issue_e
-	]] = template("login", ["nbr", "send", "sent", "codeissue", "code", "issue"]) as [DocumentFragment, [
-		HTMLInputElement, HTMLButtonElement, HTMLParagraphElement, HTMLSelectElement, HTMLInputElement, HTMLButtonElement
+		nbr_e, send_e,
+		usernew_e, act_e, activate_e,
+		codeissue_e, code_e, issue_e,
+		hint_e,
+	]] = template("login", [
+		"nbr", "send",
+		"usernew", "act", "activate",
+		"codeissue", "code", "issue",
+		"hint",
+	]) as [DocumentFragment, [
+		HTMLInputElement, HTMLButtonElement,
+		HTMLElement, HTMLInputElement, HTMLButtonElement,
+		HTMLElement, HTMLInputElement, HTMLButtonElement,
+		HTMLElement,
 	]]
-	send_e.addEventListener("click", async () => {
+	const send = async () => {
 		if (!nbr_e.checkValidity()) { alert("无效手机号"); return }
 		nbr_e.readOnly = send_e.disabled = true
-		send_e.innerText = "已发送"
 		const sent = await post("userpass_code", { nbr: nbr_e.value, code: 0, sms: true }) as UserPassCode
-		if (sent?.utc) sent_e.innerText += `上次发送：${utc_medium(sent.utc)}`
-		codeissue_e.classList.remove("none")
+		if (sent) {
+			const utc = sent.utc ? `上次发送：${utc_medium(sent.utc)}` : ""
+			hint_e.innerText = `验证码已发送，可多次使用\n一小时内不再重复发送${utc}`
+			codeissue_e.classList.remove("none")
+		} else {
+			hint_e.innerText = `手机号未注册\n输入注册激活码\n激活码只能使用一次，确认手机号无误`
+			usernew_e.classList.remove("none")
+		}
+	}
+	send_e.addEventListener("click", send)
+	activate_e.addEventListener("click", () => {
+		act_e.readOnly = activate_e.disabled = true
+		const activated = true
+		if (activated) codeissue_e.classList.remove("none") //send()
+		else {
+			act_e.readOnly = activate_e.disabled = false
+			alert("无效激活码")
+		}
 	})
 	issue_e.addEventListener("click", () => {
 		if (!code_e.checkValidity()) { alert("无效验证码"); return }
