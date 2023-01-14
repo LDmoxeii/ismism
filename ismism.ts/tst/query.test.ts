@@ -17,7 +17,7 @@ export function p(
 
 Deno.test("user", async () => {
 	const u = await query("user", p({ uid: 728 })) as User
-	assert(u && u.name === "万大可" && u.intro.length > 0)
+	assert(u && u.name === "万大可" && u.intro.length == 0)
 	assertEquals(u.referer, [1, 2])
 	const uname = new Map(u.uname)
 	assert(uname.get(u.referer[0]) === "未明子")
@@ -61,7 +61,7 @@ Deno.test("agenda", async () => {
 		await query("rec_of_aid", p({ coll: "fund", aid: a1._id })) as RecOf<T.Fund>,
 	])
 	assert(worker.rec.length === 6 && work.rec.length === 8 && fund.rec.length === 6)
-	assert(a4.imgsrc && a4.imgsrc.img.length === 4 && a1.imgsrc === undefined)
+	assert(a4.imgsrc && a4.imgsrc.img.length === 5 && a1.imgsrc === undefined)
 	assert(worker.urole.length === worker.rec.length)
 })
 

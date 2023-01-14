@@ -3,7 +3,7 @@ import { jwk_set } from "../src/aut.ts"
 import type { Act } from "../src/dbtyp.ts"
 import { post, PostPass, UserPassCode, UserPassClear } from "../src/query.ts"
 import { act_del, act_new } from "../src/query/act.ts"
-import { uid_tst, UserPass, user_del, user_set } from "../src/query/user.ts"
+import { uid_tst, UserPass, user_del, user_new, user_set } from "../src/query/user.ts"
 
 function b(json: {
 	act?: string,
@@ -23,6 +23,7 @@ Deno.test("usernew", async () => {
 		act: "usernew",
 		referer: [728],
 	}
+	await act_del(a_new._id)
 	await act_new(a_new)
 	const p: PostPass = {}
 	const { uid } = await post("usernew", p, b({ nbr, act: a_new._id })) as { uid: number }
@@ -44,14 +45,27 @@ Deno.test("usernew", async () => {
 Deno.test("userpass", async () => {
 	const nbr = "11111111111"
 	const code = 111111
-	const rset = await user_set(uid_tst, {
+	const utst = {
 		name: "测试",
 		utc: Date.now(),
 		referer: [728],
 		intro: "this is a test",
 		nbr,
-	})
-	assert(rset.matchedCount === 1)
+	}
+	const rz = await user_set(uid_tst, utst)
+	assert(rz.matchedCount === 0)
+	const a_new: Act = {
+		_id: "tstusernew",
+		exp: 0,
+		act: "usernew",
+		referer: [728],
+	}
+	await act_new(a_new)
+	const rn = await user_new(a_new._id, nbr)
+	assert(rn && rn.uid > 0)
+	await act_del(a_new._id)
+	const rt = await user_set(rn.uid, utst)
+	assert(rt.matchedCount === 1)
 
 	await jwk_set("anotherkey")
 

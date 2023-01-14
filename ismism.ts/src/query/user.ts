@@ -1,7 +1,7 @@
 import { jwt_sign, jwt_verify } from "../aut.ts"
 import { coll } from "../db.ts"
 import { User } from "../dbtyp.ts"
-import { smssend } from "../sms.ts"
+import { smssend } from "../ontic/sms.ts"
 import { act } from "./act.ts"
 import { idname, not_id } from "./id.ts"
 import { nrec_of_uid } from "./rec.ts"
@@ -14,7 +14,6 @@ async function user_of_uid(
 	const projection = { _id: 0, name: 1, utc: 1, referer: 1, intro: 1 }
 	return await coll.user.findOne({ _id: uid }, { projection }) ?? null
 }
-
 async function pass_of_uid(
 	uid: number
 ): Promise<Pick<User, "pcode" | "ptoken"> | null> {

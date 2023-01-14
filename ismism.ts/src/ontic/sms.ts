@@ -1,6 +1,6 @@
-import { to_hex } from "./ontic/base.ts"
-import { digest, key, sign } from "./ontic/crypt.ts"
-import { utc_date } from "./ontic/utc.ts"
+import { to_hex } from "./base.ts"
+import { digest, key, sign } from "./crypt.ts"
+import { utc_date } from "./utc.ts"
 
 const tc: {
 	id: string,
