@@ -24,9 +24,10 @@ Deno.test("usernew", async () => {
 		referer: [728],
 	}
 	await act_del(a_new._id)
-	await act_new(a_new)
+	const actid_new = await act_new(a_new)
+	assert(actid_new && actid_new.length > 0)
 	const p: PostPass = {}
-	const { uid } = await post("usernew", p, b({ nbr, act: a_new._id })) as { uid: number }
+	const uid = await post("usernew", p, b({ nbr, act: a_new._id })) as number
 	assert(uid > 0)
 	const a_nbr: Act = {
 		_id: "tstusernbr",
@@ -34,12 +35,12 @@ Deno.test("usernew", async () => {
 		act: "usernbr",
 		uid
 	}
-	await act_new(a_nbr)
-	const r = await post("usernew", p, b({ nbr: "11111111113", act: a_nbr._id })) as { uid: number }
-	assert(r.uid === uid)
-	await act_del(a_new._id)
 	await act_del(a_nbr._id)
-	await user_del(uid)
+	const actid_nbr = await act_new(a_nbr)
+	assert(actid_nbr && actid_nbr.length > 0)
+	const r = await post("usernew", p, b({ nbr: "11111111113", act: a_nbr._id })) as number
+	assert(r === uid)
+	assert(await user_del(uid))
 })
 
 Deno.test("userpass", async () => {
@@ -53,19 +54,19 @@ Deno.test("userpass", async () => {
 		nbr,
 	}
 	const rz = await user_set(uid_tst, utst)
-	assert(rz.matchedCount === 0)
+	assert(rz === 0)
 	const a_new: Act = {
 		_id: "tstusernew",
 		exp: 0,
 		act: "usernew",
 		referer: [728],
 	}
-	await act_new(a_new)
-	const rn = await user_new(a_new._id, nbr)
-	assert(rn && rn.uid > 0)
 	await act_del(a_new._id)
-	const rt = await user_set(rn.uid, utst)
-	assert(rt.matchedCount === 1)
+	await act_new(a_new)
+	const uid = await user_new(a_new._id, nbr)
+	assert(uid && uid > 0)
+	const rt = await user_set(uid, utst)
+	assert(rt === 1)
 
 	await jwk_set("anotherkey")
 

@@ -45,7 +45,7 @@ export async function user(
 
 export async function user_new(
 	actid: string, nbr: string,
-): Promise<{ uid: User["_id"] } | null> {
+): Promise<User["_id"] | null> {
 	const a = await act(actid)
 	if (a) switch (a.act) {
 		case "usernew": {
@@ -53,32 +53,44 @@ export async function user_new(
 			const [u] = await coll.user.find({}, { projection }).sort({ _id: -1 }).limit(1).toArray()
 			if (u) {
 				const _id = u._id + 1
-				const uid = await coll.user.insertOne({
-					_id, nbr,
-					utc: a.exp,
-					name: `${_id}`,
-					referer: a.referer,
-					intro: ""
-				}) as User["_id"]
-				return { uid }
+				try {
+					return await coll.user.insertOne({
+						_id, nbr,
+						utc: a.exp,
+						name: `${_id}`,
+						referer: a.referer,
+						intro: ""
+					}) as User["_id"]
+				} catch {
+					return null
+				}
 			} break
 		} case "usernbr": {
-			const { modifiedCount } = await user_set(a.uid, { nbr })
-			if (modifiedCount > 0) return { uid: a.uid }
+			const c = await user_set(a.uid, { nbr })
+			return c && c > 0 ? a.uid : null
 		}
 	}
 	return null
 }
-export function user_del(
-	uid: number
-) {
-	return coll.user.deleteOne({ _id: uid })
-}
-export function user_set(
+export async function user_set(
 	uid: User["_id"],
 	user: Partial<User>,
-) {
-	return coll.user.updateOne({ _id: uid }, { $set: user })
+	unset = false
+): Promise<0 | 1 | null> {
+	try {
+		const { modifiedCount } = await coll.user.updateOne(
+			{ _id: uid }, unset ? { $unset: user } : { $set: user }
+		)
+		return modifiedCount > 0 ? 1 : 0
+	} catch { return null }
+}
+export async function user_del(
+	uid: number
+): Promise<0 | 1 | null> {
+	try {
+		const c = await coll.user.deleteOne({ _id: uid })
+		return c > 0 ? 1 : 0
+	} catch { return null }
 }
 
 const utc_pass_valid = new Date("2022-10-05").getTime()
