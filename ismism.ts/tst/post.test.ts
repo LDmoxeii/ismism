@@ -1,5 +1,5 @@
 import { assert } from "https://deno.land/std@0.163.0/testing/asserts.ts"
-import { jwk_set } from "../src/aut.ts"
+import { jwk_set } from "../src/ontic/jwt.ts"
 import type { Act } from "../src/dbtyp.ts"
 import { post, PostPass, UserPassCode, UserPassClear } from "../src/query.ts"
 import { act_del, act_new } from "../src/query/act.ts"

@@ -1,5 +1,5 @@
 import { assert, equal } from "https://deno.land/std@0.163.0/testing/asserts.ts"
-import { jwk_load, jwk_set, jwt_sign, jwt_verify } from "../src/aut.ts"
+import { jwk_load, jwk_set, jwt_sign, jwt_verify } from "../src/ontic/jwt.ts"
 
 Deno.test("aut", async () => {
 	const json = { uid: 1000, name: "name", role: "admin", iat: Date.now() }

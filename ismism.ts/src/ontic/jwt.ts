@@ -1,5 +1,5 @@
-import { from_base64, from_u8, to_base64, to_u8 } from "./ontic/base.ts"
-import { key, sign, verify } from "./ontic/crypt.ts"
+import { from_base64, from_u8, to_base64, to_u8 } from "./base.ts"
+import { key, sign, verify } from "./crypt.ts"
 
 type Json = Record<string, string | number | boolean>
 
@@ -24,7 +24,6 @@ export async function jwt_sign(
 	const s = to_base64(await sign(jwk, p))
 	return `${p}.${s}`
 }
-
 export async function jwt_verify<T extends Json>(
 	jwt: string
 ): Promise<T | null> {

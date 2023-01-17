@@ -1,4 +1,4 @@
-import { jwt_sign, jwt_verify } from "../aut.ts"
+import { jwt_sign, jwt_verify } from "../ontic/jwt.ts"
 import { coll } from "../db.ts"
 import { User } from "../dbtyp.ts"
 import { smssend } from "../ontic/sms.ts"
