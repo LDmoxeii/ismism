@@ -2,10 +2,9 @@ import { Collection, MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.t
 import { Agenda, Fund, Soc, User, Work, Worker, Imgsrc, Txt, Act } from "./dbtyp.ts"
 
 const uri = "mongodb://127.0.0.1:27017"
-const mongo = new MongoClient()
-await mongo.connect(uri)
-
-const db = mongo.database("ismism")
+const conn = new MongoClient()
+await conn.connect(uri)
+const db = conn.database("ismism")
 
 export const coll = {
 	user: db.collection<User>("user"),
@@ -18,8 +17,15 @@ export const coll = {
 	txt: db.collection<Txt>("txt"),
 	act: db.collection<Act>("act"),
 }
+
 export type Coll<T> = Collection<T>
 export type CollId = (typeof coll)["user" | "soc" | "agenda"]
+
+export type DocC<T> = Promise<NonNullable<T> | null>
+export type DocR<T> = Promise<NonNullable<T> | null>
+export type DocU = Promise<0 | 1 | null>
+export type DocD = Promise<0 | 1 | null>
+export type Doc<T> = DocC<T> | DocR<T> | DocU | DocD
 
 export async function reset(
 ) {

@@ -12,10 +12,11 @@ export function not_id(
 	return !(id > 0)
 }
 
+export type IdName = [Id["_id"], Id["name"]][]
 export async function idname(
 	c: CollId,
 	id: Id["_id"][],
-): Promise<[Id["_id"], Id["name"]][]> {
+): Promise<IdName> {
 	id = [...new Set(id.filter(is_id))]
 	const d = await c.find(
 		{ _id: { $in: id } },
@@ -33,7 +34,6 @@ export async function uid_of_sid(
 }
 
 export type URole = [User["_id"], [Agenda["_id"], Role][]][]
-
 export async function urole(
 	uid: User["_id"][]
 ): Promise<URole> {

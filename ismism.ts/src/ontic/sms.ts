@@ -2,6 +2,17 @@ import { to_hex } from "./base.ts"
 import { digest, key, sign } from "./crypt.ts"
 import { utc_date } from "./utc.ts"
 
+export function is_nbr(
+	nbr: string
+) {
+	return /^1\d{10}$/.test(nbr)
+}
+export function not_nbr(
+	nbr: string
+) {
+	return !/^1\d{10}$/.test(nbr)
+}
+
 const tc: {
 	id: string,
 	key: string,

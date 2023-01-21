@@ -1,13 +1,12 @@
+import { Ret } from "./ontic/typ.ts"
 import { agenda } from "./query/agenda.ts"
 import { collrec, rec_of_aid, rec_of_recent, rec_of_sid, rec_of_uid } from "./query/rec.ts"
 import { soc } from "./query/soc.ts"
 import { user, UserPass, userpass, userpass_clear, userpass_code, userpass_issue, user_new } from "./query/user.ts"
 
-// deno-lint-ignore no-explicit-any
-type Return<T extends (...args: any) => Promise<any>> = Awaited<ReturnType<T>>
-export type Agenda = Return<typeof agenda>
-export type User = Return<typeof user>
-export type Soc = Return<typeof soc>
+export type Agenda = Ret<typeof agenda>
+export type User = Ret<typeof user>
+export type Soc = Ret<typeof soc>
 
 export async function query(
 	f: string,
@@ -48,8 +47,8 @@ export async function query(
 }
 
 export type PostPass = { jwt?: string | null, u?: UserPass | null }
-export type UserPassCode = Return<typeof userpass_code>
-export type UserPassClear = Return<typeof userpass_clear>
+export type UserPassCode = Ret<typeof userpass_code>
+export type UserPassClear = Ret<typeof userpass_clear>
 
 export async function post(
 	f: string,
@@ -63,7 +62,7 @@ export async function post(
 	switch (f) {
 		case "usernew": {
 			const { act, nbr } = JSON.parse(b)
-			if (typeof act == "string" && typeof nbr == "string" ) {
+			if (typeof act == "string" && typeof nbr == "string") {
 				return user_new(act, nbr)
 			}
 			break
