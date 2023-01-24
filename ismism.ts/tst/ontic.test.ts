@@ -1,7 +1,8 @@
 import { assert, assertEquals, assertRejects } from "https://deno.land/std@0.173.0/testing/asserts.ts"
+import { is_adm, is_adm2, not_adm, not_adm2 } from "../src/ontic/adm.ts"
 import { from_base64, from_hex, from_u8, to_base64, to_hex, to_u8 } from "../src/ontic/base.ts"
-import { digest } from "../src/ontic/crypt.ts";
-import { jwk_load, jwk_set, jwt_sign, jwt_verify } from "../src/ontic/jwt.ts";
+import { digest } from "../src/ontic/crypt.ts"
+import { jwk_load, jwk_set, jwt_sign, jwt_verify } from "../src/ontic/jwt.ts"
 import { utc_date, utc_h, utc_medium, utc_short } from "../src/ontic/utc.ts"
 
 Deno.test("base", () => {
@@ -24,6 +25,13 @@ Deno.test("utc", () => {
 	const t = Date.now()
 	const [m, s, d] = [utc_medium(t), utc_short(t), utc_date(t)]
 	assert(m.length > s.length && s.length > d.length && d.length > 0)
+})
+
+Deno.test("adm", () => {
+	assert(is_adm("四川", "成都") && is_adm("广东", "汕头"))
+	assert(not_adm("四川", "汕头") && not_adm("广东", "成都") && not_adm("", ""))
+	assert(is_adm2("成都") && is_adm2("汕头"))
+	assert(not_adm2("成") && not_adm2("汕头 成都"))
 })
 
 Deno.test("digest", async () => {

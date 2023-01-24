@@ -10,7 +10,7 @@ export function is_nbr(
 export function not_nbr(
 	nbr: string
 ) {
-	return !/^1\d{10}$/.test(nbr)
+	return !is_nbr(nbr)
 }
 
 const tc: {

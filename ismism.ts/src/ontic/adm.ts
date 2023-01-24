@@ -520,3 +520,40 @@ export const adm = new Map<string, string[]>([
 		]
 	]
 ])
+const adm2 = new Set([...adm.values()].flat())
+
+export function is_adm(
+	adm1: string,
+	adm2: string,
+) {
+	const a1 = adm.get(adm1)
+	if (!a1) return false
+	return a1.includes(adm2)
+}
+export function not_adm(
+	adm1: string,
+	adm2: string,
+) {
+	return !is_adm(adm1, adm2)
+}
+
+export function is_adm1(
+	a: string
+) {
+	return adm.has(a)
+}
+export function not_adm1(
+	a: string
+) {
+	return !adm.has(a)
+}
+export function is_adm2(
+	a: string
+) {
+	return adm2.has(a)
+}
+export function not_adm2(
+	a: string
+) {
+	return !adm2.has(a)
+}
