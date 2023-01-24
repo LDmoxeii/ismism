@@ -1,0 +1,7 @@
+GET http://localhost:728/quit
+
+### 
+GET http://localhost:728/update HTTP/1.1
+
+### 
+GET http://localhost:728/q HTTP/1.1
