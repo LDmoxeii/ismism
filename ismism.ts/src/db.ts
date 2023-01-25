@@ -1,4 +1,4 @@
-import { Act, Agenda, Aut, Fund, Imgsrc, Soc, User, Work, Worker } from "./eidetic/dbtyp.ts"
+import { Act, Agenda, Aut, Fund, Soc, User, Work, Worker } from "./eidetic/dbtyp.ts"
 import { MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
 
 const conn = new MongoClient()
@@ -21,8 +21,6 @@ export async function db(
 
 		act: db.collection<Act>("act"),
 		aut: db.collection<Aut>("aut"),
-
-		imgsrc: db.collection<Imgsrc>("imgsrc"),
 	}
 
 	if (reset) {

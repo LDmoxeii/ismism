@@ -23,8 +23,8 @@ export type Agenda = Id & {
 	fund: number,
 	expense: number,
 	goal: { name: string, pct: number }[],
+	img: { name: string, src: string }[],
 	candidate: number,
-	imgsrc?: Imgsrc["_id"],
 }
 
 export type Rec = {
@@ -66,13 +66,4 @@ export type Act = {
 export type Aut = {
 	_id: User["_id"],
 	p: string[],
-}
-
-export type Dat = {
-	_id: { uid: User["_id"], utc: number },
-	name: string,
-	utc_update: number,
-}
-export type Imgsrc = Dat & {
-	img: { title: string, src: string }[],
 }

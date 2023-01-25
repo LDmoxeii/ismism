@@ -1,5 +1,6 @@
 import { assert, assertEquals } from "https://deno.land/std@0.173.0/testing/asserts.ts"
 import { db } from "../src/db.ts"
+import { agenda_c, agenda_d, agenda_r, agenda_u } from "../src/eidetic/agenda.ts"
 import { is_id, is_intro, is_name, not_id, not_intro, not_name } from "../src/eidetic/id.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eidetic/soc.ts"
 import { user_c, user_r, user_u, user_d } from "../src/eidetic/user.ts"
@@ -44,4 +45,18 @@ Deno.test("soc", async () => {
 	assertEquals(s2, { _id: 1, sec: [2], ref: [2], uid: [2] })
 	await soc_d(r_c)
 	assert(null === await soc_r(r_c, {}))
+})
+
+Deno.test("agenda", async () => {
+	const name = "活动"
+	assert(null === await agenda_r(1, {}))
+	const r_c = await agenda_c(name, [1], "四川", "成都", name)
+	assert(r_c && r_c === 1)
+	const s = await agenda_r(r_c, { name: 1, intro: 1, adm1: 1, goal: 1 })
+	assert(s && s.name === name && s.intro === name && s.adm1 === "四川" && s.goal.length === 0)
+	await agenda_u(r_c, { ref: [2], goal: [{ name: "目标", pct: 75 }], img: [{ name: "a", src: "b" }] })
+	const s2 = await agenda_r(r_c, { ref: 1, goal: 1, img: 1 })
+	assertEquals(s2, { _id: 1, ref: [2], goal: [{ name: "目标", pct: 75 }], img: [{ name: "a", src: "b" }] })
+	await agenda_d(r_c)
+	assert(null === await agenda_r(r_c, {}))
 })
