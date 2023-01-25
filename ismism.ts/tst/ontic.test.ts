@@ -1,8 +1,9 @@
 import { assert, assertEquals, assertRejects } from "https://deno.land/std@0.173.0/testing/asserts.ts"
-import { is_adm, is_adm2, not_adm, not_adm2 } from "../src/ontic/adm.ts"
+import { is_adm, is_adm1, is_adm2, not_adm, not_adm1, not_adm2 } from "../src/ontic/adm.ts"
 import { from_base64, from_hex, from_u8, to_base64, to_hex, to_u8 } from "../src/ontic/base.ts"
 import { digest } from "../src/ontic/crypt.ts"
 import { jwk_load, jwk_set, jwt_sign, jwt_verify } from "../src/ontic/jwt.ts"
+import { is_nbr, not_nbr } from "../src/ontic/sms.ts"
 import { utc_date, utc_h, utc_medium, utc_short } from "../src/ontic/utc.ts"
 
 Deno.test("base", () => {
@@ -28,10 +29,19 @@ Deno.test("utc", () => {
 })
 
 Deno.test("adm", () => {
-	assert(is_adm("四川", "成都") && is_adm("广东", "汕头"))
-	assert(not_adm("四川", "汕头") && not_adm("广东", "成都") && not_adm("", ""))
+	assert(is_adm(["四川", "成都"]) && is_adm(["广东", "汕头"]))
+	assert(not_adm([undefined, null]) && not_adm(["广东", "成都"]) && not_adm(["", ""]))
+	
+	assert(is_adm1("四川") && is_adm1("广东"))
+	assert(not_adm1(undefined) && not_adm1(null) && not_adm2("") && not_adm1("成都"))
+	
 	assert(is_adm2("成都") && is_adm2("汕头"))
-	assert(not_adm2("成") && not_adm2("汕头 成都"))
+	assert(not_adm2(undefined) && not_adm2(null) && not_adm2("") && not_adm2("四川"))
+})
+
+Deno.test("nbr", () => {
+	assert(is_nbr("11111111111"))
+	assert(not_nbr(undefined) && not_nbr(null) && not_nbr("") && not_nbr("123"))
 })
 
 Deno.test("digest", async () => {

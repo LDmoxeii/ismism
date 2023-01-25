@@ -523,37 +523,39 @@ export const adm = new Map<string, string[]>([
 const adm2 = new Set([...adm.values()].flat())
 
 export function is_adm(
-	adm1: string,
-	adm2: string,
-) {
+	adm1adm2: [undefined | null | string, undefined | null | string]
+): adm1adm2 is [string, string] {
+	const [adm1, adm2] = adm1adm2
+	if (!adm1 || typeof adm1 !== "string") return false
+	if (!adm2 || typeof adm2 !== "string") return false
 	const a1 = adm.get(adm1)
 	if (!a1) return false
 	return a1.includes(adm2)
 }
 export function not_adm(
-	adm1: string,
-	adm2: string,
+	adm1adm2: [undefined | null | string, undefined | null | string]
 ) {
-	return !is_adm(adm1, adm2)
+	return !is_adm(adm1adm2)
 }
 
 export function is_adm1(
-	a: string
-) {
-	return adm.has(a)
+	a?: null | string
+): a is string {
+	return typeof a === "string" && adm.has(a)
 }
 export function not_adm1(
-	a: string
+	a?: null | string
 ) {
-	return !adm.has(a)
+	return !is_adm1(a)
 }
+
 export function is_adm2(
-	a: string
-) {
-	return adm2.has(a)
+	a?: null | string
+): a is string {
+	return typeof a === "string" && adm2.has(a)
 }
 export function not_adm2(
-	a: string
+	a?: null | string
 ) {
-	return !adm2.has(a)
+	return !is_adm2(a)
 }

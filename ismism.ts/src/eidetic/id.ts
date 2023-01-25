@@ -1,34 +1,34 @@
 import { Id } from "./dbtyp.ts"
 
 export function is_id(
-	id: Id["_id"]
-) {
-	return id > 0
+	id?: null | Id["_id"]
+): id is Id["_id"] {
+	return typeof id === "number" && id > 0
 }
 export function not_id(
-	id: Id["_id"]
+	id?: null | Id["_id"]
 ) {
-	return !(id > 0)
+	return !is_id(id)
 }
 
 export function is_name(
-	name: Id["name"]
+	name?: null | Id["name"]
 ) {
-	return /^[\u4E00-\u9FFF]{2,16}$/.test(name)
+	return typeof name === "string" && /^[\u4E00-\u9FFF]{2,16}$/.test(name)
 }
 export function not_name(
-	name: Id["name"]
+	name?: null | Id["name"]
 ) {
 	return !is_name(name)
 }
 
 export function is_intro(
-	intro: Id["intro"]
+	intro?: null | Id["intro"]
 ) {
-	return intro.length < 4096
+	return typeof intro === "string" && intro.length <= 4096
 }
 export function not_intro(
-	intro: Id["intro"]
+	intro?: null | Id["intro"]
 ) {
 	return !is_intro(intro)
 }

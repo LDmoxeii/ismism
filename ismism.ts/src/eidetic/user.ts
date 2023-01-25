@@ -10,7 +10,7 @@ export async function user_c(
 	adm1: string,
 	adm2: string,
 ): DocC<User["_id"]> {
-	if (not_nbr(nbr) || ref.some(not_id) || not_adm(adm1, adm2)) return null
+	if (not_nbr(nbr) || ref.some(not_id) || not_adm([adm1, adm2])) return null
 	const l = await coll.user.findOne({}, { projection: { _id: 1 }, sort: { _id: -1 } })
 	const _id = l ? l._id + 1 : 1
 	const u: User = {
@@ -43,7 +43,7 @@ export async function user_u(
 		if (u.nbr && not_nbr(u.nbr)) return null
 		if (u.name && not_name(u.name)) return null
 		if (u.ref && u.ref.some(not_id)) return null
-		if ((u.adm1 || u.adm2) && (!u.adm1 || !u.adm2 || not_adm(u.adm1, u.adm2))) return null
+		if ((u.adm1 || u.adm2) && not_adm([u.adm1, u.adm2])) return null
 		if (u.intro && not_intro(u.intro)) return null
 	}
 	try {
@@ -55,11 +55,11 @@ export async function user_u(
 }
 
 export async function user_d(
-	f: { _id: User["_id"] } | { nbr: NonNullable<User["nbr"]> },
+	uid: User["_id"]
 ): DocD {
-	if (!("_id" in f && is_id(f._id) || "nbr" in f && is_nbr(f.nbr))) return null
+	if (not_id(uid)) return null
 	try {
-		const c = await coll.user.deleteOne(f)
+		const c = await coll.user.deleteOne({ _id: uid })
 		return c > 0 ? 1 : 0
 	} catch { return null }
 }
