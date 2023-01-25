@@ -1,6 +1,7 @@
-import { assert } from "https://deno.land/std@0.173.0/testing/asserts.ts"
+import { assert, assertEquals } from "https://deno.land/std@0.173.0/testing/asserts.ts"
 import { db } from "../src/db.ts"
 import { is_id, is_intro, is_name, not_id, not_intro, not_name } from "../src/eidetic/id.ts"
+import { soc_c, soc_d, soc_r, soc_u } from "../src/eidetic/soc.ts"
 import { user_c, user_r, user_u, user_d } from "../src/eidetic/user.ts"
 
 await db("tst", true)
@@ -29,4 +30,18 @@ Deno.test("user", async () => {
 	assert(u2 && u2.name === "中文名" && u2.adm2 === "汕头" && u2.intro.length === 2)
 	await user_d(r_c)
 	assert(null === await user_r({ _id: 1 }, { nbr: 1 }))
+})
+
+Deno.test("soc", async () => {
+	const name = "社团"
+	assert(null === await soc_r(1, {}))
+	const r_c = await soc_c(name, [1], "四川", "成都", name)
+	assert(r_c && r_c === 1)
+	const s = await soc_r(r_c, { name: 1, intro: 1, adm1: 1, uid: 1 })
+	assert(s && s.name === name && s.intro === name && s.adm1 === "四川" && s.uid.length === 0)
+	await soc_u(r_c, { sec: [2], ref: [2], uid: [2] })
+	const s2 = await soc_r(r_c, { sec: 1, ref: 1, uid: 1 })
+	assertEquals(s2, { _id: 1, sec: [2], ref: [2], uid: [2] })
+	await soc_d(r_c)
+	assert(null === await soc_r(r_c, {}))
 })

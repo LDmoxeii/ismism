@@ -28,7 +28,7 @@ export async function user_r<
 >(
 	f: { _id: User["_id"] } | { nbr: NonNullable<User["nbr"]> },
 	projection: Partial<{ [K in P]: 1 }>
-): DocR<Pick<User, P>> {
+): DocR<Pick<User, "_id" | P>> {
 	if (!("_id" in f && is_id(f._id) || "nbr" in f && is_nbr(f.nbr))) return null
 	return await coll.user.findOne(f, { projection }) ?? null
 }
