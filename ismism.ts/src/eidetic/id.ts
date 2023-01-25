@@ -21,3 +21,14 @@ export function not_name(
 ) {
 	return !is_name(name)
 }
+
+export function is_intro(
+	intro: Id["intro"]
+) {
+	return intro.length < 4096
+}
+export function not_intro(
+	intro: Id["intro"]
+) {
+	return !is_intro(intro)
+}
