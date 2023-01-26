@@ -1,13 +1,13 @@
 import { assert, assertEquals } from "https://deno.land/std@0.173.0/testing/asserts.ts"
-import { db } from "../src/db.ts"
+import { coll, db } from "../src/db.ts"
 import { agenda_c, agenda_d, agenda_r, agenda_u } from "../src/eidetic/agenda.ts"
-import { is_id, is_intro, is_name, not_id, not_intro, not_name } from "../src/eidetic/id.ts"
+import { id, idname, is_id, is_intro, is_name, nid_of_adm, not_id, not_intro, not_name } from "../src/eidetic/id.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eidetic/soc.ts"
 import { user_c, user_r, user_u, user_d } from "../src/eidetic/user.ts"
 
 await db("tst", true)
 
-Deno.test("id", () => {
+Deno.test("id", async () => {
 	assert(is_id(1) && is_id(9999))
 	assert(not_id(undefined) && not_id(null) && not_id(0) && not_id(-2))
 
@@ -17,10 +17,33 @@ Deno.test("id", () => {
 
 	assert(is_intro("") && is_intro("123abc") && is_intro("中文") && "文".repeat(4096))
 	assert(not_intro(undefined) && not_intro(null) && not_intro("a".repeat(4097)))
+
+	assert((await idname(coll.soc, [])).length === 0)
+	assert((await idname(coll.soc, [1, 2, 3])).length === 0)
+	assert((await id(coll.soc)).length === 0)
+	assert((await id(coll.soc, { adm1: "成都" })).length === 0)
+	assert((await nid_of_adm(coll.soc, "adm1")).length === 0)
+
+	const sidname = ["社团一", "社团二", "社团三"]
+	const sid = [
+		await soc_c(sidname[0], [], "四川", "成都", ""),
+		await soc_c(sidname[1], [], "四川", "成都", ""),
+		await soc_c(sidname[2], [], "广东", "汕头", ""),
+	].filter(is_id)
+	assert(sid.length == 3)
+
+	assertEquals(await idname(coll.soc, sid), sid.map((u, n) => [u, sidname[n]]))
+	assertEquals(await id(coll.soc), sid.reverse())
+	assertEquals(await id(coll.soc, { adm1: "广东" }), [3])
+	assertEquals(await id(coll.soc, { adm2: "成都" }), [2, 1])
+	assertEquals(await nid_of_adm(coll.soc, "adm1"), [["四川", 2], ["广东", 1]])
+	assertEquals(await nid_of_adm(coll.soc, "adm2"), [["成都", 2], ["汕头", 1]])
+
+	await Promise.all(sid.map(soc_d))
 })
 
 Deno.test("user", async () => {
-	const nbr = "11111111111"
+	const nbr = "11111111114"
 	assert(null === await user_r({ _id: 1 }, { nbr: 1 }))
 	const r_c = await user_c(nbr, [], "四川", "成都")
 	assert(r_c && r_c === 1)

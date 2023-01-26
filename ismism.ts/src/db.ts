@@ -92,6 +92,7 @@ export async function db(
 }
 
 export let coll = await db("ismism")
+export type Coll = typeof coll
 
 export type DocC<_Id> = Promise<NonNullable<_Id> | null>
 export type DocR<Doc> = Promise<NonNullable<Doc> | null>
