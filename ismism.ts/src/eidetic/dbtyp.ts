@@ -29,8 +29,8 @@ export type Agenda = Id & {
 
 export type Rec = {
 	_id: { uid: User["_id"], aid: Agenda["_id"], utc: number },
-	ref: User["_id"],
-	rej: User["_id"],
+	ref: User["_id"][],
+	rej: User["_id"][],
 }
 export type Worker = Rec & {
 	exp: number,
