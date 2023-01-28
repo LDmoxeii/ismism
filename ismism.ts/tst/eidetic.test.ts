@@ -2,6 +2,7 @@ import { assert, assertEquals } from "https://deno.land/std@0.173.0/testing/asse
 import { coll, db } from "../src/db.ts"
 import { agenda_c, agenda_d, agenda_r, agenda_u } from "../src/eidetic/agenda.ts"
 import { id, idname, is_id, is_intro, is_name, nid_of_adm, not_id, not_intro, not_name } from "../src/eidetic/id.ts"
+import { nrec, rec_c, rec_d, rec_r, rec_u } from "../src/eidetic/rec.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eidetic/soc.ts"
 import { user_c, user_r, user_u, user_d } from "../src/eidetic/user.ts"
 
@@ -82,4 +83,50 @@ Deno.test("agenda", async () => {
 	assertEquals(s2, { _id: 1, ref: [2], goal: [{ name: "目标", pct: 75 }], img: [{ name: "a", src: "b" }] })
 	await agenda_d(r_c)
 	assert(null === await agenda_r(r_c, {}))
+})
+
+Deno.test("rec", async () => {
+	const utc = Date.now()
+	const id = [
+		{ uid: 1, aid: 4, utc },
+		{ uid: 2, aid: 4, utc: utc + 100 },
+		{ uid: 2, aid: 3, utc: utc + 200 },
+	]
+
+	assertEquals(await nrec(), { worker: 0, work: 0, fund: 0 })
+	assertEquals(await nrec({ "_id.aid": 4 }), { worker: 0, work: 0, fund: 0 })
+	assert(0 === (await rec_r(coll.worker, 0))?.length)
+	assert(0 === (await rec_r(coll.work, utc))?.length)
+	assert(0 === (await rec_r(coll.fund, utc, { "_id.uid": 2 }))?.length)
+
+	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.worker, {
+		_id, ref: [_id.uid], rej: [], role: "sec", exp: 0
+	}))))
+	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.work, {
+		_id, ref: [_id.uid], rej: [], work: "work", msg: "msg"
+	}))))
+	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.fund, {
+		_id, ref: [_id.uid], rej: [], fund: 32, msg: "msg"
+	}))))
+	assertEquals(await nrec(), { worker: 3, work: 3, fund: 3 })
+	assertEquals(await nrec({ "_id.uid": 2 }), { worker: 2, work: 2, fund: 2 })
+	assertEquals(await nrec({ "_id.aid": 4 }), { worker: 2, work: 2, fund: 2 })
+
+	assertEquals((await rec_r(coll.worker, 0))!.length, 3)
+	assertEquals((await rec_r(coll.work, utc + 100))!.length, 1)
+	assertEquals((await rec_r(coll.fund, utc))!.map(r => r._id), id.slice(1).reverse())
+	assertEquals((await rec_r(coll.worker, utc - 100, { "_id.aid": 4 }))!.map(r => r._id), id.slice(0, 2).reverse())
+	assertEquals((await rec_r(coll.work, utc, { "_id.uid": 2 }))!.map(r => r._id), id.slice(1).reverse())
+	assertEquals((await rec_r(coll.work, 0, { "_id.aid": 4 }, { work: "video" })), [])
+
+	assertEquals(await rec_u(coll.work, id[1], { msg: "updated" }), 1)
+	assertEquals((await rec_r(coll.work, utc, { "_id.aid": 4 }, { work: "work" }))!
+		.map(w => w.work == "work" ? w.msg : ""),
+		["updated"]
+	);
+
+	await Promise.all([
+		coll.worker, coll.work, coll.fund
+	].flatMap(c => id.map(_id => rec_d(c, _id))))
+	assertEquals(await nrec(), { worker: 0, work: 0, fund: 0 })
 })
