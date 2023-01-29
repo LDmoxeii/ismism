@@ -1,4 +1,4 @@
-import { coll, DocC, DocD, DocR, DocU } from "../db.ts"
+import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { Aut } from "./dbtyp.ts"
 import { not_id } from "./id.ts"
 
@@ -19,11 +19,11 @@ export async function aut_r(
 
 export async function aut_u(
 	_id: Aut["_id"],
-	a: Partial<Aut>,
+	u: Update<Aut>,
 ): DocU {
 	if (not_id(_id)) return null
 	try {
-		const { modifiedCount } = await coll.aut.updateOne({ _id }, { $set: a })
+		const { modifiedCount } = await coll.aut.updateOne({ _id }, u)
 		return modifiedCount > 0 ? 1 : 0
 	} catch { return null }
 }

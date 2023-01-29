@@ -1,4 +1,4 @@
-import { coll, DocC, DocD, DocR, DocU } from "../db.ts"
+import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { not_adm } from "../ontic/adm.ts"
 import { Soc } from "./dbtyp.ts"
 import { not_id, not_intro, not_name } from "./id.ts"
@@ -35,21 +35,22 @@ export async function soc_r<
 }
 
 export async function soc_u(
-	sid: Soc["_id"],
-	s: Partial<Soc>,
+	_id: Soc["_id"],
+	u: Update<Soc>,
 ): DocU {
-	if (not_id(sid)) return null
-	if (s.name && not_name(s.name)) return null
-	if (s.ref && s.ref.some(not_id)) return null
-	if ((s.adm1 || s.adm2) && not_adm([s.adm1, s.adm2])) return null
-	if (s.intro && not_intro(s.intro)) return null
-	if (s.sec && s.sec.some(not_id)) return null
-	if (s.uid_max && s.uid_max < 0) return null
-	if (s.uid && s.uid.some(not_id)) return null
+	if (not_id(_id)) return null
+	if ("$set" in u && u.$set) {
+		const s = u.$set
+		if (s.name && not_name(s.name)) return null
+		if (s.ref && s.ref.some(not_id)) return null
+		if ((s.adm1 || s.adm2) && not_adm([s.adm1, s.adm2])) return null
+		if (s.intro && not_intro(s.intro)) return null
+		if (s.sec && s.sec.some(not_id)) return null
+		if (s.uid_max && s.uid_max < 0) return null
+		if (s.uid && s.uid.some(not_id)) return null
+	}
 	try {
-		const { modifiedCount } = await coll.soc.updateOne(
-			{ _id: sid }, { $set: s }
-		)
+		const { modifiedCount } = await coll.soc.updateOne({ _id }, u)
 		return modifiedCount > 0 ? 1 : 0
 	} catch { return null }
 }

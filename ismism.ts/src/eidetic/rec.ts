@@ -1,4 +1,4 @@
-import { coll, Coll, DocC, DocD, DocR, DocU } from "../db.ts"
+import { coll, Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { Agenda, Fund, Rec, User, Work, Worker } from "./dbtyp.ts"
 import { is_id, not_id } from "./id.ts"
 
@@ -65,11 +65,11 @@ export async function rec_u<
 >(
 	c: C,
 	_id: Rec["_id"],
-	r: Partial<RecD<C>>,
+	u: Update<RecD<C>>,
 ): DocU {
 	if (not_recid(_id)) return null
 	try {
-		const { modifiedCount } = await c.updateOne({ _id }, { $set: r })
+		const { modifiedCount } = await c.updateOne({ _id }, u)
 		return modifiedCount > 0 ? 1 : 0
 	} catch { return null }
 }

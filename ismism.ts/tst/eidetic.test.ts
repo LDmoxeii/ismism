@@ -71,7 +71,7 @@ Deno.test("soc", async () => {
 	assert(r_c && r_c === 1)
 	const s = await soc_r(r_c, { name: 1, intro: 1, adm1: 1, uid: 1 })
 	assert(s && s.name === name && s.intro === name && s.adm1 === "四川" && s.uid.length === 0)
-	await soc_u(r_c, { sec: [2], ref: [2], uid: [2] })
+	await soc_u(r_c, { $set: { sec: [2], ref: [2], uid: [2] } })
 	const s2 = await soc_r(r_c, { sec: 1, ref: 1, uid: 1 })
 	assertEquals(s2, { _id: 1, sec: [2], ref: [2], uid: [2] })
 	await soc_d(r_c)
@@ -85,7 +85,7 @@ Deno.test("agenda", async () => {
 	assert(r_c && r_c === 1)
 	const s = await agenda_r(r_c, { name: 1, intro: 1, adm1: 1, goal: 1 })
 	assert(s && s.name === name && s.intro === name && s.adm1 === "四川" && s.goal.length === 0)
-	await agenda_u(r_c, { ref: [2], goal: [{ name: "目标", pct: 75 }], img: [{ name: "a", src: "b" }] })
+	await agenda_u(r_c, { $set: { ref: [2], goal: [{ name: "目标", pct: 75 }], img: [{ name: "a", src: "b" }] } })
 	const s2 = await agenda_r(r_c, { ref: 1, goal: 1, img: 1 })
 	assertEquals(s2, { _id: 1, ref: [2], goal: [{ name: "目标", pct: 75 }], img: [{ name: "a", src: "b" }] })
 	await agenda_d(r_c)
@@ -126,7 +126,7 @@ Deno.test("rec", async () => {
 	assertEquals((await rec_r(coll.work, utc, { "_id.uid": 2 }))!.map(r => r._id), id.slice(1).reverse())
 	assertEquals((await rec_r(coll.work, 0, { "_id.aid": 4 }, { work: "video" })), [])
 
-	assertEquals(await rec_u(coll.work, id[1], { msg: "updated" }), 1)
+	assertEquals(await rec_u(coll.work, id[1], { $set: { msg: "updated" } }), 1)
 	assertEquals((await rec_r(coll.work, utc, { "_id.aid": 4 }, { work: "work" }))!
 		.map(w => w.work == "work" ? w.msg : ""),
 		["updated"]
@@ -143,7 +143,7 @@ Deno.test("act", async () => {
 	assert(null === await act_r(_id))
 	await act_c({ _id, exp: Date.now() + 100000, act: "usernew", ref: [] })
 	assertEquals((await act_r(_id))?.act, "usernew")
-	await act_u(_id, { exp: Date.now() })
+	await act_u(_id, { $set: { exp: Date.now() } })
 	assert(null === await act_r(_id))
 	assert(1 === await act_d(_id))
 })
@@ -153,7 +153,8 @@ Deno.test("aut", async () => {
 	assert(null === await aut_r(_id))
 	await aut_c({ _id, p: ["a", "b"] })
 	assertEquals((await aut_r(_id))?.p, ["a", "b"])
-	await aut_u(_id, { p: ["b", "c"] })
+	await aut_u(_id, { $addToSet: { p: { $each: ["b", "c"] } } })
+	await aut_u(_id, { $pull: { p: "a" } })
 	assertEquals((await aut_r(_id))?.p, ["b", "c"])
 	assert(1 === await aut_d(_id))
 })

@@ -1,4 +1,4 @@
-import { coll, DocC, DocD, DocR, DocU } from "../db.ts"
+import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { not_adm } from "../ontic/adm.ts"
 import { not_id, not_intro, not_name } from "./id.ts"
 import { Agenda } from "./dbtyp.ts"
@@ -48,24 +48,25 @@ function not_img(
 }
 
 export async function agenda_u(
-	aid: Agenda["_id"],
-	a: Partial<Agenda>,
+	_id: Agenda["_id"],
+	u: Update<Agenda>,
 ): DocU {
-	if (not_id(aid)) return null
-	if (a.name && not_name(a.name)) return null
-	if (a.ref && a.ref.some(not_id)) return null
-	if ((a.adm1 || a.adm2) && not_adm([a.adm1, a.adm2])) return null
-	if (a.intro && not_intro(a.intro)) return null
-	if (a.budget && a.budget < 0) return null
-	if (a.fund && a.fund < 0) return null
-	if (a.expense && a.expense < 0) return null
-	if (a.goal && a.goal.some(not_goal)) return null
-	if (a.img && a.img.some(not_img)) return null
-	if (a.candidate && a.candidate < 0) return null
+	if (not_id(_id)) return null
+	if ("$set" in u && u.$set) {
+		const a = u.$set
+		if (a.name && not_name(a.name)) return null
+		if (a.ref && a.ref.some(not_id)) return null
+		if ((a.adm1 || a.adm2) && not_adm([a.adm1, a.adm2])) return null
+		if (a.intro && not_intro(a.intro)) return null
+		if (a.budget && a.budget < 0) return null
+		if (a.fund && a.fund < 0) return null
+		if (a.expense && a.expense < 0) return null
+		if (a.goal && a.goal.some(not_goal)) return null
+		if (a.img && a.img.some(not_img)) return null
+		if (a.candidate && a.candidate < 0) return null
+	}
 	try {
-		const { modifiedCount } = await coll.agenda.updateOne(
-			{ _id: aid }, { $set: a }
-		)
+		const { modifiedCount } = await coll.agenda.updateOne({ _id }, u)
 		return modifiedCount > 0 ? 1 : 0
 	} catch { return null }
 }

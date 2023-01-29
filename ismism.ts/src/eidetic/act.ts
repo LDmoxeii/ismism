@@ -1,4 +1,4 @@
-import { coll, DocC, DocD, DocR, DocU } from "../db.ts"
+import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { Act } from "./dbtyp.ts"
 
 function is_actid(
@@ -31,11 +31,11 @@ export async function act_r(
 
 export async function act_u(
 	_id: Act["_id"],
-	a: Partial<Act>,
+	u: Update<Act>,
 ): DocU {
 	if (not_actid(_id)) return null
 	try {
-		const { modifiedCount } = await coll.act.updateOne({ _id }, { $set: a })
+		const { modifiedCount } = await coll.act.updateOne({ _id }, u)
 		return modifiedCount > 0 ? 1 : 0
 	} catch { return null }
 }
