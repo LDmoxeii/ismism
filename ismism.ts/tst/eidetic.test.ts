@@ -2,6 +2,7 @@ import { assert, assertEquals } from "https://deno.land/std@0.173.0/testing/asse
 import { coll, db } from "../src/db.ts"
 import { act_c, act_d, act_r, act_u } from "../src/eidetic/act.ts"
 import { agenda_c, agenda_d, agenda_r, agenda_u } from "../src/eidetic/agenda.ts"
+import { aut_c, aut_d, aut_r, aut_u } from "../src/eidetic/aut.ts"
 import { id, idname, is_id, is_intro, is_name, nid_of_adm, not_id, not_intro, not_name } from "../src/eidetic/id.ts"
 import { nrec, rec_c, rec_d, rec_r, rec_u } from "../src/eidetic/rec.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eidetic/soc.ts"
@@ -140,4 +141,14 @@ Deno.test("act", async () => {
 	await act_u(_id, { exp: Date.now() })
 	assert(null === await act_r(_id))
 	assert(1 === await act_d(_id))
+})
+
+Deno.test("aut", async () => {
+	const _id = 1
+	assert(null === await aut_r(_id))
+	await aut_c({ _id, p: ["a", "b"] })
+	assertEquals((await aut_r(_id))?.p, ["a", "b"])
+	await aut_u(_id, { p: ["b", "c"] })
+	assertEquals((await aut_r(_id))?.p, ["b", "c"])
+	assert(1 === await aut_d(_id))
 })
