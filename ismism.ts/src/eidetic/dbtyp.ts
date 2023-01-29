@@ -59,7 +59,7 @@ export type Act = {
 } & ({
 	act: "usernew",
 	ref: number[],
-} & {
+} | {
 	act: "usernbr",
 	uid: number,
 })

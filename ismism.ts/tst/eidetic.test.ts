@@ -1,5 +1,6 @@
 import { assert, assertEquals } from "https://deno.land/std@0.173.0/testing/asserts.ts"
 import { coll, db } from "../src/db.ts"
+import { act_c, act_d, act_r, act_u } from "../src/eidetic/act.ts"
 import { agenda_c, agenda_d, agenda_r, agenda_u } from "../src/eidetic/agenda.ts"
 import { id, idname, is_id, is_intro, is_name, nid_of_adm, not_id, not_intro, not_name } from "../src/eidetic/id.ts"
 import { nrec, rec_c, rec_d, rec_r, rec_u } from "../src/eidetic/rec.ts"
@@ -129,4 +130,14 @@ Deno.test("rec", async () => {
 		coll.worker, coll.work, coll.fund
 	].flatMap(c => id.map(_id => rec_d(c, _id))))
 	assertEquals(await nrec(), { worker: 0, work: 0, fund: 0 })
+})
+
+Deno.test("act", async () => {
+	const _id = "111111"
+	assert(null === await act_r(_id))
+	await act_c({ _id, exp: Date.now() + 100000, act: "usernew", ref: [] })
+	assertEquals((await act_r(_id))?.act, "usernew")
+	await act_u(_id, { exp: Date.now() })
+	assert(null === await act_r(_id))
+	assert(1 === await act_d(_id))
 })
