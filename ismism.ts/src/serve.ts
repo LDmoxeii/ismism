@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.173.0/http/server.ts"
 import { jwk_load } from "./ontic/jwt.ts"
 import { utc_short } from "./ontic/utc.ts"
+import { post, PassPost } from "./praxic/post.ts"
 import { query } from "./praxic/query.ts"
 
 let etag = `W/"${Date.now()}"`
@@ -38,7 +39,17 @@ async function route(
 				status: 200,
 				headers: { etag }
 			})
-
+		} case "p": {
+			const p: PassPost = {}
+			const [cookie] = req.headers.get("cookie")?.split(";").filter(c => c.startsWith("pp=")) ?? []
+			if (cookie) p.jwt = cookie.substring(3)
+			const b = await req.text()
+			const r = JSON.stringify(await post(p, f, b))
+			log(t, `${f}#${p.pass?.id.uid ?? ""} ${b} => ${r}`, 200)
+			const headers: Headers = new Headers()
+			if (!p.pass) headers.set("set-cookie", `pp=""; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=0`)
+			else if (p.jwt) headers.set("set-cookie", `pp=${p.jwt}; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=31728728`)
+			return new Response(r, { status: 200, headers })
 		}
 	}
 	return new Response(null, { status: 400 })
