@@ -1,5 +1,5 @@
 import { Act, Agenda, Aut, Fund, Soc, User, Work, Worker } from "./eidetic/dbtyp.ts"
-import { MongoClient } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
+import { MongoClient, UpdateFilter } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
 
 const conn = new MongoClient()
 await conn.connect("mongodb://127.0.0.1:27017")
@@ -93,6 +93,8 @@ export async function db(
 
 export let coll = await db("ismism")
 export type Coll = typeof coll
+
+export type Update<T> = UpdateFilter<T>
 
 export type DocC<_Id> = Promise<NonNullable<_Id> | null>
 export type DocR<Doc> = Promise<NonNullable<Doc> | null>

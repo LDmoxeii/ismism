@@ -45,7 +45,7 @@ export async function pass_issue(
 		}
 		if (u.ptoken) return { pass, jwt: u.ptoken }
 		const jwt = await jwt_sign(pass.id)
-		const c = await user_u(u._id, { ptoken: jwt })
+		const c = await user_u(u._id, { $set: { ptoken: jwt } })
 		if (c && c > 0) return { pass, jwt }
 	}
 	return null
@@ -61,7 +61,7 @@ export async function pass_code(
 	if (u.pcode && utc - u.pcode.utc < utc_h * h_pcode_valid)
 		return { sms: false, utc: u.pcode.utc }
 	const code = Math.round(Math.random() * 1000000)
-	const c = await user_u(u._id, { pcode: { code, utc } })
+	const c = await user_u(u._id, { $set: { pcode: { code, utc } } })
 	if (c && c > 0) {
 		if (sms) {
 			const { sent } = await smssend(nbr, `${code}`.padStart(pcode_digit, "0"), `${h_pcode_valid}`)
@@ -75,5 +75,5 @@ export async function pass_code(
 export function pass_clear(
 	uid: User["_id"]
 ): DocU {
-	return user_u(uid, { ptoken: "" }, true)
+	return user_u(uid, { $unset: { ptoken: "" } })
 }
