@@ -2,6 +2,7 @@ export type Id = {
 	_id: number,
 	name: string,
 	ref: User["_id"][],
+	rej: User["_id"][],
 	utc: number,
 	adm1: string,
 	adm2: string,
@@ -16,6 +17,8 @@ export type Soc = Id & {
 	sec: User["_id"][],
 	uid_max: number,
 	uid: User["_id"][],
+	res_max: number,
+	res: User["_id"][],
 }
 export type Agenda = Id & {
 	detail: string,
@@ -24,7 +27,7 @@ export type Agenda = Id & {
 	expense: number,
 	goal: { name: string, pct: number }[],
 	img: { name: string, src: string }[],
-	candidate: number,
+	res_max: number,
 }
 
 export type Rec = {
@@ -34,7 +37,7 @@ export type Rec = {
 }
 export type Worker = Rec & {
 	exp: number,
-	role: "sec" | "worker" | "candidate",
+	role: "sec" | "worker" | "res",
 }
 export type Work = Rec & ({
 	work: "work",

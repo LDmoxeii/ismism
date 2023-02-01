@@ -15,10 +15,13 @@ export async function soc_c(
 	const _id = l ? l._id + 1 : 1
 	const s: Soc = {
 		_id, name, ref, adm1, adm2, intro,
+		rej: [],
 		utc: Date.now(),
 		sec: [],
 		uid_max: 128,
-		uid: []
+		uid: [],
+		res_max: 0,
+		res: [],
 	}
 	try { return await coll.soc.insertOne(s) as Soc["_id"] }
 	catch { return null }

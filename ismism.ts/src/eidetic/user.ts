@@ -15,6 +15,7 @@ export async function user_c(
 	const _id = l ? l._id + 1 : 1
 	const u: User = {
 		_id, nbr, ref, adm1, adm2,
+		rej: [],
 		name: `${_id}`,
 		utc: Date.now(),
 		intro: "",

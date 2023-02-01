@@ -15,12 +15,13 @@ export async function agenda_c(
 	const _id = l ? l._id + 1 : 1
 	const a: Agenda = {
 		_id, name, ref, adm1, adm2, intro,
+		rej: [],
 		utc: Date.now(),
 		detail: "",
 		budget: 0, fund: 0, expense: 0,
 		goal: [],
 		img: [],
-		candidate: 0
+		res_max: 0
 	}
 	try { return await coll.agenda.insertOne(a) as Agenda["_id"] }
 	catch { return null }
