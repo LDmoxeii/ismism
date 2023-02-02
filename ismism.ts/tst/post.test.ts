@@ -1,5 +1,8 @@
 import { assert, assertEquals } from "https://deno.land/std@0.173.0/testing/asserts.ts"
 import { db } from "../src/db.ts"
+import { agenda_c } from "../src/eidetic/agenda.ts"
+import { aut_c } from "../src/eidetic/aut.ts"
+import { soc_c } from "../src/eidetic/soc.ts"
 import { user_c, user_d, user_r } from "../src/eidetic/user.ts"
 import { jwk_set } from "../src/ontic/jwt.ts"
 import { Pass } from "../src/praxic/pass.ts"
@@ -39,4 +42,41 @@ Deno.test("pass", async () => {
 	assertEquals(p, { pass: null, jwt: null })
 	assertEquals(await user_r({ _id: uid }, { ptoken: 1 }), { _id: uid })
 	await user_d(uid)
+})
+
+Deno.test("pro", async () => {
+	const p: PassPost = {}
+	const nbr = ["11111111111", "11111111112", "11111111113"]
+	assertEquals([
+		await user_c(nbr[0], [1, 2], "四川", "成都"),
+		await user_c(nbr[1], [1, 2], "广东", "汕头"),
+		await user_c(nbr[2], [2], "广东", "汕头"),
+		{ sms: false }, { sms: false }, 1, 1
+	], await Promise.all([
+		aut_c({ _id: 1, p: ["pro_user", "pro_soc", "pro_agenda"] }),
+		aut_c({ _id: 2, p: ["pro_user", "pro_soc", "pro_agenda"] }),
+		aut_c({ _id: 3, p: ["pro_user"] }),
+		...[0, 2].map(n => post(p, "pass_code", json({ nbr: nbr[n], sms: false }))),
+		soc_c("团体", [1, 2], "四川", "成都", ""),
+		agenda_c("活动", [1, 2], "四川", "成都", ""),
+	]))
+	const code = await Promise.all([1, 3].map(_id => user_r({ _id }, { pcode: 1 })))
+	await post(p, "pass_issue", json({ nbr: nbr[0], code: code[0]?.pcode?.code }))
+	assertEquals([null, 1, 0, 1, 1, 1], await Promise.all([
+		post(p, "pro", json({ re: "rej", uid: 2, pro: true })),
+		post(p, "pro", json({ re: "ref", uid: 3, pro: true })),
+		post(p, "pro", json({ re: "ref", sid: 1, pro: true })),
+		post(p, "pro", json({ re: "rej", sid: 1, pro: true })),
+		post(p, "pro", json({ re: "ref", aid: 1, pro: false })),
+		post(p, "pro", json({ re: "rej", aid: 1, pro: true })),
+	]))
+	await post(p, "pass_issue", json({ nbr: nbr[2], code: code[1]?.pcode?.code }))
+	assertEquals([null, 0, 1, 0, null, null], await Promise.all([
+		post(p, "pro", json({ re: "ref", uid: 1, pro: false })),
+		post(p, "pro", json({ re: "ref", uid: 3, pro: false })),
+		post(p, "pro", json({ re: "rej", uid: 3, pro: true })),
+		post(p, "pro", json({ re: "rej", uid: 4, pro: true })),
+		post(p, "pro", json({ re: "ref", sid: 1, pro: true })),
+		post(p, "pro", json({ re: "rej", aid: 1, pro: true })),
+	]))
 })

@@ -1,8 +1,8 @@
 export type Id = {
 	_id: number,
 	name: string,
-	ref: User["_id"][],
 	rej: User["_id"][],
+	ref: User["_id"][],
 	utc: number,
 	adm1: string,
 	adm2: string,
@@ -32,8 +32,8 @@ export type Agenda = Id & {
 
 export type Rec = {
 	_id: { uid: User["_id"], aid: Agenda["_id"], utc: number },
-	ref: User["_id"][],
 	rej: User["_id"][],
+	ref: User["_id"][],
 }
 export type Worker = Rec & {
 	exp: number,

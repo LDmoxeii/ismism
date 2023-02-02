@@ -8,8 +8,23 @@ import { smssend } from "../ontic/sms.ts"
 
 export type Pass = {
 	id: { uid: User["_id"], utc: number },
+	rej: User["rej"],
+	ref: User["ref"],
 	name: User["name"],
 	aut: Aut["p"],
+}
+
+export function is_aut(
+	pass: Pass,
+	aut: Aut["p"][0],
+): boolean {
+	return pass.aut.includes(aut)
+}
+export function not_aut(
+	pass: Pass,
+	aut: Aut["p"][0],
+) {
+	return !is_aut(pass, aut)
 }
 
 const utc_pass_valid = new Date("2023-01-29").getTime()
@@ -22,11 +37,11 @@ export async function pass(
 	const id = await jwt_verify<Pass["id"]>(jwt)
 	if (!id) return null
 	const [u, aut] = await Promise.all([
-		user_r({ _id: id.uid }, { name: 1, pcode: 1, ptoken: 1 }),
-		aut_r(id.uid)
+		user_r({ _id: id.uid }, { rej: 1, ref: 1, name: 1, pcode: 1, ptoken: 1 }),
+		aut_r(id.uid),
 	])
 	if (u && u.pcode && u.pcode.utc > utc_pass_valid && u.ptoken && u.ptoken === jwt)
-		return { id, name: u.name, aut: aut ? aut.p : [] }
+		return { id, rej: u.rej, ref: u.ref, name: u.name, aut: aut ? aut.p : [] }
 	return null
 }
 
@@ -34,12 +49,13 @@ export async function pass_issue(
 	nbr: NonNullable<User["nbr"]>,
 	code: NonNullable<User["pcode"]>["code"],
 ): DocR<{ pass: Pass, jwt: NonNullable<User["ptoken"]> }> {
-	const u = await user_r({ nbr }, { name: 1, pcode: 1, ptoken: 1 })
+	const u = await user_r({ nbr }, { rej: 1, ref: 1, name: 1, pcode: 1, ptoken: 1 })
 	const utc = Date.now()
 	if (u && u.pcode && u.pcode.code === code && utc - u.pcode.utc < utc_h * h_pcode_valid) {
 		const aut = await aut_r(u._id)
 		const pass: Pass = {
 			id: { uid: u._id, utc },
+			rej: u.rej, ref: u.ref,
 			name: u.name,
 			aut: aut ? aut.p : [],
 		}
