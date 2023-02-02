@@ -10,42 +10,39 @@ export async function post(
 	f: string,
 	b: string,
 ) {
+	let json
+	try { json = b.length > 0 ? JSON.parse(b) : {} }
+	catch { return null }
+
 	if (p.jwt) {
 		p.pass = await pass(p.jwt)
 		p.jwt = null
 	} else p.pass = null
+
 	switch (f) {
 		case "pass": {
-			if (p.pass) return p.pass
-			break
-		} case "pass_issue": {
-			const { nbr, code } = JSON.parse(b)
-			if (typeof nbr === "string" && typeof code === "number") {
+			const { uid, sms, nbr, code } = json
+			if (typeof uid === "number") {
+				p.jwt = null
+				if (p.pass && uid === p.pass.id.uid) {
+					p.pass = null
+					return pass_clear(uid)
+				}
+			} else if (typeof sms === "boolean" && typeof nbr === "string") {
+				return await pass_code(nbr, sms)
+			} else if (typeof nbr === "string" && typeof code === "number") {
 				const issue = await pass_issue(nbr, code)
 				if (issue) {
 					p.pass = issue.pass
 					p.jwt = issue.jwt
 					return issue.pass
 				}
-			}
-			break
-		} case "pass_code": {
-			const { nbr, sms } = JSON.parse(b)
-			if (typeof nbr === "string" && typeof sms === "boolean")
-				return await pass_code(nbr, sms)
-			break
-		} case "pass_clear": {
-			p.jwt = null
-			if (p.pass) {
-				const uid = p.pass.id.uid
-				p.pass = null
-				return pass_clear(uid)
-			}
+			} else if (p.pass) return p.pass
 			break
 		}
 
 		case "pro": {
-			const { re, uid, sid, aid, pro } = JSON.parse(b)
+			const { re, uid, sid, aid, pro } = json
 			if (p.pass && is_re(re) && typeof pro === "boolean")
 				if (typeof uid === "number") return pro_user(p.pass, re, uid, pro)
 				else if (typeof sid === "number") return pro_soc(p.pass, re, sid, pro)
@@ -53,5 +50,6 @@ export async function post(
 			break
 		}
 	}
+
 	return null
 }
