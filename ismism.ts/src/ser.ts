@@ -1,8 +1,8 @@
 import { serve } from "https://deno.land/std@0.173.0/http/server.ts"
-import { jwk_load } from "./ontic/jwt.ts"
-import { utc_short } from "./ontic/utc.ts"
-import { pos, PasPos } from "./praxic/pos.ts"
-import { que } from "./praxic/que.ts"
+import { jwk_load } from "./ont/jwt.ts"
+import { utc_short } from "./ont/utc.ts"
+import { pos, PasPos } from "./pra/pos.ts"
+import { que } from "./pra/que.ts"
 
 let etag = `W/"${Date.now()}"`
 

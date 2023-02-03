@@ -5,5 +5,5 @@ rm -rf ui
 
 cd ismism.ts
 
-deno bundle src/serve.ts ../cli/serve.js
-deno bundle cli/dbreset.ts ../cli/dbreset.js
+deno bundle src/ser.ts ../cli/ser.js
+deno bundle cli/dbset.ts ../cli/dbset.js
