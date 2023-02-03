@@ -37,7 +37,7 @@ export type Rec = {
 }
 export type Worker = Rec & {
 	exp: number,
-	role: "sec" | "worker" | "res",
+	rol: "sec" | "worker" | "res",
 }
 export type Work = Rec & ({
 	work: "work",

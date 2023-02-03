@@ -60,7 +60,7 @@ export async function db(
 			}, {
 				key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 			}, {
-				key: { "_id.aid": 1, role: 1, "_id.utc": -1 }, name: "aid-role-utc"
+				key: { "_id.aid": 1, rol: 1, "_id.utc": -1 }, name: "aid-rol-utc"
 			}, {
 				key: { "_id.uid": 1, "_id.utc": -1 }, name: "uid-utc"
 			}, {

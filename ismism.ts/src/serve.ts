@@ -1,8 +1,8 @@
 import { serve } from "https://deno.land/std@0.173.0/http/server.ts"
 import { jwk_load } from "./ontic/jwt.ts"
 import { utc_short } from "./ontic/utc.ts"
-import { post, PassPost } from "./praxic/post.ts"
-import { query } from "./praxic/query.ts"
+import { pos, PasPos } from "./praxic/pos.ts"
+import { que } from "./praxic/que.ts"
 
 let etag = `W/"${Date.now()}"`
 
@@ -35,19 +35,19 @@ async function route(
 			}
 			log(t, `${f}${url.search}`, 200)
 			return new Response(
-				JSON.stringify(await query(f, url.searchParams)), {
+				JSON.stringify(await que(f, url.searchParams)), {
 				status: 200,
 				headers: { etag }
 			})
 		} case "p": {
-			const p: PassPost = {}
+			const p: PasPos = {}
 			const [cookie] = req.headers.get("cookie")?.split(";").filter(c => c.startsWith("pp=")) ?? []
 			if (cookie) p.jwt = cookie.substring(3)
 			const b = await req.text()
-			const r = JSON.stringify(await post(p, f, b))
-			log(t, `${f}#${p.pass?.id.uid ?? ""} ${b} => ${r}`, 200)
+			const r = JSON.stringify(await pos(p, f, b))
+			log(t, `${f}#${p.pas?.id.uid ?? ""} ${b} => ${r}`, 200)
 			const headers: Headers = new Headers()
-			if (!p.pass) headers.set("set-cookie", `pp=""; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=0`)
+			if (!p.pas) headers.set("set-cookie", `pp=""; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=0`)
 			else if (p.jwt) headers.set("set-cookie", `pp=${p.jwt}; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=31728728`)
 			return new Response(r, { status: 200, headers })
 		}

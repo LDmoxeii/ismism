@@ -28,17 +28,17 @@ export function not_rec(
 	return !is_rec(r)
 }
 
-export function is_role(
-	urole: URole[0][1],
-	[aid, role]: URole[0][1][0],
+export function is_rol(
+	urol: URol[0][1],
+	[aid, rol]: URol[0][1][0],
 ) {
-	return urole.some(([a, r]) => a === aid && r === role)
+	return urol.some(([a, r]) => a === aid && r === rol)
 }
-export function not_role(
-	urole: URole[0][1],
-	aidrole: URole[0][1][0],
+export function not_rol(
+	urol: URol[0][1],
+	aidrol: URol[0][1][0],
 ) {
-	return !is_role(urole, aidrole)
+	return !is_rol(urol, aidrol)
 }
 
 export function collrec(
@@ -70,13 +70,13 @@ export async function rec_r<
 	c: C,
 	utc: number,
 	id?: { "_id.aid": Agenda["_id"] } | { "_id.uid": User["_id"] },
-	rw?: { role: Worker["role"] } | { work: Work["work"] }
+	rw?: { rol: Worker["rol"] } | { work: Work["work"] }
 ): DocR<RecD<C>[]> {
 	if (id && "_id.aid" in id && not_id(id["_id.aid"])) return null
 	if (id && "_id.uid" in id && not_id(id["_id.uid"])) return null
 	const f = {
 		...id ? id : {},
-		...rw && c === coll.worker && "role" in rw && rw.role ? rw : {},
+		...rw && c === coll.worker && "rol" in rw && rw.rol ? rw : {},
 		...rw && c === coll.work && "work" in rw && rw.work ? rw : {},
 		...utc > 0 ? { "_id.utc": { $gt: utc } } : {},
 		// deno-lint-ignore no-explicit-any
@@ -125,10 +125,10 @@ export async function nrec(
 	}
 }
 
-export type URole = [User["_id"], [Agenda["_id"], Worker["role"]][]][]
-export async function urole(
+export type URol = [User["_id"], [Agenda["_id"], Worker["rol"]][]][]
+export async function urol(
 	uid: User["_id"][]
-): Promise<URole> {
+): Promise<URol> {
 	uid = Array.from(new Set(uid.filter(is_id)))
 	const r = await coll.worker.aggregate([{
 		$match: { "_id.uid": { $in: uid.filter(is_id) }, exp: { $gt: Date.now() } }
@@ -137,7 +137,7 @@ export async function urole(
 			_id: "$_id.uid", r: {
 				$push: {
 					aid: "$_id.aid",
-					role: "$role",
+					rol: "$rol",
 					rej: { $size: "$rej" },
 					ref: { $size: "$ref" }
 				}
@@ -146,14 +146,13 @@ export async function urole(
 	}]).toArray() as unknown as {
 		_id: number, r: {
 			aid: Agenda["_id"],
-			role: Worker["role"],
+			rol: Worker["rol"],
 			rej: number,
 			ref: number
 		}[]
 	}[]
-	return r.map(({ _id, r }) => [
-		_id, r
-			.filter(r => r.rej < 2 && r.ref >= 2)
-			.map(r => [r.aid, r.role])
+	return r.map(({ _id, r }) => [_id, r
+		.filter(r => r.rej < 2 && r.ref >= 2)
+		.map(r => [r.aid, r.rol])
 	])
 }
