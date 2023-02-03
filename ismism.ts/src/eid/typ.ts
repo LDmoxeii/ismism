@@ -1,39 +1,39 @@
 export type Id = {
 	_id: number,
-	name: string,
-	rej: User["_id"][],
-	ref: User["_id"][],
+	nam: string,
+	rej: Usr["_id"][],
+	ref: Usr["_id"][],
 	utc: number,
 	adm1: string,
 	adm2: string,
 	intro: string,
 }
-export type User = Id & {
+export type Usr = Id & {
 	nbr?: string,
 	pcode?: { code: number, utc: number },
 	ptoken?: string,
 }
 export type Soc = Id & {
-	sec: User["_id"][],
+	sec: Usr["_id"][],
 	uid_max: number,
-	uid: User["_id"][],
+	uid: Usr["_id"][],
 	res_max: number,
-	res: User["_id"][],
+	res: Usr["_id"][],
 }
-export type Agenda = Id & {
+export type Agd = Id & {
 	detail: string,
 	budget: number,
 	fund: number,
 	expense: number,
-	goal: { name: string, pct: number }[],
-	img: { name: string, src: string }[],
+	goal: { nam: string, pct: number }[],
+	img: { nam: string, src: string }[],
 	res_max: number,
 }
 
 export type Rec = {
-	_id: { uid: User["_id"], aid: Agenda["_id"], utc: number },
-	rej: User["_id"][],
-	ref: User["_id"][],
+	_id: { uid: Usr["_id"], aid: Agd["_id"], utc: number },
+	rej: Usr["_id"][],
+	ref: Usr["_id"][],
 }
 export type Worker = Rec & {
 	exp: number,
@@ -44,11 +44,11 @@ export type Work = Rec & ({
 	msg: string,
 } | {
 	work: "txt",
-	name: string,
+	nam: string,
 	txt: string,
 } | {
 	work: "video",
-	name: string,
+	nam: string,
 	src: string,
 })
 export type Fund = Rec & {
@@ -60,13 +60,13 @@ export type Act = {
 	_id: string,
 	exp: number,
 } & ({
-	act: "usernew",
+	act: "usrnew",
 	ref: number[],
 } | {
-	act: "usernbr",
+	act: "usrnbr",
 	uid: number,
 })
 export type Aut = {
-	_id: User["_id"],
+	_id: Usr["_id"],
 	p: string[],
 }

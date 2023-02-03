@@ -1,20 +1,20 @@
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import { not_adm } from "../ontic/adm.ts"
-import { Soc } from "./dbtyp.ts"
-import { not_id, not_intro, not_name } from "./id.ts"
+import { not_adm } from "../ont/adm.ts"
+import { Soc } from "./typ.ts"
+import { not_id, not_intro, not_nam } from "./id.ts"
 
 export async function soc_c(
-	name: Soc["name"],
+	nam: Soc["nam"],
 	ref: Soc["_id"][],
 	adm1: string,
 	adm2: string,
 	intro: string,
 ): DocC<Soc["_id"]> {
-	if (not_name(name) || ref.some(not_id) || not_adm([adm1, adm2]) || not_intro(intro)) return null
+	if (not_nam(nam) || ref.some(not_id) || not_adm([adm1, adm2]) || not_intro(intro)) return null
 	const l = await coll.soc.findOne({}, { projection: { _id: 1 }, sort: { _id: -1 } })
 	const _id = l ? l._id + 1 : 1
 	const s: Soc = {
-		_id, name, ref, adm1, adm2, intro,
+		_id, nam, ref, adm1, adm2, intro,
 		rej: [],
 		utc: Date.now(),
 		sec: [],
@@ -44,7 +44,7 @@ export async function soc_u(
 	if (not_id(_id)) return null
 	if ("$set" in u && u.$set) {
 		const s = u.$set
-		if (s.name && not_name(s.name)) return null
+		if (s.nam && not_nam(s.nam)) return null
 		if (s.ref && s.ref.some(not_id)) return null
 		if ((s.adm1 || s.adm2) && not_adm([s.adm1, s.adm2])) return null
 		if (s.intro && not_intro(s.intro)) return null

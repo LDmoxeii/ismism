@@ -1,9 +1,9 @@
 import { DocU } from "../db.ts"
-import { agenda_u } from "../eidetic/agenda.ts"
-import { Agenda, Rec, Soc, User } from "../eidetic/dbtyp.ts"
-import { collrec, not_recid, not_rol, rec_u } from "../eidetic/rec.ts"
-import { soc_u } from "../eidetic/soc.ts"
-import { user_u } from "../eidetic/user.ts"
+import { agd_u } from "../eid/agd.ts"
+import { Agd, Rec, Soc, Usr } from "../eid/typ.ts"
+import { collrec, not_recid, not_rol, rec_u } from "../eid/rec.ts"
+import { soc_u } from "../eid/soc.ts"
+import { usr_u } from "../eid/usr.ts"
 import { not_aut, Pas } from "./pas.ts"
 
 export function is_pro(
@@ -23,15 +23,15 @@ export function is_re(
 	return re === "rej" || re === "ref"
 }
 
-export async function pro_user(
+export async function pro_usr(
 	pas: Pas,
 	re: "rej" | "ref",
-	uid: User["_id"],
+	uid: Usr["_id"],
 	pro: boolean,
 ): DocU {
-	if (not_aut(pas, pro_user.name) || not_pro(pas) || pas.ref.includes(uid)) return null
+	if (not_aut(pas, pro_usr.name) || not_pro(pas) || pas.ref.includes(uid)) return null
 	const u = { [re]: pas.id.uid }
-	return await user_u(uid, pro ? { $addToSet: u } : { $pull: u })
+	return await usr_u(uid, pro ? { $addToSet: u } : { $pull: u })
 }
 export async function pro_soc(
 	pas: Pas,
@@ -43,15 +43,15 @@ export async function pro_soc(
 	const u = { [re]: pas.id.uid }
 	return await soc_u(sid, pro ? { $addToSet: u } : { $pull: u })
 }
-export async function pro_agenda(
+export async function pro_agd(
 	pas: Pas,
 	re: "rej" | "ref",
-	aid: Agenda["_id"],
+	aid: Agd["_id"],
 	pro: boolean,
 ): DocU {
-	if (not_aut(pas, pro_agenda.name) || not_pro(pas)) return null
+	if (not_aut(pas, pro_agd.name) || not_pro(pas)) return null
 	const u = { [re]: pas.id.uid }
-	return await agenda_u(aid, pro ? { $addToSet: u } : { $pull: u })
+	return await agd_u(aid, pro ? { $addToSet: u } : { $pull: u })
 }
 
 export async function pro_rec(

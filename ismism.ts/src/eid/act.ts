@@ -1,5 +1,5 @@
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import { Act } from "./dbtyp.ts"
+import { Act } from "./typ.ts"
 
 function is_actid(
 	id: Act["_id"]

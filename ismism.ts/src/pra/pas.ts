@@ -1,17 +1,17 @@
-import { Aut, User } from "../eidetic/dbtyp.ts"
+import { Aut, Usr } from "../eid/typ.ts"
 import { DocR, DocU } from "../db.ts"
-import { jwt_sign, jwt_verify } from "../ontic/jwt.ts"
-import { user_r, user_u } from "../eidetic/user.ts"
-import { aut_r } from "../eidetic/aut.ts"
-import { utc_h } from "../ontic/utc.ts"
-import { smssend } from "../ontic/sms.ts"
-import { URol, urol } from "../eidetic/rec.ts"
+import { jwt_sign, jwt_verify } from "../ont/jwt.ts"
+import { usr_r, usr_u } from "../eid/usr.ts"
+import { aut_r } from "../eid/aut.ts"
+import { utc_h } from "../ont/utc.ts"
+import { smssend } from "../ont/sms.ts"
+import { URol, urol } from "../eid/rec.ts"
 
 export type Pas = {
-	id: { uid: User["_id"], utc: number },
-	rej: User["rej"],
-	ref: User["ref"],
-	name: User["name"],
+	id: { uid: Usr["_id"], utc: number },
+	rej: Usr["rej"],
+	ref: Usr["ref"],
+	nam: Usr["nam"],
 	aut: Aut["p"],
 	rol: URol[0][1],
 }
@@ -34,12 +34,12 @@ const h_pcode_valid = 1
 export const pcode_digit = 6
 
 export async function pas(
-	jwt: NonNullable<User["ptoken"]>
+	jwt: NonNullable<Usr["ptoken"]>
 ): DocR<Pas> {
 	const id = await jwt_verify<Pas["id"]>(jwt)
 	if (!id) return null
 	const [u, aut, [rol]] = await Promise.all([
-		user_r({ _id: id.uid }, { rej: 1, ref: 1, name: 1, pcode: 1, ptoken: 1 }),
+		usr_r({ _id: id.uid }, { rej: 1, ref: 1, nam: 1, pcode: 1, ptoken: 1 }),
 		aut_r(id.uid),
 		urol([id.uid]),
 	])
@@ -48,7 +48,7 @@ export async function pas(
 			id,
 			rej: u.rej,
 			ref: u.ref,
-			name: u.name,
+			nam: u.nam,
 			aut: aut ? aut.p : [],
 			rol: rol && rol[0] === id.uid ? rol[1] : []
 		}
@@ -56,10 +56,10 @@ export async function pas(
 }
 
 export async function pas_issue(
-	nbr: NonNullable<User["nbr"]>,
-	code: NonNullable<User["pcode"]>["code"],
-): DocR<{ pas: Pas, jwt: NonNullable<User["ptoken"]> }> {
-	const u = await user_r({ nbr }, { rej: 1, ref: 1, name: 1, pcode: 1, ptoken: 1 })
+	nbr: NonNullable<Usr["nbr"]>,
+	code: NonNullable<Usr["pcode"]>["code"],
+): DocR<{ pas: Pas, jwt: NonNullable<Usr["ptoken"]> }> {
+	const u = await usr_r({ nbr }, { rej: 1, ref: 1, nam: 1, pcode: 1, ptoken: 1 })
 	const utc = Date.now()
 	if (u && u.pcode && u.pcode.code === code && utc - u.pcode.utc < utc_h * h_pcode_valid) {
 		const [aut, [rol]] = await Promise.all([
@@ -69,29 +69,29 @@ export async function pas_issue(
 		const pas: Pas = {
 			id: { uid: u._id, utc },
 			rej: u.rej, ref: u.ref,
-			name: u.name,
+			nam: u.nam,
 			aut: aut ? aut.p : [],
 			rol: rol && rol[0] === u._id ? rol[1] : []
 		}
 		if (u.ptoken) return { pas, jwt: u.ptoken }
 		const jwt = await jwt_sign(pas.id)
-		const c = await user_u(u._id, { $set: { ptoken: jwt } })
+		const c = await usr_u(u._id, { $set: { ptoken: jwt } })
 		if (c && c > 0) return { pas, jwt }
 	}
 	return null
 }
 
 export async function pas_code(
-	nbr: NonNullable<User["nbr"]>,
+	nbr: NonNullable<Usr["nbr"]>,
 	sms: boolean,
 ): DocR<{ sms: boolean, utc?: number }> {
-	const u = await user_r({ nbr }, { name: 1, pcode: 1, ptoken: 1 })
+	const u = await usr_r({ nbr }, { nam: 1, pcode: 1, ptoken: 1 })
 	if (!u) return null
 	const utc = Date.now()
 	if (u.pcode && utc - u.pcode.utc < utc_h * h_pcode_valid)
 		return { sms: false, utc: u.pcode.utc }
 	const code = Math.round(Math.random() * 1000000)
-	const c = await user_u(u._id, { $set: { pcode: { code, utc } } })
+	const c = await usr_u(u._id, { $set: { pcode: { code, utc } } })
 	if (c && c > 0) {
 		if (sms) {
 			const { sent } = await smssend(nbr, `${code}`.padStart(pcode_digit, "0"), `${h_pcode_valid}`)
@@ -103,7 +103,7 @@ export async function pas_code(
 }
 
 export function pas_clear(
-	uid: User["_id"]
+	uid: Usr["_id"]
 ): DocU {
-	return user_u(uid, { $unset: { ptoken: "" } })
+	return usr_u(uid, { $unset: { ptoken: "" } })
 }

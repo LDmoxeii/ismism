@@ -1,19 +1,19 @@
-import { Act, Agenda, Aut, Fund, Soc, User, Work, Worker } from "./eidetic/dbtyp.ts"
+import { Act, Agd, Aut, Fund, Soc, Usr, Work, Worker } from "./eid/typ.ts"
 import { MongoClient, UpdateFilter } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
 
 const conn = new MongoClient()
 await conn.connect("mongodb://127.0.0.1:27017")
 
 export async function db(
-	name: "ismism" | "tst",
+	nam: "ismism" | "tst",
 	reset = false,
 ) {
-	const db = conn.database(name)
+	const db = conn.database(nam)
 
 	const c = {
-		user: db.collection<User>("user"),
+		usr: db.collection<Usr>("usr"),
 		soc: db.collection<Soc>("soc"),
-		agenda: db.collection<Agenda>("agenda"),
+		agd: db.collection<Agd>("agd"),
 
 		worker: db.collection<Worker>("worker"),
 		work: db.collection<Work>("work"),
@@ -25,9 +25,9 @@ export async function db(
 
 	if (reset) {
 		await db.dropDatabase()
-		c.user.createIndexes({
+		c.usr.createIndexes({
 			indexes: [{
-				key: { name: 1 }, name: "name", unique: true,
+				key: { nam: 1 }, name: "nam", unique: true,
 			}, {
 				key: { nbr: 1 }, name: "nbr", unique: true,
 				partialFilterExpression: { nbr: { $exists: true } },
@@ -35,7 +35,7 @@ export async function db(
 		})
 		await c.soc.createIndexes({
 			indexes: [{
-				key: { name: 1 }, name: "name", unique: true,
+				key: { nam: 1 }, name: "nam", unique: true,
 			}, {
 				key: { uid: 1 }, name: "uid",
 			}, {
@@ -44,9 +44,9 @@ export async function db(
 				key: { adm2: 1 }, name: "adm2",
 			}]
 		})
-		await c.agenda.createIndexes({
+		await c.agd.createIndexes({
 			indexes: [{
-				key: { name: 1 }, name: "name", unique: true,
+				key: { nam: 1 }, name: "nam", unique: true,
 			}, {
 				key: { adm1: 1 }, name: "adm1",
 			}, {
@@ -89,7 +89,7 @@ export async function db(
 		})
 	}
 
-	if (name === "tst") coll = c
+	if (nam === "tst") coll = c
 	return c
 }
 

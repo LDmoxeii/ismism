@@ -1,6 +1,6 @@
 import { Coll } from "../db.ts"
-import { not_adm1, not_adm2 } from "../ontic/adm.ts"
-import { Id } from "./dbtyp.ts"
+import { not_adm1, not_adm2 } from "../ont/adm.ts"
+import { Id } from "./typ.ts"
 
 export function is_id(
 	id?: null | Id["_id"]
@@ -13,15 +13,15 @@ export function not_id(
 	return !is_id(id)
 }
 
-export function is_name(
-	name?: null | Id["name"]
+export function is_nam(
+	nam?: null | Id["nam"]
 ) {
-	return typeof name === "string" && /^[\u4E00-\u9FFF]{2,16}$/.test(name)
+	return typeof nam === "string" && /^[\u4E00-\u9FFF]{2,16}$/.test(nam)
 }
-export function not_name(
-	name?: null | Id["name"]
+export function not_nam(
+	nam?: null | Id["nam"]
 ) {
-	return !is_name(name)
+	return !is_nam(nam)
 }
 
 export function is_intro(
@@ -35,20 +35,20 @@ export function not_intro(
 	return !is_intro(intro)
 }
 
-export async function idname(
-	c: Coll["user" | "soc" | "agenda"],
+export async function idnam(
+	c: Coll["usr" | "soc" | "agd"],
 	id: Id["_id"][],
-): Promise<[Id["_id"], Id["name"]][]> {
+): Promise<[Id["_id"], Id["nam"]][]> {
 	id = [...new Set(id.filter(is_id))]
 	const d = await c.find(
 		{ _id: { $in: id } },
-		{ projection: { _id: 1, name: 1 } }
+		{ projection: { _id: 1, nam: 1 } }
 	).toArray()
-	return d.map(d => [d._id, d.name])
+	return d.map(d => [d._id, d.nam])
 }
 
 export async function id(
-	c: Coll["soc" | "agenda"],
+	c: Coll["soc" | "agd"],
 	adm?: { adm1: string } | { adm2: string },
 ): Promise<Id["_id"][]> {
 	if (adm && "adm2" in adm && not_adm2(adm.adm2)) return []
@@ -60,7 +60,7 @@ export async function id(
 export async function nid_of_adm<
 	A extends "adm1" | "adm2"
 >(
-	c: Coll["soc" | "agenda"],
+	c: Coll["soc" | "agd"],
 	a: A,
 ): Promise<[Id[A], number][]> {
 	const d = await c.aggregate<{

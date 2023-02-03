@@ -1,5 +1,5 @@
 import { coll, Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import { Agenda, Fund, Rec, User, Work, Worker } from "./dbtyp.ts"
+import { Agd, Fund, Rec, Usr, Work, Worker } from "./typ.ts"
 import { is_id, not_id } from "./id.ts"
 
 type RecD<C extends Coll["worker" | "work" | "fund"]> =
@@ -69,7 +69,7 @@ export async function rec_r<
 >(
 	c: C,
 	utc: number,
-	id?: { "_id.aid": Agenda["_id"] } | { "_id.uid": User["_id"] },
+	id?: { "_id.aid": Agd["_id"] } | { "_id.uid": Usr["_id"] },
 	rw?: { rol: Worker["rol"] } | { work: Work["work"] }
 ): DocR<RecD<C>[]> {
 	if (id && "_id.aid" in id && not_id(id["_id.aid"])) return null
@@ -110,7 +110,7 @@ export async function rec_d(
 }
 
 export async function nrec(
-	id?: { "_id.aid": Agenda["_id"] } | { "_id.uid": User["_id"] },
+	id?: { "_id.aid": Agd["_id"] } | { "_id.uid": Usr["_id"] },
 ): DocR<{ worker: number, work: number, fund: number }> {
 	if (id && "_id.aid" in id && not_id(id["_id.aid"])) return null
 	if (id && "_id.uid" in id && not_id(id["_id.uid"])) return null
@@ -125,9 +125,9 @@ export async function nrec(
 	}
 }
 
-export type URol = [User["_id"], [Agenda["_id"], Worker["rol"]][]][]
+export type URol = [Usr["_id"], [Agd["_id"], Worker["rol"]][]][]
 export async function urol(
-	uid: User["_id"][]
+	uid: Usr["_id"][]
 ): Promise<URol> {
 	uid = Array.from(new Set(uid.filter(is_id)))
 	const r = await coll.worker.aggregate([{
@@ -145,7 +145,7 @@ export async function urol(
 		}
 	}]).toArray() as unknown as {
 		_id: number, r: {
-			aid: Agenda["_id"],
+			aid: Agd["_id"],
 			rol: Worker["rol"],
 			rej: number,
 			ref: number

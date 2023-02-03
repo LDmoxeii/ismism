@@ -1,6 +1,6 @@
-import { Ret } from "../ontic/typ.ts"
+import { Ret } from "../ont/typ.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
-import { is_re, pro_agenda, pro_rec, pro_soc, pro_user } from "./pro.ts"
+import { is_re, pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
 
 export type PasPos = { jwt?: string | null, pas?: Pas | null }
 export type PasCode = Ret<typeof pas_code>
@@ -44,9 +44,9 @@ export async function pos(
 		case "pro": {
 			const { re, uid, sid, aid, rec, recid, pro } = json
 			if (p.pas && is_re(re) && typeof pro === "boolean")
-				if (typeof uid === "number") return pro_user(p.pas, re, uid, pro)
+				if (typeof uid === "number") return pro_usr(p.pas, re, uid, pro)
 				else if (typeof sid === "number") return pro_soc(p.pas, re, sid, pro)
-				else if (typeof aid === "number") return pro_agenda(p.pas, re, aid, pro)
+				else if (typeof aid === "number") return pro_agd(p.pas, re, aid, pro)
 				else if (typeof rec === "string" && typeof recid === "object") return pro_rec(p.pas, re, rec, recid, pro)
 			break
 		}
