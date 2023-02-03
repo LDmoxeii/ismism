@@ -9,7 +9,7 @@ type RecD<C extends Coll["worker" | "work" | "fund"]> =
 export function is_recid(
 	id: Rec["_id"]
 ): id is Rec["_id"] {
-	return is_id(id.uid) && is_id(id.aid) && id.utc > 0
+	return Object.keys(id).length === 3 && is_id(id.uid) && is_id(id.aid) && id.utc > 0
 }
 export function not_recid(
 	id: Rec["_id"]
@@ -99,4 +99,17 @@ export async function nrec(
 		work: await coll.work.estimatedDocumentCount(),
 		fund: await coll.fund.estimatedDocumentCount(),
 	}
+}
+
+export type URole = [User["_id"], [Agenda["_id"], Worker["role"]][]][]
+export async function urole(
+	uid: User["_id"][]
+): Promise<URole> {
+	uid = Array.from(new Set(uid.filter(is_id)))
+	const r = await coll.worker.aggregate([{
+		$match: { "_id.uid": { $in: uid.filter(is_id) }, exp: { $gt: Date.now() } }
+	}, {
+		$group: { _id: "$_id.uid", r: { $push: { aid: "$_id.aid", role: "$role" } } }
+	}]).toArray() as unknown as { _id: number, r: { aid: number, role: Worker["role"] }[] }[]
+	return r.map(({ _id, r }) => [_id, r.map(r => [r.aid, r.role])])
 }

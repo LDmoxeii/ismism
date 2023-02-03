@@ -5,6 +5,7 @@ import { user_r, user_u } from "../eidetic/user.ts"
 import { aut_r } from "../eidetic/aut.ts"
 import { utc_h } from "../ontic/utc.ts"
 import { smssend } from "../ontic/sms.ts"
+import { URole, urole } from "../eidetic/rec.ts"
 
 export type Pass = {
 	id: { uid: User["_id"], utc: number },
@@ -12,6 +13,7 @@ export type Pass = {
 	ref: User["ref"],
 	name: User["name"],
 	aut: Aut["p"],
+	role: URole[0][1],
 }
 
 export function is_aut(
@@ -36,12 +38,20 @@ export async function pass(
 ): DocR<Pass> {
 	const id = await jwt_verify<Pass["id"]>(jwt)
 	if (!id) return null
-	const [u, aut] = await Promise.all([
+	const [u, aut, [role]] = await Promise.all([
 		user_r({ _id: id.uid }, { rej: 1, ref: 1, name: 1, pcode: 1, ptoken: 1 }),
 		aut_r(id.uid),
+		urole([id.uid]),
 	])
 	if (u && u.pcode && u.pcode.utc > utc_pass_valid && u.ptoken && u.ptoken === jwt)
-		return { id, rej: u.rej, ref: u.ref, name: u.name, aut: aut ? aut.p : [] }
+		return {
+			id,
+			rej: u.rej,
+			ref: u.ref,
+			name: u.name,
+			aut: aut ? aut.p : [],
+			role: role && role[0] === id.uid ? role[1] : []
+		}
 	return null
 }
 
@@ -52,12 +62,16 @@ export async function pass_issue(
 	const u = await user_r({ nbr }, { rej: 1, ref: 1, name: 1, pcode: 1, ptoken: 1 })
 	const utc = Date.now()
 	if (u && u.pcode && u.pcode.code === code && utc - u.pcode.utc < utc_h * h_pcode_valid) {
-		const aut = await aut_r(u._id)
+		const [aut, [role]] = await Promise.all([
+			aut_r(u._id),
+			urole([u._id]),
+		])
 		const pass: Pass = {
 			id: { uid: u._id, utc },
 			rej: u.rej, ref: u.ref,
 			name: u.name,
 			aut: aut ? aut.p : [],
+			role: role && role[0] === u._id ? role[1] : []
 		}
 		if (u.ptoken) return { pass, jwt: u.ptoken }
 		const jwt = await jwt_sign(pass.id)
