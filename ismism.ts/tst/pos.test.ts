@@ -1,5 +1,6 @@
 import { assert, assertEquals } from "https://deno.land/std@0.173.0/testing/asserts.ts"
 import { coll, db } from "../src/db.ts"
+import { act_c, act_d } from "../src/eid/act.ts"
 import { agd_c, agd_d } from "../src/eid/agd.ts"
 import { aut_c, aut_d } from "../src/eid/aut.ts"
 import { rec_c, rec_d } from "../src/eid/rec.ts"
@@ -43,6 +44,26 @@ Deno.test("pas", async () => {
 	assertEquals(p, { pas: null, jwt: null })
 	assertEquals(await usr_r({ _id: uid }, { ptoken: 1 }), { _id: uid })
 	await usr_d(uid)
+})
+
+Deno.test("pre", async () => {
+	const actid = ["111111", "111112"]
+	const nbr = ["11111111111", "11111111112"]
+	const utc = Date.now()
+	const [adm1, adm2] = ["四川", "成都"]
+	await act_c({ _id: actid[0], exp: utc + 1000, act: "usrnew", ref: [1] })
+	await act_c({ _id: actid[1], exp: utc + 1000, act: "usrnbr", uid: 1 })
+	assertEquals([1, null, 1, null], [
+		await pos({}, "pre", json({ actid: actid[0], nbr: nbr[0], adm1, adm2 })),
+		await pos({}, "pre", json({ actid: actid[0], nbr: nbr[0], adm1, adm2 })),
+		await pos({}, "pre", json({ actid: actid[1], nbr: nbr[1], adm1, adm2 })),
+		await pos({}, "pre", json({ actid: actid[1], nbr: nbr[1], adm1, adm2 })),
+	])
+	assertEquals({ _id: 1, nbr: nbr[1] }, await usr_r({ _id: 1 }, { nbr: 1 }))
+	await Promise.all([
+		usr_d(1),
+		...actid.map(act_d),
+	])
 })
 
 Deno.test("pro", async () => {

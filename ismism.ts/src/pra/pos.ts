@@ -1,15 +1,17 @@
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
+import { pre_usr } from "./pre.ts"
 import { is_re, pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
 
 // deno-lint-ignore no-explicit-any
 type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
 
+export type Pos = "pas" | "pre" | "pro"
 export type PasPos = { jwt?: string | null, pas?: Pas | null }
 export type PasCode = Ret<typeof pas_code>
 
 export async function pos(
 	p: PasPos,
-	f: string,
+	f: Pos | string,
 	b: string,
 ) {
 	let json
@@ -40,6 +42,13 @@ export async function pos(
 					return issue.pas
 				}
 			} else if (p.pas) return p.pas
+			break
+		}
+
+		case "pre": {
+			const { actid, nbr, adm1, adm2 } = json
+			if (typeof actid === "string" && typeof nbr === "string" && typeof adm1 === "string" && typeof adm2 === "string")
+				return pre_usr(actid, nbr, adm1, adm2)
 			break
 		}
 
