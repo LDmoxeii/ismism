@@ -28,6 +28,30 @@ export function not_rec(
 	return !is_rec(r)
 }
 
+export function is_role(
+	urole: URole[0][1],
+	[aid, role]: URole[0][1][0],
+) {
+	return urole.some(([a, r]) => a === aid && r === role)
+}
+export function not_role(
+	urole: URole[0][1],
+	aidrole: URole[0][1][0],
+) {
+	return !is_role(urole, aidrole)
+}
+
+export function collrec(
+	c: "worker" | "work" | "fund" | string
+) {
+	switch (c) {
+		case "worker": return coll.worker
+		case "work": return coll.work
+		case "fund": return coll.fund
+	}
+	return null
+}
+
 export async function rec_c<
 	C extends Coll["worker" | "work" | "fund"]
 >(
@@ -109,7 +133,27 @@ export async function urole(
 	const r = await coll.worker.aggregate([{
 		$match: { "_id.uid": { $in: uid.filter(is_id) }, exp: { $gt: Date.now() } }
 	}, {
-		$group: { _id: "$_id.uid", r: { $push: { aid: "$_id.aid", role: "$role" } } }
-	}]).toArray() as unknown as { _id: number, r: { aid: number, role: Worker["role"] }[] }[]
-	return r.map(({ _id, r }) => [_id, r.map(r => [r.aid, r.role])])
+		$group: {
+			_id: "$_id.uid", r: {
+				$push: {
+					aid: "$_id.aid",
+					role: "$role",
+					rej: { $size: "$rej" },
+					ref: { $size: "$ref" }
+				}
+			}
+		}
+	}]).toArray() as unknown as {
+		_id: number, r: {
+			aid: Agenda["_id"],
+			role: Worker["role"],
+			rej: number,
+			ref: number
+		}[]
+	}[]
+	return r.map(({ _id, r }) => [
+		_id, r
+			.filter(r => r.rej < 2 && r.ref >= 2)
+			.map(r => [r.aid, r.role])
+	])
 }

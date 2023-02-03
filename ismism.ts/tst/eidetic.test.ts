@@ -4,7 +4,7 @@ import { act_c, act_d, act_r, act_u } from "../src/eidetic/act.ts"
 import { agenda_c, agenda_d, agenda_r, agenda_u } from "../src/eidetic/agenda.ts"
 import { aut_c, aut_d, aut_r, aut_u } from "../src/eidetic/aut.ts"
 import { id, idname, is_id, is_intro, is_name, nid_of_adm, not_id, not_intro, not_name } from "../src/eidetic/id.ts"
-import { nrec, rec_c, rec_d, rec_r, rec_u, urole } from "../src/eidetic/rec.ts"
+import { is_role, not_role, nrec, rec_c, rec_d, rec_r, rec_u, urole } from "../src/eidetic/rec.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eidetic/soc.ts"
 import { user_c, user_r, user_u, user_d } from "../src/eidetic/user.ts"
 
@@ -107,7 +107,7 @@ Deno.test("rec", async () => {
 	assert(0 === (await rec_r(coll.fund, utc, { "_id.uid": 2 }))?.length)
 
 	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.worker, {
-		_id, ref: [_id.uid], rej: [], role: "sec", exp: utc + 10000
+		_id, ref: [_id.uid, 3], rej: [], role: "sec", exp: utc + 10000
 	}))))
 	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.work, {
 		_id, ref: [_id.uid], rej: [], work: "work", msg: "msg"
@@ -118,8 +118,13 @@ Deno.test("rec", async () => {
 	assertEquals(await nrec(), { worker: 3, work: 3, fund: 3 })
 	assertEquals(await nrec({ "_id.uid": 2 }), { worker: 2, work: 2, fund: 2 })
 	assertEquals(await nrec({ "_id.aid": 4 }), { worker: 2, work: 2, fund: 2 })
-	assertEquals(await urole([1, 1]), [[1, [[4, "sec"]]]])
-	assertEquals(await urole([2, 3, 4]), [[2, [[3, "sec"], [4, "sec"]]]])
+
+	const ur = await urole([2, 3, 4, 1])
+	ur.sort((a, b) => a[0] - b[0])
+	assertEquals(ur, [[1, [[4, "sec"]]], [2, [[3, "sec"], [4, "sec"]]]])
+	assert(is_role(ur[0][1], [4, "sec"]))
+	assert(is_role(ur[1][1], [3, "sec"]))
+	assert(not_role(ur[1][1], [3, "worker"]))
 
 	assertEquals((await rec_r(coll.worker, 0))!.length, 3)
 	assertEquals((await rec_r(coll.work, utc + 100))!.length, 1)

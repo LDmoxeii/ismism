@@ -1,6 +1,6 @@
 import { Ret } from "../ontic/typ.ts"
 import { pass, Pass, pass_clear, pass_code, pass_issue } from "./pass.ts"
-import { is_re, pro_agenda, pro_soc, pro_user } from "./pro.ts"
+import { is_re, pro_agenda, pro_rec, pro_soc, pro_user } from "./pro.ts"
 
 export type PassPost = { jwt?: string | null, pass?: Pass | null }
 export type PassCode = Ret<typeof pass_code>
@@ -42,11 +42,12 @@ export async function post(
 		}
 
 		case "pro": {
-			const { re, uid, sid, aid, pro } = json
+			const { re, uid, sid, aid, rec, recid, pro } = json
 			if (p.pass && is_re(re) && typeof pro === "boolean")
 				if (typeof uid === "number") return pro_user(p.pass, re, uid, pro)
 				else if (typeof sid === "number") return pro_soc(p.pass, re, sid, pro)
 				else if (typeof aid === "number") return pro_agenda(p.pass, re, aid, pro)
+				else if (typeof rec === "string" && typeof recid === "object") return pro_rec(p.pass, re, rec, recid, pro)
 			break
 		}
 	}
