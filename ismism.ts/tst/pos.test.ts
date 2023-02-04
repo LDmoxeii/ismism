@@ -47,11 +47,12 @@ Deno.test("pas", async () => {
 })
 
 Deno.test("pre", async () => {
+	const p: PasPos = {}
 	const actid = ["111111", "111112"]
-	const nbr = ["11111111111", "11111111112"]
+	const nbr = ["11111111111", "11111111112", "11111111113"]
 	const utc = Date.now()
 	const [adm1, adm2] = ["四川", "成都"]
-	await act_c({ _id: actid[0], exp: utc + 1000, act: "usrnew", ref: [1] })
+	await act_c({ _id: actid[0], exp: utc + 1000, act: "usrnew", ref: [1, 2] })
 	await act_c({ _id: actid[1], exp: utc + 1000, act: "usrnbr", uid: 1 })
 	assertEquals([1, null, 1, null], [
 		await pos({}, "pre", json({ actid: actid[0], nbr: nbr[0], adm1, adm2 })),
@@ -60,8 +61,14 @@ Deno.test("pre", async () => {
 		await pos({}, "pre", json({ actid: actid[1], nbr: nbr[1], adm1, adm2 })),
 	])
 	assertEquals({ _id: 1, nbr: nbr[1] }, await usr_r({ _id: 1 }, { nbr: 1 }))
+	await aut_c({ _id: 1, p: ["pre_usr"] })
+	await pos(p, "pas", json({ nbr: nbr[1], sms: false }))
+	const pcode = await usr_r({ _id: 1 }, { pcode: 1 })
+	await pos(p, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
+	assert(2 === await pos(p, "pre", json({ nbr: nbr[2], adm1, adm2 })))
 	await Promise.all([
-		usr_d(1),
+		usr_d(1), aut_d(1),
+		usr_d(2),
 		...actid.map(act_d),
 	])
 })

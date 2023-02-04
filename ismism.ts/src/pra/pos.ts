@@ -1,5 +1,5 @@
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
-import { pre_usr } from "./pre.ts"
+import { pre_usr, pre_usract } from "./pre.ts"
 import { is_re, pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
 
 // deno-lint-ignore no-explicit-any
@@ -47,8 +47,9 @@ export async function pos(
 
 		case "pre": {
 			const { actid, nbr, adm1, adm2 } = json
-			if (typeof actid === "string" && typeof nbr === "string" && typeof adm1 === "string" && typeof adm2 === "string")
-				return pre_usr(actid, nbr, adm1, adm2)
+			if (typeof nbr === "string" && typeof adm1 === "string" && typeof adm2 === "string")
+				if (typeof actid === "string") return pre_usract(actid, nbr, adm1, adm2)
+				else if (p.pas) return pre_usr(p.pas, nbr, adm1, adm2)
 			break
 		}
 
