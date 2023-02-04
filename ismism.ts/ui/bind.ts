@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-window-prefix
+import { not_nbr } from "../src/ont/sms.ts"
 import { utc_medium } from "../src/ont/utc.ts"
 import type { Pas } from "../src/pra/pas.ts"
 import type { PasCode, UsrAct } from "../src/pra/pos.ts"
@@ -29,12 +30,12 @@ const main = document.getElementById("main")!
 
 function paspre(
 ) {
-	const [pas_t, [
+	const [paspre_t, [
 		nbr_e, send_e,
 		pre_e, actid_e, act_e,
 		pas_e, code_e, issue_e,
 		hint_e,
-	]] = bind("pas", [
+	]] = bind("paspre", [
 		"nbr", "send",
 		"pre", "actid", "act",
 		"pas", "code", "issue",
@@ -47,7 +48,7 @@ function paspre(
 	]]
 
 	const send = async () => {
-		if (!nbr_e.checkValidity()) { alert("无效手机号"); return }
+		if (!/^1\d{10}$/.test(nbr_e.value)) { alert("无效手机号"); return }
 		nbr_e.readOnly = send_e.disabled = true
 		const sent = await pos<PasCode>("pas", { nbr: nbr_e.value, sms: location.hostname === "ismist.cn" })
 		if (sent) {
@@ -82,11 +83,11 @@ function paspre(
 			const pas_a = document.getElementById("pas")! as HTMLAnchorElement
 			pas_a.innerText = p.nam
 			pas_a.href = `#${p.id.uid}`
-			window.location.hash = pas_a.href
+			window.location.hash = `#${p.id.uid}`
 		})
 	})
 
-	main.append(pas_t)
+	main.append(paspre_t)
 }
 
 window.addEventListener("hashchange", () => {
