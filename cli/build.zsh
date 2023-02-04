@@ -7,3 +7,9 @@ cd ismism.ts
 
 deno bundle src/ser.ts ../cli/ser.js
 deno bundle cli/dbset.ts ../cli/dbset.js
+
+mkdir ../ui
+
+cp ui/index.html ../ui/
+
+deno bundle ui/bind.ts ../ui/bind.js

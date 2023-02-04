@@ -8,6 +8,7 @@ type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
 export type Pos = "pas" | "pre" | "pro"
 export type PasPos = { jwt?: string | null, pas?: Pas | null }
 export type PasCode = Ret<typeof pas_code>
+export type UsrAct = Ret<typeof pre_usract>
 
 export async function pos(
 	p: PasPos,
