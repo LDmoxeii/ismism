@@ -194,6 +194,13 @@
 		border: none;
 	}
 
+	section>select {
+		font-size: 1em;
+		width: 14ch;
+		margin: 12px 0;
+		padding: 0.2ch 1ch;
+	}
+
 	div#main {
 		max-width: 1080px;
 		margin: 0 auto;
@@ -280,6 +287,10 @@
 				minlength="11" maxlength="11" required />
 			<button class="send">发送验证码</button>
 		</section>
+		<section class="flex adm none">
+			<select class="adm1"></select>
+			<select class="adm2"></select>
+		</section>
 		<section class="flex pre none">
 			<label>激活码：</label>
 			<input class="actid" type="text" placeholder="激活码" minlength="6" maxlength="24" required />
@@ -291,6 +302,7 @@
 				maxlength="6" required />
 			<button class="issue">登录</button>
 		</section>
+		<hr>
 		<section class="hint"></section>
 		<hr>
 	</article>
