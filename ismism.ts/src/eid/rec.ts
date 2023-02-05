@@ -29,16 +29,16 @@ export function not_rec(
 }
 
 export function is_rol(
-	urol: URol[0][1],
-	[aid, rol]: URol[0][1][0],
+	rs: Rol[0][1],
+	[aid, rol]: Rol[0][1][0],
 ) {
-	return urol.some(([a, r]) => a === aid && r === rol)
+	return rs.some(([a, r]) => a === aid && r === rol)
 }
 export function not_rol(
-	urol: URol[0][1],
-	aidrol: URol[0][1][0],
+	rs: Rol[0][1],
+	aidrol: Rol[0][1][0],
 ) {
-	return !is_rol(urol, aidrol)
+	return !is_rol(rs, aidrol)
 }
 
 export function collrec(
@@ -110,25 +110,27 @@ export async function rec_d(
 }
 
 export async function nrec(
-	id?: { "_id.aid": Agd["_id"] } | { "_id.uid": Usr["_id"] },
+	id?: { aid: Agd["_id"] } | { uid: Usr["_id"][] },
 ): DocR<{ worker: number, work: number, fund: number }> {
-	if (id && "_id.aid" in id && not_id(id["_id.aid"])) return null
-	if (id && "_id.uid" in id && not_id(id["_id.uid"])) return null
-	return id ? {
-		worker: await coll.worker.countDocuments(id),
-		work: await coll.work.countDocuments(id),
-		fund: await coll.fund.countDocuments(id),
-	} : {
-		worker: await coll.worker.estimatedDocumentCount(),
-		work: await coll.work.estimatedDocumentCount(),
-		fund: await coll.fund.estimatedDocumentCount(),
-	}
+	let p = null
+	const crec = [coll.worker, coll.work, coll.fund]
+	if (id) {
+		if ("aid" in id) {
+			if (not_id(id.aid)) return null
+			p = crec.map(c => c.countDocuments({ "_id.aid": id.aid }))
+		} else if ("uid" in id) {
+			const uid = id.uid.filter(is_id)
+			p = crec.map(c => c.countDocuments({ "_id.uid": { $in: uid } }))
+		} else return null
+	} else p = crec.map(c => c.estimatedDocumentCount())
+	const [worker, work, fund] = await Promise.all(p)
+	return { worker, work, fund }
 }
 
-export type URol = [Usr["_id"], [Agd["_id"], Worker["rol"]][]][]
-export async function urol(
+export type Rol = [Usr["_id"], [Agd["_id"], Worker["rol"]][]][]
+export async function rol(
 	uid: Usr["_id"][]
-): Promise<URol> {
+): Promise<Rol> {
 	uid = Array.from(new Set(uid.filter(is_id)))
 	const r = await coll.worker.aggregate([{
 		$match: { "_id.uid": { $in: uid.filter(is_id) }, exp: { $gt: Date.now() } }

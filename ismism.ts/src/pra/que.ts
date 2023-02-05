@@ -1,8 +1,47 @@
-import { DocR } from "../db.ts"
+import { Coll, coll } from "../db.ts"
+import { id } from "../eid/id.ts"
+import { agd, soc, usr } from "./doc.ts"
 
-export async function que<T>(
+// deno-lint-ignore no-explicit-any
+type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
+
+export type Usr = Ret<typeof usr>
+export type Soc = Ret<typeof soc>
+export type Agd = Ret<typeof agd>
+
+function id_of_adm(
+	c: Coll["soc" | "agd"],
+	p: URLSearchParams,
+) {
+	const [adm1, adm2] = [p.get("adm1"), p.get("adm2")]
+	return adm2 ? id(c, { adm2 }) : adm1 ? id(c, { adm1 }) : id(c)
+}
+
+export async function que(
 	f: string,
 	p: URLSearchParams,
-): DocR<T> {
+) {
+	switch (f) {
+		case "usr": {
+			const uid = parseInt(p.get("uid") ?? "")
+			return await usr(uid)
+		} case "soc": {
+			if (p.has("sid")) {
+				const sid = parseInt(p.get("sid") ?? "")
+				return await soc(sid)
+			}
+			const sid = await id_of_adm(coll.soc, p)
+			return await Promise.all(sid.map(soc))
+		} case "agd": {
+			if (p.has("aid")) {
+				const aid = parseInt(p.get("aid") ?? "")
+				return await agd(aid)
+			}
+			const aid = await id_of_adm(coll.agd, p)
+			return await Promise.all(aid.map(agd))
+		} case "rec": {
+			break
+		}
+	}
 	return null
 }

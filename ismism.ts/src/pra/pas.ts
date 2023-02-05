@@ -5,7 +5,7 @@ import { usr_r, usr_u } from "../eid/usr.ts"
 import { aut_r } from "../eid/aut.ts"
 import { utc_h } from "../ont/utc.ts"
 import { smssend } from "../ont/sms.ts"
-import { URol, urol } from "../eid/rec.ts"
+import { Rol, rol } from "../eid/rec.ts"
 
 export type Pas = {
 	id: { uid: Usr["_id"], utc: number },
@@ -13,7 +13,7 @@ export type Pas = {
 	ref: Usr["ref"],
 	nam: Usr["nam"],
 	aut: Aut["p"],
-	rol: URol[0][1],
+	rol: Rol[0][1],
 }
 
 export function is_aut(
@@ -38,10 +38,10 @@ export async function pas(
 ): DocR<Pas> {
 	const id = await jwt_verify<Pas["id"]>(jwt)
 	if (!id) return null
-	const [u, aut, [rol]] = await Promise.all([
+	const [u, aut, [r]] = await Promise.all([
 		usr_r({ _id: id.uid }, { rej: 1, ref: 1, nam: 1, pcode: 1, ptoken: 1 }),
 		aut_r(id.uid),
-		urol([id.uid]),
+		rol([id.uid]),
 	])
 	if (u && u.pcode && u.pcode.utc > utc_pas_valid && u.ptoken && u.ptoken === jwt)
 		return {
@@ -50,7 +50,7 @@ export async function pas(
 			ref: u.ref,
 			nam: u.nam,
 			aut: aut ? aut.p : [],
-			rol: rol && rol[0] === id.uid ? rol[1] : []
+			rol: r && r[0] === id.uid ? r[1] : []
 		}
 	return null
 }
@@ -62,16 +62,16 @@ export async function pas_issue(
 	const u = await usr_r({ nbr }, { rej: 1, ref: 1, nam: 1, pcode: 1, ptoken: 1 })
 	const utc = Date.now()
 	if (u && u.pcode && u.pcode.code === code && utc - u.pcode.utc < utc_h * h_pcode_valid) {
-		const [aut, [rol]] = await Promise.all([
+		const [aut, [r]] = await Promise.all([
 			aut_r(u._id),
-			urol([u._id]),
+			rol([u._id]),
 		])
 		const pas: Pas = {
 			id: { uid: u._id, utc },
 			rej: u.rej, ref: u.ref,
 			nam: u.nam,
 			aut: aut ? aut.p : [],
-			rol: rol && rol[0] === u._id ? rol[1] : []
+			rol: r && r[0] === u._id ? r[1] : []
 		}
 		if (u.ptoken) return { pas, jwt: u.ptoken }
 		const jwt = await jwt_sign(pas.id)

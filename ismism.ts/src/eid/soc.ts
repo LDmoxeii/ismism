@@ -1,6 +1,6 @@
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { not_adm } from "../ont/adm.ts"
-import { Soc } from "./typ.ts"
+import { Soc, Usr } from "./typ.ts"
 import { not_id, not_intro, not_nam } from "./id.ts"
 
 export async function soc_c(
@@ -66,4 +66,16 @@ export async function soc_d(
 		const c = await coll.soc.deleteOne({ _id: sid })
 		return c > 0 ? 1 : 0
 	} catch { return null }
+}
+
+export async function sidnam(
+	uid: Usr["_id"]
+): DocR<[Soc["_id"], Soc["nam"]][]> {
+	if (not_id(uid)) return []
+	const s = await coll.soc.find(
+		// deno-lint-ignore no-explicit-any
+		{ uid } as any,
+		{ projection: { _id: 1, nam: 1 } }
+	).toArray()
+	return s.map(s => [s._id, s.nam])
 }

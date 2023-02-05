@@ -4,8 +4,8 @@ import { act_c, act_d, act_r, act_u } from "../src/eid/act.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { aut_c, aut_d, aut_r, aut_u } from "../src/eid/aut.ts"
 import { id, idnam, is_id, is_intro, is_nam, nid_of_adm, not_id, not_intro, not_nam } from "../src/eid/id.ts"
-import { is_rol, not_rol, nrec, rec_c, rec_d, rec_r, rec_u, urol } from "../src/eid/rec.ts"
-import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
+import { is_rol, not_rol, nrec, rec_c, rec_d, rec_r, rec_u, rol } from "../src/eid/rec.ts"
+import { soc_c, soc_d, sidnam, soc_r, soc_u } from "../src/eid/soc.ts"
 import { usr_c, usr_r, usr_u, usr_d } from "../src/eid/usr.ts"
 
 await db("tst", true)
@@ -71,9 +71,10 @@ Deno.test("soc", async () => {
 	assert(r_c && r_c === 1)
 	const s = await soc_r(r_c, { nam: 1, intro: 1, adm1: 1, uid: 1 })
 	assert(s && s.nam === nam && s.intro === nam && s.adm1 === "四川" && s.uid.length === 0)
-	await soc_u(r_c, { $set: { sec: [2], ref: [2], uid: [2] } })
+	await soc_u(r_c, { $set: { sec: [2], ref: [2], uid: [2, 3, 4] } })
 	const s2 = await soc_r(r_c, { sec: 1, ref: 1, uid: 1 })
-	assertEquals(s2, { _id: 1, sec: [2], ref: [2], uid: [2] })
+	assertEquals(s2, { _id: 1, sec: [2], ref: [2], uid: [2, 3, 4] })
+	assertEquals([[1, "社团"]], await sidnam(3))
 	await soc_d(r_c)
 	assert(null === await soc_r(r_c, {}))
 })
@@ -101,7 +102,7 @@ Deno.test("rec", async () => {
 	]
 
 	assertEquals(await nrec(), { worker: 0, work: 0, fund: 0 })
-	assertEquals(await nrec({ "_id.aid": 4 }), { worker: 0, work: 0, fund: 0 })
+	assertEquals(await nrec({ aid: 4 }), { worker: 0, work: 0, fund: 0 })
 	assert(0 === (await rec_r(coll.worker, 0))?.length)
 	assert(0 === (await rec_r(coll.work, utc))?.length)
 	assert(0 === (await rec_r(coll.fund, utc, { "_id.uid": 2 }))?.length)
@@ -116,15 +117,15 @@ Deno.test("rec", async () => {
 		_id, ref: [_id.uid], rej: [], fund: 32, msg: "msg"
 	}))))
 	assertEquals(await nrec(), { worker: 3, work: 3, fund: 3 })
-	assertEquals(await nrec({ "_id.uid": 2 }), { worker: 2, work: 2, fund: 2 })
-	assertEquals(await nrec({ "_id.aid": 4 }), { worker: 2, work: 2, fund: 2 })
+	assertEquals(await nrec({ uid: [2] }), { worker: 2, work: 2, fund: 2 })
+	assertEquals(await nrec({ aid: 4 }), { worker: 2, work: 2, fund: 2 })
 
-	const ur = await urol([2, 3, 4, 1])
-	ur.sort((a, b) => a[0] - b[0])
-	assertEquals(ur, [[1, [[4, "sec"]]], [2, [[3, "sec"], [4, "sec"]]]])
-	assert(is_rol(ur[0][1], [4, "sec"]))
-	assert(is_rol(ur[1][1], [3, "sec"]))
-	assert(not_rol(ur[1][1], [3, "worker"]))
+	const r = await rol([2, 3, 4, 1])
+	r.sort((a, b) => a[0] - b[0])
+	assertEquals(r, [[1, [[4, "sec"]]], [2, [[3, "sec"], [4, "sec"]]]])
+	assert(is_rol(r[0][1], [4, "sec"]))
+	assert(is_rol(r[1][1], [3, "sec"]))
+	assert(not_rol(r[1][1], [3, "worker"]))
 
 	assertEquals((await rec_r(coll.worker, 0))!.length, 3)
 	assertEquals((await rec_r(coll.work, utc + 100))!.length, 1)
