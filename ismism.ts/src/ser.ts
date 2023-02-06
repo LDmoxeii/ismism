@@ -47,7 +47,7 @@ async function route(
 			const r = await pos(p, f, b)
 			if (r && p.etag) etag = p.etag
 			const s = JSON.stringify(r)
-			log(t, `${f}#${p.pas?.id.uid ?? ""} ${b} => ${r}`, 200)
+			log(t, `${f}#${p.pas?.id.uid ?? ""} ${b} => ${s}`, 200)
 			const headers: Headers = new Headers()
 			if (!p.pas) headers.set("set-cookie", `pp=""; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=0`)
 			else if (p.jwt) headers.set("set-cookie", `pp=${p.jwt}; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=31728728`)

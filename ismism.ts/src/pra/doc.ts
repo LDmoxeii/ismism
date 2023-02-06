@@ -18,7 +18,7 @@ export async function usr(
 	])
 	if (!u) return null
 	const unam = await idnam(coll.usr, [...u.rej, ...u.ref])
-	return { ...u, unam, snam, nrec: nr }
+	return { ...u, unam, snam: snam!, nrec: nr }
 }
 
 export async function soc(

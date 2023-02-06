@@ -3,14 +3,20 @@ import { adm } from "../src/ont/adm.ts"
 import { utc_medium } from "../src/ont/utc.ts"
 import type { Pas } from "../src/pra/pas.ts"
 import type { PasCode, UsrAct } from "../src/pra/pos.ts"
+import type { Usr } from "../src/pra/que.ts"
 
-function bind(
-	tid: string,
-	ecl: string[],
-): [DocumentFragment, HTMLElement[]] {
-	const temp = document.getElementById(tid) as HTMLTemplateElement
-	const t = temp.content.cloneNode(true) as DocumentFragment
-	return [t, ecl.map(c => t.querySelector(`.${c}`)!)]
+let hash = ""
+let pas: Pas | null = null
+let utc_etag = Date.now()
+const main = document.getElementById("main")!
+
+async function que<T>(
+	q: string
+) {
+	const res = await fetch(`/q/${q}`)
+	const etag = res.headers.get("etag")?.substring(3)
+	if (etag) utc_etag = parseInt(etag)
+	return res.json() as T
 }
 
 async function pos<T>(
@@ -23,9 +29,14 @@ async function pos<T>(
 	return res.json() as T
 }
 
-let hash = ""
-let pas: Pas | null = null
-const main = document.getElementById("main")!
+function bind(
+	tid: string,
+	ecl: string[],
+): [DocumentFragment, HTMLElement[]] {
+	const temp = document.getElementById(tid) as HTMLTemplateElement
+	const t = temp.content.cloneNode(true) as DocumentFragment
+	return [t, ecl.map(c => t.querySelector(`.${c}`)!)]
+}
 
 function selopt(
 	sel: HTMLSelectElement,
@@ -37,6 +48,20 @@ function selopt(
 		opt.text = t
 		sel.add(opt)
 	}
+}
+
+function idanchor(
+	el: HTMLElement,
+	pf: "" | "s" | "a",
+	id: number[],
+	idnam: Map<number, string>,
+) {
+	id.forEach((id, n) => {
+		const a = el.appendChild(document.createElement("a"))
+		a.href = `#${pf}${id}`
+		a.innerText = idnam.get(id) ?? `${id}`
+		if (n > 0) a.classList.add("sep")
+	})
 }
 
 function paspre(
@@ -99,22 +124,94 @@ function paspre(
 		if (!code_e.checkValidity()) { alert("无效验证码"); return }
 		code_e.readOnly = issue_e.disabled = true
 		pos<Pas>("pas", { nbr: nbr_e.value, code: parseInt(code_e.value) }).then(p => {
+			if (!p) {
+				code_e.readOnly = issue_e.disabled = false
+				alert("无效验证码")
+				return
+			}
 			pas = p
 			const pas_a = document.getElementById("pas")! as HTMLAnchorElement
 			pas_a.innerText = p.nam
 			pas_a.href = `#${p.id.uid}`
-			window.location.hash = `#${p.id.uid}`
+			location.hash = `#${p.id.uid}`
 		})
 	})
 
 	main.append(paspre_t)
 }
 
+async function usr(
+	uid: NonNullable<Usr>["_id"]
+) {
+	const u = await que<Usr>(`usr?uid=${uid}`)
+
+	const [usr_t, [
+		idnam_e, id_e, nam_e,
+		meta_e, rej_e, ref_e, aut_e,
+		pos_e, pas_e,
+		intro_e,
+		soc_e,
+		rec_e,
+	]] = bind("usr", [
+		"idnam", "id", "nam",
+		"meta", "rej", "ref", "aut",
+		"pos", "pas",
+		"intro",
+		"soc",
+		"rec",
+	]) as [DocumentFragment, [
+		HTMLAnchorElement, HTMLElement, HTMLElement,
+		HTMLElement, HTMLElement, HTMLElement, HTMLElement,
+		HTMLElement, HTMLButtonElement,
+		HTMLElement,
+		HTMLElement,
+		HTMLElement,
+	]]
+
+	idnam_e.href = `#${uid}`
+	id_e.innerText = `${uid}`
+	if (hash === id_e.innerText) id_e.classList.add("active")
+	if (u) {
+		nam_e.innerText = u.nam
+		meta_e.innerText = `居住地区：${u.adm1} ${u.adm2}\n注册时间：${utc_medium(u.utc)}`
+		const unam = new Map(u.unam)
+		rej_e.innerText = `反对者：${u.rej.length > 0 ? "" : "无"}`
+		if (u.rej.length >= 2) rej_e.classList.add("red")
+		idanchor(rej_e, "", u.rej, unam)
+		ref_e.innerText = `推荐人：${u.ref.length > 0 ? "" : "无"}`
+		if (u.ref.length <= 2) ref_e.classList.add("red")
+		idanchor(ref_e, "", u.ref, unam)
+		aut_e.innerText = `反对者不少于两名，或推荐人少于两名时，用户权限将被冻结`
+		if (pas && pas.id.uid === u._id) {
+			pos_e.classList.remove("none")
+			pas_e.addEventListener("click", async () => {
+				await pos("pas", { uid })
+				pas = null
+				const pas_a = document.getElementById("pas")! as HTMLAnchorElement
+				pas_a.innerText = "用户登录"
+				pas_a.href = "#pas"
+				location.href = `#pas`
+			})
+		}
+		intro_e.innerText = `简介：${u.intro.length > 0 ? u.intro : "无"}`
+		const snam = new Map(u.snam)
+		soc_e.innerText = `所属社团：${u.snam.length > 0 ? "" : "无"}`
+		idanchor(soc_e, "s", [...u.snam.keys()], snam)
+		rec_e.innerText = JSON.stringify(u.nrec)
+	} else {
+		nam_e.innerText = "【无效用户】"
+		meta_e.innerText = `ismist.cn#${uid} 是无效用户`;
+		[pos_e, intro_e, soc_e, rec_e].map(e => e.remove())
+	}
+
+	main.append(usr_t)
+}
+
 window.addEventListener("hashchange", () => {
 	hash = decodeURI(window.location.hash).substring(1)
 	main.innerHTML = ""
 	if (hash === "pas") paspre()
-	else if (/^\d+$/.test(hash)) main.innerText = JSON.stringify(pas, null, 2)
+	else if (/^\d+$/.test(hash)) usr(parseInt(hash))
 })
 
 async function load(
@@ -130,6 +227,3 @@ async function load(
 	window.dispatchEvent(new Event("hashchange"))
 }
 load()
-
-
-

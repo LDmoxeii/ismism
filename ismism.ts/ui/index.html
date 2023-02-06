@@ -160,6 +160,7 @@
 		background: var(--darkgray);
 		border: none;
 		border-radius: 8px;
+		max-width: 28ch;
 	}
 
 	section>button:disabled {
@@ -219,6 +220,14 @@
 		color: var(--gray);
 		text-align: center;
 		white-space: pre-line;
+	}
+
+	section.meta {
+		color: var(--darkgray);
+	}
+
+	section.meta>a.sep::before {
+		content: ", ";
 	}
 
 	a.idnam {
@@ -306,6 +315,34 @@
 		<section class="hint"></section>
 		<hr>
 	</article>
+</template>
+
+<template id="usr">
+	<article>
+		<section>
+			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
+		</section>
+		<hr>
+		<section class="meta admutc"></section>
+		<hr>
+		<section class="meta rej"></section>
+		<section class="meta ref"></section>
+		<hr>
+		<section class="meta aut"></section>
+		<hr>
+		<section class="intro"></section>
+		<hr>
+		<section class="soc"></section>
+		<hr>
+		<section class="rec"></section>
+		<hr>
+		<section class="pos flex none">
+			<button class="">编辑</button>
+			<button class="pas">登出</button>
+		</section>
+		<hr>
+	</article>
+
 </template>
 
 <body>
