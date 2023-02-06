@@ -1,3 +1,4 @@
+import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre_usr, pre_usract } from "./pre.ts"
 import { is_re, pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
@@ -6,7 +7,7 @@ import { is_re, pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
 type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
 
 export type Pos = "pas" | "pre" | "pro"
-export type PasPos = { jwt?: string | null, pas?: Pas | null }
+export type PasPos = { jwt?: string | null, pas?: Pas | null, etag?: string | null }
 export type PasCode = Ret<typeof pas_code>
 export type UsrAct = Ret<typeof pre_usract>
 
@@ -47,6 +48,7 @@ export async function pos(
 		}
 
 		case "pre": {
+			p.etag = utc_etag()
 			const { actid, nbr, adm1, adm2 } = json
 			if (typeof nbr === "string" && typeof adm1 === "string" && typeof adm2 === "string")
 				if (typeof actid === "string") return pre_usract(actid, nbr, adm1, adm2)
@@ -55,6 +57,7 @@ export async function pos(
 		}
 
 		case "pro": {
+			p.etag = utc_etag()
 			const { re, uid, sid, aid, rec, recid, pro } = json
 			if (p.pas && is_re(re) && typeof pro === "boolean")
 				if (typeof uid === "number") return pro_usr(p.pas, re, uid, pro)
@@ -65,5 +68,6 @@ export async function pos(
 		}
 	}
 
+	p.etag = null
 	return null
 }

@@ -19,3 +19,8 @@ export function utc_date(
 	const d = `${t.getUTCDate()}`.padStart(2, "0")
 	return `${y}-${m}-${d}`
 }
+
+export function utc_etag(
+) {
+	return `W/"${Date.now()}"`
+}

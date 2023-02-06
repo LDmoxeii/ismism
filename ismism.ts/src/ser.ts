@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.173.0/http/server.ts"
 import { jwk_load } from "./ont/jwt.ts"
-import { utc_short } from "./ont/utc.ts"
+import { utc_etag, utc_short } from "./ont/utc.ts"
 import { pos, PasPos } from "./pra/pos.ts"
 import { que } from "./pra/que.ts"
 
-let etag = `W/"${Date.now()}"`
+let etag = utc_etag()
 
 function log(
 	utc: number,
@@ -44,12 +44,14 @@ async function route(
 			const [cookie] = req.headers.get("cookie")?.split(";").filter(c => c.startsWith("pp=")) ?? []
 			if (cookie) p.jwt = cookie.substring(3)
 			const b = await req.text()
-			const r = JSON.stringify(await pos(p, f, b))
+			const r = await pos(p, f, b)
+			if (r && p.etag) etag = p.etag
+			const s = JSON.stringify(r)
 			log(t, `${f}#${p.pas?.id.uid ?? ""} ${b} => ${r}`, 200)
 			const headers: Headers = new Headers()
 			if (!p.pas) headers.set("set-cookie", `pp=""; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=0`)
 			else if (p.jwt) headers.set("set-cookie", `pp=${p.jwt}; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=31728728`)
-			return new Response(r, { status: 200, headers })
+			return new Response(s, { status: 200, headers })
 		}
 	}
 	return new Response(null, { status: 400 })
