@@ -70,6 +70,10 @@
 		text-decoration: none;
 	}
 
+	a:focus {
+		outline: none;
+	}
+
 	nav {
 		overflow: scroll;
 		scrollbar-width: none;
@@ -137,22 +141,16 @@
 		padding: 0;
 	}
 
-	section>label,
-	section>input,
-	section>button {
-		box-sizing: border-box;
-		display: inline-block;
+	section>p {
+		display: block;
+		margin: 0;
 		padding: 1ch;
 	}
 
-	section>label,
-	section>button {
-		flex: 1 0 10ch;
-	}
-
 	section>label {
-		max-width: 10ch;
-		text-align: right;
+		display: block;
+		width: 100%;
+		color: var(--gray);
 	}
 
 	section>button {
@@ -160,12 +158,16 @@
 		background: var(--darkgray);
 		border: none;
 		border-radius: 8px;
-		max-width: 28ch;
+		max-width: 12ch;
 	}
 
 	section>button:disabled {
 		color: var(--darkgray);
 		background: var(--lightgray);
+	}
+
+	section>button:focus {
+		outline: none;
 	}
 
 	@media (hover: hover) {
@@ -175,7 +177,7 @@
 	}
 
 	section>input {
-		flex: 10 1 10ch;
+		display: block;
 		border: none;
 		border-bottom: 1px dotted var(--black);
 		text-align: center;
@@ -197,7 +199,7 @@
 
 	section>select {
 		font-size: 1em;
-		width: 14ch;
+		width: 12ch;
 		margin: 12px 0;
 		padding: 0.2ch 1ch;
 	}
@@ -214,6 +216,36 @@
 		justify-content: center;
 		align-items: center;
 		gap: 6px;
+	}
+
+	section.flex>label,
+	section.flex>input,
+	section.flex>button,
+	section.flex>select {
+		box-sizing: border-box;
+		display: block;
+	}
+
+	section.flex>input,
+	section.flex>button {
+		padding: 1ch;
+	}
+
+	section.flex>label {
+		transform: translateY(1ch);
+	}
+
+	section.flex>input {
+		flex: 10 1 10ch;
+		max-width: 36ch;
+	}
+
+	section.flex>button {
+		flex: 1 1 10ch;
+	}
+
+	section.flex>select {
+		flex: 0 0 12ch;
 	}
 
 	section.hint {
@@ -297,6 +329,7 @@
 			<button class="send">发送验证码</button>
 		</section>
 		<section class="flex adm none">
+			<label>居住地：</label>
 			<select class="adm1"></select>
 			<select class="adm2"></select>
 		</section>
@@ -330,9 +363,15 @@
 		<hr>
 		<section class="meta aut"></section>
 		<hr>
-		<section class="intro"></section>
+		<section>
+			<label>简介：</label>
+			<p class="intro"></p>
+		</section>
 		<hr>
-		<section class="soc"></section>
+		<section>
+			<label>所属社团：</label>
+			<p class="soc"></p>
+		</section>
 		<hr>
 		<section class="rec"></section>
 		<hr>

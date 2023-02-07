@@ -163,8 +163,8 @@ async function usr(
 		HTMLAnchorElement, HTMLElement, HTMLElement,
 		HTMLElement, HTMLElement, HTMLElement, HTMLElement,
 		HTMLElement, HTMLButtonElement,
-		HTMLElement,
-		HTMLElement,
+		HTMLParagraphElement,
+		HTMLParagraphElement,
 		HTMLElement,
 	]]
 
@@ -193,9 +193,9 @@ async function usr(
 				location.href = `#pas`
 			})
 		}
-		intro_e.innerText = `简介：${u.intro.length > 0 ? u.intro : "无"}`
+		intro_e.innerText = `${u.intro.length > 0 ? u.intro : "无"}`
 		const snam = new Map(u.snam)
-		soc_e.innerText = `所属社团：${u.snam.length > 0 ? "" : "无"}`
+		soc_e.innerText = `${u.snam.length > 0 ? "" : "无"}`
 		idanchor(soc_e, "s", [...u.snam.keys()], snam)
 		rec_e.innerText = JSON.stringify(u.nrec)
 	} else {
