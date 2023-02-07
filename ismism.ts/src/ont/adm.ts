@@ -522,6 +522,9 @@ export const adm = new Map<string, string[]>([
 ])
 const adm2 = new Set([...adm.values()].flat())
 
+export const adm1_def = "江苏"
+export const adm2_def = "苏州"
+
 export function is_adm(
 	adm1adm2: [undefined | null | string, undefined | null | string]
 ): adm1adm2 is [string, string] {

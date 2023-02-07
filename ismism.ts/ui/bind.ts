@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-window-prefix
-import type { DocU } from "../src/db.ts"
+import type { DocC, DocU } from "../src/db.ts"
 import type { Aut } from "../src/eid/typ.ts"
-import { adm } from "../src/ont/adm.ts"
+import { adm, adm1_def, adm2_def } from "../src/ont/adm.ts"
 import { utc_medium } from "../src/ont/utc.ts"
 import type { Pas } from "../src/pra/pas.ts"
 import type { PasCode, UsrAct } from "../src/pra/pos.ts"
@@ -124,9 +124,9 @@ function paspre(
 		} else {
 			hint_e.innerText = `手机号未注册\n输入居住地与注册激活码\n激活码只能使用一次，确认手机号无误`
 			selopt(adm1_e, adm.keys())
-			adm1_e.value = "江苏"
-			selopt(adm2_e, adm.get("江苏")!)
-			adm2_e.value = "苏州"
+			adm1_e.value = adm1_def
+			selopt(adm2_e, adm.get(adm1_def)!)
+			adm2_e.value = adm2_def
 			adm1_e.addEventListener("change", () => selopt(adm2_e, adm.get(adm1_e.value)!))
 			adm_e.classList.remove("none")
 			pre_e.classList.remove("none")
@@ -173,7 +173,7 @@ async function usr(
 	const u = await que<Usr>(`usr?uid=${uid}`)
 
 	if (!u) {
-		idnull(`${uid}`)
+		idnull(`${uid}`, `ismist.cn#${uid} 是无效用户`)
 		return
 	}
 
@@ -181,27 +181,27 @@ async function usr(
 
 	const [usr_t, [
 		idnam_e, id_e, nam_e,
-		adm_e, utc_e, rej_e, ref_e,
+		adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e,
 		intro_e,
 		soc_e,
 		rec_e,
-		pos_e, put_e, pas_e,
-		pro_e, pro_rej_e, pro_ref_e,
+		pos_e, put_e, pas_e, preusr_e,
+		pro_e, prorej_e, proref_e,
 	]] = bind("usr", [
 		"idnam", "id", "nam",
-		"adm", "utc", "rej", "ref",
+		"adm", "utc", "rej", "ref", "rejc", "refc",
 		"intro",
 		"soc",
 		"rec",
-		"pos", "put", "pas",
-		"pro", "pro_rej", "pro_ref",
+		"pos", "put", "pas", "preusr",
+		"pro", "prorej", "proref",
 	]) as [DocumentFragment, [
 		HTMLAnchorElement, HTMLElement, HTMLElement,
-		HTMLElement, HTMLElement, HTMLElement, HTMLElement,
+		HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement,
 		HTMLParagraphElement,
 		HTMLParagraphElement,
 		HTMLElement,
-		HTMLElement, HTMLButtonElement, HTMLButtonElement,
+		HTMLElement, HTMLButtonElement, HTMLButtonElement, HTMLButtonElement,
 		HTMLElement, HTMLButtonElement, HTMLButtonElement,
 	]]
 
@@ -212,12 +212,18 @@ async function usr(
 	utc_e.innerText = `${utc_medium(u.utc)}`
 	const unam = new Map(u.unam)
 	rej_e.innerText = `${u.rej.length > 0 ? "" : "无"}`
-	if (u.rej.length >= 2) rej_e.classList.add("red")
-	else if (u.rej.length === 0) rej_e.classList.add("gray")
+	if (u.rej.length >= 2) {
+		rej_e.classList.add("red")
+		rejc_e.classList.add("red")
+	} else rejc_e.classList.add("gray")
+	if (u.rej.length === 0) rej_e.classList.add("gray")
 	idanchor(rej_e, "", u.rej, unam)
 	ref_e.innerText = `${u.ref.length > 0 ? "" : "无"}`
-	if (u.ref.length < 2) ref_e.classList.add("red")
-	else if (u.ref.length === 0) ref_e.classList.add("gray")
+	if (u.ref.length < 2) {
+		ref_e.classList.add("green")
+		refc_e.classList.add("green")
+	} else refc_e.classList.add("gray")
+	if (u.ref.length === 0) ref_e.classList.add("gray")
 	idanchor(ref_e, "", u.ref, unam)
 	intro_e.innerText = `${u.intro.length > 0 ? u.intro : "无"}`
 	const snam = new Map(u.snam)
@@ -228,7 +234,7 @@ async function usr(
 	if (pas) {
 		if (pas.id.uid === uid) {
 			pos_e.classList.remove("none")
-			put_e.addEventListener("click", () => usrput(u))
+			put_e.addEventListener("click", () => putusr(u))
 			pas_e.addEventListener("click", async () => {
 				await pos("pas", { uid })
 				pas = null
@@ -236,26 +242,28 @@ async function usr(
 				pas_a.href = "#pas"
 				location.href = `#pas`
 			})
+			if (not_aut(pas, "pre_usr")) preusr_e.remove()
+			else preusr_e.addEventListener("click", preusr)
 		} else pos_e.classList.add("none")
-		const pro_rej = !u.rej.includes(pas.id.uid)
-		const pro_ref = !u.ref.includes(pas.id.uid)
-		pro_rej_e.innerText = pro_rej ? "反对" : "取消反对"
-		pro_ref_e.innerText = pro_ref ? "推荐" : "取消推荐"
+		const prorej = !u.rej.includes(pas.id.uid)
+		const proref = !u.ref.includes(pas.id.uid)
+		prorej_e.innerText = prorej ? "反对" : "取消反对"
+		proref_e.innerText = proref ? "推荐" : "取消推荐"
 		if (not_aut(pas, "pro_usr") || not_pro(pas) || pas.ref.includes(uid)) {
-			pro_rej_e.disabled = true
-			pro_ref_e.disabled = true
+			prorej_e.disabled = true
+			proref_e.disabled = true
 		} else {
-			pro_rej_e.addEventListener("click", async () => {
-				pro_rej_e.disabled = true
-				const c = await pos<DocU>("pro", { re: "rej", uid, pro: pro_rej })
-				if (c && c > 0) usr(uid)
-				else pro_rej_e.disabled = false
+			prorej_e.addEventListener("click", async () => {
+				prorej_e.disabled = true
+				const c = await pos<DocU>("pro", { re: "rej", uid, pro: prorej })
+				if (c && c > 0) setTimeout(() => usr(uid), 500)
+				else prorej_e.disabled = false
 			})
-			pro_ref_e.addEventListener("click", async () => {
-				pro_ref_e.disabled = true
-				const c = await pos<DocU>("pro", { re: "ref", uid, pro: pro_ref })
-				if (c && c > 0) usr(uid)
-				else pro_ref_e.disabled = false
+			proref_e.addEventListener("click", async () => {
+				proref_e.disabled = true
+				const c = await pos<DocU>("pro", { re: "ref", uid, pro: proref })
+				if (c && c > 0) setTimeout(() => usr(uid), 500)
+				else proref_e.disabled = false
 			})
 		}
 	} else {
@@ -266,16 +274,61 @@ async function usr(
 	main.append(usr_t)
 }
 
-function usrput(
+function preusr(
+) {
+	if (!pas) { location.href = `#paspre`; return }
+
+	main.innerHTML = ""
+
+	const [preusr_t, [
+		idnam_e, id_e,
+		adm1_e, adm2_e, nbr_e,
+		pre_e, cancel_e,
+	]] = bind("preusr", [
+		"idnam", "id",
+		"adm1", "adm2", "nbr",
+		"pre", "cancel",
+	]) as [DocumentFragment, [
+		HTMLAnchorElement, HTMLElement,
+		HTMLSelectElement, HTMLSelectElement, HTMLInputElement,
+		HTMLButtonElement, HTMLButtonElement,
+	]]
+
+	idnam_e.href = `#${pas.id.uid}`
+	id_e.innerText = `${pas.id.uid}`
+	selopt(adm1_e, adm.keys())
+	adm1_e.value = adm1_def
+	selopt(adm2_e, adm.get(adm1_def)!)
+	adm2_e.value = adm2_def
+	adm1_e.addEventListener("change", () => selopt(adm2_e, adm.get(adm1_e.value)!))
+
+	pre_e.addEventListener("click", async () => {
+		if (!/^1\d{10}$/.test(nbr_e.value)) { alert("无效手机号"); return }
+		pre_e.disabled = nbr_e.readOnly = adm1_e.disabled = adm2_e.disabled = true
+		const c = await pos<DocC<NonNullable<Usr>["_id"]>>("pre", {
+			nbr: nbr_e.value, adm1: adm1_e.value, adm2: adm2_e.value
+		})
+		if (c) usr(c)
+		else {
+			alert("创建用户失败")
+			pre_e.disabled = nbr_e.readOnly = adm1_e.disabled = adm2_e.disabled = false
+		}
+	})
+	cancel_e.addEventListener("click", () => usr(pas!.id.uid))
+
+	main.append(preusr_t)
+}
+
+function putusr(
 	u: NonNullable<Usr>
 ) {
 	main.innerHTML = ""
 
-	const [usrput_t, [
+	const [putusr_t, [
 		idnam_e, id_e,
 		nam_e, adm1_e, adm2_e, intro_e,
 		put_e, cancel_e,
-	]] = bind("usrput", [
+	]] = bind("putusr", [
 		"idnam", "id",
 		"nam", "adm1", "adm2", "intro",
 		"put", "cancel",
@@ -303,6 +356,7 @@ function usrput(
 	setTimeout(() => intro_e.dispatchEvent(new Event("input")), 50)
 
 	put_e.addEventListener("click", async () => {
+		put_e.disabled = true
 		const c = await pos<DocU>("put", {
 			uid: u._id,
 			nam: nam_e.value,
@@ -310,17 +364,22 @@ function usrput(
 			adm2: adm2_e.value,
 			intro: intro_e.value.trim(),
 		})
-		if (c === null) { alert(`无效输入`); return }
-		pas_a.innerText = nam_e.value
-		usr(u._id)
+		if (c === null) {
+			alert(`无效输入`)
+			put_e.disabled = false
+		} else {
+			pas_a.innerText = nam_e.value
+			setTimeout(() => usr(u._id), 500)
+		}
 	})
 	cancel_e.addEventListener("click", () => usr(u._id))
 
-	main.append(usrput_t)
+	main.append(putusr_t)
 }
 
 function idnull(
 	id: string,
+	meta: string,
 ) {
 	main.innerHTML = ""
 
@@ -330,7 +389,7 @@ function idnull(
 		"id", "meta"
 	])
 	id_e.innerText = id
-	meta_e.innerText = `ismist.cn#${id} 是无效 id`;
+	meta_e.innerText = meta;
 	main.append(idnull_t)
 }
 
