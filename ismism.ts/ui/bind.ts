@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-window-prefix
-import { DocU } from "../src/db.ts"
+import type { DocU } from "../src/db.ts"
+import type { Aut } from "../src/eid/typ.ts"
 import { adm } from "../src/ont/adm.ts"
 import { utc_medium } from "../src/ont/utc.ts"
 import type { Pas } from "../src/pra/pas.ts"
@@ -30,6 +31,30 @@ async function pos<T>(
 	})
 	return res.json() as T
 }
+
+function is_aut(
+	pas: Pas,
+	aut: Aut["p"][0],
+): boolean {
+	return pas.aut.includes(aut)
+}
+function not_aut(
+	pas: Pas,
+	aut: Aut["p"][0],
+) {
+	return !is_aut(pas, aut)
+}
+function is_pro(
+	{ rej, ref }: Pas,
+): boolean {
+	return rej.length < 2 && ref.length >= 2
+}
+function not_pro(
+	pas: Pas,
+) {
+	return !is_pro(pas)
+}
+
 
 function bind(
 	tid: string,
@@ -161,6 +186,7 @@ async function usr(
 		soc_e,
 		rec_e,
 		pos_e, put_e, pas_e,
+		pro_e, pro_rej_e, pro_ref_e,
 	]] = bind("usr", [
 		"idnam", "id", "nam",
 		"adm", "utc", "rej", "ref",
@@ -168,12 +194,14 @@ async function usr(
 		"soc",
 		"rec",
 		"pos", "put", "pas",
+		"pro", "pro_rej", "pro_ref",
 	]) as [DocumentFragment, [
 		HTMLAnchorElement, HTMLElement, HTMLElement,
 		HTMLElement, HTMLElement, HTMLElement, HTMLElement,
 		HTMLParagraphElement,
 		HTMLParagraphElement,
 		HTMLElement,
+		HTMLElement, HTMLButtonElement, HTMLButtonElement,
 		HTMLElement, HTMLButtonElement, HTMLButtonElement,
 	]]
 
@@ -191,22 +219,49 @@ async function usr(
 	if (u.ref.length < 2) ref_e.classList.add("red")
 	else if (u.ref.length === 0) ref_e.classList.add("gray")
 	idanchor(ref_e, "", u.ref, unam)
-	if (pas && pas.id.uid === u._id) {
-		pos_e.classList.remove("none")
-		put_e.addEventListener("click", () => usrput(u))
-		pas_e.addEventListener("click", async () => {
-			await pos("pas", { uid })
-			pas = null
-			pas_a.innerText = "用户登录"
-			pas_a.href = "#pas"
-			location.href = `#pas`
-		})
-	}
 	intro_e.innerText = `${u.intro.length > 0 ? u.intro : "无"}`
 	const snam = new Map(u.snam)
 	soc_e.innerText = `${u.snam.length > 0 ? "" : "无"}`
 	idanchor(soc_e, "s", [...u.snam.keys()], snam)
 	rec_e.innerText = JSON.stringify(u.nrec)
+
+	if (pas) {
+		if (pas.id.uid === uid) {
+			pos_e.classList.remove("none")
+			put_e.addEventListener("click", () => usrput(u))
+			pas_e.addEventListener("click", async () => {
+				await pos("pas", { uid })
+				pas = null
+				pas_a.innerText = "用户登录"
+				pas_a.href = "#pas"
+				location.href = `#pas`
+			})
+		} else pos_e.classList.add("none")
+		const pro_rej = !u.rej.includes(pas.id.uid)
+		const pro_ref = !u.ref.includes(pas.id.uid)
+		pro_rej_e.innerText = pro_rej ? "反对" : "取消反对"
+		pro_ref_e.innerText = pro_ref ? "推荐" : "取消推荐"
+		if (not_aut(pas, "pro_usr") || not_pro(pas) || pas.ref.includes(uid)) {
+			pro_rej_e.disabled = true
+			pro_ref_e.disabled = true
+		} else {
+			pro_rej_e.addEventListener("click", async () => {
+				pro_rej_e.disabled = true
+				const c = await pos<DocU>("pro", { re: "rej", uid, pro: pro_rej })
+				if (c && c > 0) usr(uid)
+				else pro_rej_e.disabled = false
+			})
+			pro_ref_e.addEventListener("click", async () => {
+				pro_ref_e.disabled = true
+				const c = await pos<DocU>("pro", { re: "ref", uid, pro: pro_ref })
+				if (c && c > 0) usr(uid)
+				else pro_ref_e.disabled = false
+			})
+		}
+	} else {
+		pos_e.classList.add("none")
+		pro_e.classList.add("none")
+	}
 
 	main.append(usr_t)
 }

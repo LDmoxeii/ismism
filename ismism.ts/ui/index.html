@@ -172,7 +172,6 @@
 		background: var(--darkgray);
 		border: none;
 		border-radius: 8px;
-		max-width: 12ch;
 	}
 
 	section>button:disabled {
@@ -244,6 +243,7 @@
 
 	section.flex {
 		display: flex;
+		margin-top: 6px;
 		flex-wrap: wrap;
 		justify-content: center;
 		align-items: center;
@@ -256,15 +256,17 @@
 	section.flex>select {
 		box-sizing: border-box;
 		display: block;
+		justify-content: center;
+		align-items: center;
+	}
+
+	section.flex>label {
+		transform: translateY(1ch);
 	}
 
 	section.flex>input,
 	section.flex>button {
 		padding: 1ch;
-	}
-
-	section.flex>label {
-		transform: translateY(1ch);
 	}
 
 	section.flex>input {
@@ -274,6 +276,7 @@
 
 	section.flex>button {
 		flex: 1 1 10ch;
+		max-width: 24ch;
 	}
 
 	section.flex>select {
@@ -414,7 +417,9 @@
 			反对者：<span class="rej"></span><br>
 			推荐人：<span class="ref"></span><br>
 			<hr>
-			反对者不少于两名，或推荐人少于两名时，用户权限将被冻结
+			反对者不少于两名，或推荐人少于两名时，用户权限将被冻结<br>
+			只有发起人和书记有权限反对或推荐用户<br>
+			不能反对或推荐自己的推荐人
 		</section>
 		<hr>
 		<section>
@@ -429,9 +434,13 @@
 		<hr>
 		<section class="rec"></section>
 		<hr>
-		<section class="pos flex none">
+		<section class="pos flex">
 			<button class="put">编辑</button>
 			<button class="pas">登出</button>
+		</section>
+		<section class="pro flex">
+			<button class="pro_rej">反对</button>
+			<button class="pro_ref">推荐</button>
 		</section>
 		<hr>
 	</article>
