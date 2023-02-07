@@ -2,6 +2,7 @@ import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre_usr, pre_usract } from "./pre.ts"
 import { is_re, pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
+import { put_usr } from "./put.ts"
 
 // deno-lint-ignore no-explicit-any
 type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
@@ -64,6 +65,14 @@ export async function pos(
 				else if (typeof sid === "number") return pro_soc(p.pas, re, sid, pro)
 				else if (typeof aid === "number") return pro_agd(p.pas, re, aid, pro)
 				else if (typeof rec === "string" && typeof recid === "object") return pro_rec(p.pas, re, rec, recid, pro)
+			break
+		}
+
+		case "put": {
+			p.etag = utc_etag()
+			const { uid, sid, aid, nam, adm1, adm2, intro } = json
+			if (p.pas && typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string" && typeof intro === "string")
+				if (typeof uid === "number") return put_usr(p.pas, uid, { nam, adm1, adm2, intro })
 			break
 		}
 	}

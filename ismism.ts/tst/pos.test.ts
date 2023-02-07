@@ -22,7 +22,7 @@ Deno.test("pas", async () => {
 	assert(uid === 1)
 	const p: PasPos = {}
 	assert(null === await pos(p, "pas", ""))
-	assertEquals(p, { pas: null })
+	assertEquals(p, { etag: null, pas: null })
 	assertEquals(await pos(p, "pas", json({ nbr, sms: false })), { sms: false })
 	const pascode = await pos(p, "pas", json({ nbr, sms: true })) as PasCode
 	assert(pascode && pascode.sms === false && pascode.utc && pascode.utc > 0)
@@ -30,18 +30,18 @@ Deno.test("pas", async () => {
 	assert(pcode && pcode.pcode && pcode.pcode.code > 0)
 	const code = pcode.pcode.code
 	assert(null === await pos(p, "pas", json({ nbr, code: code + 1 })))
-	assertEquals(p, { pas: null })
+	assertEquals(p, { etag: null, pas: null })
 	const pas = await pos(p, "pas", json({ nbr, code: code })) as Pas
 	assert(p.jwt && p.jwt.length > 0 && p.pas && p.pas.id.uid === uid)
 	const jwt = p.jwt
 	assertEquals(p.pas, pas)
 	assertEquals(await pos(p, "pas", ""), pas)
-	assertEquals(p, { pas, jwt: null })
+	assertEquals(p, { etag: null, pas, jwt: null })
 	assertEquals(await pos(p, "pas", ""), null)
 	await pos(p, "pas", json({ nbr, code: code }))
 	assertEquals(p.jwt, jwt)
 	assertEquals(await pos(p, "pas", json({ uid: p.pas.id.uid })), 1)
-	assertEquals(p, { pas: null, jwt: null })
+	assertEquals(p, { etag: null, pas: null, jwt: null })
 	assertEquals(await usr_r({ _id: uid }, { ptoken: 1 }), { _id: uid })
 	await usr_d(uid)
 })
@@ -123,4 +123,19 @@ Deno.test("pro", async () => {
 		agd_d(1),
 		rec_d(coll.worker, recid),
 	])
+})
+
+Deno.test("put", async () => {
+	const p: PasPos = {}
+	const nbr = "11111111111"
+	const [uid] = await Promise.all([
+		usr_c(nbr, [1, 2], "四川", "成都")
+	])
+	await pos(p, "pas", json({ nbr, sms: false }))
+	const code = await usr_r({ _id: uid! }, { pcode: 1 })
+	await pos(p, "pas", json({ nbr, code: code?.pcode?.code }))
+	await pos(p, "put", json({ uid, nam: "万大可", adm1: "广东", adm2: "汕头", intro: "简介" }))
+	assertEquals(await usr_r({ _id: uid! }, { nam: 1, adm1: 1, adm2: 1, intro: 1 }), {
+		_id: 1, adm1: "广东", adm2: "汕头", nam: "万大可", intro: "简介"
+	})
 })

@@ -129,10 +129,24 @@
 	}
 
 	article {
+		position: relative;
+		animation: scale 0.4s;
 		margin: 16px;
 		padding: 8px 16px;
 		background: var(--white);
 		box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+	}
+
+	@keyframes scale {
+		from {
+			transform: scale(0.25);
+			opacity: 0;
+		}
+
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
 	}
 
 	section {
@@ -178,6 +192,7 @@
 
 	section>input {
 		display: block;
+		font-size: 1em;
 		border: none;
 		border-bottom: 1px dotted var(--black);
 		text-align: center;
@@ -195,6 +210,23 @@
 	section>input:read-only {
 		background: var(--lightgray);
 		border: none;
+	}
+
+	section>textarea {
+		box-sizing: border-box;
+		display: block;
+		margin: 0;
+		padding: 1ch;
+		width: 100%;
+		font-size: 1em;
+		overflow: hidden;
+		resize: none;
+		outline: none;
+		border: 1px dotted var(--black);
+	}
+
+	section>textarea:focus {
+		border: 1px solid var(--black);
 	}
 
 	section>select {
@@ -255,11 +287,30 @@
 	}
 
 	section.meta {
-		color: var(--darkgray);
+		padding: 1ch;
+		font-family: monospace;
+		color: var(--gray);
+		background: var(--lightgray);
 	}
 
-	section.meta>a.sep::before {
-		content: ", ";
+	section.meta>span {
+		color: var(--black)
+	}
+
+	section.meta>span.red {
+		color: var(--red);
+	}
+
+	section.meta>span.gray {
+		color: var(--gray);
+	}
+
+	section.meta a.sep::before {
+		content: "、";
+	}
+
+	section.meta a:hover {
+		color: var(--amber);
 	}
 
 	a.idnam {
@@ -351,17 +402,20 @@
 </template>
 
 <template id="usr">
-	<article>
+	<article class="scale">
 		<section>
-			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
+			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
 		</section>
 		<hr>
-		<section class="meta admutc"></section>
-		<hr>
-		<section class="meta rej"></section>
-		<section class="meta ref"></section>
-		<hr>
-		<section class="meta aut"></section>
+		<section class="meta">
+			居住地区：<span class="adm"></span><br>
+			注册时间：<span class="utc"></span><br>
+			<hr>
+			反对者：<span class="rej"></span><br>
+			推荐人：<span class="ref"></span><br>
+			<hr>
+			反对者不少于两名，或推荐人少于两名时，用户权限将被冻结
+		</section>
 		<hr>
 		<section>
 			<label>简介：</label>
@@ -376,12 +430,49 @@
 		<section class="rec"></section>
 		<hr>
 		<section class="pos flex none">
-			<button class="">编辑</button>
+			<button class="put">编辑</button>
 			<button class="pas">登出</button>
 		</section>
 		<hr>
 	</article>
+</template>
 
+<template id="usrput">
+	<article>
+		<section>
+			<a class="idnam"><code class="id active"></code> <span>用户信息编辑</span></a>
+		</section>
+		<hr>
+		<section class="flex">
+			<label>用户名：（2-16个中文字符，不能重复）</label>
+			<input class="nam" type="text" maxlength="16" required />
+		</section>
+		<section class="flex adm">
+			<label>居住地：</label>
+			<select class="adm1"></select>
+			<select class="adm2"></select>
+		</section>
+		<section>
+			<label>简介：（0 / 2048 个字符）</label>
+			<textarea class="intro" maxlength="2048"></textarea>
+		</section>
+		<hr>
+		<section class="flex">
+			<button class="put">确认</button>
+			<button class="cancel">取消</button>
+		</section>
+	</article>
+</template>
+
+<template id="idnull">
+	<article>
+		<section>
+			<a class="idnam" href=""><code class="id active"></code> <span class="nam">无效 id</span></a>
+		</section>
+		<hr>
+		<section class="meta"></section>
+		<hr>
+	</article>
 </template>
 
 <body>

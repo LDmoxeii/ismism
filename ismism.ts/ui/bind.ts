@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-window-prefix
+import { DocU } from "../src/db.ts"
 import { adm } from "../src/ont/adm.ts"
 import { utc_medium } from "../src/ont/utc.ts"
 import type { Pas } from "../src/pra/pas.ts"
@@ -9,6 +10,7 @@ let hash = ""
 let pas: Pas | null = null
 let utc_etag = Date.now()
 const main = document.getElementById("main")!
+const pas_a = document.getElementById("pas")! as HTMLAnchorElement
 
 async function que<T>(
 	q: string
@@ -99,6 +101,7 @@ function paspre(
 			selopt(adm1_e, adm.keys())
 			adm1_e.value = "江苏"
 			selopt(adm2_e, adm.get("江苏")!)
+			adm2_e.value = "苏州"
 			adm1_e.addEventListener("change", () => selopt(adm2_e, adm.get(adm1_e.value)!))
 			adm_e.classList.remove("none")
 			pre_e.classList.remove("none")
@@ -130,7 +133,6 @@ function paspre(
 				return
 			}
 			pas = p
-			const pas_a = document.getElementById("pas")! as HTMLAnchorElement
 			pas_a.innerText = p.nam
 			pas_a.href = `#${p.id.uid}`
 			location.hash = `#${p.id.uid}`
@@ -145,66 +147,136 @@ async function usr(
 ) {
 	const u = await que<Usr>(`usr?uid=${uid}`)
 
+	if (!u) {
+		idnull(`${uid}`)
+		return
+	}
+
+	main.innerHTML = ""
+
 	const [usr_t, [
 		idnam_e, id_e, nam_e,
-		meta_e, rej_e, ref_e, aut_e,
-		pos_e, pas_e,
+		adm_e, utc_e, rej_e, ref_e,
 		intro_e,
 		soc_e,
 		rec_e,
+		pos_e, put_e, pas_e,
 	]] = bind("usr", [
 		"idnam", "id", "nam",
-		"meta", "rej", "ref", "aut",
-		"pos", "pas",
+		"adm", "utc", "rej", "ref",
 		"intro",
 		"soc",
 		"rec",
+		"pos", "put", "pas",
 	]) as [DocumentFragment, [
 		HTMLAnchorElement, HTMLElement, HTMLElement,
 		HTMLElement, HTMLElement, HTMLElement, HTMLElement,
-		HTMLElement, HTMLButtonElement,
 		HTMLParagraphElement,
 		HTMLParagraphElement,
 		HTMLElement,
+		HTMLElement, HTMLButtonElement, HTMLButtonElement,
 	]]
 
 	idnam_e.href = `#${uid}`
 	id_e.innerText = `${uid}`
-	if (hash === id_e.innerText) id_e.classList.add("active")
-	if (u) {
-		nam_e.innerText = u.nam
-		meta_e.innerText = `居住地区：${u.adm1} ${u.adm2}\n注册时间：${utc_medium(u.utc)}`
-		const unam = new Map(u.unam)
-		rej_e.innerText = `反对者：${u.rej.length > 0 ? "" : "无"}`
-		if (u.rej.length >= 2) rej_e.classList.add("red")
-		idanchor(rej_e, "", u.rej, unam)
-		ref_e.innerText = `推荐人：${u.ref.length > 0 ? "" : "无"}`
-		if (u.ref.length <= 2) ref_e.classList.add("red")
-		idanchor(ref_e, "", u.ref, unam)
-		aut_e.innerText = `反对者不少于两名，或推荐人少于两名时，用户权限将被冻结`
-		if (pas && pas.id.uid === u._id) {
-			pos_e.classList.remove("none")
-			pas_e.addEventListener("click", async () => {
-				await pos("pas", { uid })
-				pas = null
-				const pas_a = document.getElementById("pas")! as HTMLAnchorElement
-				pas_a.innerText = "用户登录"
-				pas_a.href = "#pas"
-				location.href = `#pas`
-			})
-		}
-		intro_e.innerText = `${u.intro.length > 0 ? u.intro : "无"}`
-		const snam = new Map(u.snam)
-		soc_e.innerText = `${u.snam.length > 0 ? "" : "无"}`
-		idanchor(soc_e, "s", [...u.snam.keys()], snam)
-		rec_e.innerText = JSON.stringify(u.nrec)
-	} else {
-		nam_e.innerText = "【无效用户】"
-		meta_e.innerText = `ismist.cn#${uid} 是无效用户`;
-		[pos_e, intro_e, soc_e, rec_e].map(e => e.remove())
+	nam_e.innerText = u.nam
+	adm_e.innerText = `${u.adm1} ${u.adm2}`
+	utc_e.innerText = `${utc_medium(u.utc)}`
+	const unam = new Map(u.unam)
+	rej_e.innerText = `${u.rej.length > 0 ? "" : "无"}`
+	if (u.rej.length >= 2) rej_e.classList.add("red")
+	else if (u.rej.length === 0) rej_e.classList.add("gray")
+	idanchor(rej_e, "", u.rej, unam)
+	ref_e.innerText = `${u.ref.length > 0 ? "" : "无"}`
+	if (u.ref.length < 2) ref_e.classList.add("red")
+	else if (u.ref.length === 0) ref_e.classList.add("gray")
+	idanchor(ref_e, "", u.ref, unam)
+	if (pas && pas.id.uid === u._id) {
+		pos_e.classList.remove("none")
+		put_e.addEventListener("click", () => usrput(u))
+		pas_e.addEventListener("click", async () => {
+			await pos("pas", { uid })
+			pas = null
+			pas_a.innerText = "用户登录"
+			pas_a.href = "#pas"
+			location.href = `#pas`
+		})
 	}
+	intro_e.innerText = `${u.intro.length > 0 ? u.intro : "无"}`
+	const snam = new Map(u.snam)
+	soc_e.innerText = `${u.snam.length > 0 ? "" : "无"}`
+	idanchor(soc_e, "s", [...u.snam.keys()], snam)
+	rec_e.innerText = JSON.stringify(u.nrec)
 
 	main.append(usr_t)
+}
+
+function usrput(
+	u: NonNullable<Usr>
+) {
+	main.innerHTML = ""
+
+	const [usrput_t, [
+		idnam_e, id_e,
+		nam_e, adm1_e, adm2_e, intro_e,
+		put_e, cancel_e,
+	]] = bind("usrput", [
+		"idnam", "id",
+		"nam", "adm1", "adm2", "intro",
+		"put", "cancel",
+	]) as [DocumentFragment, [
+		HTMLAnchorElement, HTMLElement,
+		HTMLInputElement, HTMLSelectElement, HTMLSelectElement, HTMLTextAreaElement,
+		HTMLButtonElement, HTMLButtonElement,
+	]]
+
+	idnam_e.href = `#${u._id}`
+	id_e.innerText = `${u._id}`
+
+	nam_e.value = u.nam
+	selopt(adm1_e, adm.keys())
+	adm1_e.value = u.adm1
+	selopt(adm2_e, adm.get(u.adm1)!)
+	adm2_e.value = u.adm2
+	adm1_e.addEventListener("change", () => selopt(adm2_e, adm.get(adm1_e.value)!))
+	intro_e.value = u.intro
+	intro_e.addEventListener("input", () => {
+		intro_e.style.height = "auto"
+		intro_e.style.height = `${intro_e.scrollHeight}px`;
+		(intro_e.previousElementSibling as HTMLElement).innerText = `简介：（${intro_e.value.length} / 2048 个字符）`
+	})
+	setTimeout(() => intro_e.dispatchEvent(new Event("input")), 50)
+
+	put_e.addEventListener("click", async () => {
+		const c = await pos<DocU>("put", {
+			uid: u._id,
+			nam: nam_e.value,
+			adm1: adm1_e.value,
+			adm2: adm2_e.value,
+			intro: intro_e.value.trim(),
+		})
+		if (c === null) { alert(`无效输入`); return }
+		pas_a.innerText = nam_e.value
+		usr(u._id)
+	})
+	cancel_e.addEventListener("click", () => usr(u._id))
+
+	main.append(usrput_t)
+}
+
+function idnull(
+	id: string,
+) {
+	main.innerHTML = ""
+
+	const [idnull_t, [
+		id_e, meta_e
+	]] = bind("idnull", [
+		"id", "meta"
+	])
+	id_e.innerText = id
+	meta_e.innerText = `ismist.cn#${id} 是无效 id`;
+	main.append(idnull_t)
 }
 
 window.addEventListener("hashchange", () => {
@@ -220,7 +292,6 @@ async function load(
 	console.log(`\n主义主义开发小组！成员招募中！\n\n发送自我介绍至网站维护邮箱，或微信联系 728 万大可\n \n`)
 	pas = await pos<Pas>("pas", {})
 	if (pas) {
-		const pas_a = document.getElementById("pas")! as HTMLAnchorElement
 		pas_a.innerText = pas.nam
 		pas_a.href = `#${pas.id.uid}`
 	}
