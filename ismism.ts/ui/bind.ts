@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window-prefix
 import type { DocC, DocU } from "../src/db.ts"
-import type { Aut } from "../src/eid/typ.ts"
+import type { Aut, Id } from "../src/eid/typ.ts"
 import { adm, adm1_def, adm2_def } from "../src/ont/adm.ts"
 import { utc_medium } from "../src/ont/utc.ts"
 import type { Pas } from "../src/pra/pas.ts"
@@ -91,15 +91,15 @@ function idanchor(
 	})
 }
 
-function paspre(
+function pasact(
 ) {
-	const [paspre_t, [
+	const [pasact_t, [
 		nbr_e, send_e,
 		adm_e, adm1_e, adm2_e,
 		pre_e, actid_e, act_e,
 		pas_e, code_e, issue_e,
 		hint_e,
-	]] = bind("paspre", [
+	]] = bind("pasact", [
 		"nbr", "send",
 		"adm", "adm1", "adm2",
 		"pre", "actid", "act",
@@ -164,7 +164,7 @@ function paspre(
 		})
 	})
 
-	main.append(paspre_t)
+	main.append(pasact_t)
 }
 
 async function usr(
@@ -185,7 +185,8 @@ async function usr(
 		intro_e,
 		soc_e,
 		rec_e,
-		pos_e, put_e, pas_e, preusr_e,
+		pos_e, put_e, pas_e,
+		pre_e, preusr_e, presoc_e, preagd_e,
 		pro_e, prorej_e, proref_e,
 	]] = bind("usr", [
 		"idnam", "id", "nam",
@@ -193,7 +194,8 @@ async function usr(
 		"intro",
 		"soc",
 		"rec",
-		"pos", "put", "pas", "preusr",
+		"pos", "put", "pas",
+		"pre", "preusr", "presoc", "preagd",
 		"pro", "prorej", "proref",
 	]) as [DocumentFragment, [
 		HTMLAnchorElement, HTMLElement, HTMLElement,
@@ -201,6 +203,7 @@ async function usr(
 		HTMLParagraphElement,
 		HTMLParagraphElement,
 		HTMLElement,
+		HTMLElement, HTMLButtonElement, HTMLButtonElement,
 		HTMLElement, HTMLButtonElement, HTMLButtonElement, HTMLButtonElement,
 		HTMLElement, HTMLButtonElement, HTMLButtonElement,
 	]]
@@ -233,7 +236,7 @@ async function usr(
 
 	if (pas) {
 		if (pas.id.uid === uid) {
-			pos_e.classList.remove("none")
+			pro_e.remove()
 			put_e.addEventListener("click", () => putusr(u))
 			pas_e.addEventListener("click", async () => {
 				await pos("pas", { uid })
@@ -243,80 +246,113 @@ async function usr(
 				location.href = `#pas`
 			})
 			if (not_aut(pas, "pre_usr")) preusr_e.remove()
-			else preusr_e.addEventListener("click", preusr)
-		} else pos_e.classList.add("none")
-		const prorej = !u.rej.includes(pas.id.uid)
-		const proref = !u.ref.includes(pas.id.uid)
-		prorej_e.innerText = prorej ? "反对" : "取消反对"
-		proref_e.innerText = proref ? "推荐" : "取消推荐"
-		if (not_aut(pas, "pro_usr") || not_pro(pas) || pas.ref.includes(uid)) {
-			prorej_e.disabled = true
-			proref_e.disabled = true
+			else preusr_e.addEventListener("click", () => pre("创建用户"))
+			if (not_aut(pas, "pre_soc")) presoc_e.remove()
+			else presoc_e.addEventListener("click", () => pre("创建社团"))
+			if (not_aut(pas, "pre_agd")) preagd_e.remove()
+			else preagd_e.addEventListener("click", () => pre("创建活动"))
 		} else {
-			prorej_e.addEventListener("click", async () => {
+			pos_e.remove()
+			pre_e.remove()
+			const prorej = !u.rej.includes(pas.id.uid)
+			const proref = !u.ref.includes(pas.id.uid)
+			prorej_e.innerText = prorej ? "反对" : "取消反对"
+			proref_e.innerText = proref ? "推荐" : "取消推荐"
+			if (not_aut(pas, "pro_usr") || not_pro(pas) || pas.ref.includes(uid)) {
 				prorej_e.disabled = true
-				const c = await pos<DocU>("pro", { re: "rej", uid, pro: prorej })
-				if (c && c > 0) setTimeout(() => usr(uid), 500)
-				else prorej_e.disabled = false
-			})
-			proref_e.addEventListener("click", async () => {
 				proref_e.disabled = true
-				const c = await pos<DocU>("pro", { re: "ref", uid, pro: proref })
-				if (c && c > 0) setTimeout(() => usr(uid), 500)
-				else proref_e.disabled = false
-			})
+			} else {
+				prorej_e.addEventListener("click", async () => {
+					prorej_e.disabled = true
+					const c = await pos<DocU>("pro", { re: "rej", uid, pro: prorej })
+					if (c && c > 0) setTimeout(() => usr(uid), 500)
+					else prorej_e.disabled = false
+				})
+				proref_e.addEventListener("click", async () => {
+					proref_e.disabled = true
+					const c = await pos<DocU>("pro", { re: "ref", uid, pro: proref })
+					if (c && c > 0) setTimeout(() => usr(uid), 500)
+					else proref_e.disabled = false
+				})
+			}
 		}
 	} else {
-		pos_e.classList.add("none")
-		pro_e.classList.add("none")
+		pos_e.remove()
+		pre_e.remove()
+		pro_e.remove()
 	}
 
 	main.append(usr_t)
 }
 
-function preusr(
+function pre(
+	nam: "创建用户" | "创建社团" | "创建活动"
 ) {
-	if (!pas) { location.href = `#paspre`; return }
+	if (!pas) { location.href = `#pasact`; return }
 
 	main.innerHTML = ""
 
-	const [preusr_t, [
-		idnam_e, id_e,
-		adm1_e, adm2_e, nbr_e,
+	const [pre_t, [
+		idnam_e, id_e, nam_e,
+		meta_e, pnam_e, nbr_e,
+		adm1_e, adm2_e, intro_e,
 		pre_e, cancel_e,
-	]] = bind("preusr", [
-		"idnam", "id",
-		"adm1", "adm2", "nbr",
+	]] = bind("pre", [
+		"idnam", "id", "nam",
+		"meta", "pnam", "nbr",
+		"adm1", "adm2", "intro",
 		"pre", "cancel",
 	]) as [DocumentFragment, [
-		HTMLAnchorElement, HTMLElement,
-		HTMLSelectElement, HTMLSelectElement, HTMLInputElement,
+		HTMLAnchorElement, HTMLElement, HTMLElement,
+		HTMLElement, HTMLInputElement, HTMLInputElement,
+		HTMLSelectElement, HTMLSelectElement, HTMLTextAreaElement,
 		HTMLButtonElement, HTMLButtonElement,
 	]]
 
 	idnam_e.href = `#${pas.id.uid}`
 	id_e.innerText = `${pas.id.uid}`
+	nam_e.innerText = nam
+	meta_e.innerText = `将作为推荐人${nam}`
+
 	selopt(adm1_e, adm.keys())
 	adm1_e.value = adm1_def
 	selopt(adm2_e, adm.get(adm1_def)!)
 	adm2_e.value = adm2_def
 	adm1_e.addEventListener("change", () => selopt(adm2_e, adm.get(adm1_e.value)!))
 
+	let param: () => Record<string, string>
+	let pf = ""
+	switch (nam) {
+		case "创建用户": {
+			meta_e.innerText += `\n新用户可通过手机号登录、编辑用户信息`
+			pnam_e.parentElement?.remove()
+			intro_e.parentElement?.remove()
+			param = () => ({ nbr: nbr_e.value, adm1: adm1_e.value, adm2: adm2_e.value })
+			break
+		} case "创建社团": case "创建活动": {
+			nbr_e.parentElement?.remove()
+			intro_e.addEventListener("input", () => {
+				intro_e.style.height = "auto"
+				intro_e.style.height = `${intro_e.scrollHeight}px`;
+				(intro_e.previousElementSibling as HTMLElement).innerText = `简介：（${intro_e.value.length} / 2048 个字符）`
+			})
+			param = () => ({
+				...nam === "创建社团" ? { snam: pnam_e.value } : { anam: pnam_e.value },
+				adm1: adm1_e.value, adm2: adm2_e.value, intro: intro_e.value
+			})
+			pf = nam === "创建社团" ? "s" : "a"
+			break
+		} default: { usr(pas.id.uid); return }
+	}
+
 	pre_e.addEventListener("click", async () => {
-		if (!/^1\d{10}$/.test(nbr_e.value)) { alert("无效手机号"); return }
-		pre_e.disabled = nbr_e.readOnly = adm1_e.disabled = adm2_e.disabled = true
-		const c = await pos<DocC<NonNullable<Usr>["_id"]>>("pre", {
-			nbr: nbr_e.value, adm1: adm1_e.value, adm2: adm2_e.value
-		})
-		if (c) usr(c)
-		else {
-			alert("创建用户失败")
-			pre_e.disabled = nbr_e.readOnly = adm1_e.disabled = adm2_e.disabled = false
-		}
+		const id = await pos<DocC<Id["_id"]>>("pre", param())
+		if (id) setTimeout(() => location.hash = `#${pf}${id}`, 500)
+		else alert(`${nam}失败`)
 	})
 	cancel_e.addEventListener("click", () => usr(pas!.id.uid))
 
-	main.append(preusr_t)
+	main.append(pre_t)
 }
 
 function putusr(
@@ -396,8 +432,10 @@ function idnull(
 window.addEventListener("hashchange", () => {
 	hash = decodeURI(window.location.hash).substring(1)
 	main.innerHTML = ""
-	if (hash === "pas") paspre()
+	if (hash === "pas") pasact()
 	else if (/^\d+$/.test(hash)) usr(parseInt(hash))
+	else if (hash.startsWith("s")) que("soc").then(s => main.innerText = JSON.stringify(s))
+	else if (hash.startsWith("a")) que("agd").then(a => main.innerText = JSON.stringify(a))
 })
 
 async function load(

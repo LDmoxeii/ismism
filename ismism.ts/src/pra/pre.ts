@@ -1,10 +1,12 @@
-import { Act, Usr } from "../eid/typ.ts"
+import { Act, Soc, Usr, Agd } from "../eid/typ.ts"
 import { act_u, act_r } from "../eid/act.ts"
 import { usr_c, usr_u } from "../eid/usr.ts"
 import { is_id } from "../eid/id.ts"
 import { DocC } from "../db.ts"
 import { not_aut, Pas } from "./pas.ts"
 import { not_pro } from "./pro.ts"
+import { soc_c } from "../eid/soc.ts"
+import { agd_c } from "../eid/agd.ts"
 
 export async function pre_usract(
 	actid: Act["_id"],
@@ -37,4 +39,24 @@ export async function pre_usr(
 ): DocC<Usr["_id"]> {
 	if (not_aut(pas, pre_usr.name) || not_pro(pas)) return null
 	return await usr_c(nbr, [pas.id.uid], adm1, adm2)
+}
+export async function pre_soc(
+	pas: Pas,
+	nam: Soc["nam"],
+	adm1: string,
+	adm2: string,
+	intro: string,
+): DocC<Soc["_id"]> {
+	if (not_aut(pas, pre_soc.name) || not_pro(pas)) return null
+	return await soc_c(nam, [pas.id.uid], adm1, adm2, intro)
+}
+export async function pre_agd(
+	pas: Pas,
+	nam: Agd["nam"],
+	adm1: string,
+	adm2: string,
+	intro: string,
+): DocC<Soc["_id"]> {
+	if (not_aut(pas, pre_agd.name) || not_pro(pas)) return null
+	return await agd_c(nam, [pas.id.uid], adm1, adm2, intro)
 }

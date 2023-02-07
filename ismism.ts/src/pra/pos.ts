@@ -1,6 +1,6 @@
 import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
-import { pre_usr, pre_usract } from "./pre.ts"
+import { pre_agd, pre_soc, pre_usr, pre_usract } from "./pre.ts"
 import { is_re, pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
 import { put_usr } from "./put.ts"
 
@@ -50,10 +50,15 @@ export async function pos(
 
 		case "pre": {
 			p.etag = utc_etag()
-			const { actid, nbr, adm1, adm2 } = json
-			if (typeof nbr === "string" && typeof adm1 === "string" && typeof adm2 === "string")
-				if (typeof actid === "string") return pre_usract(actid, nbr, adm1, adm2)
-				else if (p.pas) return pre_usr(p.pas, nbr, adm1, adm2)
+			const { actid, nbr, snam, anam, adm1, adm2, intro } = json
+			if (typeof adm1 === "string" && typeof adm2 === "string")
+				if (typeof nbr === "string") {
+					if (typeof actid === "string") return pre_usract(actid, nbr, adm1, adm2)
+					else if (p.pas) return pre_usr(p.pas, nbr, adm1, adm2)
+				} else if (p.pas && typeof intro == "string") {
+					if (typeof snam === "string") return pre_soc(p.pas, snam, adm1, adm2, intro)
+					else if (typeof anam === "string") return pre_agd(p.pas, anam, adm1, adm2, intro)
+				}
 			break
 		}
 

@@ -375,7 +375,7 @@
 
 </style>
 
-<template id="paspre">
+<template id="pasact">
 	<article>
 		<section>
 			<a class="idnam"><code class="id active">pas</code> <span class="nam">用户登录与激活</span></a>
@@ -388,7 +388,7 @@
 			<button class="send">发送验证码</button>
 		</section>
 		<section class="flex adm none">
-			<label>居住地：</label>
+			<label>居住地区：</label>
 			<select class="adm1"></select>
 			<select class="adm2"></select>
 		</section>
@@ -442,7 +442,11 @@
 		<section class="pos flex">
 			<button class="put">编辑</button>
 			<button class="pas">登出</button>
+		</section>
+		<section class="pre flex">
 			<button class="preusr">创建用户</button>
+			<button class="presoc">创建社团</button>
+			<button class="preagd">创建活动</button>
 		</section>
 		<section class="pro flex">
 			<button class="prorej">反对</button>
@@ -452,15 +456,17 @@
 	</article>
 </template>
 
-<template id="preusr">
+<template id="pre">
 	<article>
 		<section>
-			<a class="idnam"><code class="id active"></code> <span>创建用户</span></a>
+			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
 		</section>
 		<hr>
-		<section class="meta">
-			你将作为推荐人创建用户<br>
-			新用户可通过下列手机号登录，编辑用户信息
+		<section class="meta"></section>
+		<hr>
+		<section class="flex">
+			<label>名称：（2-16个中文字符，不能重复）</label>
+			<input class="pnam" type="text" maxlength="16" required />
 		</section>
 		<section class="flex">
 			<label>手机号：</label>
@@ -468,9 +474,13 @@
 				minlength="11" maxlength="11" required />
 		</section>
 		<section class="flex">
-			<label>居住地：</label>
+			<label>地区：</label>
 			<select class="adm1"></select>
 			<select class="adm2"></select>
+		</section>
+		<section>
+			<label>简介：（0 / 2048 个字符）</label>
+			<textarea class="intro" maxlength="2048"></textarea>
 		</section>
 		<hr>
 		<section class="flex">
@@ -492,7 +502,7 @@
 			<input class="nam" type="text" maxlength="16" required />
 		</section>
 		<section class="flex adm">
-			<label>居住地：</label>
+			<label>居住地区：</label>
 			<select class="adm1"></select>
 			<select class="adm2"></select>
 		</section>

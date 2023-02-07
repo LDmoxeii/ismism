@@ -27,7 +27,7 @@ export function not_nam(
 export function is_intro(
 	intro?: null | Id["intro"]
 ) {
-	return typeof intro === "string" && intro.length <= 4096
+	return typeof intro === "string" && intro.length <= 2048
 }
 export function not_intro(
 	intro?: null | Id["intro"]
