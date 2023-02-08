@@ -5,7 +5,7 @@ import { adm, adm1_def, adm2_def } from "../src/ont/adm.ts"
 import { utc_medium } from "../src/ont/utc.ts"
 import type { Pas } from "../src/pra/pas.ts"
 import type { PasCode, UsrAct } from "../src/pra/pos.ts"
-import type { Usr } from "../src/pra/que.ts"
+import type { Soc, Usr } from "../src/pra/que.ts"
 
 let hash = ""
 let pas: Pas | null = null
@@ -78,17 +78,57 @@ function selopt(
 }
 
 function idanchor(
+	id: number[],
+	idnam: Map<Id["_id"], Id["nam"]>,
 	el: HTMLElement,
 	pf: "" | "s" | "a",
-	id: number[],
-	idnam: Map<number, string>,
 ) {
+	if (id.length === 0) { el.innerText = "无"; return }
 	id.forEach((id, n) => {
 		const a = el.appendChild(document.createElement("a"))
 		a.href = `#${pf}${id}`
 		a.innerText = idnam.get(id) ?? `${id}`
 		if (n > 0) a.classList.add("sep")
 	})
+}
+
+function idmeta(
+	id: NonNullable<Usr | Soc>,
+	idnam: Map<Id["_id"], Id["nam"]>,
+	el: {
+		idnam_e: HTMLElement,
+		adm_e: HTMLElement, utc_e: HTMLElement,
+		rej_e: HTMLElement, ref_e: HTMLElement, rejc_e: HTMLElement, refc_e: HTMLElement, proc_e: HTMLElement,
+	},
+): boolean {
+	let pro: null | "rej" | "ref" = null
+	if (id.rej.length >= 2) pro = "rej"
+	else if (id.ref.length < 2) pro = "ref"
+	const pub: boolean = pro === null || (pas !== null && is_aut(pas, "pro_usr"))
+
+	if (pro === "rej") {
+		el.idnam_e.classList.add("red")
+		el.proc_e.classList.add("red")
+	} else if (pro === "ref") {
+		el.idnam_e.classList.add("green")
+		el.proc_e.classList.add("green")
+	}
+
+	el.adm_e.innerText = `${id.adm1} ${id.adm2}`
+	el.utc_e.innerText = `${utc_medium(id.utc)}`
+	idanchor(id.rej, idnam, el.rej_e, "")
+	idanchor(id.ref, idnam, el.ref_e, "")
+
+	if (id.rej.length >= 2) {
+		el.rej_e.classList.add("red")
+		el.rejc_e.classList.add("red")
+	} else el.rejc_e.classList.add("gray")
+	if (id.ref.length < 2) {
+		el.ref_e.classList.add("green")
+		el.refc_e.classList.add("green")
+	} else el.refc_e.classList.add("gray")
+
+	return pub
 }
 
 function pasact(
@@ -181,7 +221,7 @@ async function usr(
 
 	const [usr_t, [
 		idnam_e, id_e, nam_e,
-		adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e,
+		adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e, proc_e,
 		intro_e,
 		soc_e,
 		rec_e,
@@ -190,7 +230,7 @@ async function usr(
 		pro_e, prorej_e, proref_e,
 	]] = bind("usr", [
 		"idnam", "id", "nam",
-		"adm", "utc", "rej", "ref", "rejc", "refc",
+		"adm", "utc", "rej", "ref", "rejc", "refc", "proc",
 		"intro",
 		"soc",
 		"rec",
@@ -199,7 +239,7 @@ async function usr(
 		"pro", "prorej", "proref",
 	]) as [DocumentFragment, [
 		HTMLAnchorElement, HTMLElement, HTMLElement,
-		HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement,
+		HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement,
 		HTMLParagraphElement,
 		HTMLParagraphElement,
 		HTMLElement,
@@ -211,28 +251,18 @@ async function usr(
 	idnam_e.href = `#${uid}`
 	id_e.innerText = `${uid}`
 	nam_e.innerText = u.nam
-	adm_e.innerText = `${u.adm1} ${u.adm2}`
-	utc_e.innerText = `${utc_medium(u.utc)}`
 	const unam = new Map(u.unam)
-	rej_e.innerText = `${u.rej.length > 0 ? "" : "无"}`
-	if (u.rej.length >= 2) {
-		rej_e.classList.add("red")
-		rejc_e.classList.add("red")
-	} else rejc_e.classList.add("gray")
-	if (u.rej.length === 0) rej_e.classList.add("gray")
-	idanchor(rej_e, "", u.rej, unam)
-	ref_e.innerText = `${u.ref.length > 0 ? "" : "无"}`
-	if (u.ref.length < 2) {
-		ref_e.classList.add("green")
-		refc_e.classList.add("green")
-	} else refc_e.classList.add("gray")
-	if (u.ref.length === 0) ref_e.classList.add("gray")
-	idanchor(ref_e, "", u.ref, unam)
-	intro_e.innerText = `${u.intro.length > 0 ? u.intro : "无"}`
-	const snam = new Map(u.snam)
-	soc_e.innerText = `${u.snam.length > 0 ? "" : "无"}`
-	idanchor(soc_e, "s", [...u.snam.keys()], snam)
-	rec_e.innerText = JSON.stringify(u.nrec)
+	let pub = idmeta(u, unam, { idnam_e, adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e, proc_e })
+	if (pas && pas.id.uid === uid) pub = true
+	if (pub) {
+		intro_e.innerText = u.intro.length > 0 ? u.intro : "无"
+		const snam = new Map(u.snam)
+		soc_e.innerText = `${u.snam.length > 0 ? "" : "无"}`
+		idanchor([...u.snam.keys()], snam, soc_e, "s")
+		rec_e.innerText = JSON.stringify(u.nrec)
+	} else {
+		nam_e.innerText = intro_e.innerText = soc_e.innerText = rec_e.innerText = "【冻结中】"
+	}
 
 	if (pas) {
 		if (pas.id.uid === uid) {
@@ -283,6 +313,55 @@ async function usr(
 	}
 
 	main.append(usr_t)
+}
+
+async function soc(
+	sid?: NonNullable<Soc>["_id"]
+) {
+	let ss = sid ? [await que<Soc>(`soc?sid=${sid}`)] : await que<Soc[]>("soc")
+	ss = ss.filter(s => s)
+
+	if (sid && ss.length === 0) {
+		idnull(`s${sid}`, `ismist.cn#s${sid} 是无效社团`)
+		return
+	}
+
+	main.innerHTML = ""
+
+	for (const s of ss) {
+		if (!s) continue
+		const [soc_t, [
+			idnam_e, id_e, nam_e,
+			adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e, proc_e,
+			sec_e, uid_e, res_e, intro_e, rec_e,
+		]] = bind("soc", [
+			"idnam", "id", "nam",
+			"adm", "utc", "rej", "ref", "rejc", "refc", "proc",
+			"sec", "uid", "res", "intro", "rec",
+		]) as [DocumentFragment, [
+			HTMLAnchorElement, HTMLElement, HTMLElement,
+			HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement,
+			HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement
+		]]
+
+		idnam_e.href = `#s${s._id}`
+		id_e.innerText = `s${s._id}`
+		if (hash === id_e.innerText) id_e.classList.add("active")
+		nam_e.innerText = s.nam
+		const unam = new Map(s.unam)
+		const pub = idmeta(s, unam, { idnam_e, adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e, proc_e })
+		if (pub) {
+			idanchor(s.sec, unam, sec_e, "")
+			idanchor(s.uid, unam, uid_e, "")
+			idanchor(s.res, unam, res_e, "")
+			intro_e.innerText = s.intro
+			rec_e.innerText = JSON.stringify(s.nrec)
+		} else {
+			nam_e.innerText = sec_e.innerText = uid_e.innerText = res_e.innerText = intro_e.innerText = rec_e.innerText = "【冻结中】"
+		}
+
+		main.append(soc_t)
+	}
 }
 
 function pre(
@@ -434,7 +513,8 @@ window.addEventListener("hashchange", () => {
 	main.innerHTML = ""
 	if (hash === "pas") pasact()
 	else if (/^\d+$/.test(hash)) usr(parseInt(hash))
-	else if (hash.startsWith("s")) que("soc").then(s => main.innerText = JSON.stringify(s))
+	else if (hash === "soc") soc()
+	else if (/^s\d+$/.test(hash)) soc(parseInt(hash.substring(1)))
 	else if (hash.startsWith("a")) que("agd").then(a => main.innerText = JSON.stringify(a))
 })
 

@@ -326,6 +326,14 @@
 		font-size: 24px;
 	}
 
+	a.idnam.red {
+		background: var(--red)
+	}
+
+	a.idnam.green {
+		background: var(--green)
+	}
+
 	a.idnam>code.id {
 		padding: 0.1em 8px;
 		border: 1px solid var(--black);
@@ -422,9 +430,9 @@
 			反对者：<span class="rej"></span><br>
 			推荐人：<span class="ref"></span><br>
 			<hr>
-			反对者<span class="rejc">不少于</span>两名，或推荐人<span class="refc">少于</span>两名时，用户权限将被冻结<br>
-			只有发起人和书记有权限反对或推荐用户<br>
-			不能反对或推荐自己的推荐人
+			反对者<span class="rejc">不少于</span>两名，或推荐人<span class="refc">少于</span>两名时<br>
+			用户权限将被<span class="proc">冻结</span>，信息仅本人和书记可见<br>
+			只有发起人和书记有权限反对或推荐用户
 		</section>
 		<hr>
 		<section>
@@ -451,6 +459,52 @@
 		<section class="pro flex">
 			<button class="prorej">反对</button>
 			<button class="proref">推荐</button>
+		</section>
+		<hr>
+	</article>
+</template>
+
+<template id="soc">
+	<article>
+		<section>
+			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
+		</section>
+		<hr>
+		<section class="meta">
+			社团地区：<span class="adm"></span><br>
+			注册时间：<span class="utc"></span><br>
+			<hr>
+			反对者：<span class="rej"></span><br>
+			推荐人：<span class="ref"></span><br>
+			<hr>
+			反对者<span class="rejc">不少于</span>两名，或推荐人<span class="refc">少于</span>两名时<br>
+			社团权限将被<span class="proc">冻结</span>，信息仅书记可见<br>
+			只有发起人和书记有权限反对或推荐社团
+		</section>
+		<hr>
+		<section>
+			<label>社团书记：</label>
+			<p class="sec"></p>
+		</section>
+		<hr>
+		<section>
+			<label>社团成员：</label>
+			<p class="uid"></p>
+		</section>
+		<hr>
+		<section>
+			<label>申请加入：</label>
+			<p class="res"></p>
+		</section>
+		<hr>
+		<section>
+			<label>简介：</label>
+			<p class="intro"></p>
+		</section>
+		<hr>
+		<section>
+			<label>rec：</label>
+			<p class="rec"></p>
 		</section>
 		<hr>
 	</article>
