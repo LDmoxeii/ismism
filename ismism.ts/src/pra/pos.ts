@@ -2,7 +2,7 @@ import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre_agd, pre_soc, pre_usr, pre_usract } from "./pre.ts"
 import { is_re, pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
-import { put_usr } from "./put.ts"
+import { put_soc, put_soc_res, put_soc_uid, put_usr } from "./put.ts"
 
 // deno-lint-ignore no-explicit-any
 type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
@@ -75,9 +75,15 @@ export async function pos(
 
 		case "put": {
 			p.etag = utc_etag()
-			const { uid, sid, aid, nam, adm1, adm2, intro } = json
-			if (p.pas && typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string" && typeof intro === "string")
+			const { uid, sid, aid, nam, adm1, adm2, intro, sec, uid_max, res, pro } = json
+			if (p.pas && typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string" && typeof intro === "string") {
 				if (typeof uid === "number") return put_usr(p.pas, uid, { nam, adm1, adm2, intro })
+				else if (typeof sid === "number" && typeof sec === "object" && typeof uid_max === "number")
+					return put_soc(p.pas, sid, { nam, adm1, adm2, intro, sec, uid_max })
+			} else if (p.pas && typeof sid === "number" && (typeof res === "boolean" || typeof pro === "boolean")) {
+				if (typeof res === "boolean") return put_soc_res(p.pas, sid, res)
+				else if (typeof pro === "boolean" && typeof uid === "number") return put_soc_uid(p.pas, sid, uid, pro)
+			}
 			break
 		}
 	}

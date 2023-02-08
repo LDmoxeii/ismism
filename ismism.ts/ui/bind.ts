@@ -112,7 +112,7 @@ function idmeta(
 	} else if (pro === "ref") {
 		el.idnam_e.classList.add("green")
 		el.proc_e.classList.add("green")
-	}
+	} else el.proc_e.classList.add("gray")
 
 	el.adm_e.innerText = `${id.adm1} ${id.adm2}`
 	el.utc_e.innerText = `${utc_medium(id.utc)}`
@@ -334,14 +334,20 @@ async function soc(
 			idnam_e, id_e, nam_e,
 			adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e, proc_e,
 			sec_e, uid_e, res_e, intro_e, rec_e,
+			put_e, putpre_e, putsec_e, putuid_e, putres_e,
+			pro_e, prorej_e, proref_e,
 		]] = bind("soc", [
 			"idnam", "id", "nam",
 			"adm", "utc", "rej", "ref", "rejc", "refc", "proc",
 			"sec", "uid", "res", "intro", "rec",
+			"put", "putpre", "putsec", "putuid", "putres",
+			"pro", "prorej", "proref",
 		]) as [DocumentFragment, [
 			HTMLAnchorElement, HTMLElement, HTMLElement,
 			HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement,
-			HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement
+			HTMLElement, HTMLElement, HTMLElement, HTMLElement, HTMLElement,
+			HTMLElement, HTMLButtonElement, HTMLButtonElement, HTMLButtonElement, HTMLButtonElement,
+			HTMLElement, HTMLButtonElement, HTMLButtonElement,
 		]]
 
 		idnam_e.href = `#s${s._id}`
@@ -357,7 +363,71 @@ async function soc(
 			intro_e.innerText = s.intro
 			rec_e.innerText = JSON.stringify(s.nrec)
 		} else {
-			nam_e.innerText = sec_e.innerText = uid_e.innerText = res_e.innerText = intro_e.innerText = rec_e.innerText = "【冻结中】"
+			sec_e.innerText = uid_e.innerText = res_e.innerText = intro_e.innerText = rec_e.innerText = "【冻结中】"
+		}
+
+		if (pas) {
+			if (not_aut(pas, "pre_soc")) putpre_e.remove()
+			else putpre_e.disabled = true
+			if (!s.sec.includes(pas.id.uid)) putsec_e.remove()
+			else putsec_e.disabled = true
+			if (!s.uid.includes(pas.id.uid)) putuid_e.remove()
+			else putuid_e.addEventListener("click", async () => {
+				if (confirm("退出社团？")) {
+					putuid_e.disabled = true
+					const r = await pos<DocU>("put", { sid: s._id, uid: pas!.id.uid, pro: false })
+					if (r && r > 0) {
+						const h = `s${s._id}`
+						if (hash === h) soc(s._id)
+						else location.href = `#${h}`
+					} else putuid_e.disabled = false
+				}
+			})
+			if (s.uid.includes(pas.id.uid)) putres_e.remove()
+			else {
+				const res = !s.res.includes(pas.id.uid)
+				putres_e.innerText = res ? "申请加入" : "取消申请"
+				if (!res || pub && s.res.length < s.res_max) putres_e.addEventListener("click", async () => {
+					putres_e.disabled = true
+					const r = await pos<DocU>("put", { sid: s._id, res })
+					if (r && r > 0) {
+						const h = `s${s._id}`
+						if (hash === h) soc(s._id)
+						else location.href = `#${h}`
+					} else putuid_e.disabled = false
+				}); else putres_e.disabled = true
+			}
+			if (not_aut(pas, "pro_soc")) pro_e.remove()
+			else {
+				const prorej = !s.rej.includes(pas.id.uid)
+				const proref = !s.ref.includes(pas.id.uid)
+				prorej_e.innerText = prorej ? "反对" : "取消反对"
+				proref_e.innerText = proref ? "推荐" : "取消推荐"
+				if (not_pro(pas)) prorej_e.disabled = proref_e.disabled = true
+				else {
+					prorej_e.addEventListener("click", async () => {
+						prorej_e.disabled = true
+						const r = await pos<DocU>("pro", { re: "rej", sid: s._id, pro: prorej })
+						if (r && r > 0) {
+							const h = `s${s._id}`
+							if (hash === h) soc(s._id)
+							else location.href = `#${h}`
+						} else prorej_e.disabled = false
+					})
+					proref_e.addEventListener("click", async () => {
+						proref_e.disabled = true
+						const r = await pos<DocU>("pro", { re: "ref", sid: s._id, pro: proref })
+						if (r && r > 0) {
+							const h = `s${s._id}`
+							if (hash === h) soc(s._id)
+							else location.href = `#${h}`
+						} else proref_e.disabled = false
+					})
+				}
+			}
+		} else {
+			put_e.remove()
+			pro_e.remove()
 		}
 
 		main.append(soc_t)
