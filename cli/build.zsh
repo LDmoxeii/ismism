@@ -10,6 +10,5 @@ deno bundle cli/dbset.ts ../cli/dbset.js
 
 mkdir ../ui
 
-cp ui/index.html ../ui/
-
-deno bundle ui/bind.ts ../ui/bind.js
+deno bundle ui/bind/bind.ts ui/bind/bind.js
+deno run --allow-all ui/ui.ts

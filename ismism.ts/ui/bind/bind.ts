@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-window-prefix
-import type { DocC, DocU } from "../src/db.ts"
-import type { Aut, Id } from "../src/eid/typ.ts"
-import { adm, adm1_def, adm2_def } from "../src/ont/adm.ts"
-import { utc_medium } from "../src/ont/utc.ts"
-import type { Pas } from "../src/pra/pas.ts"
-import type { PasCode, UsrAct } from "../src/pra/pos.ts"
-import type { Soc, Usr } from "../src/pra/que.ts"
+import type { DocC, DocU } from "../../src/db.ts"
+import type { Aut, Id } from "../../src/eid/typ.ts"
+import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
+import { utc_medium } from "../../src/ont/utc.ts"
+import type { Pas } from "../../src/pra/pas.ts"
+import type { PasCode, UsrAct } from "../../src/pra/pos.ts"
+import type { Soc, Usr } from "../../src/pra/que.ts"
 
 let hash = ""
 let pas: Pas | null = null
@@ -96,7 +96,7 @@ function idmeta(
 	id: NonNullable<Usr | Soc>,
 	idnam: Map<Id["_id"], Id["nam"]>,
 	el: {
-		idnam_e: HTMLElement,
+		id_e: HTMLElement,
 		adm_e: HTMLElement, utc_e: HTMLElement,
 		rej_e: HTMLElement, ref_e: HTMLElement, rejc_e: HTMLElement, refc_e: HTMLElement, proc_e: HTMLElement,
 	},
@@ -107,10 +107,10 @@ function idmeta(
 	const pub: boolean = pro === null || (pas !== null && is_aut(pas, "pro_usr"))
 
 	if (pro === "rej") {
-		el.idnam_e.classList.add("red")
+		el.id_e.classList.add("red")
 		el.proc_e.classList.add("red")
 	} else if (pro === "ref") {
-		el.idnam_e.classList.add("green")
+		el.id_e.classList.add("green")
 		el.proc_e.classList.add("green")
 	} else el.proc_e.classList.add("gray")
 
@@ -252,7 +252,7 @@ async function usr(
 	id_e.innerText = `${uid}`
 	nam_e.innerText = u.nam
 	const unam = new Map(u.unam)
-	let pub = idmeta(u, unam, { idnam_e, adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e, proc_e })
+	let pub = idmeta(u, unam, { id_e, adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e, proc_e })
 	if (pas && pas.id.uid === uid) pub = true
 	if (pub) {
 		intro_e.innerText = u.intro.length > 0 ? u.intro : "无"
@@ -355,7 +355,7 @@ async function soc(
 		if (hash === id_e.innerText) id_e.classList.add("active")
 		nam_e.innerText = s.nam
 		const unam = new Map(s.unam)
-		const pub = idmeta(s, unam, { idnam_e, adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e, proc_e })
+		const pub = idmeta(s, unam, { id_e, adm_e, utc_e, rej_e, ref_e, rejc_e, refc_e, proc_e })
 		if (pub) {
 			idanchor(s.sec, unam, sec_e, "")
 			idanchor(s.uid, unam, uid_e, "")
