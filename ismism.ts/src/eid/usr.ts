@@ -47,8 +47,9 @@ export async function usr_u(
 		if (u.$set.intro && not_intro(u.$set.intro)) return null
 	}
 	try {
-		const { modifiedCount } = await coll.usr.updateOne({ _id }, u)
-		return modifiedCount > 0 ? 1 : 0
+		const { matchedCount, modifiedCount } = await coll.usr.updateOne({ _id }, u)
+		if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
+		else return null
 	} catch { return null }
 }
 

@@ -84,11 +84,10 @@ function idanchor(
 	pf: "" | "s" | "a",
 ) {
 	if (id.length === 0) { el.innerText = "无"; return }
-	id.forEach((id, n) => {
+	id.forEach(id => {
 		const a = el.appendChild(document.createElement("a"))
 		a.href = `#${pf}${id}`
 		a.innerText = idnam.get(id) ?? `${id}`
-		if (n > 0) a.classList.add("sep")
 	})
 }
 
@@ -158,7 +157,7 @@ function pasact(
 		nbr_e.readOnly = send_e.disabled = true
 		const sent = await pos<PasCode>("pas", { nbr: nbr_e.value, sms: location.hostname === "ismist.cn" })
 		if (sent) {
-			const utc = sent.utc ? `上次发送：${utc_medium(sent.utc)}` : ""
+			const utc = sent.utc ? `\n上次发送：${utc_medium(sent.utc)}` : ""
 			hint_e.innerText = `验证码已发送，可多次使用\n一小时内不再重复发送${utc}`
 			pas_e.classList.remove("none")
 		} else {
@@ -549,8 +548,8 @@ function putusr(
 			adm2: adm2_e.value,
 			intro: intro_e.value.trim(),
 		})
-		if (c === null) {
-			alert(`无效输入`)
+		if (c === null || c === 0) {
+			alert(`无效输入\n或用户名已被占用`)
 			put_e.disabled = false
 		} else {
 			pas_a.innerText = nam_e.value

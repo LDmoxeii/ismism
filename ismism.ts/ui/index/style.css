@@ -143,60 +143,16 @@ section {
 	padding: 0;
 }
 
-section>p {
-	display: block;
-	margin: 0;
-	padding: 1ch;
-}
-
 section>label {
 	display: block;
 	width: 100%;
 	color: var(--gray);
 }
 
-section>button {
-	color: var(--lightgray);
-	background: var(--darkgray);
-	border: none;
-	border-radius: 8px;
-}
-
-section>button:disabled {
-	color: var(--darkgray);
-	background: var(--lightgray);
-}
-
-section>button:focus {
-	outline: none;
-}
-
-@media (hover: hover) {
-	section>button:enabled:hover {
-		opacity: 0.65;
-	}
-}
-
-section>input {
+section>p {
 	display: block;
-	font-size: 1em;
-	border: none;
-	border-bottom: 1px dotted var(--black);
-	text-align: center;
-}
-
-section>input:focus {
-	outline: none;
-	border-bottom: 1px solid var(--black);
-}
-
-section>input:focus::placeholder {
-	color: transparent;
-}
-
-section>input:read-only {
-	background: var(--lightgray);
-	border: none;
+	margin: 0;
+	padding: 1ch;
 }
 
 section>textarea {
@@ -204,6 +160,7 @@ section>textarea {
 	display: block;
 	margin: 0;
 	padding: 1ch;
+	margin: 6px 0;
 	width: 100%;
 	font-size: 1em;
 	overflow: hidden;
@@ -246,25 +203,59 @@ section.flex>select {
 	display: block;
 	justify-content: center;
 	align-items: center;
+	font-size: 1em;
 }
 
 section.flex>label {
-	transform: translateY(1ch);
-}
-
-section.flex>input,
-section.flex>button {
-	padding: 1ch;
-}
-
-section.flex>input {
-	flex: 10 1 10ch;
-	max-width: 36ch;
+	transform: translateY(0.75ch);
 }
 
 section.flex>button {
 	flex: 1 1 10ch;
 	max-width: 24ch;
+	padding: 1ch;
+	background: var(--darkgray);
+	color: var(--lightgray);
+	border: none;
+	border-radius: 8px;
+}
+
+section.flex>button:disabled {
+	background: var(--lightgray);
+	color: var(--darkgray);
+}
+
+section.flex>button:focus {
+	outline: none;
+}
+
+@media (hover: hover) {
+	section.flex>button:enabled:hover {
+		opacity: 0.65;
+	}
+}
+
+section.flex>input {
+	flex: 10 1 10ch;
+	padding: 1ch;
+	max-width: 36ch;
+	border: none;
+	border-bottom: 1px dotted var(--black);
+	text-align: center;
+}
+
+section.flex>input:focus {
+	outline: none;
+	border-bottom: 1px solid var(--black);
+}
+
+section.flex>input:focus::placeholder {
+	color: transparent;
+}
+
+section.flex>input:read-only {
+	background: var(--lightgray);
+	border: none;
 }
 
 section.flex>select {
@@ -300,12 +291,13 @@ section.meta>span.gray {
 	color: var(--gray);
 }
 
-section.meta a.sep::before {
-	content: "、";
+section.meta>span>a:hover {
+	color: var(--amber);
 }
 
-section.meta a:hover {
-	color: var(--amber);
+section.meta>span>a:not(:first-child):before {
+	content: "、";
+	color: initial;
 }
 
 a.idnam {
