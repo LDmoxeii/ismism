@@ -1,3 +1,52 @@
+import type { Aut } from "../../src/eid/typ.ts"
+import type { Pas } from "../../src/pra/pas.ts"
+
+export function is_aut(
+	pas: Pas,
+	aut: Aut["p"][0],
+): boolean {
+	return pas.aut.includes(aut)
+}
+export function not_aut(
+	pas: Pas,
+	aut: Aut["p"][0],
+) {
+	return !is_aut(pas, aut)
+}
+export function is_pro(
+	{ rej, ref }: Pas,
+): boolean {
+	return rej.length < 2 && ref.length >= 2
+}
+export function not_pro(
+	pas: Pas,
+) {
+	return !is_pro(pas)
+}
+
+export async function que<T>(
+	q: string
+) {
+	const res = await fetch(`/q/${q}`)
+	const etag = res.headers.get("etag")?.substring(3)
+	if (etag) utc_etag = parseInt(etag)
+	return res.json() as T
+}
+
+export async function pos<T>(
+	f: string, b: Record<string, string | number | boolean>
+) {
+	const res = await fetch(`/p/${f}`, {
+		method: "POST",
+		body: JSON.stringify(b)
+	})
+	return res.json() as T
+}
+
+export let utc_etag = Date.now()
+export const main = document.getElementById("main")!
+export const pas_a = document.getElementById("pas")! as HTMLAnchorElement
+
 const t: typeof document.createElement = (s: string) => document.createElement(s)
 
 const template = {
@@ -53,7 +102,7 @@ const template = {
 		meta: t("section")
 	}
 }
-type Template = typeof template
+export type Template = typeof template
 
 export function bind<
 	T extends keyof Template
