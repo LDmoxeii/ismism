@@ -1,45 +1,10 @@
 import { coll, Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { Agd, Fund, Rec, Usr, Work, Worker } from "./typ.ts"
-import { is_id, not_id } from "./id.ts"
+import { is_id, not_id, not_rec, not_recid, Rol } from "./is.ts"
 
 type RecD<C extends Coll["worker" | "work" | "fund"]> =
 	C extends Coll["worker"] ? Worker :
 	C extends Coll["work"] ? Work : Fund
-
-export function is_recid(
-	id: Rec["_id"]
-): id is Rec["_id"] {
-	return Object.keys(id).length === 3 && is_id(id.uid) && is_id(id.aid) && id.utc > 0
-}
-export function not_recid(
-	id: Rec["_id"]
-) {
-	return !is_recid(id)
-}
-
-export function is_rec(
-	r: Rec
-): r is Rec {
-	return is_recid(r._id) && r.ref.every(is_id) && r.rej.every(is_id)
-}
-export function not_rec(
-	r: Rec
-) {
-	return !is_rec(r)
-}
-
-export function is_rol(
-	rs: Rol[0][1],
-	[aid, rol]: Rol[0][1][0],
-) {
-	return rs.some(([a, r]) => a === aid && r === rol)
-}
-export function not_rol(
-	rs: Rol[0][1],
-	aidrol: Rol[0][1][0],
-) {
-	return !is_rol(rs, aidrol)
-}
 
 export function collrec(
 	c: "worker" | "work" | "fund" | string
@@ -127,7 +92,6 @@ export async function nrec(
 	return { worker, work, fund }
 }
 
-export type Rol = [Usr["_id"], [Agd["_id"], Worker["rol"]][]][]
 export async function rol(
 	uid: Usr["_id"][]
 ): Promise<Rol> {

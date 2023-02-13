@@ -1,7 +1,8 @@
 import { utc_etag } from "../ont/utc.ts"
+import { is_re } from "./con.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre_agd, pre_soc, pre_usr, pre_usract } from "./pre.ts"
-import { is_re, pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
+import { pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
 import { put_soc, put_soc_res, put_soc_uid, put_usr } from "./put.ts"
 
 // deno-lint-ignore no-explicit-any

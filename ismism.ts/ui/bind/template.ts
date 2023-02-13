@@ -1,29 +1,3 @@
-import type { Aut } from "../../src/eid/typ.ts"
-import type { Pas } from "../../src/pra/pas.ts"
-
-export function is_aut(
-	pas: Pas,
-	aut: Aut["p"][0],
-): boolean {
-	return pas.aut.includes(aut)
-}
-export function not_aut(
-	pas: Pas,
-	aut: Aut["p"][0],
-) {
-	return !is_aut(pas, aut)
-}
-export function is_pro(
-	{ rej, ref }: Pas,
-): boolean {
-	return rej.length < 2 && ref.length >= 2
-}
-export function not_pro(
-	pas: Pas,
-) {
-	return !is_pro(pas)
-}
-
 export async function que<T>(
 	q: string
 ) {

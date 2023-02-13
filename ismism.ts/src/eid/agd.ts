@@ -1,6 +1,6 @@
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { not_adm } from "../ont/adm.ts"
-import { not_id, not_intro, not_nam } from "./id.ts"
+import { not_nam, not_id, not_intro } from "./is.ts"
 import { Agd } from "./typ.ts"
 
 export async function agd_c(

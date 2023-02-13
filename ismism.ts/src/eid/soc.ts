@@ -1,7 +1,7 @@
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { not_adm } from "../ont/adm.ts"
 import { Soc, Usr } from "./typ.ts"
-import { not_id, not_intro, not_nam } from "./id.ts"
+import { not_nam, not_id, not_intro } from "./is.ts"
 
 export async function soc_c(
 	nam: Soc["nam"],

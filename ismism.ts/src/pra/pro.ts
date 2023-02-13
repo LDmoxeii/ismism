@@ -1,27 +1,12 @@
 import { DocU } from "../db.ts"
 import { agd_u } from "../eid/agd.ts"
 import { Agd, Rec, Soc, Usr } from "../eid/typ.ts"
-import { collrec, not_recid, not_rol, rec_u } from "../eid/rec.ts"
+import { collrec, rec_u } from "../eid/rec.ts"
+import { not_recid, not_rol } from "../eid/is.ts"
 import { soc_u } from "../eid/soc.ts"
 import { usr_u } from "../eid/usr.ts"
-import { not_aut, Pas } from "./pas.ts"
-
-export function is_pro(
-	{ rej, ref }: Pas,
-): boolean {
-	return rej.length < 2 && ref.length >= 2
-}
-export function not_pro(
-	pas: Pas,
-) {
-	return !is_pro(pas)
-}
-
-export function is_re(
-	re?: null | string
-): re is "rej" | "ref" {
-	return re === "rej" || re === "ref"
-}
+import { Pas } from "./pas.ts"
+import { not_aut, not_pro } from "./con.ts"
 
 export async function pro_usr(
 	pas: Pas,
@@ -29,7 +14,7 @@ export async function pro_usr(
 	uid: Usr["_id"],
 	pro: boolean,
 ): DocU {
-	if (not_aut(pas, pro_usr.name) || not_pro(pas) || pas.ref.includes(uid)) return null
+	if (not_aut(pas.aut, pro_usr.name) || not_pro(pas) || pas.ref.includes(uid)) return null
 	const u = { [re]: pas.id.uid }
 	return await usr_u(uid, pro ? { $addToSet: u } : { $pull: u })
 }
@@ -39,7 +24,7 @@ export async function pro_soc(
 	sid: Soc["_id"],
 	pro: boolean,
 ): DocU {
-	if (not_aut(pas, pro_soc.name) || not_pro(pas)) return null
+	if (not_aut(pas.aut, pro_soc.name) || not_pro(pas)) return null
 	const u = { [re]: pas.id.uid }
 	return await soc_u(sid, pro ? { $addToSet: u } : { $pull: u })
 }
@@ -49,7 +34,7 @@ export async function pro_agd(
 	aid: Agd["_id"],
 	pro: boolean,
 ): DocU {
-	if (not_aut(pas, pro_agd.name) || not_pro(pas)) return null
+	if (not_aut(pas.aut, pro_agd.name) || not_pro(pas)) return null
 	const u = { [re]: pas.id.uid }
 	return await agd_u(aid, pro ? { $addToSet: u } : { $pull: u })
 }

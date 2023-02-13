@@ -5,7 +5,8 @@ import { usr_r, usr_u } from "../eid/usr.ts"
 import { aut_r } from "../eid/aut.ts"
 import { utc_h } from "../ont/utc.ts"
 import { smssend } from "../ont/sms.ts"
-import { Rol, rol } from "../eid/rec.ts"
+import { rol } from "../eid/rec.ts"
+import { Rol } from "../eid/is.ts"
 
 export type Pas = {
 	id: { uid: Usr["_id"], utc: number },
@@ -14,19 +15,6 @@ export type Pas = {
 	nam: Usr["nam"],
 	aut: Aut["p"],
 	rol: Rol[0][1],
-}
-
-export function is_aut(
-	pas: Pas,
-	aut: Aut["p"][0],
-): boolean {
-	return pas.aut.includes(aut)
-}
-export function not_aut(
-	pas: Pas,
-	aut: Aut["p"][0],
-) {
-	return !is_aut(pas, aut)
 }
 
 const utc_pas_valid = new Date("2023-01-29").getTime()

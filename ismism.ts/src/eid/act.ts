@@ -1,16 +1,6 @@
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
+import { not_actid } from "./is.ts"
 import { Act } from "./typ.ts"
-
-function is_actid(
-	id: Act["_id"]
-): id is Act["_id"] {
-	return id.length >= 6
-}
-function not_actid(
-	id: Act["_id"]
-) {
-	return !is_actid(id)
-}
 
 export async function act_c(
 	act: Act,

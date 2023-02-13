@@ -3,7 +3,8 @@ import type { Pas } from "../../src/pra/pas.ts"
 import type { Usr, Soc } from "../../src/pra/que.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { adm } from "../../src/ont/adm.ts"
-import { is_aut, Template } from "./template.ts"
+import { Template } from "./template.ts"
+import { is_aut } from "../../src/pra/con.ts"
 
 function selopt(
 	sel: HTMLSelectElement,
@@ -51,7 +52,7 @@ function idmeta(
 	let pro: null | "rej" | "ref" = null
 	if (id.rej.length >= 2) pro = "rej"
 	else if (id.ref.length < 2) pro = "ref"
-	const pub: boolean = pro === null || (pas !== null && is_aut(pas, "pro_usr"))
+	const pub: boolean = pro === null || (pas !== null && is_aut(pas.aut, "pro_usr"))
 
 	if (pro === "rej") {
 		t.id.classList.add("red")

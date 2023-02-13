@@ -1,39 +1,7 @@
 import { Coll } from "../db.ts"
 import { not_adm1, not_adm2 } from "../ont/adm.ts"
+import { is_id } from "./is.ts"
 import { Id } from "./typ.ts"
-
-export function is_id(
-	id?: null | Id["_id"]
-): id is Id["_id"] {
-	return typeof id === "number" && id > 0
-}
-export function not_id(
-	id?: null | Id["_id"]
-) {
-	return !is_id(id)
-}
-
-export function is_nam(
-	nam?: null | Id["nam"]
-) {
-	return typeof nam === "string" && /^[\u4E00-\u9FFF]{2,16}$/.test(nam)
-}
-export function not_nam(
-	nam?: null | Id["nam"]
-) {
-	return !is_nam(nam)
-}
-
-export function is_intro(
-	intro?: null | Id["intro"]
-) {
-	return typeof intro === "string" && intro.length <= 2048
-}
-export function not_intro(
-	intro?: null | Id["intro"]
-) {
-	return !is_intro(intro)
-}
 
 export async function idnam(
 	c: Coll["usr" | "soc" | "agd"],

@@ -6,7 +6,8 @@ import type { Pas } from "../../src/pra/pas.ts"
 import type { PasCode, UsrAct } from "../../src/pra/pos.ts"
 import type { Soc, Usr } from "../../src/pra/que.ts"
 import { admsel, id, idanchor } from "./section.ts"
-import { bind, main, not_aut, not_pro, pas_a, pos, que } from "./template.ts"
+import { bind, main, pas_a, pos, que } from "./template.ts"
+import { not_aut, not_pro } from "../../src/pra/con.ts"
 
 let hash = ""
 let pas: Pas | null = null
@@ -100,11 +101,11 @@ async function usr(
 				pas_a.href = "#pas"
 				location.href = `#pas`
 			})
-			if (not_aut(pas, "pre_usr")) t.preusr.remove()
+			if (not_aut(pas.aut, "pre_usr")) t.preusr.remove()
 			else t.preusr.addEventListener("click", () => pre("创建用户"))
-			if (not_aut(pas, "pre_soc")) t.presoc.remove()
+			if (not_aut(pas.aut, "pre_soc")) t.presoc.remove()
 			else t.presoc.addEventListener("click", () => pre("创建社团"))
-			if (not_aut(pas, "pre_agd")) t.preagd.remove()
+			if (not_aut(pas.aut, "pre_agd")) t.preagd.remove()
 			else t.preagd.addEventListener("click", () => pre("创建活动"))
 		} else {
 			t.pos.remove()
@@ -113,7 +114,7 @@ async function usr(
 			const proref = !u.ref.includes(pas.id.uid)
 			t.prorej.innerText = prorej ? "反对" : "取消反对"
 			t.proref.innerText = proref ? "推荐" : "取消推荐"
-			if (not_aut(pas, "pro_usr") || not_pro(pas) || pas.ref.includes(uid)) {
+			if (not_aut(pas.aut, "pro_usr") || not_pro(pas) || pas.ref.includes(uid)) {
 				t.prorej.disabled = true
 				t.proref.disabled = true
 			} else {
@@ -171,7 +172,7 @@ async function soc(
 		}
 
 		if (pas) {
-			if (not_aut(pas, "pre_soc")) t.putpre.remove()
+			if (not_aut(pas.aut, "pre_soc")) t.putpre.remove()
 			else t.putpre.disabled = true
 			if (!s.sec.includes(pas.id.uid)) t.putsec.remove()
 			else t.putsec.disabled = true
@@ -201,7 +202,7 @@ async function soc(
 					} else t.putuid.disabled = false
 				}); else t.putres.disabled = true
 			}
-			if (not_aut(pas, "pro_soc")) t.pro.remove()
+			if (not_aut(pas.aut, "pro_soc")) t.pro.remove()
 			else {
 				const prorej = !s.rej.includes(pas.id.uid)
 				const proref = !s.ref.includes(pas.id.uid)

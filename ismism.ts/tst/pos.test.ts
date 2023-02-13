@@ -106,7 +106,7 @@ Deno.test("pro", async () => {
 		pos(p, "pro", json({ re: "ref", rec: "worker", recid, pro: true })),
 	]))
 	await pos(p, "pas", json({ nbr: nbr[2], code: code[1]?.pcode?.code }))
-	assertEquals([null, 0, 1, 0, null, null, 1, null], await Promise.all([
+	assertEquals([null, 0, 1, null, null, null, 1, null], await Promise.all([
 		pos(p, "pro", json({ re: "ref", uid: 1, pro: false })),
 		pos(p, "pro", json({ re: "ref", uid: 3, pro: false })),
 		pos(p, "pro", json({ re: "rej", uid: 3, pro: true })),
