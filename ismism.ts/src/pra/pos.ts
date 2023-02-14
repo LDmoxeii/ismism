@@ -76,7 +76,7 @@ export async function pos(
 
 		case "put": {
 			p.etag = utc_etag()
-			const { uid, sid, aid, nam, adm1, adm2, intro, sec, uid_max, res, pro } = json
+			const { uid, sid, nam, adm1, adm2, intro, sec, uid_max, res, pro } = json
 			if (p.pas && typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string" && typeof intro === "string") {
 				if (typeof uid === "number") return put_usr(p.pas, uid, { nam, adm1, adm2, intro })
 				else if (typeof sid === "number" && typeof sec === "object" && typeof uid_max === "number")

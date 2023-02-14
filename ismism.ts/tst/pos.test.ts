@@ -4,7 +4,7 @@ import { act_c, act_d } from "../src/eid/act.ts"
 import { agd_c, agd_d } from "../src/eid/agd.ts"
 import { aut_c, aut_d } from "../src/eid/aut.ts"
 import { rec_c, rec_d } from "../src/eid/rec.ts"
-import { soc_c, soc_d } from "../src/eid/soc.ts"
+import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { usr_c, usr_d, usr_r } from "../src/eid/usr.ts"
 import { jwk_set } from "../src/ont/jwt.ts"
 import { Pas } from "../src/pra/pas.ts"
@@ -61,7 +61,7 @@ Deno.test("pre", async () => {
 		await pos({}, "pre", json({ actid: actid[1], nbr: nbr[1], adm1, adm2 })),
 	])
 	assertEquals({ _id: 1, nbr: nbr[1] }, await usr_r({ _id: 1 }, { nbr: 1 }))
-	await aut_c({ _id: 1, p: ["pre_usr"] })
+	await aut_c({ _id: 1, aut: ["pre_usr"] })
 	await pos(p, "pas", json({ nbr: nbr[1], sms: false }))
 	const pcode = await usr_r({ _id: 1 }, { pcode: 1 })
 	await pos(p, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
@@ -85,9 +85,9 @@ Deno.test("pro", async () => {
 		{ sms: false }, { sms: false }, 1, 1,
 		recid,
 	], await Promise.all([
-		aut_c({ _id: 1, p: ["pro_usr", "pro_soc", "pro_agd"] }),
-		aut_c({ _id: 2, p: ["pro_usr", "pro_soc", "pro_agd"] }),
-		aut_c({ _id: 3, p: ["pro_usr"] }),
+		aut_c({ _id: 1, aut: ["pre_usr", "pre_soc", "pre_agd"] }),
+		aut_c({ _id: 2, aut: ["pre_usr", "pre_soc", "pre_agd"] }),
+		aut_c({ _id: 3, aut: ["pre_usr"] }),
 		...[0, 2].map(n => pos(p, "pas", json({ nbr: nbr[n], sms: false }))),
 		soc_c("团体", [1, 2], "四川", "成都", ""),
 		agd_c("活动", [1, 2], "四川", "成都", ""),
@@ -128,14 +128,20 @@ Deno.test("pro", async () => {
 Deno.test("put", async () => {
 	const p: PasPos = {}
 	const nbr = "11111111111"
-	const [uid] = await Promise.all([
-		usr_c(nbr, [1, 2], "四川", "成都")
+	const [uid, sid] = await Promise.all([
+		usr_c(nbr, [1, 2], "四川", "成都"),
+		soc_c("社团", [2, 3], "广东", "汕头", "简介"),
 	])
 	await pos(p, "pas", json({ nbr, sms: false }))
 	const code = await usr_r({ _id: uid! }, { pcode: 1 })
 	await pos(p, "pas", json({ nbr, code: code?.pcode?.code }))
-	await pos(p, "put", json({ uid, nam: "万大可", adm1: "广东", adm2: "汕头", intro: "简介" }))
+	await pos({ jwt: p.jwt }, "put", json({ uid, nam: "万大可", adm1: "广东", adm2: "汕头", intro: "简介" }))
 	assertEquals(await usr_r({ _id: uid! }, { nam: 1, adm1: 1, adm2: 1, intro: 1 }), {
 		_id: 1, adm1: "广东", adm2: "汕头", nam: "万大可", intro: "简介"
 	})
+	await soc_u(sid!, { $set: { sec: [uid!] } })
+	await pos({ jwt: p.jwt }, "put", json({ sid, nam: "社团二", intro: "简介二", adm1: "四川", adm2: "成都", sec: [2, 3], uid_max: 100 }))
+	assertEquals(await soc_r(sid!, { nam: 1, adm1: 1, adm2: 1, intro: 1, sec: 1, uid_max: 1 }),
+		{ _id: sid!, nam: "社团", intro: "简介二", sec: [uid!], adm1: "广东", adm2: "汕头", uid_max: 128 }
+	)
 })

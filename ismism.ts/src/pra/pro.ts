@@ -14,7 +14,7 @@ export async function pro_usr(
 	uid: Usr["_id"],
 	pro: boolean,
 ): DocU {
-	if (not_aut(pas.aut, pro_usr.name) || not_pro(pas) || pas.ref.includes(uid)) return null
+	if (not_aut(pas.aut, "pre_usr") || not_pro(pas) || pas.ref.includes(uid)) return null
 	const u = { [re]: pas.id.uid }
 	return await usr_u(uid, pro ? { $addToSet: u } : { $pull: u })
 }
@@ -24,7 +24,7 @@ export async function pro_soc(
 	sid: Soc["_id"],
 	pro: boolean,
 ): DocU {
-	if (not_aut(pas.aut, pro_soc.name) || not_pro(pas)) return null
+	if (not_aut(pas.aut, "pre_soc") || not_pro(pas)) return null
 	const u = { [re]: pas.id.uid }
 	return await soc_u(sid, pro ? { $addToSet: u } : { $pull: u })
 }
@@ -34,7 +34,7 @@ export async function pro_agd(
 	aid: Agd["_id"],
 	pro: boolean,
 ): DocU {
-	if (not_aut(pas.aut, pro_agd.name) || not_pro(pas)) return null
+	if (not_aut(pas.aut, "pre_agd") || not_pro(pas)) return null
 	const u = { [re]: pas.id.uid }
 	return await agd_u(aid, pro ? { $addToSet: u } : { $pull: u })
 }

@@ -4,7 +4,6 @@ import { Soc, Usr } from "../eid/typ.ts"
 import { usr_r, usr_u } from "../eid/usr.ts"
 import { not_aut, not_pro } from "./con.ts"
 import { Pas } from "./pas.ts"
-import { pre_soc } from "./pre.ts"
 
 export async function put_usr(
 	pas: Pas,
@@ -20,8 +19,11 @@ export async function put_soc(
 	sid: Soc["_id"],
 	s: Pick<Soc, "nam" | "adm1" | "adm2" | "intro" | "sec" | "uid_max">,
 ): DocU {
-	if (not_aut(pas.aut, pre_soc.name) || not_pro(pas)) return null
-	return await soc_u(sid, { $set: s })
+	if (not_pro(pas)) return null
+	const na = not_aut(pas.aut, "pre_soc")
+	const sec = await soc_r(sid, { sec: 1 })
+	if (!sec || na && !sec.sec.includes(pas.id.uid)) return null
+	return await soc_u(sid, { $set: na ? { intro: s.intro } : s })
 }
 
 export async function put_soc_res(

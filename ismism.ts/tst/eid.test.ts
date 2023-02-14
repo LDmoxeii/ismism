@@ -160,10 +160,10 @@ Deno.test("act", async () => {
 Deno.test("aut", async () => {
 	const _id = 1
 	assert(null === await aut_r(_id))
-	await aut_c({ _id, p: ["a", "b"] })
-	assertEquals((await aut_r(_id))?.p, ["a", "b"])
-	await aut_u(_id, { $addToSet: { p: { $each: ["b", "c"] } } })
-	await aut_u(_id, { $pull: { p: "a" } })
-	assertEquals((await aut_r(_id))?.p, ["b", "c"])
+	await aut_c({ _id, aut: ["pre_usr", "pre_soc"] })
+	assertEquals((await aut_r(_id))?.aut, ["pre_usr", "pre_soc"])
+	await aut_u(_id, { $addToSet: { aut: { $each: ["pre_soc", "pre_agd"] } } })
+	await aut_u(_id, { $pull: { aut: "pre_usr" } })
+	assertEquals((await aut_r(_id))?.aut, ["pre_soc", "pre_agd"])
 	assert(1 === await aut_d(_id))
 })

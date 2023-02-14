@@ -37,7 +37,7 @@ export async function pre_usr(
 	adm1: string,
 	adm2: string,
 ): DocC<Usr["_id"]> {
-	if (not_aut(pas.aut, pre_usr.name) || not_pro(pas)) return null
+	if (not_aut(pas.aut, "pre_usr") || not_pro(pas)) return null
 	return await usr_c(nbr, [pas.id.uid], adm1, adm2)
 }
 export async function pre_soc(
@@ -47,7 +47,7 @@ export async function pre_soc(
 	adm2: string,
 	intro: string,
 ): DocC<Soc["_id"]> {
-	if (not_aut(pas.aut, pre_soc.name) || not_pro(pas)) return null
+	if (not_aut(pas.aut, "pre_soc") || not_pro(pas)) return null
 	return await soc_c(nam, [pas.id.uid], adm1, adm2, intro)
 }
 export async function pre_agd(
@@ -57,6 +57,6 @@ export async function pre_agd(
 	adm2: string,
 	intro: string,
 ): DocC<Soc["_id"]> {
-	if (not_aut(pas.aut, pre_agd.name) || not_pro(pas)) return null
+	if (not_aut(pas.aut, "pre_agd") || not_pro(pas)) return null
 	return await agd_c(nam, [pas.id.uid], adm1, adm2, intro)
 }

@@ -17,7 +17,7 @@ const [uid1] = await Promise.all([
 		exp: new Date("2023-06-31").getTime(),
 		act: "usrnbr", uid: 1
 	}),
-	aut_c({ _id: 1, p: ["pre_usr", "pre_soc", "pre_agd", "pro_usr", "pro_soc", "pro_agd"] })
+	aut_c({ _id: 1, aut: ["pre_usr", "pre_soc", "pre_agd"] })
 ])
 const [uid2] = await Promise.all([
 	usr_c("11111111112", [1, 2], "江苏", "苏州"),
@@ -26,7 +26,7 @@ const [uid2] = await Promise.all([
 		exp: new Date("2023-06-31").getTime(),
 		act: "usrnbr", uid: 2
 	}),
-	aut_c({ _id: 2, p: ["pre_usr", "pre_soc", "pre_agd", "pro_usr", "pro_soc", "pro_agd"] })
+	aut_c({ _id: 2, aut: ["pre_usr", "pre_soc", "pre_agd"] })
 ])
 await Promise.all([
 	usr_u(uid1!, { $set: { nam: "未明子" } }),

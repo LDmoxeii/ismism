@@ -18,14 +18,14 @@ export function not_pro(
 }
 
 export function is_aut(
-	aut: Aut["p"],
-	p: Aut["p"][0],
+	aut: Aut["aut"],
+	p: Aut["aut"][0],
 ): boolean {
 	return aut.includes(p)
 }
 export function not_aut(
-	aut: Aut["p"],
-	p: Aut["p"][0],
+	aut: Aut["aut"],
+	p: Aut["aut"][0],
 ) {
 	return !is_aut(aut, p)
 }

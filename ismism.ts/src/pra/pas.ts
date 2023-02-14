@@ -13,7 +13,7 @@ export type Pas = {
 	rej: Usr["rej"],
 	ref: Usr["ref"],
 	nam: Usr["nam"],
-	aut: Aut["p"],
+	aut: Aut["aut"],
 	rol: Rol[0][1],
 }
 
@@ -37,7 +37,7 @@ export async function pas(
 			rej: u.rej,
 			ref: u.ref,
 			nam: u.nam,
-			aut: aut ? aut.p : [],
+			aut: aut ? aut.aut : [],
 			rol: r && r[0] === id.uid ? r[1] : []
 		}
 	return null
@@ -58,7 +58,7 @@ export async function pas_issue(
 			id: { uid: u._id, utc },
 			rej: u.rej, ref: u.ref,
 			nam: u.nam,
-			aut: aut ? aut.p : [],
+			aut: aut ? aut.aut : [],
 			rol: r && r[0] === u._id ? r[1] : []
 		}
 		if (u.ptoken) return { pas, jwt: u.ptoken }

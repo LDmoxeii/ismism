@@ -68,5 +68,5 @@ export type Act = {
 })
 export type Aut = {
 	_id: Usr["_id"],
-	p: string[],
+	aut: ("pre_usr" | "pre_soc" | "pre_agd")[],
 }
