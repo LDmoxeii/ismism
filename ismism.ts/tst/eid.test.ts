@@ -4,7 +4,7 @@ import { act_c, act_d, act_r, act_u } from "../src/eid/act.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { aut_c, aut_d, aut_r, aut_u } from "../src/eid/aut.ts"
 import { id, idnam, nid_of_adm } from "../src/eid/id.ts"
-import { is_id, is_intro, is_nam, not_id, not_intro, not_nam, is_rol, not_rol } from "../src/eid/is.ts"
+import { is_id, is_intro, is_nam, not_id, not_intro, not_nam, is_rol, not_rol, is_nbr, not_nbr } from "../src/eid/is.ts"
 import { nrec, rec_c, rec_d, rec_r, rec_u, rol } from "../src/eid/rec.ts"
 import { soc_c, soc_d, sidnam, soc_r, soc_u } from "../src/eid/soc.ts"
 import { usr_c, usr_r, usr_u, usr_d } from "../src/eid/usr.ts"
@@ -44,6 +44,11 @@ Deno.test("id", async () => {
 	assertEquals(await nid_of_adm(coll.soc, "adm2"), [["成都", 2], ["汕头", 1]])
 
 	await Promise.all(sid.map(soc_d))
+})
+
+Deno.test("nbr", () => {
+	assert(is_nbr("11111111111"))
+	assert(not_nbr(undefined) && not_nbr(null) && not_nbr("") && not_nbr("123"))
 })
 
 Deno.test("usr", async () => {

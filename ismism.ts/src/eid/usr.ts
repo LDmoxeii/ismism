@@ -1,8 +1,7 @@
 import { Usr } from "./typ.ts"
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import { is_nbr, not_nbr } from "../ont/sms.ts"
 import { not_adm } from "../ont/adm.ts"
-import { is_id, not_id, not_nam, not_intro } from "./is.ts"
+import { is_id, not_id, not_nam, is_nbr, not_nbr, not_intro } from "./is.ts"
 
 export async function usr_c(
 	nbr: NonNullable<Usr["nbr"]>,

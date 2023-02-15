@@ -1,14 +1,15 @@
 export async function que<T>(
 	q: string
 ) {
-	const res = await fetch(`/q/${q}`)
-	const etag = res.headers.get("etag")?.substring(3)
+	const r = await fetch(`/q/${q}`)
+	const etag = r.headers.get("etag")?.substring(3)
 	if (etag) utc_etag = parseInt(etag)
-	return res.json() as T
+	return r.json() as T
 }
 
 export async function pos<T>(
-	f: string, b: Record<string, string | number | boolean>
+	f: string,
+	b: Record<string, string | number | boolean>,
 ) {
 	const res = await fetch(`/p/${f}`, {
 		method: "POST",
@@ -17,14 +18,16 @@ export async function pos<T>(
 	return res.json() as T
 }
 
+export const utc_refresh = 500
 export let utc_etag = Date.now()
-export const main = document.getElementById("main")!
+export const main = document.getElementById("main")! as HTMLDivElement
 export const pas_a = document.getElementById("pas")! as HTMLAnchorElement
 
 const t: typeof document.createElement = (s: string) => document.createElement(s)
 
 const template = {
 	pasact: {
+		tid: "pasact" as const,
 		nbr: t("input"), send: t("button"),
 		adm: t("section"), adm1: t("select"), adm2: t("select"),
 		pre: t("section"), actid: t("input"), act: t("button"),
@@ -33,6 +36,7 @@ const template = {
 	},
 
 	usr: {
+		tid: "usr" as const,
 		idnam: t("a"), id: t("code"), nam: t("span"),
 		adm: t("span"), utc: t("span"),
 		rej: t("span"), ref: t("span"),
@@ -46,6 +50,7 @@ const template = {
 	},
 
 	soc: {
+		tid: "soc" as const,
 		idnam: t("a"), id: t("code"), nam: t("span"),
 		adm: t("span"), utc: t("span"),
 		rej: t("span"), ref: t("span"),
@@ -56,6 +61,7 @@ const template = {
 	},
 
 	pre: {
+		tid: "pre" as const,
 		idnam: t("a"), id: t("code"), nam: t("span"),
 		meta: t("section"), pnam: t("input"), nbr: t("input"),
 		adm: t("section"), adm1: t("select"), adm2: t("select"),
@@ -64,6 +70,7 @@ const template = {
 	},
 
 	putusr: {
+		tid: "putusr" as const,
 		idnam: t("a"), id: t("code"),
 		nam: t("input"),
 		adm1: t("select"), adm2: t("select"),
@@ -72,6 +79,7 @@ const template = {
 	},
 
 	idnull: {
+		tid: "idnull" as const,
 		id: t("cod"),
 		meta: t("section")
 	}
@@ -90,5 +98,6 @@ export function bind<
 			c, t.querySelector(`.${c}`) as HTMLElement
 		])
 	]) as Template[T] & { bind: DocumentFragment }
+	b.tid = tid
 	return b
 }

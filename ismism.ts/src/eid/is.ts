@@ -22,6 +22,17 @@ export function not_nam(
 	return !is_nam(nam)
 }
 
+export function is_nbr(
+	nbr?: null | string
+): nbr is string {
+	return typeof nbr === "string" && /^1\d{10}$/.test(nbr)
+}
+export function not_nbr(
+	nbr?: null | string
+) {
+	return !is_nbr(nbr)
+}
+
 export function is_intro(
 	intro?: null | Id["intro"]
 ) {

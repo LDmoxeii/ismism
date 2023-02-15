@@ -3,7 +3,6 @@ import { is_adm, is_adm1, is_adm2, not_adm, not_adm1, not_adm2 } from "../src/on
 import { from_base64, from_hex, from_u8, to_base64, to_hex, to_u8 } from "../src/ont/base.ts"
 import { digest } from "../src/ont/crypt.ts"
 import { jwk_load, jwk_set, jwt_sign, jwt_verify } from "../src/ont/jwt.ts"
-import { is_nbr, not_nbr } from "../src/ont/sms.ts"
 import { utc_date, utc_h, utc_medium, utc_short } from "../src/ont/utc.ts"
 
 Deno.test("base", () => {
@@ -37,11 +36,6 @@ Deno.test("adm", () => {
 
 	assert(is_adm2("成都") && is_adm2("汕头"))
 	assert(not_adm2(undefined) && not_adm2(null) && not_adm2("") && not_adm2("四川"))
-})
-
-Deno.test("nbr", () => {
-	assert(is_nbr("11111111111"))
-	assert(not_nbr(undefined) && not_nbr(null) && not_nbr("") && not_nbr("123"))
 })
 
 Deno.test("dig", async () => {

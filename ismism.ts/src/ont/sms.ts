@@ -2,17 +2,6 @@ import { to_hex } from "./base.ts"
 import { digest, key, sign } from "./crypt.ts"
 import { utc_date } from "./utc.ts"
 
-export function is_nbr(
-	nbr?: null | string
-): nbr is string {
-	return typeof nbr === "string" && /^1\d{10}$/.test(nbr)
-}
-export function not_nbr(
-	nbr?: null | string
-) {
-	return !is_nbr(nbr)
-}
-
 const tc: {
 	id: string,
 	key: string,

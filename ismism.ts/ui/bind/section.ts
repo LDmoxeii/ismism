@@ -1,10 +1,19 @@
-import type { Id } from "../../src/eid/typ.ts"
+import type { Aut, Id } from "../../src/eid/typ.ts"
 import type { Pas } from "../../src/pra/pas.ts"
-import type { Usr, Soc } from "../../src/pra/que.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { adm } from "../../src/ont/adm.ts"
-import { Template } from "./template.ts"
+import { pos, Template, utc_refresh } from "./template.ts"
 import { is_aut } from "../../src/pra/con.ts"
+import { Usr, Soc, hash } from "./article.ts"
+import type { DocU } from "../../src/db.ts"
+
+export function label(
+	el: HTMLElement,
+	s: string,
+) {
+	const l = el.previousElementSibling as HTMLLabelElement
+	l.innerText = s
+}
 
 function selopt(
 	sel: HTMLSelectElement,
@@ -30,63 +39,83 @@ export function admsel(
 	t.adm1.addEventListener("change", () => selopt(t.adm2, adm.get(t.adm1.value)!))
 }
 
-export function idanchor(
-	id: number[],
-	idnam: Map<Id["_id"], Id["nam"]>,
-	el: HTMLElement,
+export function ida(
+	t: HTMLElement,
 	pf: "" | "s" | "a",
+	nam: Map<Id["_id"], Id["nam"]>,
+	id?: number[],
 ) {
-	if (id.length === 0) { el.innerText = "无"; return }
+	if (!id) id = [...nam.keys()]
+	if (id.length === 0) return
 	id.forEach(id => {
-		const a = el.appendChild(document.createElement("a"))
+		const a = t.appendChild(document.createElement("a"))
 		a.href = `#${pf}${id}`
-		a.innerText = idnam.get(id) ?? `${id}`
+		a.innerText = nam.get(id) ?? `${pf}${id}`
 	})
 }
 
-function idmeta(
+export function idmeta(
 	pas: Pas | null,
-	id: Omit<NonNullable<Usr | Soc>, "unam"> & { unam: Map<Id["_id"], Id["nam"]> },
 	t: Template["usr" | "soc"],
+	id: Usr | Soc,
 ): boolean {
-	let pro: null | "rej" | "ref" = null
-	if (id.rej.length >= 2) pro = "rej"
-	else if (id.ref.length < 2) pro = "ref"
-	const pub: boolean = pro === null || (pas !== null && is_aut(pas.aut, "pro_usr"))
-
-	if (pro === "rej") {
-		t.id.classList.add("red")
-		t.proc.classList.add("red")
-	} else if (pro === "ref") {
-		t.id.classList.add("green")
-		t.proc.classList.add("green")
-	} else t.proc.classList.add("gray")
+	const [rej, ref] = [id.rej.length >= 2, id.ref.length < 2]
+	const re: "rej" | "ref" | null = rej ? "rej" : ref ? "ref" : null
+	const { aut }: { aut?: Aut["aut"][0] } = {
+		...t.tid === "usr" ? { aut: "pre_usr" } : {},
+		...t.tid === "soc" ? { aut: "pre_soc" } : {},
+	}
+	const pub: boolean = re === null || (pas !== null && aut !== undefined && is_aut(pas.aut, aut))
 
 	t.adm.innerText = `${id.adm1} ${id.adm2}`
 	t.utc.innerText = `${utc_medium(id.utc)}`
-	idanchor(id.rej, id.unam, t.rej, "")
-	idanchor(id.ref, id.unam, t.ref, "")
+	ida(t.rej, "", id.unam, id.rej)
+	ida(t.ref, "", id.unam, id.ref)
 
-	if (id.rej.length >= 2) {
-		t.rej.classList.add("red")
-		t.rejc.classList.add("red")
-	} else t.rejc.classList.add("gray")
-	if (id.ref.length < 2) {
-		t.ref.classList.add("green")
-		t.refc.classList.add("green")
-	} else t.refc.classList.add("gray")
+	if (rej) [t.rej, t.rejc].forEach(el => el.classList.add("red"))
+	if (ref) [t.ref, t.refc].forEach(el => el.classList.add("green"))
+	if (re === "rej") [t.id, t.proc].forEach(el => el.classList.add("red"))
+	else if (re === "ref") [t.id, t.proc].forEach(el => el.classList.add("green"))
 
 	return pub
 }
 
-export function id(
-	pas: Pas | null,
-	ph: "" | "s",
-	id: Omit<NonNullable<Usr | Soc>, "unam"> & { unam: Map<Id["_id"], Id["nam"]> },
+export function idnam(
+	t: Template["usr" | "soc" | "pre"],
+	id: string,
+	nam?: string,
+) {
+	t.idnam.href = `#${id}`
+	t.id.innerText = id
+	if (hash === id) t.id.classList.add("active")
+	if (nam) t.nam.innerText = nam
+}
+
+export function pro(
+	pas: Pas,
 	t: Template["usr" | "soc"],
-): boolean {
-	t.idnam.href = `#${ph}${id._id}`
-	t.id.innerText = `${ph}${id._id}`
-	t.nam.innerText = id.nam
-	return idmeta(pas, id, t) || ph === "" && pas !== null && pas.id.uid === id._id
+	id: Usr | Soc,
+	re?: (r: Id["_id"]) => void,
+) {
+	const [prorej, proref] = [!id.rej.includes(pas.id.uid), !id.ref.includes(pas.id.uid)]
+	t.prorej.innerText = prorej ? "反对" : "取消反对"
+	t.proref.innerText = proref ? "推荐" : "取消推荐"
+	if (re) {
+		const pid = {
+			...t.tid === "usr" ? { uid: id._id } : {},
+			...t.tid === "soc" ? { sid: id._id } : {},
+		}
+		t.prorej.addEventListener("click", async () => {
+			t.prorej.disabled = true
+			const c = await pos<DocU>("pro", { re: "rej", ...pid, pro: prorej })
+			if (c && c > 0) setTimeout(() => re(id._id), utc_refresh)
+			else t.prorej.disabled = false
+		})
+		t.proref.addEventListener("click", async () => {
+			t.proref.disabled = true
+			const c = await pos<DocU>("pro", { re: "ref", ...pid, pro: proref })
+			if (c && c > 0) setTimeout(() => re(id._id), utc_refresh)
+			else t.proref.disabled = false
+		})
+	} else t.prorej.disabled = t.proref.disabled = true
 }
