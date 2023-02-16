@@ -314,6 +314,47 @@ section.meta>span.green:empty::before {
 	color: var(--green) !important;
 }
 
+section.acct>div>:first-child {
+	float: left;
+}
+
+section.acct>div>:last-child {
+	float: right;
+}
+
+section.acct>svg {
+	margin: 0.4em 0 0.2em 0;
+	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+}
+
+section.acct>svg>rect:first {
+	fill: var(--lightgray);
+}
+
+section.acct>svg>rect:not(:first-child) {
+	fill: var(--gray);
+}
+
+section.acct>svg>text {
+	font-size: 1em;
+	font-family: monospace;
+	fill: var(--black);
+}
+
+section.acct>svg>text.fund,
+section.acct>svg>text.expense {
+	text-anchor: start;
+}
+
+section.acct>svg>text.fundpct,
+section.acct>svg>text.expensepct {
+	text-anchor: middle;
+}
+
+section.acct>svg>text.budget {
+	text-anchor: end;
+}
+
 a.idnam {
 	display: block;
 	font-size: 24px;

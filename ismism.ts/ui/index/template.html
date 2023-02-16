@@ -136,6 +136,58 @@
 	</article>
 </template>
 
+<template id="agd">
+	<article>
+		<section>
+			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
+		</section>
+		<hr>
+		<section class="meta">
+			活动地区：<span class="adm"></span><br>
+			注册时间：<span class="utc"></span><br>
+			<hr>
+			反对者：<span class="rej"></span><br>
+			推荐人：<span class="ref"></span><br>
+			<hr>
+			反对者<span class="rejc">不少于</span>两名，或推荐人<span class="refc">少于</span>两名时<br>
+			活动权限将被<span class="proc">冻结</span>，信息仅书记可见<br>
+			只有发起人和书记有权限反对或推荐活动
+		</section>
+		<hr>
+		<section class="acct">
+			<div><span>收到支持</span><span>当前预算</span></div>
+			<svg width="100%" height="4em">
+				<rect width="100%" height="100%" fill="var(--lightgray)" />
+				<rect class="fundbar" y="0" width="0%" height="50%" />
+				<rect class="expensebar" y="50%" width="0%" height="50%" />
+				<text class="fund" y="25%" x="1%" dominant-baseline="central">0</text>
+				<text class="fundpct" y="25%" x="50%" dominant-baseline="central">0%</text>
+				<text class="budget" y="25%" x="99%" dominant-baseline="central">0</text>
+				<text class="expense" y="75%" x="1%" dominant-baseline="central">0</text>
+				<text class="expensepct" y="75%" x="50%" dominant-baseline="central">0%</text>
+			</svg>
+			<div><span>当前支出</span><a class="detail">历史明细</a></div>
+		</section>
+		<hr>
+		<hr>
+		<section>
+			<label>简介：</label>
+			<p class="intro"></p>
+		</section>
+		<hr>
+		<section>
+			<label>rec：</label>
+			<p class="rec"></p>
+		</section>
+		<hr>
+		<section class="pro flex">
+			<button class="prorej">反对</button>
+			<button class="proref">推荐</button>
+		</section>
+		<hr>
+	</article>
+</template>
+
 <template id="pre">
 	<article>
 		<section>

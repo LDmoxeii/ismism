@@ -24,6 +24,7 @@ export const main = document.getElementById("main")! as HTMLDivElement
 export const pas_a = document.getElementById("pas")! as HTMLAnchorElement
 
 const t: typeof document.createElement = (s: string) => document.createElement(s)
+const svg = <S extends keyof SVGElementTagNameMap>(s: S) => document.createElementNS("http://www.w3.org/2000/svg", s)
 
 const template = {
 	pasact: {
@@ -57,6 +58,20 @@ const template = {
 		rejc: t("span"), refc: t("span"), proc: t("span"),
 		sec: t("section"), uid: t("p"), res: t("p"), intro: t("p"), rec: t("p"),
 		put: t("section"), putpre: t("button"), putsec: t("button"), putuid: t("button"), putres: t("button"),
+		pro: t("section"), prorej: t("button"), proref: t("button"),
+	},
+
+	agd: {
+		tid: "agd" as const,
+		idnam: t("a"), id: t("code"), nam: t("span"),
+		adm: t("span"), utc: t("span"),
+		rej: t("span"), ref: t("span"),
+		rejc: t("span"), refc: t("span"), proc: t("span"),
+		fundbar: svg("rect"), expensebar: svg("rect"),
+		fund: svg("text"), fundpct: svg("text"), budget: svg("text"),
+		expense: svg("text"), expensepct: svg("text"),
+		detail: t("a"),
+		intro: t("p"), rec: t("p"),
 		pro: t("section"), prorej: t("button"), proref: t("button"),
 	},
 

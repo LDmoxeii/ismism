@@ -4,7 +4,7 @@ import { utc_medium } from "../../src/ont/utc.ts"
 import { adm } from "../../src/ont/adm.ts"
 import { pos, Template, utc_refresh } from "./template.ts"
 import { is_aut } from "../../src/pra/con.ts"
-import { Usr, Soc, hash } from "./article.ts"
+import { Usr, Soc, Agd, hash } from "./article.ts"
 import type { DocU } from "../../src/db.ts"
 
 export function label(
@@ -97,8 +97,8 @@ export function ida(
 
 export function idmeta(
 	pas: Pas | null,
-	t: Template["usr" | "soc"],
-	id: Usr | Soc,
+	t: Template["usr" | "soc" | "agd"],
+	id: Usr | Soc | Agd,
 ): boolean {
 	const [rej, ref] = [id.rej.length >= 2, id.ref.length < 2]
 	const re: "rej" | "ref" | null = rej ? "rej" : ref ? "ref" : null
@@ -122,7 +122,7 @@ export function idmeta(
 }
 
 export function idnam(
-	t: Template["usr" | "soc" | "pre" | "putusr"],
+	t: Template["usr" | "soc" | "agd" | "pre" | "putusr"],
 	id: string,
 	nam?: string,
 ) {
@@ -137,8 +137,8 @@ export function idnam(
 
 export function pro(
 	pas: Pas,
-	t: Template["usr" | "soc"],
-	id: Usr | Soc,
+	t: Template["usr" | "soc" | "agd"],
+	id: Usr | Soc | Agd,
 	refresh?: () => void,
 ) {
 	const [rej, ref] = [!id.rej.includes(pas.id.uid), !id.ref.includes(pas.id.uid)]
@@ -146,6 +146,7 @@ export function pro(
 		re: r, pro: p,
 		...t.tid === "usr" ? { uid: id._id } : {},
 		...t.tid === "soc" ? { sid: id._id } : {},
+		...t.tid === "agd" ? { aid: id._id } : {},
 	})
 	btn(t.prorej, rej ? "反对" : "取消反对", refresh ? { pos: () => p("rej", rej), refresh } : undefined)
 	btn(t.proref, ref ? "推荐" : "取消推荐", refresh ? { pos: () => p("ref", ref), refresh } : undefined)

@@ -209,7 +209,42 @@ async function agd(
 	aa = aa.filter(a => a)
 	if (aid && aa.length === 0) return idnull(`a${aid}`, "活动")
 
-	main.innerText = JSON.stringify(aa, null, 2)
+	main.innerHTML = ""
+
+	for (const d of aa) {
+		if (!d) continue
+
+		const t = bind("agd")
+		const a = { ...d, unam: new Map(d.unam) }
+
+		const pub = idmeta(pas, t, a)
+		idnam(t, `a${a._id}`, a.nam)
+
+		if (pub) {
+			t.intro.innerText = a.intro
+			t.rec.innerText = JSON.stringify(a.nrec)
+		} else t.intro.innerText = t.rec.innerText = "-冻结中-"
+
+		if (a.budget > 0) {
+			console.log(a)
+			t.fund.textContent = `${a.fund}`
+			t.budget.textContent = `${a.budget}`
+			t.expense.textContent = `${a.expense}`
+			const [fpct, epct] = [a.fund / a.budget, a.expense / a.budget].map(p => `${Math.round(p * 100)}%`)
+			t.fundbar.style.width = t.fundpct.textContent = fpct
+			t.expensebar.style.width = t.expensepct.textContent = epct
+		}
+		t.detail.href = a.detail
+
+		if (pas) {
+			if (not_aut(pas.aut, "pre_agd") || not_pro(pas)) pro(pas, t, a)
+			else pro(pas, t, a, () => agd(a._id))
+		} else {
+			t.pro.remove()
+		}
+
+		main.append(t.bind)
+	}
 }
 
 function pre(
