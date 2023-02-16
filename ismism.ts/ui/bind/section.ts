@@ -15,16 +15,57 @@ export function label(
 	l.innerText = s
 }
 
+export function btn<
+	T
+>(
+	b: HTMLButtonElement,
+	s: string,
+	c?: {
+		confirm?: string,
+		pos: () => T,
+		alert?: string,
+		refresh: (r: NonNullable<Awaited<T>>) => void,
+	}
+) {
+	b.innerText = s
+	if (c) b.addEventListener("click", async () => {
+		if (!c.confirm || confirm(c.confirm)) {
+			b.disabled = true
+			const r = await c.pos()
+			if (c.alert) {
+				if (r === null) { alert(c.alert); b.disabled = false; return }
+			} else {
+				if (!r || r <= 0) return
+			}
+			if (r || r === 0) setTimeout(() => c.refresh(r), utc_refresh)
+		}
+	}); else b.disabled = true
+}
+
 function selopt(
 	sel: HTMLSelectElement,
-	ts: Iterable<string>,
+	opt: Iterable<string>,
 ) {
 	sel.options.length = 0
-	for (const t of ts) {
-		const opt = document.createElement("option")
-		opt.text = t
-		sel.add(opt)
+	for (const op of opt) {
+		const t = document.createElement("option")
+		t.text = op
+		sel.add(t)
 	}
+}
+
+export function txt(
+	t: HTMLTextAreaElement,
+	n: string,
+	s?: string,
+) {
+	if (s) t.value = s
+	t.addEventListener("input", () => {
+		label(t, `${n}：（${t.value.length}/${t.maxLength} 个字符）`)
+		t.style.height = "auto"
+		t.style.height = `${t.scrollHeight}px`
+	})
+	if (s) setTimeout(() => t.dispatchEvent(new Event("input")), 50)
 }
 
 export function admsel(
@@ -81,41 +122,31 @@ export function idmeta(
 }
 
 export function idnam(
-	t: Template["usr" | "soc" | "pre"],
+	t: Template["usr" | "soc" | "pre" | "putusr"],
 	id: string,
 	nam?: string,
 ) {
 	t.idnam.href = `#${id}`
 	t.id.innerText = id
 	if (hash === id) t.id.classList.add("active")
-	if (nam) t.nam.innerText = nam
+	if (nam) {
+		if ("value" in t.nam) t.nam.value = nam
+		else t.nam.innerText = nam
+	}
 }
 
 export function pro(
 	pas: Pas,
 	t: Template["usr" | "soc"],
 	id: Usr | Soc,
-	re?: (r: Id["_id"]) => void,
+	refresh?: () => void,
 ) {
-	const [prorej, proref] = [!id.rej.includes(pas.id.uid), !id.ref.includes(pas.id.uid)]
-	t.prorej.innerText = prorej ? "反对" : "取消反对"
-	t.proref.innerText = proref ? "推荐" : "取消推荐"
-	if (re) {
-		const pid = {
-			...t.tid === "usr" ? { uid: id._id } : {},
-			...t.tid === "soc" ? { sid: id._id } : {},
-		}
-		t.prorej.addEventListener("click", async () => {
-			t.prorej.disabled = true
-			const c = await pos<DocU>("pro", { re: "rej", ...pid, pro: prorej })
-			if (c && c > 0) setTimeout(() => re(id._id), utc_refresh)
-			else t.prorej.disabled = false
-		})
-		t.proref.addEventListener("click", async () => {
-			t.proref.disabled = true
-			const c = await pos<DocU>("pro", { re: "ref", ...pid, pro: proref })
-			if (c && c > 0) setTimeout(() => re(id._id), utc_refresh)
-			else t.proref.disabled = false
-		})
-	} else t.prorej.disabled = t.proref.disabled = true
+	const [rej, ref] = [!id.rej.includes(pas.id.uid), !id.ref.includes(pas.id.uid)]
+	const p = (r: "rej" | "ref", p: boolean) => pos<DocU>("pro", {
+		re: r, pro: p,
+		...t.tid === "usr" ? { uid: id._id } : {},
+		...t.tid === "soc" ? { sid: id._id } : {},
+	})
+	btn(t.prorej, rej ? "反对" : "取消反对", refresh ? { pos: () => p("rej", rej), refresh } : undefined)
+	btn(t.proref, ref ? "推荐" : "取消推荐", refresh ? { pos: () => p("ref", ref), refresh } : undefined)
 }

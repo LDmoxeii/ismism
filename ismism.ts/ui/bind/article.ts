@@ -1,12 +1,12 @@
 // deno-lint-ignore-file no-window-prefix
-import type { DocC, DocU } from "../../src/db.ts"
+import type { DocC } from "../../src/db.ts"
 import type { Id } from "../../src/eid/typ.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import type { Pas } from "../../src/pra/pas.ts"
 import type { PasCode, UsrAct } from "../../src/pra/pos.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { admsel, idnam, ida, idmeta, pro, label } from "./section.ts"
-import { bind, main, pas_a, pos, que, utc_refresh } from "./template.ts"
+import { admsel, idnam, ida, idmeta, pro, label, btn, txt } from "./section.ts"
+import { bind, main, pas_a, pos, que } from "./template.ts"
 import { not_aut, not_pro } from "../../src/pra/con.ts"
 import { not_actid, not_nbr } from "../../src/eid/is.ts"
 
@@ -122,7 +122,7 @@ async function usr(
 			t.pre.remove()
 			if (not_aut(pas.aut, "pre_usr") || not_pro(pas) || pas.ref.includes(uid))
 				pro(pas, t, u)
-			else pro(pas, t, u, usr)
+			else pro(pas, t, u, () => usr(u._id))
 		}
 	} else {
 		t.pos.remove()
@@ -173,27 +173,20 @@ async function soc(
 			if (!s.sec.includes(pas.id.uid)) t.putsec.remove()
 			else t.putsec.disabled = true
 			if (!s.uid.includes(pas.id.uid)) t.putuid.remove()
-			else t.putuid.addEventListener("click", async () => {
-				if (confirm("退出社团？")) {
-					t.putuid.disabled = true
-					const r = await pos<DocU>("put", { sid: s._id, uid: pas!.id.uid, pro: false })
-					if (r && r > 0) soc(s._id)
-					else t.putuid.disabled = false
-				}
+			else btn(t.putuid, t.putuid.innerText, {
+				confirm: "退出社团？",
+				pos: () => pos("put", { sid: s._id, uid: pas!.id.uid, pro: false }),
+				refresh: () => soc(s._id),
 			})
 			if (s.uid.includes(pas.id.uid)) t.putres.remove()
 			else {
 				const res = !s.res.includes(pas.id.uid)
-				t.putres.innerText = res ? "申请加入" : "取消申请"
-				if (!res || pub && s.res.length < s.res_max) t.putres.addEventListener("click", async () => {
-					t.putres.disabled = true
-					const r = await pos<DocU>("put", { sid: s._id, res })
-					if (r && r > 0) soc(s._id)
-					else t.putuid.disabled = false
-				}); else t.putres.disabled = true
+				btn(t.putres, res ? "申请加入" : "取消申请", !res || pub && s.res.length < s.res_max ? {
+					pos: () => pos("put", { sid: s._id, res }), refresh: () => soc(s._id)
+				} : undefined)
 			}
 			if (not_aut(pas.aut, "pre_soc") || not_pro(pas)) pro(pas, t, s)
-			else pro(pas, t, s, soc)
+			else pro(pas, t, s, () => soc(s._id))
 		} else {
 			t.put.remove()
 			t.pro.remove()
@@ -222,7 +215,7 @@ async function agd(
 function pre(
 	nam: "创建用户" | "创建社团" | "创建活动"
 ) {
-	if (!pas || hashchange("pas")) return
+	if (!pas || hashchange(`${pas.id.uid}`)) return
 
 	main.innerHTML = ""
 	const t = bind("pre")
@@ -239,11 +232,7 @@ function pre(
 			break
 		} case "创建社团": case "创建活动": {
 			t.nbr.parentElement?.remove()
-			t.intro.addEventListener("input", () => {
-				label(t.intro, `简介：（${t.intro.value.length}/2048 个字符）`)
-				t.intro.style.height = "auto"
-				t.intro.style.height = `${t.intro.scrollHeight}px`
-			})
+			txt(t.intro, "简介")
 			break
 		} default: { usr(pas.id.uid); return }
 	}
@@ -262,11 +251,10 @@ function pre(
 			}), f: agd,
 		} : {},
 	}
-	t.pre.addEventListener("click", async () => {
-		t.pre.disabled = true
-		const id = await pos<DocC<Id["_id"]>>("pre", p())
-		if (id) setTimeout(() => f(id), utc_refresh)
-		else { alert("无效输入\n或名称已被占用"); t.pre.disabled = false }
+	btn(t.pre, t.pre.innerText, {
+		pos: () => pos<DocC<Id["_id"]>>("pre", p()),
+		alert: `无效输入\n或${nam === "创建用户" ? "手机号" : "名称"}已注册`,
+		refresh: f,
 	})
 	t.cancel.addEventListener("click", () => usr(pas!.id.uid))
 
@@ -279,36 +267,19 @@ function putusr(
 	main.innerHTML = ""
 	const t = bind("putusr")
 
-	t.idnam.href = `#${u._id}`
-	t.id.innerText = `${u._id}`
-	t.nam.value = u.nam
-
+	idnam(t, `${u._id}`, u.nam)
 	admsel(t, u.adm1, u.adm2)
-
-	t.intro.value = u.intro
-	t.intro.addEventListener("input", () => {
-		label(t.intro, `简介：（${t.intro.value.length}/2048 个字符）`)
-		t.intro.style.height = "auto"
-		t.intro.style.height = `${t.intro.scrollHeight}px`
-	})
-	setTimeout(() => t.intro.dispatchEvent(new Event("input")), 50)
-
-	t.put.addEventListener("click", async () => {
-		t.put.disabled = true
-		const c = await pos<DocU>("put", {
+	txt(t.intro, "简介", u.intro)
+	btn(t.put, t.put.innerText, {
+		pos: () => pos("put", {
 			uid: u._id,
 			nam: t.nam.value,
 			adm1: t.adm1.value,
 			adm2: t.adm2.value,
 			intro: t.intro.value.trim(),
-		})
-		if (c === null) {
-			alert("无效输入\n或名称已被占用")
-			t.put.disabled = false
-		} else {
-			pas_a.innerText = t.nam.value
-			setTimeout(() => usr(u._id), utc_refresh)
-		}
+		}),
+		alert: "无效输入\n或名称已被占用",
+		refresh: () => { pas_a.innerText = t.nam.value; usr(u._id) },
 	})
 	t.cancel.addEventListener("click", () => usr(u._id))
 
