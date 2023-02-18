@@ -5,7 +5,7 @@ import { utc_medium } from "../../src/ont/utc.ts"
 import type { Pas } from "../../src/pra/pas.ts"
 import type { PasCode, UsrAct } from "../../src/pra/pos.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { admsel, idnam, ida, idmeta, pro, label, btn, txt } from "./section.ts"
+import { admsel, idnam, ida, idmeta, pro, label, btn, txt, goal } from "./section.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
 import { not_aut, not_pro } from "../../src/pra/con.ts"
 import { not_actid, not_nbr } from "../../src/eid/is.ts"
@@ -104,7 +104,7 @@ async function usr(
 		t.intro.innerText = u.intro.length > 0 ? u.intro : "无"
 		ida(t.soc, "s", u.snam)
 		t.rec.innerText = JSON.stringify(u.nrec)
-	} else t.intro.innerText = t.soc.innerText = t.rec.innerText = "-冻结中-"
+	} else[t.intro, t.soc, t.rec].forEach(el => el.classList.add("pubn"))
 
 	if (pas) {
 		if (pas.id.uid === uid) {
@@ -157,15 +157,14 @@ async function soc(
 		const pub = idmeta(pas, t, s)
 		idnam(t, `s${s._id}`, s.nam)
 
-		ida(t.sec, "", s.unam, s.sec)
-		ida(t.uid, "", s.unam, s.uid)
-		label(t.res, `申请加入（${s.res.length}/${s.res_max}）：`)
-		ida(t.res, "", s.unam, s.res)
-
 		if (pub) {
+			ida(t.sec, "", s.unam, s.sec)
+			ida(t.uid, "", s.unam, s.uid)
+			label(t.res, `申请加入（${s.res.length}/${s.res_max}）：`)
+			ida(t.res, "", s.unam, s.res)
 			t.intro.innerText = s.intro
 			t.rec.innerText = JSON.stringify(s.nrec)
-		} else t.sec.innerText = t.uid.innerText = t.res.innerText = t.intro.innerText = t.rec.innerText = "-冻结中-"
+		} else[t.sec, t.uid, t.res, t.intro, t.rec].forEach(el => el.classList.add("pubn"))
 
 		if (pas) {
 			if (not_aut(pas.aut, "pre_soc")) t.putpre.remove()
@@ -221,9 +220,10 @@ async function agd(
 		idnam(t, `a${a._id}`, a.nam)
 
 		if (pub) {
+			goal(t, a)
 			t.intro.innerText = a.intro
 			t.rec.innerText = JSON.stringify(a.nrec)
-		} else t.intro.innerText = t.rec.innerText = "-冻结中-"
+		} else[t.goal, t.intro, t.rec].forEach(el => el.classList.add("pubn"))
 
 		if (a.budget > 0) {
 			console.log(a)

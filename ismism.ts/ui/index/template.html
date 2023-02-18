@@ -60,7 +60,10 @@
 			<p class="soc"></p>
 		</section>
 		<hr>
-		<section class="rec"></section>
+		<section>
+			<label>rec：</label>
+			<p class="rec"></p>
+		</section>
 		<hr>
 		<section class="pos flex">
 			<button class="put">编辑</button>
@@ -136,6 +139,17 @@
 	</article>
 </template>
 
+<template id="goal">
+	<div style="width: 160px">
+		<svg width="160" height="160">
+			<circle cx="50%" cy="50%" r="60" />
+			<circle class="circle" cx="50%" cy="50%" r="60" />
+			<text class="pct" y="50%" x="50%" dominant-baseline="central"></text>
+		</svg>
+		<span class="nam"></span>
+	</div>
+</template>
+
 <template id="agd">
 	<article>
 		<section>
@@ -153,6 +167,12 @@
 			活动权限将被<span class="proc">冻结</span>，信息仅书记可见<br>
 			只有发起人和书记有权限反对或推荐活动
 		</section>
+		<section class="cover flex">
+			<div class="imgn">第 1 / 6 张</div>
+			<div><button class="prev">上一张</button> / <button class="next">下一张</button></div>
+			<div class="imgnam">年夜饭 22020304</div>
+			<img class="img" src="https://img1.imgtp.com/2023/01/27/Q2NK5uxM.jpeg">
+		</section>
 		<hr>
 		<section class="acct">
 			<div><span>收到支持</span><span>当前预算</span></div>
@@ -169,6 +189,10 @@
 			<div><span>当前支出</span><a class="detail">历史明细</a></div>
 		</section>
 		<hr>
+		<section>
+			<label>当前目标：</label>
+			<p class="goal"></p>
+		</section>
 		<hr>
 		<section>
 			<label>简介：</label>

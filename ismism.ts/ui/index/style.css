@@ -155,8 +155,13 @@ section>p {
 	padding: 1ch;
 }
 
-section>span:empty::before,
+section>span:empty::before {
+	color: var(--gray) !important;
+	content: "无";
+}
+
 section>p:empty::before {
+	padding: 1ch;
 	color: var(--gray);
 	content: "无";
 }
@@ -314,6 +319,66 @@ section.meta>span.green:empty::before {
 	color: var(--green) !important;
 }
 
+section.cover {
+	padding-top: 6px;
+	color: var(--darkgray);
+	border-top: 1px dotted var(--lightgray);
+	gap: 0;
+}
+
+@media (max-width: 720px) {
+	section.cover>div {
+		width: 100%;
+		text-align: center;
+	}
+}
+
+@media (min-width: 720px) {
+	section.cover>div {
+		flex-basis: 180px;
+		flex-grow: 1;
+	}
+
+	section.cover>div:nth-child(1) {
+		text-align: left;
+	}
+
+	section.cover>div:nth-child(2) {
+		text-align: center;
+	}
+
+	section.cover>div:nth-child(3) {
+		text-align: right;
+	}
+}
+
+section.cover>div>button {
+	font-size: 1em;
+	color: var(--darkgray);
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+section.cover>div>button:focus {
+	outline: none;
+}
+
+@media (hover: hover) {
+	section.cover>div>button:hover {
+		color: var(--white) !important;
+		border-color: var(--darkgray) !important;
+		background: var(--darkgray) !important;
+		opacity: 0.7;
+	}
+}
+
+section.cover>img {
+	width: 100%;
+	margin: 6px 0;
+	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+}
+
 section.acct>div>:first-child {
 	float: left;
 }
@@ -353,6 +418,58 @@ section.acct>svg>text.expensepct {
 
 section.acct>svg>text.budget {
 	text-anchor: end;
+}
+
+section>p.goal:not(:empty) {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-items: center;
+	gap: 6px;
+}
+
+section>p.goal>div {
+	width: 160px;
+}
+
+section>p.goal>div>svg {
+	filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, .4));
+}
+
+section>p.goal>div>svg>circle:first-child {
+	stroke: var(--gray);
+	stroke-width: 25px;
+	fill: var(--white);
+}
+
+section>p.goal>div>svg>circle:nth-child(2) {
+	--pct: 0;
+	stroke: var(--lightgray);
+	stroke-width: 25px;
+	stroke-dasharray: 377px 377px;
+	stroke-dashoffset: calc(-377px * var(--pct) / 100);
+	fill: transparent;
+}
+
+section>p.goal>div>svg>text {
+	text-anchor: middle;
+	font-size: 30px;
+	fill: var(--amber);
+}
+
+section>p.goal>div>svg>text.gray {
+	fill: var(--gray)
+}
+
+section>p.goal>div>span {
+	display: block;
+	font-size: var(--large);
+	color: var(--darkgray);
+	text-align: center;
+}
+
+section>p.pubn:empty::before {
+	content: "-冻结中-" !important;
 }
 
 a.idnam {

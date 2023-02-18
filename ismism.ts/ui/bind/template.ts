@@ -42,9 +42,7 @@ const template = {
 		adm: t("span"), utc: t("span"),
 		rej: t("span"), ref: t("span"),
 		rejc: t("span"), refc: t("span"), proc: t("span"),
-		intro: t("p"),
-		soc: t("p"),
-		rec: t("section"),
+		intro: t("p"), soc: t("p"), rec: t("p"),
 		pos: t("section"), put: t("button"), pas: t("button"),
 		pre: t("section"), preusr: t("button"), presoc: t("button"), preagd: t("button"),
 		pro: t("section"), prorej: t("button"), proref: t("button"),
@@ -56,9 +54,14 @@ const template = {
 		adm: t("span"), utc: t("span"),
 		rej: t("span"), ref: t("span"),
 		rejc: t("span"), refc: t("span"), proc: t("span"),
-		sec: t("section"), uid: t("p"), res: t("p"), intro: t("p"), rec: t("p"),
+		sec: t("p"), uid: t("p"), res: t("p"), intro: t("p"), rec: t("p"),
 		put: t("section"), putpre: t("button"), putsec: t("button"), putuid: t("button"), putres: t("button"),
 		pro: t("section"), prorej: t("button"), proref: t("button"),
+	},
+
+	goal: {
+		tid: "goal" as const,
+		circle: svg("circle"), pct: svg("text"), nam: t("span"),
 	},
 
 	agd: {
@@ -71,7 +74,7 @@ const template = {
 		fund: svg("text"), fundpct: svg("text"), budget: svg("text"),
 		expense: svg("text"), expensepct: svg("text"),
 		detail: t("a"),
-		intro: t("p"), rec: t("p"),
+		goal: t("p"), intro: t("p"), rec: t("p"),
 		pro: t("section"), prorej: t("button"), proref: t("button"),
 	},
 

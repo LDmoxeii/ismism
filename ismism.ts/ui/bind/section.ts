@@ -2,7 +2,7 @@ import type { Aut, Id } from "../../src/eid/typ.ts"
 import type { Pas } from "../../src/pra/pas.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { adm } from "../../src/ont/adm.ts"
-import { pos, Template, utc_refresh } from "./template.ts"
+import { bind, pos, Template, utc_refresh } from "./template.ts"
 import { is_aut } from "../../src/pra/con.ts"
 import { Usr, Soc, Agd, hash } from "./article.ts"
 import type { DocU } from "../../src/db.ts"
@@ -132,6 +132,25 @@ export function idnam(
 	if (nam) {
 		if ("value" in t.nam) t.nam.value = nam
 		else t.nam.innerText = nam
+	}
+}
+
+export function goal(
+	t: Template["agd"],
+	a: Agd
+) {
+	for (const { nam, pct } of a.goal) {
+		const g = bind("goal")
+		g.nam.innerText = nam
+		if (pct === 0 || pct >= 100) g.pct.classList.add("gray")
+		if (pct >= 100) {
+			g.pct.textContent = "完成"
+			g.circle.remove()
+		} else {
+			g.pct.textContent = `${pct}%`
+			g.circle.style.setProperty("--pct", `${pct}`)
+		}
+		t.goal.append(g.bind)
 	}
 }
 
