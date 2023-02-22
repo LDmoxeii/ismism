@@ -13,7 +13,7 @@ export function not_id(
 
 export function is_nam(
 	nam?: null | Id["nam"]
-) {
+): nam is Id["nam"] {
 	return typeof nam === "string" && /^[\u4E00-\u9FFF]{2,16}$/.test(nam)
 }
 export function not_nam(
@@ -35,7 +35,7 @@ export function not_nbr(
 
 export function is_intro(
 	intro?: null | Id["intro"]
-) {
+): intro is Id["intro"] {
 	return typeof intro === "string" && intro.length <= 2048
 }
 export function not_intro(

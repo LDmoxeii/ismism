@@ -225,9 +225,10 @@ export async function agd(
 			if (not_aut(pas.aut, "pre_agd") || not_pro(pas)) pro(pas, t, a)
 			else pro(pas, t, a, () => agd(a._id))
 			if (is_rol(pas.rol, [a._id, "sec"])) btn(t.putgoal, t.putgoal.innerText, not_pro(pas) ? undefined : {
-				prompt: "输入目标名与进度百分比（空格间隔）\n例: 目标一  33\n只输入目标名将删除目标\n例：目标一",
-				pos: p => {
-					const [nam, pct] = p.split(/\s+/)
+				prompt1: "输入目标名，为 2-16 个中文字符",
+				prompt2: "输入进度百分比，为 0-100 间的整数。留空将删除目标",
+				pos: (nam, pct) => {
+					if (!nam) return null
 					return pos("put", { aid: a._id, goal: nam, ...pct ? { pct: parseInt(pct) } : {} })
 				},
 				alert: "无效输入\n目标名是 2-16 个中文字符\n进度百分比是 0-100 间的整数\n最多设定 9 个目标",

@@ -23,20 +23,23 @@ export function btn<
 	b: HTMLButtonElement,
 	s: string,
 	c?: {
-		prompt?: string,
+		prompt1?: string,
+		prompt2?: string,
 		confirm?: string,
-		pos: (p: string) => T,
+		pos: (p1?: string, p2?: string) => T,
 		alert?: string,
 		refresh: (r: NonNullable<Awaited<T>>) => void,
 	}
 ) {
 	b.innerText = s
 	if (c) b.addEventListener("click", async () => {
-		const p = c.prompt ? prompt(c.prompt) : ""
-		if (c.prompt && !p) return
+		const p1 = c.prompt1 ? prompt(c.prompt1) : undefined
+		if (p1 === null) return
+		const p2 = c.prompt2 ? prompt(c.prompt2) : undefined
+		if (p2 === null) return
 		if (!c.confirm || confirm(c.confirm)) {
 			b.disabled = true
-			const r = await c.pos(p ?? "")
+			const r = await c.pos(p1, p2)
 			if (c.alert) {
 				if (r === null) { alert(c.alert); b.disabled = false; return }
 			} else {
