@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-window-prefix
 import type { DocC } from "../../src/db.ts"
 import type { Id } from "../../src/eid/typ.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
@@ -9,26 +8,15 @@ import { admsel, idnam, ida, idmeta, pro, label, btn, txt, goal } from "./sectio
 import { bind, main, pas_a, pos, que } from "./template.ts"
 import { not_aut, not_pro } from "../../src/pra/con.ts"
 import { is_rol, not_actid, not_nbr } from "../../src/eid/is.ts"
+import { hashchange, pas, paschange } from "./nav.ts"
 
-export let hash = ""
-let pas: Pas | null = null
-
-function hashchange(
-	h: string
-): boolean {
-	if (hash === h || hash === "" && h === "agd") return false
-	location.href = `#${h}`
-	return true
-}
-
-function pasact(
+export function pasact(
 ) {
 	if (hashchange("pas")) return
-
-	if (pas) pos("pas", { uid: pas.id.uid })
-	pas = null
-	pas_a.innerText = "用户登录"
-	pas_a.href = "#pas"
+	if (pas) {
+		pos("pas", { uid: pas.id.uid })
+		paschange(null)
+	}
 
 	main.innerHTML = ""
 	const t = bind("pasact")
@@ -71,9 +59,7 @@ function pasact(
 			t.code.readOnly = t.issue.disabled = false
 			return alert("无效验证码")
 		}
-		pas = p
-		pas_a.innerText = p.nam
-		pas_a.href = `#${p.id.uid}`
+		paschange(p)
 		usr(p.id.uid)
 	})
 
@@ -85,7 +71,7 @@ export type Usr = Omit<NonNullable<Q.Usr>, "unam" | "snam"> & {
 	snam: Map<Id["_id"], Id["nam"]>,
 }
 
-async function usr(
+export async function usr(
 	uid: Usr["_id"],
 ) {
 	if (hashchange(`${uid}`)) return
@@ -137,7 +123,7 @@ export type Soc = Omit<NonNullable<Q.Soc>, "unam"> & {
 	unam: Map<Id["_id"], Id["nam"]>,
 }
 
-async function soc(
+export async function soc(
 	sid?: Soc["_id"]
 ) {
 	if (hashchange(`s${sid ?? "oc"}`)) return
@@ -199,7 +185,7 @@ export type Agd = Omit<NonNullable<Q.Agd>, "unam"> & {
 	unam: Map<Id["_id"], Id["nam"]>,
 }
 
-async function agd(
+export async function agd(
 	aid?: Agd["_id"]
 ) {
 	if (hashchange(`a${aid ?? "gd"}`)) return
@@ -330,7 +316,7 @@ function putusr(
 	main.append(t.bind)
 }
 
-function idnull(
+export function idnull(
 	id: string,
 	nam: string,
 ) {
@@ -341,27 +327,4 @@ function idnull(
 	t.meta.innerText = `ismist#${id} 是无效${nam}`
 
 	main.append(t.bind)
-}
-
-window.addEventListener("hashchange", () => {
-	hash = decodeURI(location.hash).substring(1)
-	if (hash === "pas") pasact()
-	else if (/^\d+$/.test(hash)) usr(parseInt(hash))
-	else if (hash === "soc") soc()
-	else if (/^s\d+$/.test(hash)) soc(parseInt(hash.substring(1)))
-	else if (hash === "" || hash === "agd") agd()
-	else if (/^a\d+$/.test(hash)) agd(parseInt(hash.substring(1)))
-	else idnull(hash, "链接")
-})
-
-export async function load(
-) {
-	console.log("ismism-20230204")
-	console.log(`\n主义主义开发小组！成员招募中！\n\n发送自我介绍至网站维护邮箱，或微信联系 728 万大可\n \n`)
-	pas = await pos<Pas>("pas", {})
-	if (pas) {
-		pas_a.innerText = pas.nam
-		pas_a.href = `#${pas.id.uid}`
-	}
-	window.dispatchEvent(new Event("hashchange"))
 }

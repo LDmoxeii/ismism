@@ -4,9 +4,10 @@ import { utc_medium } from "../../src/ont/utc.ts"
 import { adm } from "../../src/ont/adm.ts"
 import { bind, pos, Template, utc_refresh } from "./template.ts"
 import { is_aut } from "../../src/pra/con.ts"
-import { Usr, Soc, Agd, hash } from "./article.ts"
+import type { Usr, Soc, Agd } from "./article.ts"
 import type { DocU } from "../../src/db.ts"
 import { is_rol } from "../../src/eid/is.ts"
+import { hash } from "./nav.ts"
 
 export function label(
 	el: HTMLElement,

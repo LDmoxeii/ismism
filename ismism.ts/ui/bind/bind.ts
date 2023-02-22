@@ -1,3 +1,3 @@
-import { load } from "./article.ts"
+import { load } from "./nav.ts"
 
 load()
