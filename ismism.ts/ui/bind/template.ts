@@ -76,6 +76,7 @@ const template = {
 		detail: t("a"),
 		goal: t("p"), intro: t("p"), rec: t("p"),
 		pro: t("section"), prorej: t("button"), proref: t("button"),
+		put: t("section"), putgoal: t("button"),
 	},
 
 	pre: {

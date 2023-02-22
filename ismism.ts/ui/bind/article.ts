@@ -8,7 +8,7 @@ import type * as Q from "../../src/pra/que.ts"
 import { admsel, idnam, ida, idmeta, pro, label, btn, txt, goal } from "./section.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
 import { not_aut, not_pro } from "../../src/pra/con.ts"
-import { not_actid, not_nbr } from "../../src/eid/is.ts"
+import { is_rol, not_actid, not_nbr } from "../../src/eid/is.ts"
 
 export let hash = ""
 let pas: Pas | null = null
@@ -226,7 +226,6 @@ async function agd(
 		} else[t.goal, t.intro, t.rec].forEach(el => el.classList.add("pubn"))
 
 		if (a.budget > 0) {
-			console.log(a)
 			t.fund.textContent = `${a.fund}`
 			t.budget.textContent = `${a.budget}`
 			t.expense.textContent = `${a.expense}`
@@ -239,8 +238,18 @@ async function agd(
 		if (pas) {
 			if (not_aut(pas.aut, "pre_agd") || not_pro(pas)) pro(pas, t, a)
 			else pro(pas, t, a, () => agd(a._id))
+			if (is_rol(pas.rol, [a._id, "sec"])) btn(t.putgoal, t.putgoal.innerText, not_pro(pas) ? undefined : {
+				prompt: "输入目标名与进度百分比（空格间隔）\n例: 目标一  33\n只输入目标名将删除目标\n例：目标一",
+				pos: p => {
+					const [nam, pct] = p.split(/\s+/)
+					return pos("put", { aid: a._id, goal: nam, ...pct ? { pct: parseInt(pct) } : {} })
+				},
+				alert: "无效输入\n目标名是 2-16 个中文字符\n进度百分比是 0-100 间的整数\n最多设定 9 个目标",
+				refresh: () => agd(a._id)
+			}); else t.put.remove()
 		} else {
 			t.pro.remove()
+			t.put.remove()
 		}
 
 		main.append(t.bind)

@@ -72,7 +72,6 @@ export async function agd_u(
 	} catch { return null }
 }
 
-
 export async function agd_d(
 	aid: Agd["_id"]
 ): DocD {

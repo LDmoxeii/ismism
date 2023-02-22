@@ -1,4 +1,4 @@
-import type { Aut, Id } from "../../src/eid/typ.ts"
+import type { Id } from "../../src/eid/typ.ts"
 import type { Pas } from "../../src/pra/pas.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { adm } from "../../src/ont/adm.ts"
@@ -6,6 +6,7 @@ import { bind, pos, Template, utc_refresh } from "./template.ts"
 import { is_aut } from "../../src/pra/con.ts"
 import { Usr, Soc, Agd, hash } from "./article.ts"
 import type { DocU } from "../../src/db.ts"
+import { is_rol } from "../../src/eid/is.ts"
 
 export function label(
 	el: HTMLElement,
@@ -21,17 +22,20 @@ export function btn<
 	b: HTMLButtonElement,
 	s: string,
 	c?: {
+		prompt?: string,
 		confirm?: string,
-		pos: () => T,
+		pos: (p: string) => T,
 		alert?: string,
 		refresh: (r: NonNullable<Awaited<T>>) => void,
 	}
 ) {
 	b.innerText = s
 	if (c) b.addEventListener("click", async () => {
+		const p = c.prompt ? prompt(c.prompt) : ""
+		if (c.prompt && !p) return
 		if (!c.confirm || confirm(c.confirm)) {
 			b.disabled = true
-			const r = await c.pos()
+			const r = await c.pos(p ?? "")
 			if (c.alert) {
 				if (r === null) { alert(c.alert); b.disabled = false; return }
 			} else {
@@ -102,11 +106,12 @@ export function idmeta(
 ): boolean {
 	const [rej, ref] = [id.rej.length >= 2, id.ref.length < 2]
 	const re: "rej" | "ref" | null = rej ? "rej" : ref ? "ref" : null
-	const { aut }: { aut?: Aut["aut"][0] } = {
-		...t.tid === "usr" ? { aut: "pre_usr" } : {},
-		...t.tid === "soc" ? { aut: "pre_soc" } : {},
+	const { p }: { p?: boolean } = pas === null ? {} : {
+		...t.tid === "usr" ? { p: is_aut(pas.aut, "pre_usr") || id._id === pas.id.uid } : {},
+		...t.tid === "soc" ? { p: is_aut(pas.aut, "pre_soc") || (id as Soc).sec.includes(pas.id.uid) } : {},
+		...t.tid === "agd" ? { p: is_aut(pas.aut, "pre_agd") || is_rol(pas.rol, [id._id, "sec"]) } : {},
 	}
-	const pub: boolean = re === null || (pas !== null && aut !== undefined && is_aut(pas.aut, aut))
+	const pub: boolean = re === null || p === true
 
 	t.adm.innerText = `${id.adm1} ${id.adm2}`
 	t.utc.innerText = `${utc_medium(id.utc)}`

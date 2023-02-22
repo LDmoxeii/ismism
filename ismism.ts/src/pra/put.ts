@@ -1,8 +1,10 @@
 import { DocU } from "../db.ts"
+import { agd_r, agd_u } from "../eid/agd.ts"
+import { not_rol } from "../eid/is.ts"
 import { soc_r, soc_u } from "../eid/soc.ts"
-import { Soc, Usr } from "../eid/typ.ts"
+import { Agd, Soc, Usr } from "../eid/typ.ts"
 import { usr_r, usr_u } from "../eid/usr.ts"
-import { not_aut, not_pro } from "./con.ts"
+import { goal_max, not_aut, not_pro } from "./con.ts"
 import { Pas } from "./pas.ts"
 
 export async function put_usr(
@@ -61,4 +63,23 @@ export async function put_soc_uid(
 		|| s.res.includes(uid) && s.sec.includes(pas.id.uid)
 	)) return await soc_u(sid, { $pull: { uid, res: uid } })
 	return null
+}
+
+export async function put_agd_goal(
+	pas: Pas,
+	aid: Agd["_id"],
+	goal: Agd["goal"][0]["nam"],
+	pct?: Agd["goal"][0]["pct"],
+): DocU {
+	if (not_rol(pas.rol, [aid, "sec"]) || not_pro(pas)) return null
+	const a = await agd_r(aid, { goal: 1 })
+	if (!a) return null
+	if (pct === undefined) a.goal = a.goal.filter(g => g.nam !== goal).slice(0, goal_max)
+	else {
+		const n = a.goal.findIndex(g => g.nam === goal)
+		if (n >= 0) a.goal[n].pct = pct
+		else if (a.goal.length >= goal_max) return null
+		else a.goal.push({ nam: goal, pct })
+	}
+	return await agd_u(aid, { $set: { goal: a.goal.sort((a, b) => a.pct - b.pct) } })
 }

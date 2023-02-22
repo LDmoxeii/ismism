@@ -29,3 +29,5 @@ export function not_aut(
 ) {
 	return !is_aut(aut, p)
 }
+
+export const goal_max = 9

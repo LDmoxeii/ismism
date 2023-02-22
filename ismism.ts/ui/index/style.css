@@ -379,10 +379,6 @@ section.cover>img {
 	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
 }
 
-section.acct>div>:first-child {
-	float: left;
-}
-
 section.acct>div>:last-child {
 	float: right;
 }

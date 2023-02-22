@@ -3,7 +3,7 @@ import { is_re } from "./con.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre_agd, pre_soc, pre_usr, pre_usract } from "./pre.ts"
 import { pro_agd, pro_rec, pro_soc, pro_usr } from "./pro.ts"
-import { put_soc, put_soc_res, put_soc_uid, put_usr } from "./put.ts"
+import { put_agd_goal, put_soc, put_soc_res, put_soc_uid, put_usr } from "./put.ts"
 
 // deno-lint-ignore no-explicit-any
 type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
@@ -76,7 +76,7 @@ export async function pos(
 
 		case "put": {
 			p.etag = utc_etag()
-			const { uid, sid, nam, adm1, adm2, intro, sec, uid_max, res, pro } = json
+			const { uid, sid, aid, nam, adm1, adm2, intro, sec, uid_max, res, goal, pct, pro } = json
 			if (p.pas && typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string" && typeof intro === "string") {
 				if (typeof uid === "number") return put_usr(p.pas, uid, { nam, adm1, adm2, intro })
 				else if (typeof sid === "number" && typeof sec === "object" && typeof uid_max === "number")
@@ -84,6 +84,8 @@ export async function pos(
 			} else if (p.pas && typeof sid === "number" && (typeof res === "boolean" || typeof pro === "boolean")) {
 				if (typeof res === "boolean") return put_soc_res(p.pas, sid, res)
 				else if (typeof pro === "boolean" && typeof uid === "number") return put_soc_uid(p.pas, sid, uid, pro)
+			} else if (p.pas && typeof aid === "number" && typeof goal === "string" && (pct === undefined || typeof pct === "number")) {
+				return put_agd_goal(p.pas, aid, goal, pct)
 			}
 			break
 		}
