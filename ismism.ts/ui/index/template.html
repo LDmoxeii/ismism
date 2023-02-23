@@ -251,24 +251,33 @@
 	</article>
 </template>
 
-<template id="putusr">
+<template id="put">
 	<article>
 		<section>
-			<a class="idnam"><code class="id active"></code> <span>编辑用户信息</span></a>
+			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
 		</section>
 		<hr>
 		<section class="flex">
-			<label>用户名：（2-16个中文字符）</label>
-			<input class="nam" type="text" maxlength="16" required />
+			<label>名称：（2-16个中文字符）</label>
+			<input class="pnam" type="text" maxlength="16" required />
 		</section>
 		<section class="flex adm">
-			<label>居住地区：</label>
+			<label>地区：</label>
 			<select class="adm1"></select>
 			<select class="adm2"></select>
 		</section>
 		<section>
 			<label>简介：（0 / 2048 个字符）</label>
 			<textarea class="intro" maxlength="2048"></textarea>
+		</section>
+		<section class="flex">
+			<label>申请人数上限：</label>
+			<input class="resmax" type="text" inputmode="numeric" pattern="\d{1,2}" placeholder="0-99 的整数" minlength="1"
+				maxlength="2" required />
+		</section>
+		<section class="flex">
+			<label>历史明细链接：</label>
+			<input class="detail" type="text" required />
 		</section>
 		<hr>
 		<section class="flex">

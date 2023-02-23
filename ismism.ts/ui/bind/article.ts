@@ -5,7 +5,7 @@ import type { Pas } from "../../src/pra/pas.ts"
 import type { PasCode, UsrAct } from "../../src/pra/pos.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { admsel, idnam, ida, idmeta, pro, label, btn, txt, goal } from "./section.ts"
-import { bind, main, pas_a, pos, que } from "./template.ts"
+import { bind, main, pos, que } from "./template.ts"
 import { not_aut, not_pro } from "../../src/pra/con.ts"
 import { is_rol, not_actid, not_nbr } from "../../src/eid/is.ts"
 import { hashchange, pas, paschange } from "./nav.ts"
@@ -94,7 +94,7 @@ export async function usr(
 
 	if (pas) {
 		if (pas.id.uid === uid) {
-			t.put.addEventListener("click", () => putusr(u))
+			t.put.addEventListener("click", () => put("用户", u))
 			t.pas.addEventListener("click", () => pasact())
 			if (not_aut(pas.aut, "pre_usr")) t.preusr.remove()
 			else t.preusr.addEventListener("click", () => pre("创建用户"))
@@ -292,27 +292,57 @@ function pre(
 	main.append(t.bind)
 }
 
-function putusr(
-	u: Usr
+function put(
+	typ: "用户" | "社团" | "活动",
+	id: Usr | Soc | Agd,
 ) {
 	main.innerHTML = ""
-	const t = bind("putusr")
+	const t = bind("put")
 
-	idnam(t, `${u._id}`, u.nam)
-	admsel(t, u.adm1, u.adm2)
-	txt(t.intro, "简介", u.intro)
-	btn(t.put, t.put.innerText, {
-		pos: () => pos("put", {
-			uid: u._id,
-			nam: t.nam.value,
-			adm1: t.adm1.value,
-			adm2: t.adm2.value,
+	idnam(t, `${id._id}`, `编辑${typ}信息`)
+	t.pnam.value = id.nam
+	admsel(t, id.adm1, id.adm2)
+	txt(t.intro, "简介", id.intro)
+
+	let p
+	let r
+	if (typ === "用户") {
+		t.resmax.parentElement?.remove()
+		t.detail.parentElement?.remove()
+		p = () => pos("put", {
+			uid: id._id, nam: t.pnam.value,
+			adm1: t.adm1.value, adm2: t.adm2.value,
 			intro: t.intro.value.trim(),
-		}),
+		})
+		r = () => usr(id._id)
+	} else if (typ === "社团") {
+		t.resmax.value = `${(id as Soc).res_max}`
+		t.detail.parentElement?.remove()
+		p = () => pos("put", {
+			sid: id._id, nam: t.pnam.value,
+			adm1: t.adm1.value, adm2: t.adm2.value,
+			intro: t.intro.value.trim(),
+			res_max: parseInt(t.resmax.value),
+		})
+		r = () => soc(id._id)
+	} else if (typ === "活动") {
+		t.resmax.value = `${(id as Agd).res_max}`
+		t.detail.value = (id as Agd).detail
+		p = () => pos("put", {
+			sid: id._id, nam: t.pnam.value,
+			adm1: t.adm1.value, adm2: t.adm2.value,
+			intro: t.intro.value.trim(),
+			res_max: parseInt(t.resmax.value),
+			detail: t.detail.value,
+		})
+		r = () => agd(id._id)
+	} else return
+	btn(t.put, t.put.innerText, {
+		pos: p,
 		alert: "无效输入\n或名称已被占用",
-		refresh: () => { pas_a.innerText = t.nam.value; usr(u._id) },
+		refresh: r,
 	})
-	t.cancel.addEventListener("click", () => usr(u._id))
+	t.cancel.addEventListener("click", r)
 
 	main.append(t.bind)
 }

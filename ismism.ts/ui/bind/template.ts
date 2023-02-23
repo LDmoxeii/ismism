@@ -88,12 +88,11 @@ const template = {
 		pre: t("button"), cancel: t("button"),
 	},
 
-	putusr: {
-		tid: "putusr" as const,
-		idnam: t("a"), id: t("code"),
-		nam: t("input"),
-		adm1: t("select"), adm2: t("select"),
-		intro: t("textarea"),
+	put: {
+		tid: "put" as const,
+		idnam: t("a"), id: t("code"), nam: t("span"),
+		pnam: t("input"), adm1: t("select"), adm2: t("select"), intro: t("textarea"),
+		resmax: t("input"), detail: t("input"),
 		put: t("button"), cancel: t("button"),
 	},
 

@@ -77,7 +77,7 @@ export function txt(
 }
 
 export function admsel(
-	t: Template["pasact" | "pre" | "putusr"],
+	t: Template["pasact" | "pre" | "put"],
 	adm1 = "江苏",
 	adm2 = "苏州"
 ) {
@@ -131,17 +131,14 @@ export function idmeta(
 }
 
 export function idnam(
-	t: Template["usr" | "soc" | "agd" | "pre" | "putusr"],
+	t: Template["usr" | "soc" | "agd" | "pre" | "put"],
 	id: string,
 	nam?: string,
 ) {
 	t.idnam.href = `#${id}`
 	t.id.innerText = id
 	if (hash === id) t.id.classList.add("active")
-	if (nam) {
-		if ("value" in t.nam) t.nam.value = nam
-		else t.nam.innerText = nam
-	}
+	if (nam) t.nam.innerText = nam
 }
 
 export function goal(
