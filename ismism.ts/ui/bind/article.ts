@@ -7,7 +7,7 @@ import type * as Q from "../../src/pra/que.ts"
 import { admsel, idnam, ida, idmeta, pro, label, btn, txt, goal } from "./section.ts"
 import { bind, main, pos, que } from "./template.ts"
 import { not_aut, not_pro } from "../../src/pra/con.ts"
-import { is_rol, not_actid, not_nbr } from "../../src/eid/is.ts"
+import { not_actid, not_nbr } from "../../src/eid/is.ts"
 import { hashchange, pas, paschange } from "./nav.ts"
 
 export function pasact(
@@ -146,7 +146,7 @@ export async function soc(
 		if (pub) {
 			ida(t.sec, "", s.unam, s.sec)
 			ida(t.uid, "", s.unam, s.uid)
-			label(t.res, `申请加入（${s.res.length}/${s.res_max}）：`)
+			label(t.res, `申请加入（${s.res.length}/${s.reslim}）：`)
 			ida(t.res, "", s.unam, s.res)
 			t.intro.innerText = s.intro
 			t.rec.innerText = JSON.stringify(s.nrec)
@@ -169,7 +169,7 @@ export async function soc(
 			if (!nu) t.putres.remove()
 			else {
 				const res = !s.res.includes(pas.id.uid)
-				btn(t.putres, res ? "申请加入" : "取消申请", !res || pub && s.res.length < s.res_max ? {
+				btn(t.putres, res ? "申请加入" : "取消申请", !res || pub && s.res.length < s.reslim ? {
 					pos: () => pos("put", { sid: s._id, res }), refresh: () => soc(s._id)
 				} : undefined)
 			}
@@ -231,7 +231,7 @@ export async function agd(
 		if (pas) {
 			if (not_aut(pas.aut, "pre_agd") || not_pro(pas)) pro(pas, t, a)
 			else pro(pas, t, a, () => agd(a._id))
-			if (is_rol(pas.rol, [a._id, "sec"])) btn(t.putgoal, t.putgoal.innerText, not_pro(pas) ? undefined : {
+			if (pas.aid.sec.includes(a._id)) btn(t.putgoal, t.putgoal.innerText, not_pro(pas) ? undefined : {
 				prompt1: "输入目标名，为 2-16 个中文字符",
 				prompt2: "输入进度百分比，为 0-100 间的整数。留空将删除目标",
 				pos: (nam, pct) => {
@@ -324,7 +324,7 @@ function put(
 		})
 		r = () => usr(id._id)
 	} else if (typ === "社团") {
-		t.resmax.value = `${(id as Soc).res_max}`
+		t.resmax.value = `${(id as Soc).reslim}`
 		t.detail.parentElement?.remove()
 		if (not_aut(pas.aut, "pre_soc")) t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = true
 		p = () => pos("put", {
@@ -335,7 +335,7 @@ function put(
 		})
 		r = () => soc(id._id)
 	} else if (typ === "活动") {
-		t.resmax.value = `${(id as Agd).res_max}`
+		t.resmax.value = `${(id as Agd).reslim}`
 		t.detail.value = (id as Agd).detail
 		if (not_aut(pas.aut, "pre_agd")) t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = true
 		p = () => pos("put", {

@@ -1,12 +1,11 @@
-import { Aut, Usr } from "../eid/typ.ts"
-import { DocR, DocU } from "../db.ts"
+import { Agd, Aut, Soc, Usr } from "../eid/typ.ts"
+import { coll, DocR, DocU } from "../db.ts"
 import { jwt_sign, jwt_verify } from "../ont/jwt.ts"
 import { usr_r, usr_u } from "../eid/usr.ts"
 import { aut_r } from "../eid/aut.ts"
 import { utc_h } from "../ont/utc.ts"
 import { smssend } from "../ont/sms.ts"
-import { rol } from "../eid/rec.ts"
-import { Rol } from "../eid/is.ts"
+import { id_of_uid } from "../eid/id.ts"
 
 export type Pas = {
 	id: { uid: Usr["_id"], utc: number },
@@ -14,7 +13,8 @@ export type Pas = {
 	ref: Usr["ref"],
 	nam: Usr["nam"],
 	aut: Aut["aut"],
-	rol: Rol[0][1],
+	sid: { sec: Soc["_id"][], res: Soc["_id"][], uid: Soc["_id"][] }
+	aid: { sec: Agd["_id"][], res: Agd["_id"][], uid: Agd["_id"][] }
 }
 
 const utc_pas_valid = new Date("2023-01-29").getTime()
@@ -26,10 +26,9 @@ export async function pas(
 ): DocR<Pas> {
 	const id = await jwt_verify<Pas["id"]>(jwt)
 	if (!id) return null
-	const [u, aut, [r]] = await Promise.all([
+	const [u, aut, sid, aid] = await Promise.all([
 		usr_r({ _id: id.uid }, { rej: 1, ref: 1, nam: 1, pcode: 1, ptoken: 1 }),
-		aut_r(id.uid),
-		rol([id.uid]),
+		aut_r(id.uid), id_of_uid(coll.soc, id.uid), id_of_uid(coll.agd, id.uid),
 	])
 	if (u && u.pcode && u.pcode.utc > utc_pas_valid && u.ptoken && u.ptoken === jwt)
 		return {
@@ -38,7 +37,7 @@ export async function pas(
 			ref: u.ref,
 			nam: u.nam,
 			aut: aut ? aut.aut : [],
-			rol: r && r[0] === id.uid ? r[1] : []
+			sid, aid,
 		}
 	return null
 }
@@ -50,16 +49,15 @@ export async function pas_issue(
 	const u = await usr_r({ nbr }, { rej: 1, ref: 1, nam: 1, pcode: 1, ptoken: 1 })
 	const utc = Date.now()
 	if (u && u.pcode && u.pcode.code === code && utc - u.pcode.utc < utc_h * h_pcode_valid) {
-		const [aut, [r]] = await Promise.all([
-			aut_r(u._id),
-			rol([u._id]),
+		const [aut, sid, aid] = await Promise.all([
+			aut_r(u._id), id_of_uid(coll.soc, u._id), id_of_uid(coll.agd, u._id),
 		])
 		const pas: Pas = {
 			id: { uid: u._id, utc },
 			rej: u.rej, ref: u.ref,
 			nam: u.nam,
 			aut: aut ? aut.aut : [],
-			rol: r && r[0] === u._id ? r[1] : []
+			sid, aid,
 		}
 		if (u.ptoken) return { pas, jwt: u.ptoken }
 		const jwt = await jwt_sign(pas.id)

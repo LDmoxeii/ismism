@@ -2,7 +2,7 @@ import { DocU } from "../db.ts"
 import { agd_u } from "../eid/agd.ts"
 import { Agd, Rec, Soc, Usr } from "../eid/typ.ts"
 import { collrec, rec_u } from "../eid/rec.ts"
-import { not_recid, not_rol } from "../eid/is.ts"
+import { not_recid } from "../eid/is.ts"
 import { soc_u } from "../eid/soc.ts"
 import { usr_u } from "../eid/usr.ts"
 import { Pas } from "./pas.ts"
@@ -42,15 +42,15 @@ export async function pro_agd(
 export async function pro_rec(
 	pas: Pas,
 	re: "rej" | "ref",
-	rec: "worker" | "work" | "fund" | string,
+	rec: "work" | "fund" | string,
 	recid: Rec["_id"],
 	pro: boolean,
 ): DocU {
 	if (not_recid(recid) || not_pro(pas)) return null
 	const c = collrec(rec)
-	const not_sec = not_rol(pas.rol, [recid.aid, "sec"])
-	const not_worker = not_rol(pas.rol, [recid.aid, "worker"])
-	if (!c || not_sec && re === "ref" || not_sec && not_worker) return null
+	const not_sec = !pas.aid.sec.includes(recid.aid)
+	const not_uid = !pas.aid.uid.includes(recid.aid)
+	if (!c || not_sec && re === "ref" || not_sec && not_uid) return null
 	const u = { [re]: pas.id.uid }
 	return await rec_u(c, recid, pro ? { $addToSet: u } : { $pull: u })
 }

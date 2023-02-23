@@ -1,4 +1,4 @@
-import { Act, Agd, Aut, Fund, Soc, Usr, Work, Worker } from "./eid/typ.ts"
+import { Act, Agd, Aut, Fund, Soc, Usr, Work } from "./eid/typ.ts"
 import { MongoClient, UpdateFilter } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
 
 const conn = new MongoClient()
@@ -15,7 +15,6 @@ export async function db(
 		soc: db.collection<Soc>("soc"),
 		agd: db.collection<Agd>("agd"),
 
-		worker: db.collection<Worker>("worker"),
 		work: db.collection<Work>("work"),
 		fund: db.collection<Fund>("fund"),
 
@@ -33,9 +32,13 @@ export async function db(
 				partialFilterExpression: { nbr: { $exists: true } },
 			}]
 		})
-		await c.soc.createIndexes({
+		await Promise.all([c.soc, c.agd].map(cl => cl.createIndexes({
 			indexes: [{
 				key: { nam: 1 }, name: "nam", unique: true,
+			}, {
+				key: { sec: 1 }, name: "sec",
+			}, {
+				key: { res: 1 }, name: "res",
 			}, {
 				key: { uid: 1 }, name: "uid",
 			}, {
@@ -43,42 +46,8 @@ export async function db(
 			}, {
 				key: { adm2: 1 }, name: "adm2",
 			}]
-		})
-		await c.agd.createIndexes({
-			indexes: [{
-				key: { nam: 1 }, name: "nam", unique: true,
-			}, {
-				key: { adm1: 1 }, name: "adm1",
-			}, {
-				key: { adm2: 1 }, name: "adm2",
-			}]
-		})
-
-		await c.worker.createIndexes({
-			indexes: [{
-				key: { "_id.utc": -1 }, name: "utc"
-			}, {
-				key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
-			}, {
-				key: { "_id.aid": 1, rol: 1, "_id.utc": -1 }, name: "aid-rol-utc"
-			}, {
-				key: { "_id.uid": 1, "_id.utc": -1 }, name: "uid-utc"
-			}, {
-				key: { "_id.uid": 1, "exp": 1 }, name: "uid-exp"
-			}]
-		})
-		await c.work.createIndexes({
-			indexes: [{
-				key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
-			}, {
-				key: { "_id.aid": 1, work: 1, "_id.utc": -1 }, name: "aid-work-utc"
-			}, {
-				key: { "_id.uid": 1, "_id.utc": -1 }, name: "uid-utc"
-			}, {
-				key: { "_id.utc": -1 }, name: "utc"
-			}]
-		})
-		await c.fund.createIndexes({
+		})))
+		await Promise.all([c.work, c.fund].map(cl => cl.createIndexes({
 			indexes: [{
 				key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
 			}, {
@@ -86,7 +55,7 @@ export async function db(
 			}, {
 				key: { "_id.utc": -1 }, name: "utc"
 			}]
-		})
+		})))
 	}
 
 	if (nam === "tst") coll = c

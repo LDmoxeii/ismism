@@ -1,6 +1,6 @@
 import { DocU } from "../db.ts"
 import { agd_r, agd_u } from "../eid/agd.ts"
-import { not_id, not_rol } from "../eid/is.ts"
+import { not_id } from "../eid/is.ts"
 import { soc_r, soc_u } from "../eid/soc.ts"
 import { Agd, Soc, Usr } from "../eid/typ.ts"
 import { usr_r, usr_u } from "../eid/usr.ts"
@@ -19,23 +19,23 @@ export async function put_usr(
 export async function put_soc(
 	pas: Pas,
 	sid: Soc["_id"],
-	s: Pick<Soc, "nam" | "adm1" | "adm2" | "intro" | "res_max">,
+	s: Pick<Soc, "nam" | "adm1" | "adm2" | "intro" | "reslim">,
 ): DocU {
 	if (not_pro(pas)) return null
 	const na = not_aut(pas.aut, "pre_soc")
 	const sec = await soc_r(sid, { sec: 1 })
 	if (!sec || na && !sec.sec.includes(pas.id.uid)) return null
-	return await soc_u(sid, { $set: na ? { intro: s.intro, res_max: s.res_max, } : s })
+	return await soc_u(sid, { $set: na ? { intro: s.intro, reslim: s.reslim, } : s })
 }
 
 export async function put_agd(
 	pas: Pas,
 	aid: Agd["_id"],
-	a: Pick<Agd, "nam" | "adm1" | "adm2" | "intro" | "res_max" | "detail">,
+	a: Pick<Agd, "nam" | "adm1" | "adm2" | "intro" | "reslim" | "detail">,
 ): DocU {
 	const na = not_aut(pas.aut, "pre_agd")
-	if (na && not_rol(pas.rol, [aid, "sec"]) || not_pro(pas)) return null
-	return await agd_u(aid, { $set: na ? { intro: a.intro, res_max: a.res_max, detail: a.detail } : a })
+	if (na && !pas.aid.sec.includes(aid) || not_pro(pas)) return null
+	return await agd_u(aid, { $set: na ? { intro: a.intro, reslim: a.reslim, detail: a.detail } : a })
 }
 
 export async function put_soc_sec(
@@ -88,7 +88,7 @@ export async function put_agd_goal(
 	goal: Agd["goal"][0]["nam"],
 	pct?: Agd["goal"][0]["pct"],
 ): DocU {
-	if (not_rol(pas.rol, [aid, "sec"]) || not_pro(pas)) return null
+	if (!pas.aid.sec.includes(aid) || not_pro(pas)) return null
 	const a = await agd_r(aid, { goal: 1 })
 	if (!a) return null
 	if (pct === undefined) a.goal = a.goal.filter(g => g.nam !== goal).slice(0, goal_max)

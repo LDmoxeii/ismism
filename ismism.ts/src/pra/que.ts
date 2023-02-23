@@ -1,5 +1,5 @@
 import { Coll, coll } from "../db.ts"
-import { id } from "../eid/id.ts"
+import { id_of_adm } from "../eid/id.ts"
 import { agd, soc, usr } from "./doc.ts"
 
 // deno-lint-ignore no-explicit-any
@@ -9,12 +9,12 @@ export type Usr = Ret<typeof usr>
 export type Soc = Ret<typeof soc>
 export type Agd = Ret<typeof agd>
 
-function id_of_adm(
+function id(
 	c: Coll["soc" | "agd"],
 	p: URLSearchParams,
 ) {
 	const [adm1, adm2] = [p.get("adm1"), p.get("adm2")]
-	return adm2 ? id(c, { adm2 }) : adm1 ? id(c, { adm1 }) : id(c)
+	return id_of_adm(c, adm2 ? { adm2 } : adm1 ? { adm1 } : undefined)
 }
 
 export async function que(
@@ -30,14 +30,14 @@ export async function que(
 				const sid = parseInt(p.get("sid") ?? "")
 				return await soc(sid)
 			}
-			const sid = await id_of_adm(coll.soc, p)
+			const sid = await id(coll.soc, p)
 			return await Promise.all(sid.map(soc))
 		} case "agd": {
 			if (p.has("aid")) {
 				const aid = parseInt(p.get("aid") ?? "")
 				return await agd(aid)
 			}
-			const aid = await id_of_adm(coll.agd, p)
+			const aid = await id(coll.agd, p)
 			return await Promise.all(aid.map(agd))
 		} case "rec": {
 			break

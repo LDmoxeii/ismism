@@ -6,7 +6,6 @@ import { bind, pos, Template, utc_refresh } from "./template.ts"
 import { is_aut } from "../../src/pra/con.ts"
 import type { Usr, Soc, Agd } from "./article.ts"
 import type { DocU } from "../../src/db.ts"
-import { is_rol } from "../../src/eid/is.ts"
 import { hash } from "./nav.ts"
 
 export function label(
@@ -112,8 +111,8 @@ export function idmeta(
 	const re: "rej" | "ref" | null = rej ? "rej" : ref ? "ref" : null
 	const { p }: { p?: boolean } = pas === null ? {} : {
 		...t.tid === "usr" ? { p: is_aut(pas.aut, "pre_usr") || id._id === pas.id.uid } : {},
-		...t.tid === "soc" ? { p: is_aut(pas.aut, "pre_soc") || (id as Soc).sec.includes(pas.id.uid) } : {},
-		...t.tid === "agd" ? { p: is_aut(pas.aut, "pre_agd") || is_rol(pas.rol, [id._id, "sec"]) } : {},
+		...t.tid === "soc" ? { p: is_aut(pas.aut, "pre_soc") || pas.sid.sec.includes(id._id) } : {},
+		...t.tid === "agd" ? { p: is_aut(pas.aut, "pre_agd") || pas.aid.sec.includes(id._id) } : {},
 	}
 	const pub: boolean = re === null || p === true
 

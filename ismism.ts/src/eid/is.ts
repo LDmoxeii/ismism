@@ -1,4 +1,25 @@
-import type { Act, Agd, Id, Rec, Usr, Worker } from "./typ.ts"
+import type { Act, Agd, Id, Rec } from "./typ.ts"
+
+export const lim_intro = 2048
+export const lim_re = 16
+export const lim_sec = 16
+export const lim_res_def = 0
+export const lim_res_max = 16
+export const lim_uid_def = 64
+export const lim_uid_max = 256
+
+export function is_lim(
+	n: number,
+	lim: number,
+) {
+	return 0 <= n && n <= lim
+}
+export function not_lim(
+	n: number,
+	lim: number,
+) {
+	return !is_lim(n, lim)
+}
 
 export function is_id(
 	id?: null | Id["_id"]
@@ -9,6 +30,19 @@ export function not_id(
 	id?: null | Id["_id"]
 ) {
 	return !is_id(id)
+}
+
+export function is_idl(
+	id: Id["_id"][],
+	lim: number,
+) {
+	return id.length <= lim && id.every(is_id)
+}
+export function not_idl(
+	id: Id["_id"][],
+	lim: number,
+) {
+	return !is_idl(id, lim)
 }
 
 export function is_nam(
@@ -36,12 +70,23 @@ export function not_nbr(
 export function is_intro(
 	intro?: null | Id["intro"]
 ): intro is Id["intro"] {
-	return typeof intro === "string" && intro.length <= 2048
+	return typeof intro === "string" && intro.length <= lim_intro
 }
 export function not_intro(
 	intro?: null | Id["intro"]
 ) {
 	return !is_intro(intro)
+}
+
+export function not_goal(
+	g: Agd["goal"][0]
+) {
+	return not_nam(g.nam) || typeof g.pct !== "number" || not_lim(g.pct, 100)
+}
+export function not_img(
+	i: Agd["img"][0]
+) {
+	return typeof i.nam !== "string" || typeof i.src !== "string"
 }
 
 export function is_recid(
@@ -64,21 +109,6 @@ export function not_rec(
 	r: Rec
 ) {
 	return !is_rec(r)
-}
-
-export type Rol = [Usr["_id"], [Agd["_id"], Worker["rol"]][]][]
-
-export function is_rol(
-	rs: Rol[0][1],
-	[aid, rol]: Rol[0][1][0],
-) {
-	return rs.some(([a, r]) => a === aid && r === rol)
-}
-export function not_rol(
-	rs: Rol[0][1],
-	aidrol: Rol[0][1][0],
-) {
-	return !is_rol(rs, aidrol)
 }
 
 export function is_actid(

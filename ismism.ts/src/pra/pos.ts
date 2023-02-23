@@ -51,14 +51,14 @@ export async function pos(
 
 		case "pre": {
 			p.etag = utc_etag()
-			const { actid, nbr, snam, anam, adm1, adm2, intro } = json
+			const { actid, nbr, snam, anam, adm1, adm2 } = json
 			if (typeof adm1 === "string" && typeof adm2 === "string")
 				if (typeof nbr === "string") {
 					if (typeof actid === "string") return pre_usract(actid, nbr, adm1, adm2)
 					else if (p.pas) return pre_usr(p.pas, nbr, adm1, adm2)
-				} else if (p.pas && typeof intro == "string") {
-					if (typeof snam === "string") return pre_soc(p.pas, snam, adm1, adm2, intro)
-					else if (typeof anam === "string") return pre_agd(p.pas, anam, adm1, adm2, intro)
+				} else if (p.pas) {
+					if (typeof snam === "string") return pre_soc(p.pas, snam, adm1, adm2)
+					else if (typeof anam === "string") return pre_agd(p.pas, anam, adm1, adm2)
 				}
 			break
 		}
@@ -76,13 +76,13 @@ export async function pos(
 
 		case "put": {
 			p.etag = utc_etag()
-			const { uid, sid, aid, nam, adm1, adm2, intro, res_max, detail, sec, res, goal, pct, pro } = json
+			const { uid, sid, aid, nam, adm1, adm2, intro, reslim, detail, sec, res, goal, pct, pro } = json
 			if (p.pas && typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string" && typeof intro === "string") {
 				if (typeof uid === "number") return put_usr(p.pas, uid, { nam, adm1, adm2, intro })
-				else if (typeof sid === "number" && typeof res_max === "number")
-					return put_soc(p.pas, sid, { nam, adm1, adm2, intro, res_max })
-				else if (typeof aid === "number" && typeof res_max === "number" && typeof detail === "string")
-					return put_agd(p.pas, aid, { nam, adm1, adm2, intro, res_max, detail })
+				else if (typeof sid === "number" && typeof reslim === "number")
+					return put_soc(p.pas, sid, { nam, adm1, adm2, intro, reslim })
+				else if (typeof aid === "number" && typeof reslim === "number" && typeof detail === "string")
+					return put_agd(p.pas, aid, { nam, adm1, adm2, intro, reslim, detail })
 			} else if (p.pas && typeof sid === "number") {
 				if (typeof sec === "boolean" && typeof uid === "number") return put_soc_sec(p.pas, sid, uid, sec)
 				else if (typeof res === "boolean") return put_soc_res(p.pas, sid, res)
