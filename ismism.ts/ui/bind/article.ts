@@ -153,25 +153,32 @@ export async function soc(
 		} else[t.sec, t.uid, t.res, t.intro, t.rec].forEach(el => el.classList.add("pubn"))
 
 		if (pas) {
-			if (not_aut(pas.aut, "pre_soc")) t.putpre.remove()
-			else t.putpre.disabled = true
-			if (!s.sec.includes(pas.id.uid)) t.putsec.remove()
-			else t.putsec.disabled = true
-			if (!s.uid.includes(pas.id.uid)) t.putuid.remove()
-			else btn(t.putuid, t.putuid.innerText, {
-				confirm: "退出社团？",
-				pos: () => pos("put", { sid: s._id, uid: pas!.id.uid, pro: false }),
-				refresh: () => soc(s._id),
-			})
-			if (s.uid.includes(pas.id.uid)) t.putres.remove()
+			const [np, na, ns, nr, nu] = [
+				not_pro(pas), not_aut(pas.aut, "pre_soc"),
+				!s.sec.includes(pas.id.uid),
+				!s.res.includes(pas.id.uid),
+				!s.uid.includes(pas.id.uid)
+			]
+			if (na || np) pro(pas, t, s)
+			else pro(pas, t, s, () => soc(s._id))
+			if (na && ns) t.putsoc.remove()
+			else if (np) t.putsoc.disabled = true
+			else t.putsoc.addEventListener("click", () => put("社团", s))
+			if (na) t.putsec.remove()
+			else if (np) t.putsec.disabled = true
+			if (!nu) t.putres.remove()
 			else {
 				const res = !s.res.includes(pas.id.uid)
 				btn(t.putres, res ? "申请加入" : "取消申请", !res || pub && s.res.length < s.res_max ? {
 					pos: () => pos("put", { sid: s._id, res }), refresh: () => soc(s._id)
 				} : undefined)
 			}
-			if (not_aut(pas.aut, "pre_soc") || not_pro(pas)) pro(pas, t, s)
-			else pro(pas, t, s, () => soc(s._id))
+			if (nu) t.putuid.remove()
+			else btn(t.putuid, t.putuid.innerText, {
+				confirm: "退出社团？",
+				pos: () => pos("put", { sid: s._id, uid: pas!.id.uid, pro: false }),
+				refresh: () => soc(s._id),
+			})
 		} else {
 			t.put.remove()
 			t.pro.remove()
@@ -296,6 +303,7 @@ function put(
 	typ: "用户" | "社团" | "活动",
 	id: Usr | Soc | Agd,
 ) {
+	if (!pas) return
 	main.innerHTML = ""
 	const t = bind("put")
 
@@ -318,6 +326,7 @@ function put(
 	} else if (typ === "社团") {
 		t.resmax.value = `${(id as Soc).res_max}`
 		t.detail.parentElement?.remove()
+		if (not_aut(pas.aut, "pre_soc")) t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = true
 		p = () => pos("put", {
 			sid: id._id, nam: t.pnam.value,
 			adm1: t.adm1.value, adm2: t.adm2.value,
@@ -328,6 +337,7 @@ function put(
 	} else if (typ === "活动") {
 		t.resmax.value = `${(id as Agd).res_max}`
 		t.detail.value = (id as Agd).detail
+		if (not_aut(pas.aut, "pre_agd")) t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = true
 		p = () => pos("put", {
 			sid: id._id, nam: t.pnam.value,
 			adm1: t.adm1.value, adm2: t.adm2.value,

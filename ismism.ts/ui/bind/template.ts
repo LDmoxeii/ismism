@@ -55,7 +55,7 @@ const template = {
 		rej: t("span"), ref: t("span"),
 		rejc: t("span"), refc: t("span"), proc: t("span"),
 		sec: t("p"), uid: t("p"), res: t("p"), intro: t("p"), rec: t("p"),
-		put: t("section"), putpre: t("button"), putsec: t("button"), putuid: t("button"), putres: t("button"),
+		put: t("section"), putsoc: t("button"), putsec: t("button"), putuid: t("button"), putres: t("button"),
 		pro: t("section"), prorej: t("button"), proref: t("button"),
 	},
 
@@ -76,7 +76,7 @@ const template = {
 		detail: t("a"),
 		goal: t("p"), intro: t("p"), rec: t("p"),
 		pro: t("section"), prorej: t("button"), proref: t("button"),
-		put: t("section"), putgoal: t("button"),
+		put: t("section"), putagd: t("button"), putgoal: t("button"),
 	},
 
 	pre: {
