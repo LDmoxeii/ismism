@@ -27,7 +27,7 @@ export async function soc_r<
 	P extends keyof Soc
 >(
 	sid: Soc["_id"],
-	projection: Partial<{ [K in P]: 1 }>
+	projection: Partial<{ [K in P]: 1 }>,
 ): DocR<Pick<Soc, "_id" | P>> {
 	if (not_id(sid)) return null
 	return await coll.soc.findOne({ _id: sid }, { projection }) ?? null

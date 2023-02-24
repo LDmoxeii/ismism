@@ -18,7 +18,7 @@ export async function agd_c(
 		sec: [],
 		reslim: lim_res_def, res: [],
 		uidlim: lim_uid_def, uid: [],
-		detail: "",
+		account: "",
 		budget: 0, fund: 0, expense: 0,
 		goal: [], img: [],
 	}

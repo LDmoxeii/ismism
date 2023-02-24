@@ -11,6 +11,8 @@ export const lim_res_max = 16
 export const lim_uid_def = 64
 export const lim_uid_max = 256
 export const lim_goal = 9
+export const lim_url = 256
+export const lim_msg = 256
 
 export function is_lim(
 	n: number,
@@ -104,21 +106,10 @@ export function not_recid(
 	return !is_recid(id)
 }
 
-export function is_rec(
-	r: Rec
-): r is Rec {
-	return is_recid(r._id) && r.ref.every(is_id) && r.rej.every(is_id)
-}
-export function not_rec(
-	r: Rec
-) {
-	return !is_rec(r)
-}
-
 export function is_actid(
 	id: Act["_id"]
 ): id is Act["_id"] {
-	return id.length >= 6
+	return 6 <= id.length && id.length <= 64
 }
 export function not_actid(
 	id: Act["_id"]

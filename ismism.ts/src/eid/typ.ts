@@ -1,12 +1,14 @@
 export type Id = {
 	_id: number,
 	nam: string,
-	rej: Usr["_id"][],
-	ref: Usr["_id"][],
 	utc: number,
 	adm1: string,
 	adm2: string,
 	intro: string,
+}
+export type Re = {
+	rej: Usr["_id"][],
+	ref: Usr["_id"][],
 }
 export type Rel = {
 	sec: Usr["_id"][],
@@ -16,14 +18,14 @@ export type Rel = {
 	res: Usr["_id"][],
 }
 
-export type Usr = Id & {
+export type Usr = Id & Re & {
 	nbr?: string,
 	pcode?: { code: number, utc: number },
 	ptoken?: string,
 }
-export type Soc = Id & Rel
-export type Agd = Id & Rel & {
-	detail: string,
+export type Soc = Id & Re & Rel
+export type Agd = Id & Re & Rel & {
+	account: string,
 	budget: number,
 	fund: number,
 	expense: number,
@@ -33,10 +35,8 @@ export type Agd = Id & Rel & {
 
 export type Rec = {
 	_id: { uid: Usr["_id"], aid: Agd["_id"], utc: number },
-	rej: Usr["_id"][],
-	ref: Usr["_id"][],
 }
-export type Work = Rec & ({
+export type Work = Rec & Re & ({
 	work: "work",
 	msg: string,
 } | {
@@ -51,7 +51,6 @@ export type Fund = Rec & {
 
 export type Aut = {
 	_id: Usr["_id"],
-	aut: ("pre_usr" | "pre_soc" | "pre_agd")[],
 }
 export type Act = {
 	_id: string,
@@ -59,7 +58,7 @@ export type Act = {
 } & ({
 	act: "usrfund",
 	ref: Usr["_id"][],
-	aid: Agd["_id"]
+	aid: Agd["_id"],
 } | {
 	act: "usrnbr",
 	uid: number,
