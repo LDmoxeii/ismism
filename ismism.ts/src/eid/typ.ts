@@ -5,7 +5,7 @@ export type Id = {
 	adm1: string,
 	adm2: string,
 	intro: string,
-}
+} & Re
 export type Re = {
 	rej: Usr["_id"][],
 	ref: Usr["_id"][],
@@ -18,13 +18,13 @@ export type Rel = {
 	res: Usr["_id"][],
 }
 
-export type Usr = Id & Re & {
+export type Usr = Id & {
 	nbr?: string,
 	pcode?: { code: number, utc: number },
 	ptoken?: string,
 }
-export type Soc = Id & Re & Rel
-export type Agd = Id & Re & Rel & {
+export type Soc = Id & Rel
+export type Agd = Soc & {
 	account: string,
 	budget: number,
 	fund: number,
