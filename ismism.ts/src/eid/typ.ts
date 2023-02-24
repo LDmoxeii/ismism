@@ -8,19 +8,21 @@ export type Id = {
 	adm2: string,
 	intro: string,
 }
+export type Rel = {
+	sec: Usr["_id"][],
+	uidlim: number,
+	uid: Usr["_id"][],
+	reslim: number,
+	res: Usr["_id"][],
+}
+
 export type Usr = Id & {
 	nbr?: string,
 	pcode?: { code: number, utc: number },
 	ptoken?: string,
 }
-export type Soc = Id & {
-	sec: Usr["_id"][],
-	reslim: number,
-	res: Usr["_id"][],
-	uidlim: number,
-	uid: Usr["_id"][],
-}
-export type Agd = Soc & {
+export type Soc = Id & Rel
+export type Agd = Id & Rel & {
 	detail: string,
 	budget: number,
 	fund: number,

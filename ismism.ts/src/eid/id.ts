@@ -1,7 +1,7 @@
 import { Coll } from "../db.ts"
 import { not_adm1, not_adm2 } from "../ont/adm.ts"
-import { is_id, not_id } from "./is.ts"
-import { Id, Usr } from "./typ.ts"
+import { is_id } from "./is.ts"
+import { Id } from "./typ.ts"
 
 export async function idnam(
 	c: Coll["usr" | "soc" | "agd"],
@@ -13,22 +13,6 @@ export async function idnam(
 		{ projection: { _id: 1, nam: 1 } }
 	).toArray()
 	return d.map(d => [d._id, d.nam])
-}
-
-export async function id_of_uid(
-	c: Coll["soc" | "agd"],
-	_id: Usr["_id"],
-): Promise<{ sec: Id["_id"][], res: Id["_id"][], uid: Id["_id"][] }> {
-	if (not_id(_id)) return { sec: [], res: [], uid: [] }
-	const [sec, res, uid] = await Promise.all([
-		// deno-lint-ignore no-explicit-any
-		c.find({ sec: _id } as any, { projection: { _id: 1 } }).toArray(),
-		// deno-lint-ignore no-explicit-any
-		c.find({ res: _id } as any, { projection: { _id: 1 } }).toArray(),
-		// deno-lint-ignore no-explicit-any
-		c.find({ uid: _id } as any, { projection: { _id: 1 } }).toArray(),
-	])
-	return { sec: sec.map(s => s._id), res: res.map(s => s._id), uid: uid.map(s => s._id) }
 }
 
 export async function id_of_adm(

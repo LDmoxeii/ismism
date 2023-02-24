@@ -1,5 +1,8 @@
 import type { Act, Agd, Id, Rec } from "./typ.ts"
 
+export const req_rej = 2
+export const req_ref = 2
+
 export const lim_intro = 2048
 export const lim_re = 16
 export const lim_sec = 16
@@ -7,6 +10,7 @@ export const lim_res_def = 0
 export const lim_res_max = 16
 export const lim_uid_def = 64
 export const lim_uid_max = 256
+export const lim_goal = 9
 
 export function is_lim(
 	n: number,

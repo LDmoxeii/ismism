@@ -1,10 +1,11 @@
 import { coll } from "../db.ts"
 import { agd_r } from "../eid/agd.ts"
-import { idnam, id_of_uid } from "../eid/id.ts"
+import { idnam } from "../eid/id.ts"
 import { nrec } from "../eid/rec.ts"
 import { soc_r } from "../eid/soc.ts"
 import { Agd, Soc, Usr } from "../eid/typ.ts"
 import { usr_r } from "../eid/usr.ts"
+import { rolref } from "../eid/rel.ts"
 
 const pid = { nam: 1, rej: 1, ref: 1, utc: 1, adm1: 1, adm2: 1, intro: 1 } as const
 const psoc = { sec: 1, reslim: 1, res: 1, uidlim: 1, uid: 1 } as const
@@ -12,19 +13,19 @@ const psoc = { sec: 1, reslim: 1, res: 1, uidlim: 1, uid: 1 } as const
 export async function usr(
 	_id: Usr["_id"],
 ) {
-	const [u, sid, aid, nr] = await Promise.all([
+	const [u, sref, aref, nr] = await Promise.all([
 		usr_r({ _id }, pid),
-		id_of_uid(coll.soc, _id), id_of_uid(coll.agd, _id),
+		rolref(coll.soc, _id), rolref(coll.agd, _id),
 		nrec({ uid: [_id] })
 	])
-	if (!u) return null
+	if (!u || !sref || !aref || !nr) return null
 	const [unam, snam, anam] = await Promise.all([
 		idnam(coll.usr, [...u.rej, ...u.ref]),
-		idnam(coll.soc, Object.values(sid).flat()),
-		idnam(coll.agd, Object.values(aid).flat()),
+		idnam(coll.soc, Object.values(sref).flatMap(s => s.map(p => p[0]))),
+		idnam(coll.agd, Object.values(aref).flatMap(s => s.map(p => p[0]))),
 	])
 	return {
-		...u, sid, aid, unam, snam, anam, nrec: nr
+		...u, sref, aref, unam, snam, anam, nrec: nr
 	}
 }
 
