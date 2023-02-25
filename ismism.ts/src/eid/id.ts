@@ -19,13 +19,13 @@ export async function id_c<
 	id: T,
 	isnam = false,
 ): DocC<T["_id"]> {
-	const v = is_id(id._id)
+	const is = is_id(id._id)
 		&& (isnam || is_nam(id.nam))
 		&& is_adm([id.adm1, id.adm2])
 		&& is_intro(id.intro)
 		&& is_idl(id.rej, lim_re)
 		&& is_idl(id.ref, lim_re)
-	if (!v) return null
+	if (!is) return null
 	try { return await c.insertOne(id) as T["_id"] }
 	catch { return null }
 }

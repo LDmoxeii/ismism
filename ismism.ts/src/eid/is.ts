@@ -3,13 +3,14 @@ import { Act, Agd, Id, Rec, Usr } from "./typ.ts"
 export const req_re = 2
 export const lim_re = 64
 
-export const lim_sec = 16
-export const lim_uid_def = 64
-export const lim_uid_max = 256
+export const lim_sec = 8
+export const lim_uid_def = lim_re
+export const lim_uid_max = lim_re * lim_sec / req_re
 export const lim_res_def = 0
 export const lim_res_max = 64
 
 export const lim_intro = 2048
+export const lim_img = 9
 export const lim_goal = 9
 export const lim_url = 128
 export const lim_msg = 256
