@@ -1,14 +1,15 @@
 import { assert, assertEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts"
-import { db } from "../src/db.ts"
+import { coll, db } from "../src/db.ts"
 import { usr_c, usr_r, usr_u, usr_d } from "../src/eid/usr.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { nrec, rec_c, rec_d, rec_r, rec_u, collrec } from "../src/eid/rec.ts"
+import { rolref, rol } from "../src/eid/rel.ts"
 
 await db("tst", true)
 
 Deno.test("usr", async () => {
-	const nbr = "11111111114"
+	const nbr = "11111111111"
 	assert(null === await usr_r({ _id: 1 }, { nbr: 1 }))
 	const r_c = await usr_c(nbr, "四川", "成都")
 	assert(r_c && r_c === 1)
@@ -52,6 +53,27 @@ Deno.test("agd", async () => {
 	assertEquals(s2, { _id: 1, ref: [2], goal: [{ nam: "目标", pct: 75 }], img: [{ nam: "a", src: "b" }] })
 	await agd_d(r_c)
 	assert(null === await agd_r(r_c, {}))
+})
+
+Deno.test("rel", async () => {
+	assertEquals([
+		await usr_c("11111111111", "四川", "成都"),
+		await soc_c("社团一", "广东", "汕头"),
+		await soc_c("社团二", "四川", "成都"),
+		await soc_c("社团三", "广东", "汕头"),
+	], [1, 1, 2, 3])
+	await Promise.all([
+		usr_u(1, { $set: { ref: [1, 2, 3] } }),
+		soc_u(1, { $set: { ref: [3, 4], sec: [1, 4], uid: [1, 3], res: [] } }),
+		soc_u(2, { $set: { ref: [2, 3], sec: [1, 4], uid: [1, 3], res: [1, 2] } }),
+		soc_u(3, { $set: { ref: [], sec: [2, 3], uid: [1, 3], res: [1, 2] } }),
+	])
+	assertEquals(await rolref(coll.soc, 1), {
+		sec: [[1, 1], [2, 2]],
+		uid: [[1, 1], [2, 1], [3, 2]],
+		res: [[2, 1], [3, 2]],
+	})
+	assertEquals(await rol(coll.soc, 1), { sec: [2], uid: [3], res: [3] })
 })
 
 Deno.test("rec", async () => {
