@@ -3,6 +3,7 @@ import { db } from "../src/db.ts"
 import { usr_c, usr_r, usr_u, usr_d } from "../src/eid/usr.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
+import { nrec, rec_c, rec_d, rec_r, rec_u, collrec } from "../src/eid/rec.ts"
 
 await db("tst", true)
 
@@ -52,3 +53,42 @@ Deno.test("agd", async () => {
 	await agd_d(r_c)
 	assert(null === await agd_r(r_c, {}))
 })
+
+Deno.test("rec", async () => {
+	const utc = Date.now()
+	const id = [
+		{ uid: 1, aid: 4, utc },
+		{ uid: 2, aid: 4, utc: utc + 100 },
+		{ uid: 2, aid: 3, utc: utc + 200 },
+	]
+
+	assertEquals(await nrec(), { work: 0, fund: 0 })
+	assertEquals(await nrec({ aid: 4 }), { work: 0, fund: 0 })
+	assert(0 === (await rec_r(collrec.work, {}))?.length)
+	assert(0 === (await rec_r(collrec.fund, { uid: 2, utc }))?.length)
+
+	assertEquals(id, await Promise.all(id.map(_id => rec_c(collrec.work, {
+		_id, ref: [_id.uid], rej: [], work: "work", msg: "msg"
+	}))))
+	assertEquals(id, await Promise.all(id.map(_id => rec_c(collrec.fund, {
+		_id, fund: 32, msg: "msg"
+	}))))
+	assertEquals(await nrec(), { work: 3, fund: 3 })
+	assertEquals(await nrec({ uid: [2] }), { work: 2, fund: 2 })
+	assertEquals(await nrec({ aid: 4 }), { work: 2, fund: 2 })
+
+	assertEquals((await rec_r(collrec.work, { utc: utc + 100 }))!.length, 1)
+	assertEquals((await rec_r(collrec.fund, { utc }))!.map(r => r._id), id.slice(1).reverse())
+	assertEquals((await rec_r(collrec.work, { utc, uid: 2 }))!.map(r => r._id), id.slice(1).reverse())
+	assertEquals((await rec_r(collrec.work, { aid: 3 })), [{ _id: id[2], work: "work", msg: "msg", ref: [2], rej: [] }])
+
+	assertEquals(await rec_u(collrec.work, id[1], { $set: { msg: "updated" } }), 1)
+	assertEquals((await rec_r(collrec.work, { utc: utc, aid: 4 })), [{ _id: id[1], work: "work", msg: "updated", ref: [2], rej: [] }])
+
+	await Promise.all([
+		id.map(_id => rec_d(collrec.work, _id)),
+		id.map(_id => rec_d(collrec.fund, _id)),
+	].flat())
+	assertEquals(await nrec(), { work: 0, fund: 0 })
+})
+

@@ -15,6 +15,8 @@ export const lim_goal = 9
 export const lim_url = 128
 export const lim_msg = 256
 
+export const lim_rec = 32
+
 export function is_lim(
 	n: number,
 	lim: number,
