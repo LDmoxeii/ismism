@@ -1,4 +1,4 @@
-import { Act, Agd, Id, Rec, Usr } from "./typ.ts";
+import { Act, Agd, Id, Rec, Usr } from "./typ.ts"
 
 export const req_re = 2
 export const lim_re = 64
@@ -38,7 +38,6 @@ export function is_nam(
 ): nam is Id["nam"] {
 	return typeof nam === "string" && /^[\u4E00-\u9FFF]{2,16}$/.test(nam)
 }
-
 export function is_nbr(
 	nbr: NonNullable<Usr["nbr"]>
 ): nbr is NonNullable<Usr["nbr"]> {
@@ -56,6 +55,11 @@ export function is_goal(
 ): goal is Agd["goal"][0] {
 	return is_nam(goal.nam) && is_lim(goal.pct, 100)
 }
+export function is_img(
+	img: Agd["img"][0]
+): img is Agd["img"][0] {
+	return is_msg(img.nam) && is_url(img.src)
+}
 
 export function is_url(
 	url: string
@@ -66,12 +70,6 @@ export function is_msg(
 	msg: string
 ): msg is string {
 	return typeof msg === "string" && msg.length <= lim_msg
-}
-
-export function is_img(
-	img: Agd["img"][0]
-): img is Agd["img"][0] {
-	return is_msg(img.nam) && is_url(img.src)
 }
 
 export function is_recid(

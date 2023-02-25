@@ -1,13 +1,13 @@
-import { Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
+import type { Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
+import type { Id } from "./typ.ts"
 import { is_adm, is_adm1, is_adm2 } from "../ont/adm.ts"
 import { is_id, is_idl, is_intro, is_nam, lim_re } from "./is.ts"
-import { Agd, Id, Soc, Usr } from "./typ.ts"
 
 export async function id_n<
 	T extends Id
 >(
 	c: Coll<T>
-): Promise<Id["_id"]> {
+): Promise<T["_id"]> {
 	const l = await c.findOne({}, { projection: { _id: 1 }, sort: { _id: -1 } })
 	return l ? l._id + 1 : 1
 }
@@ -35,12 +35,11 @@ export async function id_r<
 	P extends keyof T,
 >(
 	c: Coll<T>,
-	f: { _id: T["_id"] } | { nam: T["nam"] } | { nbr: NonNullable<Usr["nbr"]> },
+	f: Partial<T>,
 	projection: Partial<{ [K in P]: 1 }>
 ): DocR<Pick<T, "_id" | P>> {
-	if ("_id" in f && !is_id(f._id) || "nam" in f && !is_nam(f.nam)) return null
-	// deno-lint-ignore no-explicit-any
-	return await c.findOne(f as any, { projection }) ?? null
+	if (f._id && !is_id(f._id) || f.nam && !is_nam(f.nam)) return null
+	return await c.findOne(f, { projection }) ?? null
 }
 
 export async function id_u<
@@ -71,7 +70,7 @@ export async function id_d<
 	T extends Id
 >(
 	c: Coll<T>,
-	_id: T["_id"]
+	_id: T["_id"],
 ): DocD {
 	if (!is_id(_id)) return null
 	try {
@@ -82,7 +81,7 @@ export async function id_d<
 }
 
 export async function idnam<
-	T extends Usr | Soc | Agd
+	T extends Id
 >(
 	c: Coll<T>,
 	id: T["_id"][],
@@ -97,7 +96,7 @@ export async function idnam<
 }
 
 export async function id<
-	T extends Soc | Agd
+	T extends Id
 >(
 	c: Coll<T>,
 	adm?: { adm1: string } | { adm2: string },
@@ -110,7 +109,7 @@ export async function id<
 }
 
 export async function nid_of_adm<
-	T extends Soc | Agd,
+	T extends Id,
 	A extends "adm1" | "adm2",
 >(
 	c: Coll<T>,
