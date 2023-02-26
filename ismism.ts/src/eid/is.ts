@@ -9,6 +9,9 @@ export const lim_uid_max = lim_re * lim_sec / req_re
 export const lim_res_def = 0
 export const lim_res_max = 64
 
+export const len_code = 6
+export const lim_code = 10 ** len_code
+export const lim_ptoken = 1024
 export const lim_intro = 2048
 export const lim_img = 9
 export const lim_goal = 9
@@ -45,6 +48,11 @@ export function is_nbr(
 	nbr: NonNullable<Usr["nbr"]>
 ): nbr is NonNullable<Usr["nbr"]> {
 	return typeof nbr === "string" && /^1\d{10}$/.test(nbr)
+}
+export function is_ptoken(
+	token: string
+): token is string {
+	return typeof token === "string" && token.length <= lim_ptoken
 }
 
 export function is_intro(

@@ -1,6 +1,6 @@
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { id_c, id_d, id_n, id_r, id_u } from "./id.ts"
-import { is_nbr } from "./is.ts"
+import { is_nbr, is_ptoken } from "./is.ts"
 import { Usr } from "./typ.ts"
 
 export async function usr_c(
@@ -32,7 +32,10 @@ export async function usr_u(
 	uid: Usr["_id"],
 	u: Update<Usr>,
 ): DocU {
-	if (u.$set && u.$set.nbr && !is_nbr(u.$set.nbr)) return null
+	if (u.$set && (
+		u.$set.nbr && !is_nbr(u.$set.nbr)
+		|| u.$set.ptoken && !is_ptoken(u.$set.ptoken)
+	)) return null
 	return await id_u(coll.usr, uid, u)
 }
 
