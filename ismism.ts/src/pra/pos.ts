@@ -1,7 +1,5 @@
+import type { Ret } from "./con.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
-
-// deno-lint-ignore no-explicit-any
-type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
 
 export type PasPos = {
 	jwt?: string | null,

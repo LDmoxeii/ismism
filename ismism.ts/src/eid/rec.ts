@@ -1,11 +1,6 @@
 import type { Rec } from "./typ.ts"
 import { coll, Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import { is_id, is_recid, lim_rec } from "./is.ts"
-
-export const collrec = {
-	work: coll.work,
-	fund: coll.fund,
-}
+import { is_id, is_idl, is_recid, lim_rec, lim_uid_max } from "./is.ts"
 
 export async function rec_c<
 	T extends Rec
@@ -22,13 +17,14 @@ export async function rec_r<
 	T extends Rec
 >(
 	c: Coll<T>,
-	{ uid, aid, utc }: Partial<Rec["_id"]>,
+	utc: Rec["_id"]["utc"],
+	id?: { aid: Rec["_id"]["aid"] } | { uid: Rec["_id"]["uid"][] },
 ): DocR<T[]> {
-	if (uid && !is_id(uid) || aid && !is_id(aid)) return null
+	if (id && ("aid" in id && !is_id(id.aid) || "uid" in id && !is_idl(id.uid, lim_uid_max))) return null
 	const f = {
-		...uid ? { "_id.uid": uid } : {},
-		...aid ? { "_id.aid": aid } : {},
-		...utc && utc > 0 ? { "_id.utc": { $gt: utc } } : {},
+		...id && "aid" in id ? { "_id.aid": id.aid } : {},
+		...id && "uid" in id ? { "_id.uid": { $in: id.uid } } : {},
+		...utc > 0 ? { "_id.utc": { $gt: utc } } : {},
 	}
 	// deno-lint-ignore no-explicit-any
 	return await c.find(f as any, { sort: { utc: -1 }, limit: lim_rec }).toArray() as T[]
@@ -66,7 +62,7 @@ export async function nrec(
 	id?: { aid: Rec["_id"]["aid"] } | { uid: Rec["_id"]["uid"][] },
 ): DocR<{ work: number, fund: number }> {
 	let p = null
-	const cr = Object.values(collrec)
+	const cr = Object.values([coll.work, coll.fund])
 	if (id) {
 		if ("aid" in id) {
 			if (!is_id(id.aid)) return null

@@ -3,7 +3,7 @@ import { coll, db } from "../src/db.ts"
 import { usr_c, usr_r, usr_u, usr_d } from "../src/eid/usr.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
-import { nrec, rec_c, rec_d, rec_r, rec_u, collrec } from "../src/eid/rec.ts"
+import { nrec, rec_c, rec_d, rec_r, rec_u } from "../src/eid/rec.ts"
 import { rolref, rol } from "../src/eid/rel.ts"
 
 await db("tst", true)
@@ -86,30 +86,30 @@ Deno.test("rec", async () => {
 
 	assertEquals(await nrec(), { work: 0, fund: 0 })
 	assertEquals(await nrec({ aid: 4 }), { work: 0, fund: 0 })
-	assert(0 === (await rec_r(collrec.work, {}))?.length)
-	assert(0 === (await rec_r(collrec.fund, { uid: 2, utc }))?.length)
+	assert(0 === (await rec_r(coll.work, 0))?.length)
+	assert(0 === (await rec_r(coll.fund, utc, { uid: [2] }))?.length)
 
-	assertEquals(id, await Promise.all(id.map(_id => rec_c(collrec.work, {
+	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.work, {
 		_id, ref: [_id.uid], rej: [], work: "work", msg: "msg"
 	}))))
-	assertEquals(id, await Promise.all(id.map(_id => rec_c(collrec.fund, {
+	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.fund, {
 		_id, fund: 32, msg: "msg"
 	}))))
 	assertEquals(await nrec(), { work: 3, fund: 3 })
 	assertEquals(await nrec({ uid: [2] }), { work: 2, fund: 2 })
 	assertEquals(await nrec({ aid: 4 }), { work: 2, fund: 2 })
 
-	assertEquals((await rec_r(collrec.work, { utc: utc + 100 }))!.length, 1)
-	assertEquals((await rec_r(collrec.fund, { utc }))!.map(r => r._id), id.slice(1).reverse())
-	assertEquals((await rec_r(collrec.work, { utc, uid: 2 }))!.map(r => r._id), id.slice(1).reverse())
-	assertEquals((await rec_r(collrec.work, { aid: 3 })), [{ _id: id[2], work: "work", msg: "msg", ref: [2], rej: [] }])
+	assertEquals((await rec_r(coll.work, utc + 100))!.length, 1)
+	assertEquals((await rec_r(coll.fund, utc))!.map(r => r._id), id.slice(1).reverse())
+	assertEquals((await rec_r(coll.work, utc, { uid: [2] }))!.map(r => r._id), id.slice(1).reverse())
+	assertEquals((await rec_r(coll.work, 0, { aid: 3 })), [{ _id: id[2], work: "work", msg: "msg", ref: [2], rej: [] }])
 
-	assertEquals(await rec_u(collrec.work, id[1], { $set: { msg: "updated" } }), 1)
-	assertEquals((await rec_r(collrec.work, { utc: utc, aid: 4 })), [{ _id: id[1], work: "work", msg: "updated", ref: [2], rej: [] }])
+	assertEquals(await rec_u(coll.work, id[1], { $set: { msg: "updated" } }), 1)
+	assertEquals((await rec_r(coll.work, utc, { aid: 4 })), [{ _id: id[1], work: "work", msg: "updated", ref: [2], rej: [] }])
 
 	await Promise.all([
-		id.map(_id => rec_d(collrec.work, _id)),
-		id.map(_id => rec_d(collrec.fund, _id)),
+		id.map(_id => rec_d(coll.work, _id)),
+		id.map(_id => rec_d(coll.fund, _id)),
 	].flat())
 	assertEquals(await nrec(), { work: 0, fund: 0 })
 })

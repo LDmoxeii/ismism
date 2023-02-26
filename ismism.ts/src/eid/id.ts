@@ -100,9 +100,9 @@ export async function id<
 >(
 	c: Coll<T>,
 	adm?: { adm1: string } | { adm2: string },
-): DocR<Id["_id"][]> {
-	if (adm && "adm2" in adm && !is_adm2(adm.adm2)) return null
-	if (adm && "adm1" in adm && !is_adm1(adm.adm1)) return null
+): Promise<Id["_id"][]> {
+	if (adm && "adm2" in adm && !is_adm2(adm.adm2)) return []
+	if (adm && "adm1" in adm && !is_adm1(adm.adm1)) return []
 	// deno-lint-ignore no-explicit-any
 	const d = await c.find(adm as any, { projection: { _id: 1 }, sort: { _id: -1 } }).toArray()
 	return d.map(d => d._id)
