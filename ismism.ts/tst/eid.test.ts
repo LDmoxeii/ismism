@@ -70,10 +70,10 @@ Deno.test("rel", async () => {
 	])
 	assertEquals(await rolref(coll.soc, 1), {
 		sec: [[1, 1], [2, 2]],
-		uid: [[1, 1], [2, 1], [3, 2]],
-		res: [[2, 1], [3, 2]],
+		uid: [[1, 2], [2, 3], [3, 2]],
+		res: [[2, 3], [3, 2]],
 	})
-	assertEquals(await rol(coll.soc, 1), { sec: [2], uid: [3], res: [3] })
+	assertEquals(await rol(coll.soc, 1), { sec: [2], uid: [1, 2, 3], res: [2, 3] })
 })
 
 Deno.test("rec", async () => {

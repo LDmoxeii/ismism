@@ -38,14 +38,14 @@ export async function rolref<
 		// deno-lint-ignore no-explicit-any
 		c.find({ sec: _id } as any, { projection: { _id: 1, ref: 1 } }).toArray(),
 		// deno-lint-ignore no-explicit-any
-		c.find({ uid: _id } as any, { projection: { _id: 1, sec: 1 } }).toArray(),
+		c.find({ uid: _id } as any, { projection: { _id: 1, ref: 1, sec: 1 } }).toArray(),
 		// deno-lint-ignore no-explicit-any
-		c.find({ res: _id } as any, { projection: { _id: 1, sec: 1 } }).toArray(),
+		c.find({ res: _id } as any, { projection: { _id: 1, ref: 1, sec: 1 } }).toArray(),
 	])
 	if (!u) return null
 	return {
 		sec: sec.map(t => idnref(t._id, t.ref, u.ref)),
-		uid: uid.map(t => idnref(t._id, t.sec, u.ref)),
-		res: res.map(t => idnref(t._id, t.sec, u.ref)),
+		uid: uid.map(t => idnref(t._id, [...t.ref, ...t.sec], u.ref)),
+		res: res.map(t => idnref(t._id, [...t.ref, ...t.sec], u.ref)),
 	}
 }
