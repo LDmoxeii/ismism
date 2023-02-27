@@ -1,5 +1,7 @@
 import type { Ret } from "./con.ts"
+import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
+import { pro_agd, pro_soc, pro_usr, pro_work } from "./pro.ts"
 
 export type PasPos = {
 	jwt?: string | null,
@@ -42,6 +44,20 @@ export async function pos(
 					return issue.pas
 				}
 			} else if (p.pas) return p.pas
+			break
+		}
+
+		case "pro": {
+			p.etag = utc_etag()
+			const { re, uid, sid, aid, workid, pro } = json
+			if (p.pas && typeof re === "string" && typeof pro === "boolean") {
+				const r = re as "rej" | "ref"
+				if (typeof uid === "number") return pro_usr(p.pas, r, uid, pro)
+				else if (typeof sid === "number") return pro_soc(p.pas, r, sid, pro)
+				else if (typeof aid === "number") return pro_agd(p.pas, r, aid, pro)
+				else if (typeof workid === "object" && Object.keys(workid).length === 3)
+					return pro_work(p.pas, r, workid, pro)
+			}
 			break
 		}
 	}

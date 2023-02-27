@@ -1,6 +1,6 @@
-import { req_re } from "../eid/is.ts"
-import { Usr, Re, Agd, Soc } from "../eid/typ.ts"
-import { Pas } from "./pas.ts"
+import type { Usr, Re, Agd, Soc, Work } from "../eid/typ.ts"
+import type { Pas } from "./pas.ts"
+import { is_recid, req_re } from "../eid/is.ts"
 
 // deno-lint-ignore no-explicit-any
 export type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
@@ -71,26 +71,33 @@ export function is_pre_work(
 
 export function is_pro_usr(
 	pas: Pas,
+	re: "rej" | "ref",
 	uid: Usr["_id"],
 ): boolean {
+	if (re !== "rej" && re !== "ref") return false
 	return is_pre_usr(pas) && pas.uid !== uid && !pas.ref.includes(uid)
 }
 export function is_pro_soc(
-	pas: Pas
+	pas: Pas,
+	re: "rej" | "ref",
 ): boolean {
+	if (re !== "rej" && re !== "ref") return false
 	return is_pre_soc(pas)
 }
 export function is_pro_agd(
-	pas: Pas
+	pas: Pas,
+	re: "rej" | "ref",
 ): boolean {
+	if (re !== "rej" && re !== "ref") return false
 	return is_pre_agd(pas)
 }
 export function is_pro_work(
 	pas: Pas,
 	re: "rej" | "ref",
-	aid: Agd["_id"],
+	workid: Work["_id"],
 ): boolean {
-	if (re === "rej") return is_uid(pas, { aid })
-	if (re === "ref") return is_sec(pas, { aid })
+	if (!is_recid(workid)) return false
+	if (re === "rej") return is_uid(pas, { aid: workid.aid })
+	if (re === "ref") return is_sec(pas, { aid: workid.aid })
 	return false
 }
