@@ -1,4 +1,4 @@
-import { Act, Agd, Aut, Fund, Soc, Usr, Work } from "./eid/typ.ts"
+import type { Act, Agd, Aut, Fund, Soc, Usr, Work } from "./eid/typ.ts"
 import { Collection, MongoClient, UpdateFilter } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
 
 const conn = new MongoClient()

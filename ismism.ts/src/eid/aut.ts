@@ -1,5 +1,5 @@
+import type { Aut } from "./typ.ts"
 import { coll, DocC, DocD, DocR } from "../db.ts"
-import { Aut } from "./typ.ts"
 import { is_id } from "./is.ts"
 
 export async function aut_c(

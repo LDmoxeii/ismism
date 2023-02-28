@@ -1,6 +1,7 @@
 import type { Ret } from "./con.ts"
 import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
+import { pre_agd, pre_fund, pre_soc, pre_usr, pre_work } from "./pre.ts"
 import { pro_agd, pro_soc, pro_usr, pro_work } from "./pro.ts"
 
 export type PasPos = {
@@ -44,6 +45,24 @@ export async function pos(
 					return issue.pas
 				}
 			} else if (p.pas) return p.pas
+			break
+		}
+
+		case "pre": {
+			p.etag = utc_etag()
+			const { aid, actid, nbr, adm1, adm2, snam, anam, msg, nam, src } = json
+			if (typeof adm1 === "string" && typeof adm2 === "string") {
+				if (typeof nbr === "string") {
+					if (typeof actid === "string") return pre_usr({ actid }, nbr, adm1, adm2)
+					else if (p.pas) return pre_usr({ pas: p.pas }, nbr, adm1, adm2)
+				} else if (p.pas) {
+					if (typeof snam === "string") return pre_soc(p.pas, snam, adm1, adm2)
+					else if (typeof anam === "string") return pre_agd(p.pas, anam, adm1, adm2)
+				}
+			} else if (typeof aid === "number" && p.pas) {
+				if (typeof msg === "string") return pre_work(p.pas, aid, { msg })
+				else if (typeof nam === "string" && typeof src === "string") return pre_work(p.pas, aid, { nam, src })
+			} else if (typeof actid === "string" && p.pas) return pre_fund(p.pas, actid)
 			break
 		}
 

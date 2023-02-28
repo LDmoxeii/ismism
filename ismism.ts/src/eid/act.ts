@@ -1,6 +1,6 @@
+import type { Act } from "./typ.ts"
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { is_actid } from "./is.ts"
-import { Act } from "./typ.ts"
 
 export async function act_c(
 	act: Act,

@@ -1,3 +1,4 @@
+import type { Rec } from "../src/eid/typ.ts"
 import type { Pas } from "../src/pra/pas.ts"
 import { assert, assertEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts"
 import { coll, db } from "../src/db.ts"
@@ -8,6 +9,7 @@ import { aut_c, aut_d } from "../src/eid/aut.ts"
 import { soc_c, soc_d, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_u } from "../src/eid/agd.ts"
 import { rec_c, rec_d } from "../src/eid/rec.ts"
+import { act_c, act_d } from "../src/eid/act.ts"
 
 await db("tst", true)
 await jwk_set("testkey")
@@ -42,6 +44,52 @@ Deno.test("pas", async () => {
 	assertEquals(p, { etag: null, pas: null, jwt: null })
 	assertEquals(await usr_r({ _id: uid }, { ptoken: 1 }), { _id: uid })
 	await usr_d(uid)
+})
+
+Deno.test("pre", async () => {
+	const p: PasPos = {}
+	const actid = ["111111", "111112", "111113"]
+	const nbr = ["11111111111", "11111111112", "11111111113"]
+	const utc = Date.now()
+	const [adm1, adm2] = ["四川", "成都"]
+	await Promise.all([
+		act_c({ _id: actid[0], exp: utc + 1000, act: "fund", aid: 1, msg: "msg" }),
+		act_c({ _id: actid[1], exp: utc + 1000, act: "fund", aid: 2, msg: "msg" }),
+		act_c({ _id: actid[2], exp: utc + 1000, act: "nbr", uid: 1 }),
+		aut_c({ _id: 1 }),
+	])
+	assertEquals([1, null, 1, null], [
+		await pos({}, "pre", json({ actid: actid[0], nbr: nbr[0], adm1, adm2 })),
+		await pos({}, "pre", json({ actid: actid[0], nbr: nbr[0], adm1, adm2 })),
+		await pos({}, "pre", json({ actid: actid[2], nbr: nbr[1], adm1, adm2 })),
+		await pos({}, "pre", json({ actid: actid[2], nbr: nbr[1], adm1, adm2 })),
+	])
+	assertEquals({ _id: 1, nbr: nbr[1] }, await usr_r({ _id: 1 }, { nbr: 1 }))
+	await Promise.all([
+		pos(p, "pas", json({ nbr: nbr[1], sms: false })),
+		usr_u(1, { $set: { ref: [1, 2] } }),
+	])
+	const pcode = await usr_r({ _id: 1 }, { pcode: 1 })
+	await pos(p, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
+	const jwt = p.jwt
+	assertEquals([2, 1, 1], await Promise.all([
+		pos({ jwt }, "pre", json({ nbr: nbr[2], adm1, adm2 })),
+		pos({ jwt }, "pre", json({ snam: "社团", adm1, adm2 })),
+		pos({ jwt }, "pre", json({ anam: "活动", adm1, adm2 })),
+	]))
+	await agd_u(1, { $set: { ref: [1, 2], uid: [1] } })
+	await pos({ jwt }, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
+	const w = [
+		await pos({ jwt }, "pre", json({ actid: actid[1] })),
+		await pos({ jwt }, "pre", json({ aid: 1, msg: "msg" })),
+		await pos({ jwt }, "pre", json({ aid: 1, nam: "nam", src: "src" })),
+	] as Rec["_id"][]
+	assertEquals([2, 1, 1], w.map(w => w.aid))
+	await Promise.all([
+		usr_d(1), usr_d(2), soc_d(1), agd_d(1),
+		rec_d(coll.fund, w[0]), rec_d(coll.work, w[1]), rec_d(coll.work, w[2]),
+		aut_d(1), ...actid.map(act_d),
+	])
 })
 
 Deno.test("pro", async () => {

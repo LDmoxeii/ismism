@@ -56,11 +56,11 @@ export type Act = {
 	_id: string,
 	exp: number,
 } & ({
-	act: "usrfund",
-	ref: Usr["_id"][],
+	act: "fund",
 	aid: Agd["_id"],
+	msg: string,
 } | {
-	act: "usrnbr",
+	act: "nbr",
 	uid: number,
 })
 
