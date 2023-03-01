@@ -1,4 +1,4 @@
-import type { Usr, Re, Agd, Soc, Work } from "../eid/typ.ts"
+import type { Usr, Re, Agd, Soc, Work, Rel, Id } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import { is_recid, req_re } from "../eid/is.ts"
 
@@ -100,4 +100,52 @@ export function is_pro_work(
 	if (re === "rej") return is_uid(pas, { aid: workid.aid })
 	if (re === "ref") return is_sec(pas, { aid: workid.aid })
 	return false
+}
+
+export type PutIdRel = Pick<Id & Rel, "nam" | "adm1" | "adm2" | "uidlim"> | Pick<Id & Rel, "intro" | "reslim">
+// deno-lint-ignore ban-types
+export type PutRel = { rel: "sec" | "uid" | "res" } & ({ add: boolean, uid: Usr["_id"] } | {})
+export type PutSoc = PutIdRel | PutRel
+export type PutAgd = PutSoc
+	| Pick<Agd, "intro" | "reslim" | "account" | "budget" | "fund" | "expense">
+	| { gnam: string, pct?: number }
+	| { inam: string, src?: string }
+
+export function is_put_soc(
+	pas: Pas,
+	sid: Soc["_id"],
+	p: PutSoc,
+): boolean {
+	if ("nam" in p) return is_pre_soc(pas)
+	else if ("intro" in p) return is_sec(pas, { sid })
+	else if ("rel" in p) switch (p.rel) {
+		case "sec": return is_pre_soc(pas)
+		case "uid": return "uid" in p && p.uid === pas.uid && p.add === false || is_sec(pas, { sid })
+		case "res": return "uid" in p && p.uid === pas.uid && (p.add === false || is_re(pas)) || is_sec(pas, { sid })
+		default: return false
+	}
+	return false
+}
+
+export function is_put_agd(
+	pas: Pas,
+	aid: Agd["_id"],
+	p: PutAgd
+): boolean {
+	if ("nam" in p) return is_pre_agd(pas)
+	else if ("intro" in p) return is_sec(pas, { aid })
+	else if ("rel" in p) switch (p.rel) {
+		case "sec": return is_pre_agd(pas)
+		case "uid": return "uid" in p && p.uid === pas.uid && p.add === false || is_sec(pas, { aid })
+		case "res": return "uid" in p && p.uid === pas.uid && (p.add === false || is_re(pas)) || is_sec(pas, { aid })
+		default: return false
+	}
+	return false
+}
+
+export function is_put_work(
+	pas: Pas,
+	workid: Work["_id"],
+): boolean {
+	return workid.uid === pas.uid
 }

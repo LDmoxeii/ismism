@@ -3,6 +3,7 @@ import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre_agd, pre_fund, pre_soc, pre_usr, pre_work } from "./pre.ts"
 import { pro_agd, pro_soc, pro_usr, pro_work } from "./pro.ts"
+import { put_agd, put_soc, put_usr } from "./put.ts"
 
 export type PasPos = {
 	jwt?: string | null,
@@ -76,6 +77,33 @@ export async function pos(
 				else if (typeof aid === "number") return pro_agd(p.pas, r, aid, pro)
 				else if (typeof workid === "object" && Object.keys(workid).length === 3)
 					return pro_work(p.pas, r, workid, pro)
+			}
+			break
+		}
+
+		case "put": {
+			if (!p.pas) break
+			p.etag = utc_etag()
+			const { nam, adm1, adm2, sid, aid, uidlim, intro, reslim, account, budget, fund, expense, rel, add, uid } = json
+			if (typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string") {
+				if (typeof intro === "string") return put_usr(p.pas, { nam, adm1, adm2, intro })
+				else if (typeof uidlim === "number") {
+					if (typeof sid === "number") return put_soc(p.pas, sid, { nam, adm1, adm2, uidlim })
+					else if (typeof aid === "number") return put_agd(p.pas, aid, { nam, adm1, adm2, uidlim })
+				}
+			} else if (typeof intro === "string" && typeof reslim === "number") {
+				if (typeof sid === "number") return put_soc(p.pas, sid, { intro, reslim })
+				else if (typeof aid === "number" && typeof account === "string" && typeof budget === "number" && typeof fund === "number" && typeof expense === "number")
+					return put_agd(p.pas, aid, { intro, reslim, account })
+			} else if (typeof rel === "string") {
+				const r = rel as "sec" | "uid" | "res"
+				if (typeof add === "boolean" && typeof uid === "number") {
+					if (typeof sid === "number") return put_soc(p.pas, sid, { rel: r, add, uid })
+					else if (typeof aid === "number") return put_agd(p.pas, aid, { rel: r, add, uid })
+				} else {
+					if (typeof sid === "number") return put_soc(p.pas, sid, { rel: r })
+					else if (typeof aid === "number") return put_agd(p.pas, aid, { rel: r })
+				}
 			}
 			break
 		}
