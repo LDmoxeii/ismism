@@ -4,7 +4,7 @@ import { rolref } from "../eid/rel.ts"
 import { usr_r } from "../eid/usr.ts"
 import { soc_r } from "../eid/soc.ts"
 import { agd_r } from "../eid/agd.ts"
-import { nrec, rec_r } from "../eid/rec.ts"
+import { nrec, rec_f } from "../eid/rec.ts"
 import { idnam, nid_of_adm } from "../eid/id.ts"
 
 export async function nid(
@@ -69,12 +69,12 @@ export async function rec<
 	id?: { uid: T["_id"]["uid"] } | { aid: T["_id"]["aid"] } | { sid: Soc["_id"] }
 ) {
 	let r = null
-	if (!id) r = await rec_r(c, utc)
-	else if ("uid" in id) r = await rec_r(c, utc, { uid: [id.uid] })
-	else if ("aid" in id) { r = await rec_r(c, utc, id) }
+	if (!id) r = await rec_f(c, utc)
+	else if ("uid" in id) r = await rec_f(c, utc, { uid: [id.uid] })
+	else if ("aid" in id) { r = await rec_f(c, utc, id) }
 	else {
 		const s = await soc_r(id.sid, { uid: 1 })
-		if (s) r = await rec_r(c, utc, { uid: s.uid })
+		if (s) r = await rec_f(c, utc, { uid: s.uid })
 	}
 	if (r) {
 		const [unam, anam] = await Promise.all([

@@ -6,9 +6,9 @@ import { usr_c, usr_d, usr_r, usr_u } from "../src/eid/usr.ts"
 import { jwk_set } from "../src/ont/jwt.ts"
 import { PasCode, PasPos, pos } from "../src/pra/pos.ts"
 import { aut_c, aut_d } from "../src/eid/aut.ts"
-import { soc_c, soc_d, soc_u } from "../src/eid/soc.ts"
-import { agd_c, agd_d, agd_u } from "../src/eid/agd.ts"
-import { rec_c, rec_d } from "../src/eid/rec.ts"
+import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
+import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
+import { rec_c, rec_d, rec_f } from "../src/eid/rec.ts"
 import { act_c, act_d } from "../src/eid/act.ts"
 
 await db("tst", true)
@@ -138,3 +138,46 @@ Deno.test("pro", async () => {
 	])
 })
 
+Deno.test("put", async () => {
+	const p: PasPos = {}
+	const nbr = "11111111111"
+	const utc = Date.now()
+	const workid = { uid: 1, aid: 1, utc }
+	await Promise.all([
+		await usr_c(nbr, "四川", "成都"), usr_u(1, { $set: { ref: [1, 2] } }),
+		await soc_c("社团", "江苏", "苏州"), soc_u(1, { $set: { ref: [1, 2] } }),
+		await agd_c("活动", "江苏", "苏州"), agd_u(1, { $set: { ref: [1, 2] } }),
+		rec_c(coll.work, { _id: workid, ref: [], rej: [], work: "work", msg: "msg" }),
+		aut_c({ _id: 1 }),
+		pos(p, "pas", json({ nbr, sms: false })),
+	])
+	const code = await usr_r({ _id: 1 }, { pcode: 1 })
+	await pos(p, "pas", json({ nbr, code: code?.pcode?.code }))
+	const jwt = p.jwt
+	const uu = { nam: "用户一", adm1: "广东", adm2: "汕头", intro: "简介" }
+	const su = { sid: 1, nam: "社团一", adm1: "广东", adm2: "汕头", uidlim: 8 }
+	const au = { aid: 1, nam: "活动一", adm1: "广东", adm2: "汕头", uidlim: 8 }
+	const aus = { aid: 1, intro: "简介", reslim: 10, account: "明细", budget: 9, fund: 9, expense: 9 }
+	await Promise.all([
+		pos({ jwt }, "put", json(uu)),
+		pos({ jwt }, "put", json(su)),
+		pos({ jwt }, "put", json(au)),
+		await pos({ jwt }, "put", json({ aid: 1, rel: "sec", uid: 1, add: true })),
+		pos({ jwt }, "put", json(aus)),
+		await pos({ jwt }, "put", json({ aid: 1, rel: "res", uid: 1, add: true })),
+		await pos({ jwt }, "put", json({ aid: 1, rel: "res", uid: 2, add: true })),
+		pos({ jwt }, "put", json({ aid: 1, rel: "uid", uid: 1, add: true })),
+		pos({ jwt }, "put", json({ aid: 1, rel: "uid", uid: 2, add: true })),
+		pos({ jwt }, "put", json({ workid, msg: "updated" })),
+	])
+	assertEquals({ _id: 1, ...uu }, await usr_r({ _id: 1 }, { nam: 1, adm1: 1, adm2: 1, intro: 1 }))
+	assertEquals({ _id: 1, nam: su.nam, uidlim: su.uidlim }, await soc_r(1, { nam: 1, uidlim: 1 }))
+	assertEquals({
+		_id: 1, nam: au.nam, intro: aus.intro, sec: [1], uid: [1], res: [], uidlim: au.uidlim, reslim: aus.reslim, expense: aus.expense,
+	}, await agd_r(1, {
+		nam: 1, intro: 1, sec: 1, uid: 1, res: 1, uidlim: 1, reslim: 1, expense: 1,
+	}))
+	await pos({ jwt }, "put", json({ aid: 1, rel: "uid" }))
+	assertEquals({ _id: 1, uid: [] }, await agd_r(1, { uid: 1 }))
+	assertEquals([{ _id: workid, ref: [], rej: [], work: "work", msg: "updated" }], await rec_f(coll.work, 0))
+})

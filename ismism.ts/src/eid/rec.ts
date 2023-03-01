@@ -14,6 +14,18 @@ export async function rec_c<
 }
 
 export async function rec_r<
+	T extends Rec,
+	P extends keyof T,
+>(
+	c: Coll<T>,
+	_id: T["_id"],
+	projection: Partial<{ [K in P]: 1 }>
+): DocR<Pick<T, "_id" | P>> {
+	if (!is_recid(_id)) return null
+	return await c.findOne({ _id }, { projection }) ?? null
+}
+
+export async function rec_f<
 	T extends Rec
 >(
 	c: Coll<T>,

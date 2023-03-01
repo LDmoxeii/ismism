@@ -3,7 +3,7 @@ import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre_agd, pre_fund, pre_soc, pre_usr, pre_work } from "./pre.ts"
 import { pro_agd, pro_soc, pro_usr, pro_work } from "./pro.ts"
-import { put_agd, put_soc, put_usr } from "./put.ts"
+import { put_agd, put_soc, put_usr, put_work } from "./put.ts"
 
 export type PasPos = {
 	jwt?: string | null,
@@ -84,7 +84,7 @@ export async function pos(
 		case "put": {
 			if (!p.pas) break
 			p.etag = utc_etag()
-			const { nam, adm1, adm2, sid, aid, uidlim, intro, reslim, account, budget, fund, expense, rel, add, uid } = json
+			const { nam, adm1, adm2, sid, aid, workid, uidlim, intro, reslim, account, budget, fund, expense, rel, add, uid, msg, src } = json
 			if (typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof intro === "string") return put_usr(p.pas, { nam, adm1, adm2, intro })
 				else if (typeof uidlim === "number") {
@@ -94,7 +94,7 @@ export async function pos(
 			} else if (typeof intro === "string" && typeof reslim === "number") {
 				if (typeof sid === "number") return put_soc(p.pas, sid, { intro, reslim })
 				else if (typeof aid === "number" && typeof account === "string" && typeof budget === "number" && typeof fund === "number" && typeof expense === "number")
-					return put_agd(p.pas, aid, { intro, reslim, account })
+					return put_agd(p.pas, aid, { intro, reslim, account, budget, fund, expense })
 			} else if (typeof rel === "string") {
 				const r = rel as "sec" | "uid" | "res"
 				if (typeof add === "boolean" && typeof uid === "number") {
@@ -104,6 +104,9 @@ export async function pos(
 					if (typeof sid === "number") return put_soc(p.pas, sid, { rel: r })
 					else if (typeof aid === "number") return put_agd(p.pas, aid, { rel: r })
 				}
+			} else if (typeof workid === "object" && Object.keys(workid).length === 3) {
+				if (typeof msg === "string") return put_work(p.pas, workid, { msg })
+				else if (typeof nam === "string" && typeof src === "string") put_work(p.pas, workid, { nam, src })
 			}
 			break
 		}
