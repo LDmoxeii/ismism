@@ -1,4 +1,4 @@
-import type { Agd, Soc, Usr, Work } from "../eid/typ.ts"
+import type { Agd, Re, Soc, Usr, Work } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import { coll, DocU } from "../db.ts"
 import { is_pro_agd, is_pro_soc, is_pro_usr, is_pro_work } from "./con.ts"
@@ -6,47 +6,50 @@ import { usr_u } from "../eid/usr.ts"
 import { soc_u } from "../eid/soc.ts"
 import { agd_u } from "../eid/agd.ts"
 import { rec_u } from "../eid/rec.ts"
+import { re_u } from "../eid/re.ts"
+import { is_id } from "../eid/is.ts"
 
 export async function pro_usr(
 	pas: Pas,
-	re: "rej" | "ref",
+	re: keyof Re,
 	uid: Usr["_id"],
-	pro: boolean,
+	add: boolean,
 ): DocU {
 	if (!is_pro_usr(pas, re, uid)) return null
-	const u = { [re]: pas.uid }
-	return await usr_u(uid, pro ? { $addToSet: u } : { $pull: u })
+	const u = await re_u(coll.usr, uid, { re, add, uid: pas.uid })
+	return u ? usr_u(uid, u) : null
 }
 
 export async function pro_soc(
 	pas: Pas,
-	re: "rej" | "ref",
+	re: keyof Re,
 	sid: Soc["_id"],
-	pro: boolean,
+	add: boolean,
 ): DocU {
-	if (!is_pro_soc(pas, re)) return null
-	const u = { [re]: pas.uid }
-	return await soc_u(sid, pro ? { $addToSet: u } : { $pull: u })
+	if (!is_pro_soc(pas, re) || !is_id(sid)) return null
+	const u = await re_u(coll.soc, sid, { re, add, uid: pas.uid })
+	return u ? soc_u(sid, u) : null
 }
 
 export async function pro_agd(
 	pas: Pas,
-	re: "rej" | "ref",
+	re: keyof Re,
 	aid: Agd["_id"],
-	pro: boolean,
+	add: boolean,
 ): DocU {
-	if (!is_pro_agd(pas, re)) return null
-	const u = { [re]: pas.uid }
-	return await agd_u(aid, pro ? { $addToSet: u } : { $pull: u })
+	if (!is_pro_agd(pas, re) || !is_id(aid)) return null
+	const u = await re_u(coll.agd, aid, { re, add, uid: pas.uid })
+	return u ? agd_u(aid, u) : null
+
 }
 
 export async function pro_work(
 	pas: Pas,
-	re: "rej" | "ref",
+	re: keyof Re,
 	workid: Work["_id"],
-	pro: boolean,
+	add: boolean,
 ): DocU {
 	if (!is_pro_work(pas, re, workid)) return null
-	const u = { [re]: pas.uid }
-	return await rec_u(coll.work, workid, pro ? { $addToSet: u } : { $pull: u })
+	const u = await re_u(coll.work, workid, { re, add, uid: pas.uid })
+	return u ? rec_u(coll.work, workid, u) : null
 }

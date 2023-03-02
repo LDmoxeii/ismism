@@ -1,6 +1,7 @@
 import type { Usr, Re, Agd, Soc, Work, Rel, Id } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
-import { is_msg, is_recid, is_url, req_re } from "../eid/is.ts"
+import type { UpdateRel } from "../eid/rel.ts"
+import { is_id, is_msg, is_recid, is_url, req_re } from "../eid/is.ts"
 
 // deno-lint-ignore no-explicit-any
 export type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
@@ -52,15 +53,20 @@ export function is_pre_usr(
 ): boolean {
 	return (pas.aut || is_sec(pas)) && is_re(pas)
 }
-export function is_pre_soc(
+function is_pre_rel(
 	pas: Pas
 ): boolean {
 	return pas.aut && is_re(pas)
 }
+export function is_pre_soc(
+	pas: Pas
+): boolean {
+	return is_pre_rel(pas)
+}
 export function is_pre_agd(
 	pas: Pas
 ): boolean {
-	return pas.aut && is_re(pas)
+	return is_pre_rel(pas)
 }
 export function is_pre_work(
 	pas: Pas,
@@ -71,29 +77,29 @@ export function is_pre_work(
 
 export function is_pro_usr(
 	pas: Pas,
-	re: "rej" | "ref",
+	re: keyof Re,
 	uid: Usr["_id"],
 ): boolean {
-	if (re !== "rej" && re !== "ref") return false
+	if (re !== "rej" && re !== "ref" || !is_id(uid)) return false
 	return is_pre_usr(pas) && pas.uid !== uid && !pas.ref.includes(uid)
 }
 export function is_pro_soc(
 	pas: Pas,
-	re: "rej" | "ref",
+	re: keyof Re,
 ): boolean {
 	if (re !== "rej" && re !== "ref") return false
 	return is_pre_soc(pas)
 }
 export function is_pro_agd(
 	pas: Pas,
-	re: "rej" | "ref",
+	re: keyof Re,
 ): boolean {
 	if (re !== "rej" && re !== "ref") return false
 	return is_pre_agd(pas)
 }
 export function is_pro_work(
 	pas: Pas,
-	re: "rej" | "ref",
+	re: keyof Re,
 	workid: Work["_id"],
 ): boolean {
 	if (!is_recid(workid)) return false
@@ -103,49 +109,42 @@ export function is_pro_work(
 }
 
 export type PutIdRel = Pick<Id & Rel, "nam" | "adm1" | "adm2" | "uidlim"> | Pick<Id & Rel, "intro" | "reslim">
-// deno-lint-ignore ban-types
-export type PutRel = { rel: "sec" | "uid" | "res" } & ({ add: boolean, uid: Usr["_id"] } | {})
-export type PutSoc = PutIdRel | PutRel
+export type PutSoc = PutIdRel | UpdateRel
 export type PutAgd = PutSoc
 	| Pick<Agd, "intro" | "reslim" | "account" | "budget" | "fund" | "expense">
-	| { gnam: string, pct?: number }
-	| { inam: string, src?: string }
+	| Pick<Agd, "goal"> | Pick<Agd, "img">
 export type PutWork = { msg: string } | { nam: string, src: string }
 
+function is_put_idrel(
+	pas: Pas,
+	id: { sid: Soc["_id"] } | { aid: Agd["_id"] },
+	p: PutIdRel | UpdateRel,
+): boolean {
+	if ("nam" in p) return is_pre_rel(pas)
+	else if ("intro" in p) return is_sec(pas, id)
+	else if ("rol" in p) switch (p.rol) {
+		case "sec": return is_pre_rel(pas)
+		case "uid": return "uid" in p && p.uid === pas.uid && p.add === false || is_sec(pas, id)
+		case "res": return "uid" in p && p.uid === pas.uid && (p.add === false || is_re(pas))
+			|| !("uid" in p) && is_sec(pas, id)
+	}
+	return false
+}
 export function is_put_soc(
 	pas: Pas,
 	sid: Soc["_id"],
 	p: PutSoc,
 ): boolean {
-	if ("nam" in p) return is_pre_soc(pas)
-	else if ("intro" in p) return is_sec(pas, { sid })
-	else if ("rel" in p) switch (p.rel) {
-		case "sec": return is_pre_soc(pas)
-		case "uid": return "uid" in p && p.uid === pas.uid && p.add === false || is_sec(pas, { sid })
-		case "res": return "uid" in p && p.uid === pas.uid && (p.add === false || is_re(pas))
-			|| !("uid" in p) && is_sec(pas, { sid })
-		default: return false
-	}
-	return false
+	return is_put_idrel(pas, { sid }, p)
 }
-
 export function is_put_agd(
 	pas: Pas,
 	aid: Agd["_id"],
-	p: PutAgd
+	p: PutAgd,
 ): boolean {
-	if ("nam" in p) return is_pre_agd(pas)
-	else if ("intro" in p) return is_sec(pas, { aid })
-	else if ("rel" in p) switch (p.rel) {
-		case "sec": return is_pre_agd(pas)
-		case "uid": return "uid" in p && p.uid === pas.uid && p.add === false || is_sec(pas, { aid })
-		case "res": return "uid" in p && p.uid === pas.uid && (p.add === false || is_re(pas))
-			|| !("uid" in p) && is_sec(pas, { aid })
-		default: return false
-	}
-	return false
+	if ("goal" in p || "img" in p) return is_sec(pas, { aid })
+	return is_put_idrel(pas, { aid }, p)
 }
-
 export function is_put_work(
 	pas: Pas,
 	work: Pick<Work, "_id" | "ref" | "work">,

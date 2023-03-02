@@ -1,4 +1,5 @@
-import type { Ret } from "./con.ts"
+import type { PutAgd, PutSoc, Ret } from "./con.ts"
+import type { Re } from "../eid/typ.ts"
 import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre_agd, pre_fund, pre_soc, pre_usr, pre_work } from "./pre.ts"
@@ -69,14 +70,14 @@ export async function pos(
 
 		case "pro": {
 			p.etag = utc_etag()
-			const { re, uid, sid, aid, workid, pro } = json
-			if (p.pas && typeof re === "string" && typeof pro === "boolean") {
-				const r = re as "rej" | "ref"
-				if (typeof uid === "number") return pro_usr(p.pas, r, uid, pro)
-				else if (typeof sid === "number") return pro_soc(p.pas, r, sid, pro)
-				else if (typeof aid === "number") return pro_agd(p.pas, r, aid, pro)
+			const { re, uid, sid, aid, workid, add } = json
+			if (p.pas && typeof re === "string" && typeof add === "boolean") {
+				const r = re as keyof Re
+				if (typeof uid === "number") return pro_usr(p.pas, r, uid, add)
+				else if (typeof sid === "number") return pro_soc(p.pas, r, sid, add)
+				else if (typeof aid === "number") return pro_agd(p.pas, r, aid, add)
 				else if (typeof workid === "object" && Object.keys(workid).length === 3)
-					return pro_work(p.pas, r, workid, pro)
+					return pro_work(p.pas, r, workid, add)
 			}
 			break
 		}
@@ -84,7 +85,7 @@ export async function pos(
 		case "put": {
 			if (!p.pas) break
 			p.etag = utc_etag()
-			const { nam, adm1, adm2, sid, aid, workid, uidlim, intro, reslim, account, budget, fund, expense, rel, add, uid, msg, src } = json
+			const { nam, adm1, adm2, sid, aid, workid, uidlim, intro, reslim, account, budget, fund, expense, goal, img, rol, add, uid, msg, src } = json
 			if (typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof intro === "string") return put_usr(p.pas, { nam, adm1, adm2, intro })
 				else if (typeof uidlim === "number") {
@@ -95,18 +96,20 @@ export async function pos(
 				if (typeof sid === "number") return put_soc(p.pas, sid, { intro, reslim })
 				else if (typeof aid === "number" && typeof account === "string" && typeof budget === "number" && typeof fund === "number" && typeof expense === "number")
 					return put_agd(p.pas, aid, { intro, reslim, account, budget, fund, expense })
-			} else if (typeof rel === "string") {
-				const r = rel as "sec" | "uid" | "res"
+			} else if (typeof rol === "string") {
 				if (typeof add === "boolean" && typeof uid === "number") {
-					if (typeof sid === "number") return put_soc(p.pas, sid, { rel: r, add, uid })
-					else if (typeof aid === "number") return put_agd(p.pas, aid, { rel: r, add, uid })
+					if (typeof sid === "number") return put_soc(p.pas, sid, { rol, add, uid } as PutSoc)
+					else if (typeof aid === "number") return put_agd(p.pas, aid, { rol, add, uid } as PutAgd)
 				} else {
-					if (typeof sid === "number") return put_soc(p.pas, sid, { rel: r })
-					else if (typeof aid === "number") return put_agd(p.pas, aid, { rel: r })
+					if (typeof sid === "number") return put_soc(p.pas, sid, { rol } as PutSoc)
+					else if (typeof aid === "number") return put_agd(p.pas, aid, { rol } as PutAgd)
 				}
 			} else if (typeof workid === "object" && Object.keys(workid).length === 3) {
 				if (typeof msg === "string") return put_work(p.pas, workid, { msg })
 				else if (typeof nam === "string" && typeof src === "string") put_work(p.pas, workid, { nam, src })
+			} else if (typeof aid === "number") {
+				if (typeof goal === "object") return put_agd(p.pas, aid, { goal })
+				else if (typeof img === "object") return put_agd(p.pas, aid, { img })
 			}
 			break
 		}

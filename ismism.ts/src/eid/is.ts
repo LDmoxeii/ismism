@@ -62,14 +62,18 @@ export function is_intro(
 }
 
 export function is_goal(
-	goal: Agd["goal"][0]
-): goal is Agd["goal"][0] {
-	return is_nam(goal.nam) && is_lim(goal.pct, 100)
+	goal: Agd["goal"]
+): goal is Agd["goal"] {
+	return is_lim(goal.length, lim_goal) && goal.every(g =>
+		Object.keys(g).length === 2 && is_nam(g.nam) && is_lim(g.pct, 100)
+	)
 }
 export function is_img(
-	img: Agd["img"][0]
-): img is Agd["img"][0] {
-	return is_msg(img.nam) && is_url(img.src)
+	img: Agd["img"]
+): img is Agd["img"] {
+	return is_lim(img.length, lim_img) && img.every(m =>
+		Object.keys(m).length === 2 && is_nam(m.nam) && is_url(m.src)
+	)
 }
 
 export function is_url(
