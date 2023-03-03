@@ -1,5 +1,5 @@
 import type { Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import type { Id } from "./typ.ts"
+import type { Id, Re, Usr } from "./typ.ts"
 import { is_adm, is_adm1, is_adm2 } from "../ont/adm.ts"
 import { is_id, is_idl, is_intro, is_nam, lim_re } from "./is.ts"
 
@@ -96,16 +96,30 @@ export async function idnam<
 }
 
 export async function id<
+	T extends Id,
+>(
+	c: Coll<T>,
+	f?: { adm1: string } | { adm2: string } | Partial<{ [R in keyof Re]: Usr["_id"] }>,
+): Promise<Id["_id"][]> {
+	if (f && ("adm1" in f && !is_adm1(f.adm1)
+		|| "adm2" in f && !is_adm2(f.adm2)
+		|| "rej" in f && !is_id(f.rej!)
+		|| "ref" in f && !is_id(f.ref!)
+	)) return []
+	// deno-lint-ignore no-explicit-any
+	const d = await c.find(f as any, { projection: { _id: 1 }, sort: { _id: -1 } }).toArray()
+	return d.map(d => d._id)
+}
+
+export async function nid<
 	T extends Id
 >(
 	c: Coll<T>,
-	adm?: { adm1: string } | { adm2: string },
-): Promise<Id["_id"][]> {
-	if (adm && "adm2" in adm && !is_adm2(adm.adm2)) return []
-	if (adm && "adm1" in adm && !is_adm1(adm.adm1)) return []
+	f?: Partial<{ [R in keyof Re]: Usr["_id"] }>,
+): Promise<number> {
+	if (f && ("rej" in f && !is_id(f.rej!) || "ref" in f && !is_id(f.ref!))) return 0
 	// deno-lint-ignore no-explicit-any
-	const d = await c.find(adm as any, { projection: { _id: 1 }, sort: { _id: -1 } }).toArray()
-	return d.map(d => d._id)
+	return f ? await c.countDocuments(f as any) : c.estimatedDocumentCount()
 }
 
 export async function nid_of_adm<

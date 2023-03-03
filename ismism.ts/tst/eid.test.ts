@@ -5,6 +5,7 @@ import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { nrec, rec_c, rec_d, rec_f, rec_r, rec_u } from "../src/eid/rec.ts"
 import { rolref, rol } from "../src/eid/rel.ts"
+import { nid } from "../src/eid/id.ts"
 
 await db("tst", true)
 
@@ -12,12 +13,14 @@ Deno.test("usr", async () => {
 	const nbr = "11111111111"
 	assert(null === await usr_r({ _id: 1 }, { nbr: 1 }))
 	const r_c = await usr_c(nbr, "四川", "成都")
-	assert(r_c && r_c === 1)
+	assert(r_c && r_c === 1 && await nid(coll.usr) === 1)
 	const u = await usr_r({ _id: r_c }, { nam: 1, intro: 1, adm2: 1, nbr: 1 })
 	assert(u && u.nam === "1" && u.intro.length === 0 && u.adm2 === "成都" && u.nbr === nbr)
-	await usr_u(r_c, { $set: { nam: "中文名", adm1: "广东", adm2: "汕头", intro: "介绍" } })
+	assertEquals([0, 0], await Promise.all([nid(coll.usr, { rej: 2 }), nid(coll.usr, { ref: 2 })]))
+	await usr_u(r_c, { $set: { nam: "中文名", adm1: "广东", adm2: "汕头", rej: [2], intro: "介绍" } })
 	const u2 = await usr_r({ _id: r_c }, { nam: 1, adm2: 1, intro: 1 })
 	assert(u2 && u2.nam === "中文名" && u2.adm2 === "汕头" && u2.intro.length === 2)
+	assertEquals([1, 0], await Promise.all([nid(coll.usr, { rej: 2 }), nid(coll.usr, { ref: 2 })]))
 	await usr_d(r_c)
 	assert(null === await usr_r({ _id: 1 }, { nbr: 1 }))
 })
