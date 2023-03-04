@@ -11,8 +11,10 @@ export type PasPos = {
 	pas?: Pas | null,
 	etag?: string | null,
 }
-export type Pos = "pas"
+export type Pos = "pas" | "pre" | "pro" | "put"
+export type { Pas } from "./pas.ts"
 export type PasCode = Ret<typeof pas_code>
+export type PreUsr = Ret<typeof pre_usr>
 
 export async function pos(
 	p: PasPos,

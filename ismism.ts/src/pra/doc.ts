@@ -6,6 +6,7 @@ import { soc_r } from "../eid/soc.ts"
 import { agd_r } from "../eid/agd.ts"
 import { nrec, rec_f } from "../eid/rec.ts"
 import { id, idnam, nid_of_adm } from "../eid/id.ts"
+import { aut_r } from "../eid/aut.ts"
 
 export async function nid(
 ) {
@@ -23,8 +24,8 @@ const pagd = { account: 1, budget: 1, fund: 1, expense: 1, goal: 1, img: 1 } as 
 export async function usr(
 	_id: Usr["_id"]
 ) {
-	const [u, urej, uref, sref, aref, nr] = await Promise.all([
-		usr_r({ _id }, pid),
+	const [u, aut, urej, uref, sref, aref, nr] = await Promise.all([
+		usr_r({ _id }, pid), aut_r(_id),
 		id(coll.usr, { rej: _id }), id(coll.usr, { ref: _id }),
 		rolref(coll.soc, _id), rolref(coll.agd, _id),
 		nrec({ uid: [_id] }),
@@ -35,7 +36,7 @@ export async function usr(
 		idnam(coll.soc, Object.values(sref).flatMap(s => s.map(p => p[0]))),
 		idnam(coll.agd, Object.values(aref).flatMap(s => s.map(p => p[0]))),
 	])
-	return { ...u, sref, aref, unam, snam, anam, nrec: nr }
+	return { ...u, aut: aut ? true : false, urej, uref, sref, aref, unam, snam, anam, nrec: nr }
 }
 
 export async function soc(
