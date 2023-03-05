@@ -71,6 +71,12 @@ button:focus {
 	outline: none;
 }
 
+nav {
+	overflow: scroll;
+	scrollbar-width: none;
+	scroll-snap-type: x mandatory;
+}
+
 nav::-webkit-scrollbar {
 	display: none;
 }
@@ -538,6 +544,18 @@ nav.main li.active>a>em {
 	color: var(--red);
 }
 
+nav.adm a {
+	padding: 0px 12px;
+	border-radius: 16px;
+	border: 1px solid var(--darkgray);
+	color: var(--darkgray);
+}
+
+nav.adm li.active>a {
+	color: var(--lightgray);
+	background: var(--darkgray);
+}
+
 @media (hover: hover) {
 	nav.main a:hover {
 		color: var(--black);
@@ -546,5 +564,11 @@ nav.main li.active>a>em {
 
 	nav.main a:hover>em {
 		color: var(--red);
+	}
+
+	nav.adm a:hover {
+		color: var(--lightgray);
+		background: var(--darkgray);
+		opacity: 0.65;
 	}
 }

@@ -1,9 +1,11 @@
 import type { Pos } from "../../src/pra/pos.ts"
 
-export const utc_refresh = 500
+export const utc_refresh = 750
 export let utc_etag = Date.now()
 export const main = document.getElementById("main")! as HTMLDivElement
 export const pas_a = document.getElementById("pas_a")! as HTMLAnchorElement
+export const adm1 = document.getElementById("adm1")! as HTMLMenuElement
+export const adm2 = document.getElementById("adm2")! as HTMLMenuElement
 
 export async function que<T>(
 	q: string

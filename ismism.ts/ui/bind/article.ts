@@ -2,7 +2,7 @@ import type { Id } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { nav, navhash, navpas } from "./nav.ts"
+import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
 import { is_actid, is_nbr, lim_re, req_re } from "../../src/eid/is.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
@@ -17,6 +17,7 @@ export function pas(
 		navpas(null)
 	}
 
+	navnid()
 	main.innerHTML = ""
 	const t = bind("pas")
 
@@ -82,6 +83,7 @@ export async function usr(
 	const [rej2, ref2] = [u.rej.length >= req_re, u.ref.length < req_re]
 	const froze = rej2 && !(nav.pas && (nav.pas.aut || is_sec(nav.pas)))
 
+	navnid()
 	main.innerHTML = ""
 	const t = bind("usr")
 
@@ -132,13 +134,40 @@ export async function usr(
 	main.append(t.bind)
 
 }
-export function soc(
-	sid?: number
-) {
 
+export type Soc = Omit<NonNullable<Q.Soc>, "unam"> & {
+	unam: Map<Id["_id"], Id["nam"]>,
 }
+export async function soc(
+	sidadm?: number | string
+) {
+	if (navhash(typeof sidadm === "number" ? `s${sidadm}` : `soc${sidadm ?? ""}`)) return
+	let ss: Q.Soc[]
+	if (typeof sidadm === "number") {
+		ss = [await que<Q.Soc>(`soc?sid=${sidadm}`)]
+		navnid()
+	} else {
+		const [a1, a2] = (sidadm ?? "").split("-")
+		if (a2) {
+			ss = await que<Q.Soc[]>(`soc?adm2=${a2}`)
+			navnid("soc", a1, a2)
+		} else if (a1) {
+			ss = await que<Q.Soc[]>(`soc?adm1=${a1}`)
+			navnid("soc", a1)
+		} else {
+			ss = await que<Q.Soc[]>(`soc`)
+			navnid("soc")
+		}
+	}
+
+	ss = ss.filter(s => s)
+	if (typeof sidadm === "number" && ss.length === 0) return idn(`s${sidadm}`, "社团")
+
+	main.innerHTML = JSON.stringify(ss)
+}
+
 export function agd(
-	aid?: number
+	aid?: number | string
 ) {
 
 }
@@ -154,6 +183,7 @@ function pre(
 	nam: "用户" | "社团" | "活动",
 ) {
 	if (!nav.pas) return
+	navnid()
 	main.innerHTML = ""
 	const t = bind("pre")
 
@@ -197,6 +227,7 @@ function put(
 	id: Usr,
 ) {
 	if (!nav.pas) return
+	navnid()
 	main.innerHTML = ""
 	const t = bind("put")
 
@@ -259,6 +290,7 @@ function put(
 export function idn(
 	id: string, nam: string
 ) {
+	navnid()
 	main.innerHTML = ""
 
 	const t = bind("idn")

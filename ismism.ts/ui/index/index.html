@@ -25,6 +25,15 @@
 			<li><a id="pas_a" href="#pas">用户登录</a></li>
 		</menu>
 	</nav>
+	<hr>
+	<nav class="adm none">
+		<menu id="adm1"></menu>
+	</nav>
+	<hr>
+	<nav class="adm none">
+		<menu id="adm2"></menu>
+	</nav>
+	<hr>
 	<div id="main"></div>
 </body>
 
@@ -34,7 +43,7 @@
 	) {
 		for (const e of t.parentElement.parentElement.children) e.classList.remove("active")
 		t.parentElement.classList.add("active")
-		if (scroll) t.scrollIntoView({ behavior: "smooth" })
+		// if (scroll) t.scrollIntoView({ behavior: "smooth" })
 	}
 	for (const n of document.getElementsByTagName("nav")) n.addEventListener("wheel", e => {
 		if (e.deltaX != 0) return
