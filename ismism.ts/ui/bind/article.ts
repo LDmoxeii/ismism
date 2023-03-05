@@ -6,7 +6,7 @@ import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
 import { is_actid, is_nbr, lim_re, lim_sec, req_re } from "../../src/eid/is.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
-import { btn, ida, idnam, label, meta, pro, rolref, seladm, txt } from "./section.ts"
+import { btn, ida, idnam, label, meta, pro, rel, rolref, seladm, txt } from "./section.ts"
 import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_sec } from "../../src/pra/con.ts"
 
 export function pas(
@@ -189,11 +189,14 @@ export async function soc(
 		}
 
 		if (nav.pas) {
-			if (nav.pas.aut || is_sec(nav.pas, { sid: s._id })) t.put.addEventListener("click", () => put("社团", s))
+			if (nav.pas.aut || s.sec.includes(nav.pas.uid))
+				t.put.addEventListener("click", () => put("社团", s))
 			else t.put.remove()
+			rel(t, "sid", s, () => soc(s._id))
 			pro(t, "sid", s, nav.pas.aut ? () => soc(s._id) : undefined)
 		} else {
 			t.pos.remove()
+			t.rel.remove()
 			t.pro.remove()
 		}
 
@@ -296,7 +299,6 @@ function put(
 			t.uidlim.value = `${s.uidlim}`
 			t.reslim.value = `${s.reslim}`
 			const [isaut, issec] = [nav.pas.aut, is_sec(nav.pas, { sid: id._id })]
-			console.log({ isaut, issec })
 			t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = !isaut
 			t.intro.readOnly = t.reslim.readOnly = !issec
 			p = () => [

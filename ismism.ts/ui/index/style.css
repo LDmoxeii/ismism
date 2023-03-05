@@ -322,9 +322,14 @@ section.meta>span.green {
 }
 
 section>p.rolref>a {
+	margin-right: 4px;
 	padding: 0.4ch 1ch;
 	color: var(--lightgray);
 	border-radius: 4px;
+}
+
+section>p.rolref>a::before {
+	content: "";
 }
 
 section.cover {

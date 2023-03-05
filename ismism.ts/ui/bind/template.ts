@@ -41,13 +41,17 @@ const section = {
 		rej2: t("em"), ref2: t("em"),
 	},
 
+	seladm: {
+		adm: t("section"), adm1: t("select"), adm2: t("select"),
+	},
+
+	rel: {
+		rel: t("section"), relsec: t("button"), reluid: t("button"), relres: t("button"),
+	},
+
 	pro: {
 		pro: t("section"), prorej: t("button"), proref: t("button"),
 	},
-
-	seladm: {
-		adm: t("section"), adm1: t("select"), adm2: t("select"),
-	}
 }
 export type Section = typeof section
 
@@ -78,6 +82,7 @@ const template = {
 		sec: t("p"), uid: t("p"), res: t("p"),
 		intro: t("p"), rec: t("p"),
 		pos: t("section"), put: t("button"),
+		...section.rel,
 		...section.pro,
 	},
 

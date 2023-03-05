@@ -62,7 +62,7 @@ Deno.test("rel", async () => {
 	], [1, 1, 2, 3])
 	await Promise.all([
 		usr_u(1, { $set: { ref: [1, 2, 3] } }),
-		soc_u(1, { $set: { ref: [3, 4], sec: [1, 4], uid: [1, 3], res: [] } }),
+		soc_u(1, { $set: { ref: [3, 3, 4], sec: [1, 4, 4], uid: [1, 3], res: [] } }),
 		soc_u(2, { $set: { ref: [2, 3], sec: [1, 4], uid: [1, 3], res: [1, 2] } }),
 		soc_u(3, { $set: { ref: [], sec: [2, 3], uid: [1, 3], res: [1, 2] } }),
 	])

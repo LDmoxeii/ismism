@@ -1,7 +1,7 @@
 import type { DocU } from "../../src/db.ts"
+import type { Agd, Soc, Usr } from "./article.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
-import { Soc, Usr } from "./article.ts"
 import { nav } from "./nav.ts"
 import { pos, Section, utc_refresh } from "./template.ts"
 
@@ -137,6 +137,42 @@ export function seladm(
 	selopt(t.adm2, adm.get(adm1)!)
 	t.adm2.value = adm2
 	t.adm1.addEventListener("change", () => selopt(t.adm2, adm.get(t.adm1.value)!))
+}
+
+export function rel(
+	t: Section["rel"],
+	id: "sid" | "aid",
+	d: Soc | Agd,
+	refresh: () => void,
+) {
+	if (!nav.pas) { t.rel.remove(); return }
+	const namid = new Map([...d.unam.entries()].map(([u, nam]) => [nam, u]))
+	if (d.ref.includes(nav.pas.uid)) btn(t.relsec, t.relsec.innerText, {
+		prompt1: "输入要增加或删除的书记名",
+		pos: p1 => {
+			const uid = namid.get(p1 ?? "")
+			if (!uid) return null
+			return pos<DocU>("put", { [id]: d._id, rol: "sec", uid, add: !d.sec.includes(uid) })
+		},
+		alert: "无效书记名或书记已满\n增删的书记名需出现在申请人、志愿者或书记名单",
+		refresh,
+	}); else t.relsec.remove()
+	if (d.sec.includes(nav.pas.uid)) btn(t.reluid, t.reluid.innerText, {
+		prompt1: "输入要增加或删除的志愿者名",
+		pos: p1 => {
+			const uid = namid.get(p1 ?? "")
+			if (!uid) return null
+			return pos<DocU>("put", { [id]: d._id, rol: "uid", uid, add: !d.uid.includes(uid) })
+		},
+		alert: "无效志愿者名或志愿者已满\n增删的志愿者名需出现在申请人或志愿者名单",
+		refresh,
+	}); else t.reluid.remove()
+	const [isuid, isres] = [d.uid.includes(nav.pas.uid), d.res.includes(nav.pas.uid)]
+	if (!isuid) btn(t.relres, isres ? "取消申请" : "申请加入", {
+		pos: () => pos<DocU>("put", { [id]: d._id, rol: "res", uid: nav.pas!.uid, add: !isres }),
+		refresh,
+		alert: "申请人已满",
+	}); else t.relres.disabled = true
 }
 
 export function pro(

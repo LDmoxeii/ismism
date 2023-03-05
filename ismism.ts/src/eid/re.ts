@@ -33,8 +33,6 @@ export function idnref(
 	idr: Re["ref"] | Rel["sec"],
 	ref: Re["ref"],
 ): IdNRef {
-	return [id, idr.length > ref.length
-		? idr.filter(r => ref.includes(r)).length
-		: ref.filter(r => idr.includes(r)).length
-	]
+	const rs = new Set(idr)
+	return [id, ref.filter(r => rs.has(r)).length]
 }
