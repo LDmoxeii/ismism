@@ -13,6 +13,20 @@ export function label(
 	l.innerText = s
 }
 
+export function txt(
+	t: HTMLTextAreaElement,
+	n: string,
+	s?: string,
+) {
+	if (s) t.value = s
+	t.addEventListener("input", () => {
+		label(t, `${n}：（${t.value.length}/${t.maxLength} 个字符）`)
+		t.style.height = "auto"
+		t.style.height = `${t.scrollHeight}px`
+	})
+	if (s) setTimeout(() => t.dispatchEvent(new Event("input")), 50)
+}
+
 function selopt(
 	sel: HTMLSelectElement,
 	opt: Iterable<string>,

@@ -1,11 +1,12 @@
 import type { Id } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
+import type { DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { nav, navhash, navpas } from "./nav.ts"
-import { bind, main, pos, que } from "./template.ts"
+import { bind, main, pas_a, pos, que } from "./template.ts"
 import { is_actid, is_nbr, lim_re, req_re } from "../../src/eid/is.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
-import { ida, idnam, label, meta, pro, rolref, seladm } from "./section.ts"
+import { btn, ida, idnam, label, meta, pro, rolref, seladm, txt } from "./section.ts"
 import { is_pro_usr, is_sec } from "../../src/pra/con.ts"
 
 export function pas(
@@ -100,6 +101,7 @@ export async function usr(
 
 	if (nav.pas) {
 		if (nav.pas.uid === uid) {
+			pas_a.innerText = u.nam
 			t.put.addEventListener("click", () => put("用户", u))
 			t.pas.addEventListener("click", pas)
 			if (nav.pas.aut || is_sec(nav.pas)) {
@@ -147,11 +149,72 @@ function pre(
 ) {
 
 }
+
 function put(
-	t: "用户" | "社团" | "活动",
+	nam: "用户" | "社团" | "活动",
 	id: Usr,
 ) {
+	if (!nav.pas) return
+	main.innerHTML = ""
+	const t = bind("put")
+
+	idnam(t, `${id._id}`, `编辑${nam}信息`)
+	t.pnam.value = id.nam
+	seladm(t, id.adm1, id.adm2)
+	txt(t.intro, "简介", id.intro)
+
+	const pid = () => ({ nam: t.pnam.value, adm1: t.adm1.value, adm2: t.adm2.value, })
+	const paut = () => ({ uidlim: parseInt(t.uidlim.value) })
+	const psoc = () => ({ intro: t.intro.value.trim(), reslim: parseInt(t.reslim.value) })
+	const pagd = () => ({
+		account: t.account.value.trim(), budget: parseInt(t.budget.value),
+		fund: parseInt(t.fund.value), expense: parseInt(t.expense.value)
+	})
+	// deno-lint-ignore no-explicit-any
+	let p: () => any[]
+	let r
+	switch (nam) {
+		case "用户": {
+			[t.uidlim, t.reslim, t.account, t.budget, t.fund, t.expense].forEach(el => el.parentElement?.remove())
+			p = () => [{ uid: id._id, ...pid(), intro: t.intro.value.trim() }]
+			r = () => usr(id._id)
+			break
+		} case "社团": {
+			[t.account, t.budget, t.fund, t.expense].forEach(el => el.parentElement?.remove())
+			const [isaut, issec] = [nav.pas.aut, is_sec(nav.pas, { sid: id._id })]
+			if (!nav.pas.aut) t.intro.readOnly = t.uidlim.readOnly = true
+			if (!issec) t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = true
+			p = () => [
+				...isaut ? [{ sid: id._id, ...pid(), ...paut() }] : [],
+				...issec ? [{ sid: id._id, ...psoc() }] : [],
+			]
+			r = () => soc(id._id)
+			break
+		} case "活动": {
+			const [isaut, issec] = [nav.pas.aut, is_sec(nav.pas, { aid: id._id })]
+			if (!nav.pas.aut) t.intro.readOnly = t.uidlim.readOnly = true
+			if (!issec) t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = true
+			p = () => [
+				...isaut ? [{ aid: id._id, ...pid(), ...paut() }] : [],
+				...issec ? [{ aid: id._id, ...psoc(), ...pagd() }] : [],
+			]
+			r = () => agd(id._id)
+			break
+		}
+	}
+	btn(t.put, t.put.innerText, {
+		pos: async () => {
+			const rs = await Promise.all(p().map(b => pos<DocU>("put", b)))
+			return rs.some(r => r === null) ? null : 1
+		},
+		alert: "无效输入\n或名称已被占用",
+		refresh: r,
+	})
+	t.cancel.addEventListener("click", r)
+
+	main.append(t.bind)
 }
+
 export function idn(
 	id: string, nam: string
 ) {

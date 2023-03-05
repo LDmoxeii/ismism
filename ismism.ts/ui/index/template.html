@@ -97,6 +97,68 @@
 	</article>
 </template>
 
+<template id="put">
+	<article>
+		<section>
+			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
+		</section>
+		<hr>
+		<section class="flex">
+			<label>名称：（2-16个中文字符）</label>
+			<input class="pnam" type="text" maxlength="16" required />
+		</section>
+		<hr>
+		<section class="flex adm">
+			<label>地区：</label>
+			<select class="adm1"></select>
+			<select class="adm2"></select>
+		</section>
+		<hr>
+		<section>
+			<label>简介：（0 / 2048 个字符）</label>
+			<textarea class="intro" maxlength="2048"></textarea>
+		</section>
+		<hr>
+		<section class="flex">
+			<label>志愿者上限：（0-256）</label>
+			<input class="uidlim" type="text" inputmode="numeric" pattern="\d{1,3}" placeholder="0-256 的整数"
+				minlength="1" maxlength="3" required />
+		</section>
+		<hr>
+		<section class="flex">
+			<label>申请人上限：（0-64）</label>
+			<input class="reslim" type="text" inputmode="numeric" pattern="\d{1,2}" placeholder="0-64 的整数" minlength="1"
+				maxlength="2" required />
+		</section>
+		<hr>
+		<section class="flex">
+			<label>历史明细：（文档链接）</label>
+			<input class="account" type="text" maxlength="128" required />
+		</section>
+		<hr>
+		<section class="flex">
+			<label>当前预算：</label>
+			<input class="budget" type="text" inputmode="numeric" required />
+		</section>
+		<hr>
+		<section class="flex">
+			<label>收到支持：</label>
+			<input class="fund" type="text" inputmode="numeric" required />
+		</section>
+		<hr>
+		<section class="flex">
+			<label>当前指出：</label>
+			<input class="expense" type="text" inputmode="numeric" required />
+		</section>
+		<hr>
+		<section class="flex">
+			<button class="put">确认</button>
+			<button class="cancel">取消</button>
+		</section>
+		<hr>
+	</article>
+</template>
+
 <template id="idn">
 	<article>
 		<section>

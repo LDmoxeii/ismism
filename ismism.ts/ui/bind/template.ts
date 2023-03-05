@@ -69,6 +69,17 @@ const template = {
 		...section.pro,
 	},
 
+	put: {
+		tid: "put" as const,
+		...section.idnam,
+		pnam: t("input"),
+		...section.seladm,
+		intro: t("textarea"),
+		uidlim: t("input"), reslim: t("input"),
+		account: t("input"), budget: t("input"), fund: t("input"), expense: t("input"),
+		put: t("button"), cancel: t("button"),
+	},
+
 	idn: {
 		tid: "idn" as const,
 		id: t("code"), meta: t("section"),
