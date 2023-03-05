@@ -1,5 +1,5 @@
 import type { DocU } from "../../src/db.ts"
-import { adm } from "../../src/ont/adm.ts"
+import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { Usr } from "./article.ts"
 import { nav } from "./nav.ts"
@@ -129,8 +129,8 @@ export function rolref(
 
 export function seladm(
 	t: Section["seladm"],
-	adm1 = "江苏",
-	adm2 = "苏州"
+	adm1 = adm1_def,
+	adm2 = adm2_def,
 ) {
 	selopt(t.adm1, adm.keys())
 	t.adm1.value = adm1
@@ -149,5 +149,5 @@ export function pro(
 	const [rej, ref] = [d.rej.includes(nav.pas.uid), d.ref.includes(nav.pas.uid)]
 	const p = (re: "rej" | "ref", add: boolean) => pos<DocU>("pro", { re, [id]: d._id, add })
 	btn(t.prorej, rej ? "取消反对" : "反对", refresh ? { pos: () => p("rej", !rej), refresh } : undefined)
-	btn(t.proref, rej ? "取消推荐" : "推荐", refresh ? { pos: () => p("ref", !ref), refresh } : undefined)
+	btn(t.proref, ref ? "取消推荐" : "推荐", refresh ? { pos: () => p("ref", !ref), refresh } : undefined)
 }

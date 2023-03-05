@@ -69,6 +69,14 @@ const template = {
 		...section.pro,
 	},
 
+	pre: {
+		tid: "pre" as const,
+		...section.idnam,
+		nbr: t("input"), pnam: t("input"),
+		...section.seladm,
+		pre: t("button"), cancel: t("button"),
+	},
+
 	put: {
 		tid: "put" as const,
 		...section.idnam,

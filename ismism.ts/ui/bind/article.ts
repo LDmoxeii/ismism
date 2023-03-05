@@ -1,13 +1,13 @@
 import type { Id } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
-import type { DocU } from "../../src/db.ts"
+import type { DocC, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { nav, navhash, navpas } from "./nav.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
 import { is_actid, is_nbr, lim_re, req_re } from "../../src/eid/is.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { btn, ida, idnam, label, meta, pro, rolref, seladm, txt } from "./section.ts"
-import { is_pro_usr, is_sec } from "../../src/pra/con.ts"
+import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_sec } from "../../src/pra/con.ts"
 
 export function pas(
 ) {
@@ -104,13 +104,19 @@ export async function usr(
 			pas_a.innerText = u.nam
 			t.put.addEventListener("click", () => put("用户", u))
 			t.pas.addEventListener("click", pas)
-			if (nav.pas.aut || is_sec(nav.pas)) {
-				t.preusr.addEventListener("click", () => pre("用户"))
-			} else t.preusr.remove()
-			if (nav.pas.aut) {
-				t.presoc.addEventListener("click", () => pre("社团"))
-				t.preagd.addEventListener("click", () => pre("活动"))
-			} else[t.presoc, t.preagd].forEach(p => p.remove())
+			if (is_pre_usr(nav.pas)) t.preusr.addEventListener("click", () => pre("用户"))
+			else t.preusr.remove()
+			if (is_pre_soc(nav.pas)) t.presoc.addEventListener("click", () => pre("社团"))
+			else t.presoc.remove()
+			if (is_pre_agd(nav.pas)) t.preagd.addEventListener("click", () => pre("活动"))
+			else t.preagd.remove()
+			btn(t.prefund, t.prefund.innerText, {
+				prompt1: "输入订单号",
+				confirm: "订单号只能激活或绑定一位用户。确认使用？",
+				alert: "无效订单号，或订单号已被使用",
+				pos: (actid) => actid ? pos("pre", { actid }) : null,
+				refresh: () => usr(u._id),
+			})
 			t.pro.remove()
 		} else {
 			t.pos.remove()
@@ -145,9 +151,45 @@ export function lit(
 
 }
 function pre(
-	t: "用户" | "社团" | "活动",
+	nam: "用户" | "社团" | "活动",
 ) {
+	if (!nav.pas) return
+	main.innerHTML = ""
+	const t = bind("pre")
 
+	idnam(t, `${nav.pas.uid}`, `添加${nam}`)
+	seladm(t)
+
+	// deno-lint-ignore no-explicit-any
+	let p: () => any
+	let r: (id: Id["_id"]) => void
+	switch (nam) {
+		case "用户": {
+			t.pnam.parentElement?.remove()
+			p = () => ({ nbr: t.nbr.value, adm1: t.adm1.value, adm2: t.adm2.value })
+			r = usr
+			break
+		} case "社团": {
+			t.nbr.parentElement?.remove()
+			p = () => ({ snam: t.pnam.value, adm1: t.adm1.value, adm2: t.adm2.value })
+			r = soc
+			break
+		} case "活动": {
+			t.nbr.parentElement?.remove()
+			p = () => ({ anam: t.pnam.value, adm1: t.adm1.value, adm2: t.adm2.value })
+			r = agd
+			break
+		}
+	}
+
+	btn(t.pre, t.pre.innerText, {
+		pos: () => pos<DocC<Id["_id"]>>("pre", p()),
+		alert: `无效输入\n或${nam === "用户" ? "手机号" : "名称"}已被占用`,
+		refresh: r,
+	})
+	t.cancel.addEventListener("click", () => usr(nav.pas!.uid))
+
+	main.append(t.bind)
 }
 
 function put(
@@ -169,8 +211,7 @@ function put(
 	const pagd = () => ({
 		account: t.account.value.trim(), budget: parseInt(t.budget.value),
 		fund: parseInt(t.fund.value), expense: parseInt(t.expense.value)
-	})
-	// deno-lint-ignore no-explicit-any
+	}) // deno-lint-ignore no-explicit-any
 	let p: () => any[]
 	let r
 	switch (nam) {
