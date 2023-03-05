@@ -1,7 +1,7 @@
 import type { DocU } from "../../src/db.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
-import { Usr } from "./article.ts"
+import { Soc, Usr } from "./article.ts"
 import { nav } from "./nav.ts"
 import { pos, Section, utc_refresh } from "./template.ts"
 
@@ -100,7 +100,7 @@ export function idnam(
 
 export function meta(
 	t: Section["meta"],
-	id: Usr,
+	id: Usr | Soc,
 	rej2: boolean,
 	ref2: boolean,
 ) {
@@ -142,7 +142,7 @@ export function seladm(
 export function pro(
 	t: Section["pro"],
 	id: "uid" | "sid" | "aid",
-	d: Usr,
+	d: Usr | Soc,
 	refresh?: () => void,
 ) {
 	if (!nav.pas) { t.pro.remove(); return }

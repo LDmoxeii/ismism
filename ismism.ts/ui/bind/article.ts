@@ -4,7 +4,7 @@ import type { DocC, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
-import { is_actid, is_nbr, lim_re, req_re } from "../../src/eid/is.ts"
+import { is_actid, is_nbr, lim_re, lim_sec, req_re } from "../../src/eid/is.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { btn, ida, idnam, label, meta, pro, rolref, seladm, txt } from "./section.ts"
 import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_sec } from "../../src/pra/con.ts"
@@ -90,9 +90,9 @@ export async function usr(
 	const re = meta(t, u, rej2, ref2)
 	idnam(t, `${uid}`, froze ? "" : u.nam, re)
 	rolref(t.rolref, u)
-	label(t.urej, `反对（${u.urej.length}/${lim_re}）：`)
+	label(t.urej, `反对：（${u.urej.length}/${lim_re}）`)
 	ida(t.urej, u.urej.map(r => [`${r}`, u.unam.get(r)!]))
-	label(t.uref, `推荐（${u.uref.length}/${lim_re}）：`)
+	label(t.uref, `推荐：（${u.uref.length}/${lim_re}）`)
 	ida(t.uref, u.uref.map(r => [`${r}`, u.unam.get(r)!]))
 
 	if (froze) [t.nam, t.intro, t.rec].forEach(el => el.classList.add("froze"))
@@ -163,7 +163,46 @@ export async function soc(
 	ss = ss.filter(s => s)
 	if (typeof sidadm === "number" && ss.length === 0) return idn(`s${sidadm}`, "社团")
 
-	main.innerHTML = JSON.stringify(ss)
+	main.innerHTML = ""
+	for (const d of ss) {
+		if (!d) continue
+
+		const s: Soc = { ...d, unam: new Map(d.unam) }
+		const [rej2, ref2] = [s.rej.length >= req_re, s.ref.length < req_re]
+		const froze = rej2 && !(nav.pas && (nav.pas.aut || is_sec(nav.pas, { sid: s._id })))
+
+		const t = bind("soc")
+		const re = meta(t, s, rej2, ref2)
+		idnam(t, `s${s._id}`, s.nam, re)
+
+		label(t.sec, `书记：（${s.sec.length}/${lim_sec}）`)
+		ida(t.sec, s.sec.map(r => [`${r}`, s.unam.get(r)!]))
+		label(t.uid, `成员：（${s.uid.length}/${s.uidlim}）`)
+		ida(t.uid, s.uid.map(r => [`${r}`, s.unam.get(r)!]))
+		label(t.res, `申请人：（${s.res.length}/${s.reslim}）`)
+		ida(t.res, s.res.map(r => [`${r}`, s.unam.get(r)!]))
+
+		if (froze) [t.nam, t.intro, t.rec].forEach(el => el.classList.add("froze"))
+		else {
+			t.intro.innerText = s.intro
+			t.rec.innerText = JSON.stringify(s.nrec)
+		}
+
+		if (nav.pas) {
+			if (nav.pas.aut || is_sec(nav.pas, { sid: s._id })) t.put.addEventListener("click", () => put("社团", s))
+			else t.put.remove()
+			pro(t, "sid", s, nav.pas.aut ? () => soc(s._id) : undefined)
+		} else {
+			t.pos.remove()
+			t.pro.remove()
+		}
+
+		main.append(t.bind)
+	}
+}
+
+export type Agd = Omit<NonNullable<Q.Agd>, "unam"> & {
+	unam: Map<Id["_id"], Id["nam"]>,
 }
 
 export function agd(
@@ -224,7 +263,7 @@ function pre(
 
 function put(
 	nam: "用户" | "社团" | "活动",
-	id: Usr,
+	id: Usr | Soc,
 ) {
 	if (!nav.pas) return
 	navnid()
@@ -253,9 +292,13 @@ function put(
 			break
 		} case "社团": {
 			[t.account, t.budget, t.fund, t.expense].forEach(el => el.parentElement?.remove())
+			const s = id as Soc
+			t.uidlim.value = `${s.uidlim}`
+			t.reslim.value = `${s.reslim}`
 			const [isaut, issec] = [nav.pas.aut, is_sec(nav.pas, { sid: id._id })]
-			if (!nav.pas.aut) t.intro.readOnly = t.uidlim.readOnly = true
-			if (!issec) t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = true
+			console.log({ isaut, issec })
+			t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = !isaut
+			t.intro.readOnly = t.reslim.readOnly = !issec
 			p = () => [
 				...isaut ? [{ sid: id._id, ...pid(), ...paut() }] : [],
 				...issec ? [{ sid: id._id, ...psoc() }] : [],
@@ -263,9 +306,16 @@ function put(
 			r = () => soc(id._id)
 			break
 		} case "活动": {
+			const a = id as Agd
+			t.uidlim.value = `${a.uidlim}`
+			t.reslim.value = `${a.reslim}`
+			t.account.value = a.account
+			t.budget.value = `${a.budget}`
+			t.fund.value = `${a.fund}`
+			t.expense.value = `${a.expense}`
 			const [isaut, issec] = [nav.pas.aut, is_sec(nav.pas, { aid: id._id })]
-			if (!nav.pas.aut) t.intro.readOnly = t.uidlim.readOnly = true
-			if (!issec) t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = true
+			t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = !isaut;
+			[t.intro, t.reslim, t.account, t.budget, t.fund, t.expense].forEach(el => el.readOnly = !issec)
 			p = () => [
 				...isaut ? [{ aid: id._id, ...pid(), ...paut() }] : [],
 				...issec ? [{ aid: id._id, ...psoc(), ...pagd() }] : [],

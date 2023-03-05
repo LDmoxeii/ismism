@@ -175,6 +175,23 @@ section>p>span:empty::before {
 	content: "无";
 }
 
+section>input {
+	padding: 1ch;
+	max-width: 36ch;
+	border: none;
+	border-bottom: 1px dotted var(--black);
+	text-align: center;
+}
+
+section>input:focus {
+	outline: none;
+	border-bottom: 1px solid var(--black);
+}
+
+section>input:focus::placeholder {
+	color: transparent;
+}
+
 section>textarea {
 	box-sizing: border-box;
 	display: block;
@@ -191,6 +208,12 @@ section>textarea {
 
 section>textarea:focus {
 	border: 1px solid var(--black);
+}
+
+section>input:read-only,
+section>textarea:read-only {
+	background: var(--lightgray);
+	border: none !important;
 }
 
 section>select {
@@ -267,25 +290,6 @@ section.flex>button:disabled {
 
 section.flex>input {
 	flex: 10 1 10ch;
-	padding: 1ch;
-	max-width: 36ch;
-	border: none;
-	border-bottom: 1px dotted var(--black);
-	text-align: center;
-}
-
-section.flex>input:focus {
-	outline: none;
-	border-bottom: 1px solid var(--black);
-}
-
-section.flex>input:focus::placeholder {
-	color: transparent;
-}
-
-section.flex>input:read-only {
-	background: var(--lightgray);
-	border: none;
 }
 
 section.flex>select {

@@ -97,6 +97,61 @@
 	</article>
 </template>
 
+<template id="soc">
+	<article>
+		<section>
+			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
+		</section>
+		<hr>
+		<section class="meta">
+			社团地区：<span class="adm"></span><br>
+			注册时间：<span class="utc"></span><br>
+			<hr>
+			反对者：<span class="rej"></span><br>
+			推荐人：<span class="ref"></span><br>
+			<hr>
+			反对者达两名时，<em class="rej2">社团信息不公示</em><br>
+			推荐人达两名前，<em class="ref2">社团权限不可用</em><br>
+			仅书记有权限反对或推荐用户
+		</section>
+		<hr>
+		<section>
+			<label>书记：</label>
+			<p class="sec"></p>
+		</section>
+		<hr>
+		<section>
+			<label>成员：</label>
+			<p class="uid"></p>
+		</section>
+		<hr>
+		<section>
+			<label>申请人：</label>
+			<p class="res"></p>
+		</section>
+		<hr>
+		<section>
+			<label>简介：</label>
+			<p class="intro"></p>
+		</section>
+		<hr>
+		<section>
+			<label>rec：</label>
+			<p class="rec"></p>
+		</section>
+		<hr>
+		<section class="pos flex">
+			<button class="put">编辑</button>
+		</section>
+		<hr>
+		<section class="pro flex">
+			<button class="prorej">反对</button>
+			<button class="proref">推荐</button>
+		</section>
+		<hr>
+	</article>
+</template>
+
 <template id="pre">
 	<article>
 		<section>
@@ -145,15 +200,15 @@
 			<select class="adm2"></select>
 		</section>
 		<hr>
-		<section>
-			<label>简介：（0 / 2048 个字符）</label>
-			<textarea class="intro" maxlength="2048"></textarea>
-		</section>
-		<hr>
 		<section class="flex">
 			<label>志愿者上限：（0-256）</label>
 			<input class="uidlim" type="text" inputmode="numeric" pattern="\d{1,3}" placeholder="0-256 的整数"
 				minlength="1" maxlength="3" required />
+		</section>
+		<hr>
+		<section>
+			<label>简介：（0 / 2048 个字符）</label>
+			<textarea class="intro" maxlength="2048"></textarea>
 		</section>
 		<hr>
 		<section class="flex">
@@ -178,7 +233,7 @@
 		</section>
 		<hr>
 		<section class="flex">
-			<label>当前指出：</label>
+			<label>当前支出：</label>
 			<input class="expense" type="text" inputmode="numeric" required />
 		</section>
 		<hr>

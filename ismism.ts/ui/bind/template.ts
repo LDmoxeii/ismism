@@ -71,6 +71,16 @@ const template = {
 		...section.pro,
 	},
 
+	soc: {
+		tid: "soc" as const,
+		...section.idnam,
+		...section.meta,
+		sec: t("p"), uid: t("p"), res: t("p"),
+		intro: t("p"), rec: t("p"),
+		pos: t("section"), put: t("button"),
+		...section.pro,
+	},
+
 	pre: {
 		tid: "pre" as const,
 		...section.idnam,
