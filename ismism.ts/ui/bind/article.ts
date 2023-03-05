@@ -3,10 +3,10 @@ import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { nav, navhash, navpas } from "./nav.ts"
 import { bind, main, pos, que } from "./template.ts"
-import { is_actid, is_nbr, req_re } from "../../src/eid/is.ts"
+import { is_actid, is_nbr, lim_re, req_re } from "../../src/eid/is.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
-import { ida, idnam, meta, pro, rolref, seladm } from "./section.ts"
-import { is_sec } from "../../src/pra/con.ts"
+import { ida, idnam, label, meta, pro, rolref, seladm } from "./section.ts"
+import { is_pro_usr, is_sec } from "../../src/pra/con.ts"
 
 export function pas(
 ) {
@@ -87,7 +87,9 @@ export async function usr(
 	const re = meta(t, u, rej2, ref2)
 	idnam(t, `${uid}`, froze ? "" : u.nam, re)
 	rolref(t.rolref, u)
-	ida(t.uref, u.urej.map(r => [`${r}`, u.unam.get(r)!]))
+	label(t.urej, `反对（${u.urej.length}/${lim_re}）：`)
+	ida(t.urej, u.urej.map(r => [`${r}`, u.unam.get(r)!]))
+	label(t.uref, `推荐（${u.uref.length}/${lim_re}）：`)
 	ida(t.uref, u.uref.map(r => [`${r}`, u.unam.get(r)!]))
 
 	if (froze) [t.nam, t.intro, t.rec].forEach(el => el.classList.add("froze"))
@@ -111,8 +113,7 @@ export async function usr(
 		} else {
 			t.pos.remove()
 			t.pre.remove()
-			if (nav.pas.aut || is_sec(nav.pas)) pro(t, u)
-			else t.pro.remove()
+			pro(t, "uid", u, is_pro_usr(nav.pas, "rej", u._id) ? () => usr(u._id) : undefined)
 		}
 	} else {
 		t.pos.remove()

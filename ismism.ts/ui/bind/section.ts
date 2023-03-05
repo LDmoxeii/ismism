@@ -1,8 +1,17 @@
+import type { DocU } from "../../src/db.ts"
 import { adm } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { Usr } from "./article.ts"
 import { nav } from "./nav.ts"
-import { Section } from "./template.ts"
+import { pos, Section, utc_refresh } from "./template.ts"
+
+export function label(
+	el: HTMLElement,
+	s: string,
+) {
+	const l = el.previousElementSibling as HTMLLabelElement
+	l.innerText = s
+}
 
 function selopt(
 	sel: HTMLSelectElement,
@@ -27,6 +36,39 @@ export function ida(
 		a.innerText = n
 		if (cls) a.classList.add(cls)
 	})
+}
+
+export function btn<
+	T
+>(
+	b: HTMLButtonElement,
+	s: string,
+	c?: {
+		prompt1?: string,
+		prompt2?: string,
+		confirm?: string,
+		pos: (p1?: string, p2?: string) => T,
+		alert?: string,
+		refresh: (r: NonNullable<Awaited<T>>) => void,
+	}
+) {
+	b.innerText = s
+	if (c) b.addEventListener("click", async () => {
+		const p1 = c.prompt1 ? prompt(c.prompt1) : undefined
+		if (p1 === null) return
+		const p2 = c.prompt2 ? prompt(c.prompt2) : undefined
+		if (p2 === null) return
+		if (!c.confirm || confirm(c.confirm)) {
+			b.disabled = true
+			const r = await c.pos(p1, p2)
+			if (c.alert) {
+				if (r === null) { alert(c.alert); b.disabled = false; return }
+			} else {
+				if (!r || r <= 0) return
+			}
+			if (r || r === 0) setTimeout(() => c.refresh(r), utc_refresh)
+		}
+	}); else b.disabled = true
 }
 
 export function idnam(
@@ -85,7 +127,13 @@ export function seladm(
 
 export function pro(
 	t: Section["pro"],
-	u: Usr,
+	id: "uid" | "sid" | "aid",
+	d: Usr,
+	refresh?: () => void,
 ) {
-
+	if (!nav.pas) { t.pro.remove(); return }
+	const [rej, ref] = [d.rej.includes(nav.pas.uid), d.ref.includes(nav.pas.uid)]
+	const p = (re: "rej" | "ref", add: boolean) => pos<DocU>("pro", { re, [id]: d._id, add })
+	btn(t.prorej, rej ? "取消反对" : "反对", refresh ? { pos: () => p("rej", !rej), refresh } : undefined)
+	btn(t.proref, rej ? "取消推荐" : "推荐", refresh ? { pos: () => p("ref", !ref), refresh } : undefined)
 }

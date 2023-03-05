@@ -1,4 +1,4 @@
-import { Pos } from "../../src/pra/pos.ts"
+import type { Pos } from "../../src/pra/pos.ts"
 
 export const utc_refresh = 500
 export let utc_etag = Date.now()
@@ -63,7 +63,7 @@ const template = {
 		tid: "usr" as const,
 		...section.idnam,
 		...section.meta,
-		rolref: t("p"), urej: t("span"), uref: t("span"), intro: t("p"), rec: t("p"),
+		rolref: t("p"), urej: t("p"), uref: t("p"), intro: t("p"), rec: t("p"),
 		pos: t("section"), put: t("button"), pas: t("button"),
 		pre: t("section"), preusr: t("button"), presoc: t("button"), preagd: t("button"), prefund: t("button"),
 		...section.pro,
