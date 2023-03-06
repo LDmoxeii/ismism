@@ -81,12 +81,12 @@ Deno.test("rec", async () => {
 	const fund = await que("rec", p({ c: "fund", utc: 0 })) as Rec
 	assertEquals(work!.rec.length, 3)
 	assertEquals(fund!.rec.length, 2)
-	const work_utc = await que("rec", p({ c: "work", utc })) as Rec
-	const work_uid2 = await que("rec", p({ c: "work", utc: 0, uid: 2 })) as Rec
+	const work_utc = await que("rec", p({ c: "work", utc: work!.rec[0]._id.utc })) as Rec
+	const work_uid1 = await que("rec", p({ c: "work", utc: 0, uid: 1 })) as Rec
 	const fund_aid2 = await que("rec", p({ c: "fund", utc: 0, aid: 2 })) as Rec
 	const fund_sid2 = await que("rec", p({ c: "fund", utc: 0, sid: 2 })) as Rec
-	assertEquals(work?.rec.slice(2), work_utc?.rec)
-	assertEquals(work_utc, work_uid2)
-	assertEquals(fund?.rec.slice(1), fund_aid2?.rec)
+	assertEquals(work?.rec.slice(1), work_utc?.rec)
+	assertEquals(work_utc, work_uid1)
+	assertEquals(fund?.rec.slice(0, 1), fund_aid2?.rec)
 	assertEquals(fund_aid2, fund_sid2)
 })

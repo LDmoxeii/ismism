@@ -36,10 +36,9 @@ export async function rec_f<
 	const f = {
 		...id && "aid" in id ? { "_id.aid": id.aid } : {},
 		...id && "uid" in id ? { "_id.uid": { $in: id.uid } } : {},
-		...utc > 0 ? { "_id.utc": { $gt: utc } } : {},
-	}
-	// deno-lint-ignore no-explicit-any
-	return await c.find(f as any, { sort: { utc: -1 }, limit: lim_rec }).toArray() as T[]
+		...utc > 0 ? { "_id.utc": { $lt: utc } } : {},
+	} // deno-lint-ignore no-explicit-any
+	return await c.find(f as any, { sort: { "_id.utc": -1 }, limit: lim_rec }).toArray() as T[]
 }
 
 export async function rec_u<

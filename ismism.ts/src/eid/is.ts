@@ -84,7 +84,7 @@ export function is_url(
 export function is_msg(
 	msg: string
 ): msg is string {
-	return typeof msg === "string" && msg.length <= lim_msg
+	return typeof msg === "string" && 2 <= msg.length && msg.length <= lim_msg
 }
 
 export function is_recid(

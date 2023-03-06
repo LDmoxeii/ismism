@@ -227,16 +227,18 @@ export function rec(
 	const lrec = async (c: "work" | "fund") => {
 		if (utc[c] < 0 || t[`rec${c}`].scrollTop > 0) return
 		const rec = await que<Rec>(`rec?c=${c}&${id}=${d._id}&utc=${utc.work}`)
-		console.log(`loading ${c} for ${id} ${d._id} with`, d.nrec)
 		if (!rec || rec.rec.length === 0) { utc[c] = -1; return }
 		utc[c] = rec.rec[rec.rec.length - 1]._id.utc
 		const r = { ...rec, unam: new Map(rec.unam), anam: new Map(rec.anam) }
-		arec(t[`rec${c}`], c, r)
+		arec(t[`rec${c}`], c, r, utc[c] === 0 ? 0 : t[`rec${c}`].scrollHeight)
 	}
 	lrec("work")
 	lrec("fund")
 	t.recwork.addEventListener("scroll", () => lrec("work"))
-	t.recfund.addEventListener("scroll", () => lrec("fund"))
+	t.recfund.addEventListener("scroll", () => lrec("fund"));
+	[t.recwork, t.recfund].map(r => r.parentElement as HTMLDetailsElement).forEach(d =>
+		d.addEventListener("toggle", () => { if (d.open) d.scrollIntoView(false) })
+	)
 }
 
 export function putrel(

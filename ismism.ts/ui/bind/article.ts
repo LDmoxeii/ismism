@@ -2,11 +2,11 @@ import type { Fund, Id, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_rej, is_sec } from "../../src/pra/con.ts"
+import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec, rel, rolref, seladm, txt, ida } from "./section.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
-import { is_actid, is_goal, is_img, is_nam, is_nbr, } from "../../src/eid/is.ts"
+import { is_actid, is_goal, is_img, is_msg, is_nam, is_nbr, is_url, } from "../../src/eid/is.ts"
 import { utc_medium, utc_short } from "../../src/ont/utc.ts"
 
 export function pas(
@@ -256,10 +256,30 @@ export async function agd(
 					},
 					refresh: () => agd(a._id),
 				})
+				btn(t.prevideo, t.prevideo.innerText, {
+					prompt1: "输入视频标题（2 - 256 个字符）",
+					prompt2: "输入视频外链",
+					alert: "无效输入",
+					pos: (nam, src) => {
+						if (!is_msg(nam!) || !is_url(src!)) return null
+						return pos("pre", { aid: a._id, nam, src })
+					},
+					refresh: () => agd(a._id),
+				})
 			} else {
 				t.putimg.remove()
 				t.putgoal.remove()
+				t.prevideo.remove()
 			}
+			if (is_uid(nav.pas, { aid: a._id })) btn(t.prework, t.prework.innerText, {
+				prompt1: "输入工作日志（2 - 256 个字符）",
+				pos: msg => {
+					if (!is_msg(msg!)) return null
+					return pos("pre", { aid: a._id, msg })
+				},
+				alert: "无效输入",
+				refresh: () => agd(a._id),
+			}); else t.prework.remove()
 			putrel(t, "aid", a, () => agd(a._id))
 			putpro(t, "aid", a, nav.pas.aut ? () => agd(a._id) : undefined)
 		} else {
@@ -281,6 +301,7 @@ export function arec(
 	p: HTMLParagraphElement,
 	c: "work" | "fund",
 	r: Rec,
+	ph = p.scrollHeight,
 ) {
 	for (const d of r.rec) {
 		const t = bind("rec")
@@ -312,8 +333,9 @@ export function arec(
 			t.recre.remove()
 			t.recput.remove()
 		}
-		p.append(t.bind)
+		p.prepend(t.bind)
 	}
+	p.scrollTop = p.scrollHeight - ph
 }
 
 export function wsl(

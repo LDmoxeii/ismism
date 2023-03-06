@@ -1,3 +1,4 @@
+import type { Rec } from "../../src/eid/typ.ts"
 import type { Pos } from "../../src/pra/pos.ts"
 import type { Agd } from "./article.ts"
 
@@ -19,7 +20,7 @@ export async function que<T>(
 
 export async function pos<T>(
 	f: Pos,
-	b: Record<string, string | number | boolean | Agd["img"] | Agd["goal"]>,
+	b: Record<string, string | number | boolean | Agd["img"] | Agd["goal"] | Rec["_id"]>,
 ) {
 	const res = await fetch(`/p/${f}`, {
 		method: "POST",
@@ -124,7 +125,7 @@ const template = {
 		goal: t("p"), intro: t("p"),
 		...section.rel,
 		...section.rec,
-		pos: t("section"), put: t("button"), putimg: t("button"), putgoal: t("button"),
+		pos: t("section"), put: t("button"), putimg: t("button"), putgoal: t("button"), prework: t("button"), prevideo: t("button"),
 		...section.putrel,
 		...section.putpro,
 	},

@@ -77,9 +77,9 @@ Deno.test("rel", async () => {
 Deno.test("rec", async () => {
 	const utc = Date.now()
 	const id = [
-		{ uid: 1, aid: 4, utc },
-		{ uid: 2, aid: 4, utc: utc + 100 },
 		{ uid: 2, aid: 3, utc: utc + 200 },
+		{ uid: 2, aid: 4, utc: utc + 100 },
+		{ uid: 1, aid: 4, utc },
 	]
 
 	assertEquals(await nrec(), { work: 0, fund: 0 })
@@ -98,9 +98,9 @@ Deno.test("rec", async () => {
 	assertEquals(await nrec({ aid: 4 }), { work: 2, fund: 2 })
 
 	assertEquals((await rec_f(coll.work, utc + 100))!.length, 1)
-	assertEquals((await rec_f(coll.fund, utc))!.map(r => r._id), id.slice(1).reverse())
-	assertEquals((await rec_f(coll.work, utc, { uid: [2] }))!.map(r => r._id), id.slice(1).reverse())
-	assertEquals((await rec_f(coll.work, 0, { aid: 3 })), [{ _id: id[2], work: "work", msg: "msg", ref: [2], rej: [] }])
+	assertEquals((await rec_f(coll.fund, utc + 200))!.map(r => r._id), id.slice(1))
+	assertEquals((await rec_f(coll.work, utc + 300, { uid: [2] }))!.map(r => r._id), id.slice(0, 2))
+	assertEquals((await rec_f(coll.work, 0, { aid: 3 })), [{ _id: id[0], work: "work", msg: "msg", ref: [2], rej: [] }])
 
 	assertEquals(await rec_u(coll.work, id[1], { $set: { msg: "updated" } }), 1)
 	// deno-lint-ignore no-explicit-any
