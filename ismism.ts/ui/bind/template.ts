@@ -97,6 +97,7 @@ const template = {
 	put: {
 		tid: "put" as const,
 		...section.idnam,
+		meta: t("section"),
 		pnam: t("input"),
 		...section.seladm,
 		intro: t("textarea"),

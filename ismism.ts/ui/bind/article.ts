@@ -4,10 +4,10 @@ import type { DocC, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
-import { is_actid, is_nbr, lim_re, lim_sec, req_re } from "../../src/eid/is.ts"
+import { is_actid, is_nbr, lim_re, lim_sec } from "../../src/eid/is.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { btn, ida, idnam, label, meta, pro, rel, rolref, seladm, txt } from "./section.ts"
-import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_sec } from "../../src/pra/con.ts"
+import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_rej, is_sec } from "../../src/pra/con.ts"
 
 export function pas(
 ) {
@@ -80,14 +80,13 @@ export async function usr(
 	const q = await que<Q.Usr>(`usr?uid=${uid}`)
 	if (!q) return idn(`${uid}`, "用户")
 	const u: Usr = { ...q, unam: new Map(q.unam), snam: new Map(q.snam), anam: new Map(q.anam) }
-	const [rej2, ref2] = [u.rej.length >= req_re, u.ref.length < req_re]
-	const froze = rej2 && !(nav.pas && (nav.pas.aut || is_sec(nav.pas)))
+	const froze = is_rej(u) && !(nav.pas && (nav.pas.aut || is_sec(nav.pas)))
 
 	navnid()
 	main.innerHTML = ""
 	const t = bind("usr")
 
-	const re = meta(t, u, rej2, ref2)
+	const re = meta(t, u)
 	idnam(t, `${uid}`, froze ? "" : u.nam, re)
 	rolref(t.rolref, u)
 	label(t.urej, `反对：（${u.urej.length}/${lim_re}）`)
@@ -168,16 +167,15 @@ export async function soc(
 		if (!d) continue
 
 		const s: Soc = { ...d, unam: new Map(d.unam) }
-		const [rej2, ref2] = [s.rej.length >= req_re, s.ref.length < req_re]
-		const froze = rej2 && !(nav.pas && (nav.pas.aut || is_sec(nav.pas, { sid: s._id })))
+		const froze = is_rej(s) && !(nav.pas && (nav.pas.aut || is_sec(nav.pas, { sid: s._id })))
 
 		const t = bind("soc")
-		const re = meta(t, s, rej2, ref2)
+		const re = meta(t, s)
 		idnam(t, `s${s._id}`, s.nam, re)
 
 		label(t.sec, `书记：（${s.sec.length}/${lim_sec}）`)
 		ida(t.sec, s.sec.map(r => [`${r}`, s.unam.get(r)!]))
-		label(t.uid, `成员：（${s.uid.length}/${s.uidlim}）`)
+		label(t.uid, `志愿者：（${s.uid.length}/${s.uidlim}）`)
 		ida(t.uid, s.uid.map(r => [`${r}`, s.unam.get(r)!]))
 		label(t.res, `申请人：（${s.res.length}/${s.reslim}）`)
 		ida(t.res, s.res.map(r => [`${r}`, s.unam.get(r)!]))
@@ -189,7 +187,7 @@ export async function soc(
 		}
 
 		if (nav.pas) {
-			if (nav.pas.aut || s.sec.includes(nav.pas.uid))
+			if (nav.pas.aut || is_sec(nav.pas, { sid: s._id }))
 				t.put.addEventListener("click", () => put("社团", s))
 			else t.put.remove()
 			rel(t, "sid", s, () => soc(s._id))
