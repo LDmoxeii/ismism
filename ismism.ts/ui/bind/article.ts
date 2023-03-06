@@ -1,13 +1,13 @@
-import type { Id } from "../../src/eid/typ.ts"
+import type { Fund, Id, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_rej, is_sec } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
-import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rel, rolref, seladm, txt } from "./section.ts"
+import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec, rel, rolref, seladm, txt, ida } from "./section.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
 import { is_actid, is_goal, is_img, is_nam, is_nbr, } from "../../src/eid/is.ts"
-import { utc_medium } from "../../src/ont/utc.ts"
+import { utc_medium, utc_short } from "../../src/ont/utc.ts"
 
 export function pas(
 ) {
@@ -172,12 +172,10 @@ export async function soc(
 		const t = bind("soc")
 		idnam(t, `s${s._id}`, s.nam, meta(t, s))
 		rel(t, s)
+		rec(t, "sid", s, froze)
 
-		if (froze) [t.nam, t.intro, t.rec].forEach(el => el.classList.add("froze"))
-		else {
-			t.intro.innerText = s.intro
-			t.rec.innerText = JSON.stringify(s.nrec)
-		}
+		if (froze) [t.nam, t.intro].forEach(el => el.classList.add("froze"))
+		else t.intro.innerText = s.intro
 
 		if (nav.pas) {
 			if (nav.pas.aut || is_sec(nav.pas, { sid: s._id }))
@@ -224,12 +222,10 @@ export async function agd(
 		cover(t, a)
 		acct(t, a)
 		goal(t.goal, a)
+		rec(t, "aid", a, froze)
 
-		if (froze) [t.nam, t.intro, t.rec].forEach(el => el.classList.add("froze"))
-		else {
-			t.intro.innerText = a.intro
-			t.rec.innerText = JSON.stringify(a.nrec)
-		}
+		if (froze) [t.nam, t.intro].forEach(el => el.classList.add("froze"))
+		else t.intro.innerText = a.intro
 
 		if (nav.pas) {
 			if (nav.pas.aut || is_sec(nav.pas, { aid: a._id }))
@@ -273,6 +269,50 @@ export async function agd(
 		}
 
 		main.append(t.bind)
+	}
+}
+
+export type Rec = Omit<NonNullable<Q.Rec>, "unam" | "anam"> & {
+	unam: Map<Id["_id"], Id["nam"]>,
+	anam: Map<Id["_id"], Id["nam"]>,
+}
+
+export function arec(
+	p: HTMLParagraphElement,
+	c: "work" | "fund",
+	r: Rec,
+) {
+	for (const d of r.rec) {
+		const t = bind("rec")
+		t.recunam.innerText = r.unam.get(d._id.uid)!
+		t.recunam.href = `#${d._id.uid}`
+		t.recanam.innerText = r.anam.get(d._id.aid)!
+		t.recanam.href = `#a${d._id.aid}`
+		t.recutc.innerText = utc_short(d._id.utc)
+		if (c === "work") {
+			const w = d as Work
+			switch (w.work) {
+				case "work": {
+					t.recmsg.innerText = w.msg
+					break
+				} case "video": {
+					t.recmsg.innerText = "发布了视频："
+					const a = t.recmsg.appendChild(document.createElement("a"))
+					a.innerText = w.nam
+					a.href = w.src
+					break
+				}
+			}
+			ida(t.rej, w.rej.map(uid => [`${uid}`, r.unam.get(uid)!]))
+			ida(t.ref, w.ref.map(uid => [`${uid}`, r.unam.get(uid)!]))
+		} else if (c === "fund") {
+			const f = d as Fund
+			const amount = f.fund > 0 ? `提供支持：+${f.fund}\n` : ""
+			t.recmsg.innerText = `${amount}${f.msg}`
+			t.recre.remove()
+			t.recput.remove()
+		}
+		p.append(t.bind)
 	}
 }
 

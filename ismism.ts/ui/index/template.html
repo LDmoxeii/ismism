@@ -136,8 +136,14 @@
 		</section>
 		<hr>
 		<section>
-			<label>rec：</label>
-			<p class="rec"></p>
+			<details>
+				<summary>工作日志：</summary>
+				<p class="recwork"></p>
+			</details>
+			<details>
+				<summary>支持者：</summary>
+				<p class="recfund"></p>
+			</details>
 		</section>
 		<hr>
 		<section class="pos flex">
@@ -224,8 +230,14 @@
 		</section>
 		<hr>
 		<section>
-			<label>rec：</label>
-			<p class="rec"></p>
+			<details>
+				<summary>工作日志：</summary>
+				<p class="recwork"></p>
+			</details>
+			<details>
+				<summary>支持者：</summary>
+				<p class="recfund"></p>
+			</details>
 		</section>
 		<hr>
 		<section class="pos flex">
@@ -257,6 +269,20 @@
 		</svg>
 		<span class="nam"></span>
 	</div>
+</template>
+
+<template id="rec">
+	<article class="rec">
+		<section class="recnam flex"><a class="recunam"></a> <a class="recanam uid"></a></section>
+		<section><label class="recutc"></label></section>
+		<section class="recmsg"></section>
+		<section class="recre">反对者：<span class="rej"></span>， 推荐人：<span class="ref"></span></section>
+		<section class="recput flex">
+			<button class="putrej">反对</button>
+			<button class="putrej">推荐</button>
+			<button class="put">编辑</button>
+		</section>
+	</article>
 </template>
 
 <template id="pre">

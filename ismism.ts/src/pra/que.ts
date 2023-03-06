@@ -32,7 +32,7 @@ export async function que(
 			return await Promise.all(aid.map(agd))
 		} case "rec": {
 			const c = p.get("c")
-			const [utc, uid, aid, sid] = ["utc", "uid", "sid", "aid"].map(t => parseInt(p.get(t) ?? ""))
+			const [utc, uid, sid, aid] = ["utc", "uid", "sid", "aid"].map(t => parseInt(p.get(t) ?? ""))
 			const id = is_id(uid) ? { uid } : is_id(aid) ? { aid } : is_id(sid) ? { sid } : undefined
 			if (utc >= 0) {
 				if (c === "work") return await rec(coll.work, utc, id)

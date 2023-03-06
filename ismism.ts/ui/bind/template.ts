@@ -67,6 +67,10 @@ const section = {
 		account: t("a"),
 	},
 
+	rec: {
+		recwork: t("p"), recfund: t("p"),
+	},
+
 	putrel: {
 		putrel: t("section"), putsec: t("button"), putuid: t("button"), putres: t("button"),
 	},
@@ -104,7 +108,8 @@ const template = {
 		...section.idnam,
 		...section.meta,
 		...section.rel,
-		intro: t("p"), rec: t("p"),
+		intro: t("p"),
+		...section.rec,
 		pos: t("section"), put: t("button"),
 		...section.putrel,
 		...section.putpro,
@@ -116,8 +121,9 @@ const template = {
 		...section.meta,
 		...section.cover,
 		...section.acct,
-		goal: t("p"), intro: t("p"), rec: t("p"),
+		goal: t("p"), intro: t("p"),
 		...section.rel,
+		...section.rec,
 		pos: t("section"), put: t("button"), putimg: t("button"), putgoal: t("button"),
 		...section.putrel,
 		...section.putpro,
@@ -126,6 +132,14 @@ const template = {
 	goal: {
 		tid: "goal" as const,
 		circle: svg("circle"), pct: svg("text"), nam: t("span"),
+	},
+
+	rec: {
+		tid: "rec" as const,
+		recunam: t("a"), recanam: t("a"), recutc: t("label"),
+		recmsg: t("section"),
+		recre: t("section"), rej: t("span"), ref: t("span"),
+		recput: t("section"), putrej: t("button"), putref: t("button"), put: t("button"),
 	},
 
 	pre: {

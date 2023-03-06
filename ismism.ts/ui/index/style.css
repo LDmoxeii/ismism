@@ -157,6 +157,28 @@ section>label {
 	color: var(--gray);
 }
 
+section>details>summary {
+	color: var(--gray);
+	user-select: none;
+	cursor: pointer;
+}
+
+section>details>p {
+	display: block;
+	background: var(--lightgray);
+	border-radius: 16px;
+	padding: 16px 8px;
+	margin: 8px auto;
+	max-height: 480px;
+	overflow-y: scroll;
+}
+
+@media (hover: hover) {
+	section>details>summary:hover {
+		background: var(--lightgray);
+	}
+}
+
 section>p {
 	display: block;
 	margin: 0;
@@ -232,6 +254,7 @@ section>p>span>a:not(:first-child):before {
 
 @media (hover: hover) {
 
+	section>a:hover,
 	section>span>a:hover,
 	section>p>a:hover,
 	section>p>span>a:hover,
@@ -244,6 +267,40 @@ div#main {
 	max-width: 1080px;
 	margin: 0 auto;
 	padding: 0;
+}
+
+article.rec {
+	width: fit-content;
+	margin: 8px;
+	background: none;
+	box-shadow: none;
+}
+
+article.rec>section.recnam {
+	justify-content: left;
+	gap: 8px;
+}
+
+article.rec>section>a.recanam {
+	padding: 0.2ch 1ch;
+	font-size: var(--small);
+	background: var(--black);
+	color: var(--white);
+}
+
+article.rec>section>label.recutc {
+	font-size: var(--small);
+	font-style: italic;
+}
+
+article.rec>section.recmsg {
+	min-width: 240px;
+	width: fit-content;
+	margin-top: 6px;
+	padding: 0.5em 16px;
+	background: var(--lightgray);
+	border-radius: 0 8px 8px 8px;
+	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px;
 }
 
 section.flex {

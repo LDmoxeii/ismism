@@ -1,9 +1,10 @@
 import type { DocU } from "../../src/db.ts"
-import type { Agd, Soc, Usr } from "./article.ts"
+import type { Rec } from "../../src/pra/que.ts"
+import { Agd, Soc, Usr, arec } from "./article.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
-import { bind, pos, Section, utc_refresh } from "./template.ts"
+import { bind, pos, que, Section, utc_refresh } from "./template.ts"
 import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
 import { lim_re, lim_sec } from "../../src/eid/is.ts"
 
@@ -178,7 +179,8 @@ export function acct(
 		t.fundbar.style.width = t.fundpct.textContent = fpct
 		t.expensebar.style.width = t.expensepct.textContent = epct
 	}
-	t.account.href = a.account
+	if (a.account.length > 0) t.account.href = a.account
+	else t.account.classList.add("none")
 }
 
 export function goal(
@@ -210,6 +212,31 @@ export function seladm(
 	selopt(t.adm2, adm.get(adm1)!)
 	t.adm2.value = adm2
 	t.adm1.addEventListener("change", () => selopt(t.adm2, adm.get(t.adm1.value)!))
+}
+
+export function rec(
+	t: Section["rec"],
+	id: "sid" | "aid",
+	d: Soc | Agd,
+	froze: boolean,
+) {
+	label(t.recwork, `工作日志：（${d.nrec.work}）`)
+	label(t.recfund, `支持者：（${d.nrec.fund}）`)
+	if (froze) { [t.recwork, t.recfund].forEach(el => el.classList.add("froze")); return }
+	const utc = { work: 0, fund: 0 }
+	const lrec = async (c: "work" | "fund") => {
+		if (utc[c] < 0 || t[`rec${c}`].scrollTop > 0) return
+		const rec = await que<Rec>(`rec?c=${c}&${id}=${d._id}&utc=${utc.work}`)
+		console.log(`loading ${c} for ${id} ${d._id} with`, d.nrec)
+		if (!rec || rec.rec.length === 0) { utc[c] = -1; return }
+		utc[c] = rec.rec[rec.rec.length - 1]._id.utc
+		const r = { ...rec, unam: new Map(rec.unam), anam: new Map(rec.anam) }
+		arec(t[`rec${c}`], c, r)
+	}
+	lrec("work")
+	lrec("fund")
+	t.recwork.addEventListener("scroll", () => lrec("work"))
+	t.recfund.addEventListener("scroll", () => lrec("fund"))
 }
 
 export function putrel(

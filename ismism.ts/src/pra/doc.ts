@@ -48,6 +48,7 @@ export async function soc(
 		idnam(coll.usr, [...s.rej, ...s.ref, ...s.sec, ...s.uid, ...s.res,]),
 		nrec({ uid: s.uid }),
 	])
+	if (!nr) return null
 	return { ...s, unam, nrec: nr }
 }
 
@@ -60,6 +61,7 @@ export async function agd(
 		idnam(coll.usr, [...a.rej, ...a.ref, ...a.sec, ...a.uid, ...a.res,]),
 		nrec({ aid: a._id }),
 	])
+	if (!nr) return null
 	return { ...a, unam, nrec: nr }
 }
 
@@ -81,7 +83,7 @@ export async function rec<
 	if (r) {
 		const [unam, anam] = await Promise.all([
 			idnam(coll.usr, r.map(r => r._id.uid)),
-			idnam(coll.usr, r.map(r => r._id.aid)),
+			idnam(coll.agd, r.map(r => r._id.aid)),
 		])
 		return { rec: r, unam, anam }
 	}
