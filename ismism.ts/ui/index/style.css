@@ -234,7 +234,8 @@ section>p>span>a:not(:first-child):before {
 
 	section>span>a:hover,
 	section>p>a:hover,
-	section>p>span>a:hover {
+	section>p>span>a:hover,
+	div>a:hover {
 		color: var(--amber) !important;
 	}
 }
@@ -421,6 +422,11 @@ section.acct>svg>text.expensepct {
 
 section.acct>svg>text.budget {
 	text-anchor: end;
+}
+
+section.acct a.account {
+	text-decoration: underline;
+	text-underline-offset: 4px;
 }
 
 section>p.goal:not(:empty) {

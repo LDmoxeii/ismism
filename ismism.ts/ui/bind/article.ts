@@ -4,7 +4,7 @@ import type { DocC, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_rej, is_sec } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
-import { btn, idnam, meta, putpro, putrel, re, rel, rolref, seladm, txt } from "./section.ts"
+import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rel, rolref, seladm, txt } from "./section.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
 import { is_actid, is_nbr, } from "../../src/eid/is.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
@@ -127,7 +127,23 @@ export async function usr(
 	}
 
 	main.append(t.bind)
+}
 
+function doc<T>(
+	q: "soc" | "agd",
+	adm: string,
+) {
+	const [a1, a2] = (adm).split("-")
+	if (a2) {
+		navnid(q, a1, a2)
+		return que<T[]>(`${q}?adm2=${a2}`)
+	} else if (a1) {
+		navnid(q, a1)
+		return que<T[]>(`${q}?adm1=${a1}`)
+	} else {
+		navnid(q)
+		return que<T[]>(q)
+	}
 }
 
 export type Soc = Omit<NonNullable<Q.Soc>, "unam"> & {
@@ -141,19 +157,7 @@ export async function soc(
 	if (typeof sidadm === "number") {
 		ss = [await que<Q.Soc>(`soc?sid=${sidadm}`)]
 		navnid()
-	} else {
-		const [a1, a2] = (sidadm ?? "").split("-")
-		if (a2) {
-			ss = await que<Q.Soc[]>(`soc?adm2=${a2}`)
-			navnid("soc", a1, a2)
-		} else if (a1) {
-			ss = await que<Q.Soc[]>(`soc?adm1=${a1}`)
-			navnid("soc", a1)
-		} else {
-			ss = await que<Q.Soc[]>(`soc`)
-			navnid("soc")
-		}
-	}
+	} else ss = await doc<Q.Soc>("soc", sidadm ?? "")
 
 	ss = ss.filter(s => s)
 	if (typeof sidadm === "number" && ss.length === 0) return idn(`s${sidadm}`, "社团")
@@ -194,12 +198,55 @@ export async function soc(
 export type Agd = Omit<NonNullable<Q.Agd>, "unam"> & {
 	unam: Map<Id["_id"], Id["nam"]>,
 }
-
-export function agd(
-	aid?: number | string
+export async function agd(
+	aidadm?: number | string
 ) {
+	if (navhash(typeof aidadm === "number" ? `a${aidadm}` : `agd${aidadm ?? ""}`)) return
+	let aa: Q.Agd[]
+	if (typeof aidadm === "number") {
+		aa = [await que<Q.Agd>(`agd?aid=${aidadm}`)]
+		navnid()
+	} else aa = await doc<Q.Agd>("agd", aidadm ?? "")
 
+	aa = aa.filter(a => a)
+	if (typeof aidadm === "number" && aa.length === 0) return idn(`a${aidadm}`, "活动")
+
+	main.innerHTML = ""
+	for (const d of aa) {
+		if (!d) continue
+
+		const a: Agd = { ...d, unam: new Map(d.unam) }
+		const froze = is_rej(a) && !(nav.pas && (nav.pas.aut || is_sec(nav.pas, { aid: a._id })))
+
+		const t = bind("agd")
+		idnam(t, `a${a._id}`, a.nam, meta(t, a))
+		rel(t, a)
+		cover(t, a)
+		acct(t, a)
+		goal(t.goal, a)
+
+		if (froze) [t.nam, t.intro, t.rec].forEach(el => el.classList.add("froze"))
+		else {
+			t.intro.innerText = a.intro
+			t.rec.innerText = JSON.stringify(a.nrec)
+		}
+
+		if (nav.pas) {
+			if (nav.pas.aut || is_sec(nav.pas, { aid: a._id }))
+				t.put.addEventListener("click", () => put("活动", a))
+			else t.put.remove()
+			putrel(t, "aid", a, () => agd(a._id))
+			putpro(t, "aid", a, nav.pas.aut ? () => agd(a._id) : undefined)
+		} else {
+			t.pos.remove()
+			t.putrel.remove()
+			t.putpro.remove()
+		}
+
+		main.append(t.bind)
+	}
 }
+
 export function wsl(
 ) {
 

@@ -3,7 +3,7 @@ import type { Agd, Soc, Usr } from "./article.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
-import { pos, Section, utc_refresh } from "./template.ts"
+import { bind, pos, Section, utc_refresh } from "./template.ts"
 import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
 import { lim_re, lim_sec } from "../../src/eid/is.ts"
 
@@ -149,6 +149,57 @@ export function rel(
 	ida(t.res, d.res.map(r => [`${r}`, d.unam.get(r)!]))
 }
 
+export function cover(
+	t: Section["cover"],
+	a: Agd,
+) {
+	if (a.img.length === 0) { t.cover.remove(); return }
+	let n = 0
+	const img = (d: number) => {
+		n = ((n + d) % a.img.length + a.img.length) % a.img.length;
+		t.imgn.innerText = `第 ${n + 1} / ${a.img.length} 张`
+		t.imgnam.innerText = a.img[n].nam
+		t.img.src = a.img[n].src
+	}
+	t.prev.addEventListener("click", () => img(-1))
+	t.next.addEventListener("click", () => img(+1))
+	img(0)
+}
+
+export function acct(
+	t: Section["acct"],
+	a: Agd,
+) {
+	if (a.budget > 0) {
+		t.fund.textContent = `${a.fund}`
+		t.budget.textContent = `${a.budget}`
+		t.expense.textContent = `${a.expense}`
+		const [fpct, epct] = [a.fund / a.budget, a.expense / a.budget].map(p => `${Math.round(p * 100)}%`)
+		t.fundbar.style.width = t.fundpct.textContent = fpct
+		t.expensebar.style.width = t.expensepct.textContent = epct
+	}
+	t.account.href = a.account
+}
+
+export function goal(
+	t: HTMLParagraphElement,
+	a: Agd,
+) {
+	for (const { nam, pct } of a.goal) {
+		const g = bind("goal")
+		g.nam.innerText = nam
+		if (pct === 0 || pct >= 100) g.pct.classList.add("gray")
+		if (pct >= 100) {
+			g.pct.textContent = "完成"
+			g.circle.remove()
+		} else {
+			g.pct.textContent = `${pct}%`
+			g.circle.style.setProperty("--pct", `${pct}`)
+		}
+		t.append(g.bind)
+	}
+}
+
 export function seladm(
 	t: Section["seladm"],
 	adm1 = adm1_def,
@@ -176,7 +227,7 @@ export function putrel(
 			if (!uid) return null
 			return pos<DocU>("put", { [id]: d._id, rol: "sec", uid, add: !d.sec.includes(uid) })
 		},
-		alert: "无效书记名或书记已满\n增删的书记需先作为申请人或其它出现在社团名单",
+		alert: `无效书记名或书记已满\n增删的书记需先作为申请人或其它出现在${id === "sid" ? "社团" : "活动"}名单`,
 		refresh: async () => { await navpas(); refresh() },
 	}); else t.putsec.remove() // deno-lint-ignore no-explicit-any
 	if (is_sec(nav.pas, { [id]: d._id } as any)) btn(t.putuid, t.putuid.innerText, {
@@ -186,7 +237,7 @@ export function putrel(
 			if (!uid) return null
 			return pos<DocU>("put", { [id]: d._id, rol: "uid", uid, add: !d.uid.includes(uid) })
 		},
-		alert: "无效志愿者名或志愿者已满\n增删的志愿者需先作为申请人或志愿者出现在社团名单",
+		alert: `无效志愿者名或志愿者已满\n增删的志愿者需先作为申请人或志愿者出现在${id === "sid" ? "社团" : "活动"}名单`,
 		refresh: async () => { await navpas(); refresh() },
 	}); else t.putuid.remove()
 	const [isuid, isres] = [d.uid.includes(nav.pas.uid), d.res.includes(nav.pas.uid)]
