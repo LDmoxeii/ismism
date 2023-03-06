@@ -185,7 +185,7 @@ export function goal(
 	t: HTMLParagraphElement,
 	a: Agd,
 ) {
-	for (const { nam, pct } of a.goal) {
+	for (const { nam, pct } of a.goal.sort((m, n) => m.pct - n.pct)) {
 		const g = bind("goal")
 		g.nam.innerText = nam
 		if (pct === 0 || pct >= 100) g.pct.classList.add("gray")

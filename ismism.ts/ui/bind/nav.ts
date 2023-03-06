@@ -72,7 +72,8 @@ export async function navnid(
 	if (!a1) {
 		nav.nid = await que<NId>("nid")
 		const admn = p === "soc" ? nav.nid!.adm1nsid : nav.nid!.adm1naid
-		menu(adm1, [p, "全部"], admn.map(([a, n]) => [`${p}${a}`, `${a} (${n})`]))
+		const s = admn.reduce((x, y) => x + y[1], 0)
+		menu(adm1, [p, `全部 (${s})`], admn.map(([a, n]) => [`${p}${a}`, `${a} (${n})`]))
 		adm1.parentElement!.classList.remove("none")
 		adm2.parentElement!.classList.add("none")
 	} else if (!nav.nid) return
@@ -80,7 +81,8 @@ export async function navnid(
 		const a2 = adm.get(a1)!
 		const admn = (p === "soc" ? nav.nid.adm2nsid : nav.nid.adm2naid)
 			.filter(an => a2.includes(an[0]))
-		menu(adm2, [`${p}${a1}`, "全部"], admn.map(([a, n]) => [`${p}${a1}-${a}`, `${a} (${n})`]))
+		const s = admn.reduce((x, y) => x + y[1], 0)
+		menu(adm2, [`${p}${a1}`, `全部 (${s})`], admn.map(([a, n]) => [`${p}${a1}-${a}`, `${a} (${n})`]))
 		adm1.parentElement!.classList.remove("none")
 		adm2.parentElement!.classList.remove("none")
 	} else {

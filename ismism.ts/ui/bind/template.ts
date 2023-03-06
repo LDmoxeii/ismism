@@ -1,4 +1,5 @@
 import type { Pos } from "../../src/pra/pos.ts"
+import type { Agd } from "./article.ts"
 
 export const utc_refresh = 750
 export let utc_etag = Date.now()
@@ -18,7 +19,7 @@ export async function que<T>(
 
 export async function pos<T>(
 	f: Pos,
-	b: Record<string, string | number | boolean>,
+	b: Record<string, string | number | boolean | Agd["img"] | Agd["goal"]>,
 ) {
 	const res = await fetch(`/p/${f}`, {
 		method: "POST",

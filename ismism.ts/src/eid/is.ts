@@ -79,7 +79,7 @@ export function is_img(
 export function is_url(
 	url: string
 ): url is string {
-	return typeof url === "string" && url.length <= lim_url
+	return typeof url === "string" && url.length <= lim_url && url.startsWith("http")
 }
 export function is_msg(
 	msg: string

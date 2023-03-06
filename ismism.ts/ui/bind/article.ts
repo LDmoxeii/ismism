@@ -6,7 +6,7 @@ import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_rej, is_sec } from "
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rel, rolref, seladm, txt } from "./section.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
-import { is_actid, is_nbr, } from "../../src/eid/is.ts"
+import { is_actid, is_goal, is_img, is_nam, is_nbr, } from "../../src/eid/is.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 
 export function pas(
@@ -235,6 +235,35 @@ export async function agd(
 			if (nav.pas.aut || is_sec(nav.pas, { aid: a._id }))
 				t.put.addEventListener("click", () => put("活动", a))
 			else t.put.remove()
+			if (is_sec(nav.pas, { aid: a._id })) {
+				btn(t.putimg, t.putimg.innerText, {
+					prompt1: "输入要增删或编辑的图片名（2-16个中文字符）",
+					prompt2: "输入图片外链，或留空以删除图片",
+					alert: "无效输入，或图片数已达上限（9张）",
+					pos: (nam, src) => {
+						if (!is_nam(nam!)) return null
+						let img = a.img.filter(m => m.nam !== nam)
+						if (src && src.length > 0) img = [{ nam, src }, ...img]
+						return is_img(img) ? pos("put", { aid: a._id, img }) : null
+					},
+					refresh: () => agd(a._id),
+				})
+				btn(t.putgoal, t.putgoal.innerText, {
+					prompt1: "输入要增删或编辑的目标名（2-16个中文字符）",
+					prompt2: "输入目标进度（0-100），或留空以删除目标",
+					alert: "无效输入，或目标数已达上限（9个）",
+					pos: (nam, pct) => {
+						if (!is_nam(nam!)) return null
+						let g = a.goal.filter(m => m.nam !== nam)
+						if (pct && pct.length > 0) g = [{ nam, pct: parseInt(pct) }, ...g]
+						return is_goal(g) ? pos("put", { aid: a._id, goal: g }) : null
+					},
+					refresh: () => agd(a._id),
+				})
+			} else {
+				t.putimg.remove()
+				t.putgoal.remove()
+			}
 			putrel(t, "aid", a, () => agd(a._id))
 			putpro(t, "aid", a, nav.pas.aut ? () => agd(a._id) : undefined)
 		} else {

@@ -83,7 +83,7 @@ Deno.test("pre", async () => {
 	const w = [
 		await pos({ jwt }, "pre", json({ actid: actid[1] })),
 		await pos({ jwt }, "pre", json({ aid: 1, msg: "msg" })),
-		await pos({ jwt }, "pre", json({ aid: 1, nam: "nam", src: "src" })),
+		await pos({ jwt }, "pre", json({ aid: 1, nam: "nam", src: "httpsrc" })),
 	] as Rec["_id"][]
 	assertEquals([2, 1, 1], w.map(w => w.aid))
 	await Promise.all([
@@ -161,7 +161,7 @@ Deno.test("put", async () => {
 	const uu = { nam: "用户一", adm1: "广东", adm2: "汕头", intro: "简介" }
 	const su = { sid: 1, nam: "社团一", adm1: "广东", adm2: "汕头", uidlim: 8 }
 	const au = { aid: 1, nam: "活动一", adm1: "广东", adm2: "汕头", uidlim: 8 }
-	const aus = { aid: 1, intro: "简介", reslim: 10, account: "明细", budget: 9, fund: 9, expense: 9 }
+	const aus = { aid: 1, intro: "简介", reslim: 10, account: "http明细", budget: 9, fund: 9, expense: 9 }
 	await Promise.all([
 		pos({ jwt }, "put", json(uu)),
 		pos({ jwt }, "put", json(su)),
