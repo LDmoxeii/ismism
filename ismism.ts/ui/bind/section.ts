@@ -5,6 +5,7 @@ import { utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { pos, Section, utc_refresh } from "./template.ts"
 import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
+import { lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
 	el: HTMLElement,
@@ -126,6 +127,28 @@ export function rolref(
 	ida(t, u.sref.res.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}申请人 (${r}推荐)`]), "res")
 }
 
+export function re(
+	t: Section["re"],
+	u: Usr,
+) {
+	label(t.urej, `反对：（${u.urej.length}/${lim_re}）`)
+	ida(t.urej, u.urej.map(r => [`${r}`, u.unam.get(r)!]))
+	label(t.uref, `推荐：（${u.uref.length}/${lim_re}）`)
+	ida(t.uref, u.uref.map(r => [`${r}`, u.unam.get(r)!]))
+}
+
+export function rel(
+	t: Section["rel"],
+	d: Soc | Agd,
+) {
+	label(t.sec, `书记：（${d.sec.length}/${lim_sec}）`)
+	ida(t.sec, d.sec.map(r => [`${r}`, d.unam.get(r)!]))
+	label(t.uid, `志愿者：（${d.uid.length}/${d.uidlim}）`)
+	ida(t.uid, d.uid.map(r => [`${r}`, d.unam.get(r)!]))
+	label(t.res, `申请人：（${d.res.length}/${d.reslim}）`)
+	ida(t.res, d.res.map(r => [`${r}`, d.unam.get(r)!]))
+}
+
 export function seladm(
 	t: Section["seladm"],
 	adm1 = adm1_def,
@@ -138,15 +161,15 @@ export function seladm(
 	t.adm1.addEventListener("change", () => selopt(t.adm2, adm.get(t.adm1.value)!))
 }
 
-export function rel(
-	t: Section["rel"],
+export function putrel(
+	t: Section["putrel"],
 	id: "sid" | "aid",
 	d: Soc | Agd,
 	refresh: () => void,
 ) {
-	if (!nav.pas) { t.rel.remove(); return }
+	if (!nav.pas) { t.putrel.remove(); return }
 	const namid = new Map([...d.unam.entries()].map(([u, nam]) => [nam, u]))
-	if (d.ref.includes(nav.pas.uid)) btn(t.relsec, t.relsec.innerText, {
+	if (d.ref.includes(nav.pas.uid)) btn(t.putsec, t.putsec.innerText, {
 		prompt1: "输入要增加或删除的书记名",
 		pos: p1 => {
 			const uid = namid.get(p1 ?? "")
@@ -155,8 +178,8 @@ export function rel(
 		},
 		alert: "无效书记名或书记已满\n增删的书记需先作为申请人或其它出现在社团名单",
 		refresh: async () => { await navpas(); refresh() },
-	}); else t.relsec.remove() // deno-lint-ignore no-explicit-any
-	if (is_sec(nav.pas, { [id]: d._id } as any)) btn(t.reluid, t.reluid.innerText, {
+	}); else t.putsec.remove() // deno-lint-ignore no-explicit-any
+	if (is_sec(nav.pas, { [id]: d._id } as any)) btn(t.putuid, t.putuid.innerText, {
 		prompt1: "输入要增加或删除的志愿者名",
 		pos: p1 => {
 			const uid = namid.get(p1 ?? "")
@@ -165,29 +188,29 @@ export function rel(
 		},
 		alert: "无效志愿者名或志愿者已满\n增删的志愿者需先作为申请人或志愿者出现在社团名单",
 		refresh: async () => { await navpas(); refresh() },
-	}); else t.reluid.remove()
+	}); else t.putuid.remove()
 	const [isuid, isres] = [d.uid.includes(nav.pas.uid), d.res.includes(nav.pas.uid)]
-	if (!isuid && is_re(d) || isres) btn(t.relres, isres ? "取消申请" : "申请加入", !isres && d.res.length >= d.reslim ? undefined : {
+	if (!isuid && is_re(d) || isres) btn(t.putres, isres ? "取消申请" : "申请加入", !isres && d.res.length >= d.reslim ? undefined : {
 		pos: () => pos<DocU>("put", { [id]: d._id, rol: "res", uid: nav.pas!.uid, add: !isres }),
 		refresh,
 		alert: "申请人已满",
-	}); else t.relres.disabled = true
+	}); else t.putres.disabled = true
 }
 
-export function pro(
-	t: Section["pro"],
+export function putpro(
+	t: Section["putpro"],
 	id: "uid" | "sid" | "aid",
 	d: Usr | Soc,
 	refresh?: () => void,
 ) {
-	if (!nav.pas) { t.pro.remove(); return }
+	if (!nav.pas) { t.putpro.remove(); return }
 	const [rej, ref] = [d.rej.includes(nav.pas.uid), d.ref.includes(nav.pas.uid)]
 	const p = (re: "rej" | "ref", add: boolean) => pos<DocU>("pro", { re, [id]: d._id, add })
-	btn(t.prorej, rej ? "取消反对" : "反对", refresh ? {
+	btn(t.putrej, rej ? "取消反对" : "反对", refresh ? {
 		pos: () => p("rej", !rej),
 		refresh
 	} : undefined)
-	btn(t.proref, ref ? "取消推荐" : "推荐", refresh ? {
+	btn(t.putref, ref ? "取消推荐" : "推荐", refresh ? {
 		pos: () => p("ref", !ref),
 		refresh: async () => { await navpas(); refresh() },
 	} : undefined)

@@ -45,12 +45,33 @@ const section = {
 		adm: t("section"), adm1: t("select"), adm2: t("select"),
 	},
 
-	rel: {
-		rel: t("section"), relsec: t("button"), reluid: t("button"), relres: t("button"),
+	re: {
+		urej: t("p"), uref: t("p"),
 	},
 
-	pro: {
-		pro: t("section"), prorej: t("button"), proref: t("button"),
+	rel: {
+		sec: t("p"), uid: t("p"), res: t("p"),
+	},
+
+	cover: {
+		cover: t("section"),
+		imgn: t("div"), prev: t("button"), next: t("button"),
+		imgnam: t("div"), img: t("img"),
+	},
+
+	acct: {
+		fundbar: svg("rect"), expensebar: svg("rect"),
+		fund: svg("text"), fundpct: svg("text"), budget: svg("text"),
+		expense: svg("text"), expensepct: svg("text"),
+		account: t("a"),
+	},
+
+	putrel: {
+		putrel: t("section"), putsec: t("button"), putuid: t("button"), putres: t("button"),
+	},
+
+	putpro: {
+		putpro: t("section"), putrej: t("button"), putref: t("button"),
 	},
 }
 export type Section = typeof section
@@ -69,21 +90,41 @@ const template = {
 		tid: "usr" as const,
 		...section.idnam,
 		...section.meta,
-		rolref: t("p"), urej: t("p"), uref: t("p"), intro: t("p"), rec: t("p"),
+		rolref: t("p"),
+		...section.re,
+		intro: t("p"), rec: t("p"),
 		pos: t("section"), put: t("button"), pas: t("button"),
 		pre: t("section"), preusr: t("button"), presoc: t("button"), preagd: t("button"), prefund: t("button"),
-		...section.pro,
+		...section.putpro,
 	},
 
 	soc: {
 		tid: "soc" as const,
 		...section.idnam,
 		...section.meta,
-		sec: t("p"), uid: t("p"), res: t("p"),
+		...section.rel,
 		intro: t("p"), rec: t("p"),
 		pos: t("section"), put: t("button"),
+		...section.putrel,
+		...section.putpro,
+	},
+
+	agd: {
+		tid: "agd" as const,
+		...section.idnam,
+		...section.meta,
+		...section.cover,
+		...section.acct,
+		goal: t("p"), intro: t("p"), rec: t("p"),
 		...section.rel,
-		...section.pro,
+		pos: t("section"), put: t("button"), putimg: t("button"), putgoal: t("button"),
+		...section.putrel,
+		...section.putpro,
+	},
+
+	goal: {
+		tid: "goal" as const,
+		circle: svg("circle"), pct: svg("text"), nam: t("span"),
 	},
 
 	pre: {
