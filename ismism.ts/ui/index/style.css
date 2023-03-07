@@ -6,6 +6,7 @@
 	--black: #000;
 	--palered: #ffdddd;
 	--red: #f44336;
+	--palegreen: #ddffdd;
 	--green: #4CAF50;
 	--amber: #ffc107;
 	--purple: #673ab7;
@@ -271,42 +272,86 @@ div#main {
 
 article.rec {
 	width: fit-content;
-	margin: 8px;
+	margin: 0;
 	background: none;
 	box-shadow: none;
 }
 
-article.rec>section.recnam {
+article.rec>section.nam {
 	justify-content: left;
 	gap: 8px;
 }
 
-article.rec>section>a.recanam {
+article.rec>section.nam>a.anam {
 	padding: 0.2ch 1ch;
 	font-size: var(--small);
 	background: var(--black);
 	color: var(--white);
 }
 
-article.rec>section>label.recutc {
-	padding: 0.1ch;
+article.rec>section.meta {
+	padding: 0.5ch;
 	font-size: var(--small);
 	font-style: italic;
 }
 
-article.rec>section.recmsg {
+article.rec>section.msg {
 	min-width: 240px;
 	width: fit-content;
-	margin-top: 6px;
 	padding: 0.5em 16px;
 	background: var(--lightgray);
 	border-radius: 0 8px 8px 8px;
 	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px;
 }
 
-article.rec>section.recmsg>a {
+article.rec>section.msg:empty::before {
+	content: "-本条不公示-";
+}
+
+article.rec>section.msg>a {
 	text-decoration: underline;
 	text-underline-offset: 4px;
+}
+
+article.rec>section.meta.rej2,
+article.rec>section.msg.rej2:empty::before {
+	color: var(--red);
+}
+
+article.rec>section.msg.rej2 {
+	background: var(--palered);
+}
+
+article.rec>section.meta.ref2,
+article.rec>section.msg.ref2,
+:empty::before {
+	color: var(--green);
+}
+
+article.rec>section.msg.ref2 {
+	background: var(--palegreen);
+}
+
+article.rec>section.re {
+	font-size: var(--small);
+	padding: 1em 0;
+	color: var(--gray);
+}
+
+article.rec>section.re>section.putpro {
+	float: right;
+}
+
+article.rec>section.re>section.putpro>button {
+	background: none;
+}
+
+@media (hover: hover) {
+
+	article.rec a:hover,
+	article.rec button:hover {
+		color: var(--amber);
+	}
 }
 
 section.flex {

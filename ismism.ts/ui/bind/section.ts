@@ -1,6 +1,7 @@
+import type { Work } from "../../src/eid/typ.ts"
 import type { DocU } from "../../src/db.ts"
-import type { Rec } from "../../src/pra/que.ts"
-import { Agd, Soc, Usr, arec } from "./article.ts"
+import type * as Q from "../../src/pra/que.ts"
+import { Agd, Soc, Usr, rec as arec } from "./article.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
@@ -216,26 +217,27 @@ export function seladm(
 
 export function rec(
 	t: Section["rec"],
-	id: "sid" | "aid",
-	d: Soc | Agd,
+	id: "uid" | "sid" | "aid",
+	d: Usr | Soc | Agd,
 	froze: boolean,
 ) {
 	label(t.recwork, `工作日志：（${d.nrec.work}）`)
-	label(t.recfund, `支持者：（${d.nrec.fund}）`)
+	label(t.recfund, `支持记录：（${d.nrec.fund}）`)
 	if (froze) { [t.recwork, t.recfund].forEach(el => el.classList.add("froze")); return }
 	const utc = { work: 0, fund: 0 }
 	const lrec = async (c: "work" | "fund") => {
-		if (utc[c] < 0 || t[`rec${c}`].scrollTop > 0) return
-		const rec = await que<Rec>(`rec?c=${c}&${id}=${d._id}&utc=${utc.work}`)
+		const p = t[`rec${c}`]
+		if (utc[c] < 0 || p.scrollTop > 0) return
+		const h = utc[c] === 0 ? 0 : p.scrollHeight
+		const rec = await que<Q.Rec>(`rec?c=${c}&${id}=${d._id}&utc=${utc[c]}`)
 		if (!rec || rec.rec.length === 0) { utc[c] = -1; return }
 		utc[c] = rec.rec[rec.rec.length - 1]._id.utc
-		const r = { ...rec, unam: new Map(rec.unam), anam: new Map(rec.anam) }
-		arec(t[`rec${c}`], c, r, utc[c] === 0 ? 0 : t[`rec${c}`].scrollHeight)
+		const rc = { ...rec, unam: new Map(rec.unam), anam: new Map(rec.anam) }
+		for (const r of rc.rec) p.prepend(arec(c, rc, r))
+		setTimeout(() => p.scrollTop = p.scrollHeight - h, 100)
 	}
-	lrec("work")
-	lrec("fund")
-	t.recwork.addEventListener("scroll", () => lrec("work"))
-	t.recfund.addEventListener("scroll", () => lrec("fund"));
+	lrec("work"); t.recwork.addEventListener("scroll", () => lrec("work"))
+	lrec("fund"); t.recfund.addEventListener("scroll", () => lrec("fund"));
 	[t.recwork, t.recfund].map(r => r.parentElement as HTMLDetailsElement).forEach(d =>
 		d.addEventListener("toggle", () => { if (d.open) d.scrollIntoView(false) })
 	)
@@ -279,11 +281,12 @@ export function putrel(
 
 export function putpro(
 	t: Section["putpro"],
-	id: "uid" | "sid" | "aid",
-	d: Usr | Soc,
+	id: "uid" | "sid" | "aid" | "workid",
+	d: Usr | Soc | Agd | Work,
 	refresh?: () => void,
 ) {
 	if (!nav.pas) { t.putpro.remove(); return }
+	const repas = id === "sid" || id !== "aid"
 	const [rej, ref] = [d.rej.includes(nav.pas.uid), d.ref.includes(nav.pas.uid)]
 	const p = (re: "rej" | "ref", add: boolean) => pos<DocU>("pro", { re, [id]: d._id, add })
 	btn(t.putrej, rej ? "取消反对" : "反对", refresh ? {
@@ -292,6 +295,6 @@ export function putpro(
 	} : undefined)
 	btn(t.putref, ref ? "取消推荐" : "推荐", refresh ? {
 		pos: () => p("ref", !ref),
-		refresh: async () => { await navpas(); refresh() },
+		refresh: async () => { if (repas) await navpas(); refresh() },
 	} : undefined)
 }

@@ -98,7 +98,8 @@ const template = {
 		...section.meta,
 		rolref: t("p"),
 		...section.re,
-		intro: t("p"), rec: t("p"),
+		intro: t("p"),
+		...section.rec,
 		pos: t("section"), put: t("button"), pas: t("button"),
 		pre: t("section"), preusr: t("button"), presoc: t("button"), preagd: t("button"), prefund: t("button"),
 		...section.putpro,
@@ -137,10 +138,11 @@ const template = {
 
 	rec: {
 		tid: "rec" as const,
-		recunam: t("a"), recanam: t("a"), recutc: t("label"),
-		recmsg: t("section"),
-		recre: t("section"), rej: t("span"), ref: t("span"),
-		recput: t("section"), putrej: t("button"), putref: t("button"), put: t("button"),
+		unam: t("a"), anam: t("a"),
+		meta: t("section"),
+		msg: t("section"),
+		re: t("section"), rej: t("span"), ref: t("span"),
+		...section.putpro, put: t("button"),
 	},
 
 	pre: {
