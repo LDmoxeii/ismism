@@ -108,11 +108,13 @@ export async function pos(
 				}
 			} else if (typeof workid === "object" && Object.keys(workid).length === 3) {
 				if (typeof msg === "string") return put_work(p.pas, workid, { msg })
-				else if (typeof nam === "string" && typeof src === "string") put_work(p.pas, workid, { nam, src })
+				else if (typeof nam === "string" && typeof src === "string") return put_work(p.pas, workid, { nam, src })
+				else return put_work(p.pas, workid, null)
 			} else if (typeof aid === "number") {
 				if (typeof goal === "object") return put_agd(p.pas, aid, { goal })
 				else if (typeof img === "object") return put_agd(p.pas, aid, { img })
-			}
+				else return put_agd(p.pas, aid, null)
+			} else if (typeof sid === "number") return put_soc(p.pas, sid, null)
 			break
 		}
 	}

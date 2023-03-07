@@ -173,6 +173,7 @@ Deno.test("put", async () => {
 		pos({ jwt }, "put", json({ aid: 1, rol: "uid", uid: 1, add: true })),
 		pos({ jwt }, "put", json({ aid: 1, rol: "uid", uid: 2, add: true })),
 		pos({ jwt }, "put", json({ workid, msg: "updated" })),
+		pos({ jwt }, "put", json({ aid: 1 })),
 	])
 	assertEquals({ _id: 1, ...uu }, await usr_r({ _id: 1 }, { nam: 1, adm1: 1, adm2: 1, intro: 1 }))
 	assertEquals({ _id: 1, nam: su.nam, uidlim: su.uidlim }, await soc_r(1, { nam: 1, uidlim: 1 }))

@@ -118,8 +118,9 @@ export type PutWork = { msg: string } | { nam: string, src: string }
 function is_put_idrel(
 	pas: Pas,
 	id: { sid: Soc["_id"] } | { aid: Agd["_id"] },
-	p: PutIdRel | UpdateRel,
+	p: PutIdRel | UpdateRel | null,
 ): boolean {
+	if (p === null) return pas.aut && is_re(pas)
 	if ("nam" in p) return is_pre_rel(pas)
 	else if ("intro" in p) return is_sec(pas, id)
 	else if ("rol" in p) switch (p.rol) {
@@ -133,25 +134,25 @@ function is_put_idrel(
 export function is_put_soc(
 	pas: Pas,
 	sid: Soc["_id"],
-	p: PutSoc,
+	p: PutSoc | null,
 ): boolean {
 	return is_put_idrel(pas, { sid }, p)
 }
 export function is_put_agd(
 	pas: Pas,
 	aid: Agd["_id"],
-	p: PutAgd,
+	p: PutAgd | null,
 ): boolean {
-	if ("goal" in p || "img" in p) return is_sec(pas, { aid })
+	if (p !== null && ("goal" in p || "img" in p)) return is_sec(pas, { aid })
 	return is_put_idrel(pas, { aid }, p)
 }
 export function is_put_work(
 	pas: Pas,
 	work: Pick<Work, "_id" | "ref" | "work">,
-	p: PutWork,
+	p: PutWork | null,
 ): boolean {
-	return work._id.uid === pas.uid && work.ref.length === 0 && (
-		"msg" in p && is_msg(p.msg) && work.work === "work"
+	return work._id.uid === pas.uid && work.ref.length === 0 && (p === null
+		|| "msg" in p && is_msg(p.msg) && work.work === "work"
 		|| "src" in p && is_msg(p.nam) && is_url(p.src) && work.work === "video"
 	)
 }
