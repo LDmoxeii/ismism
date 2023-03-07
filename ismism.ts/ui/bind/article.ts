@@ -312,12 +312,13 @@ export function rec(
 		const w = d as Work
 		const froze = !is_re(w) && !(nav.pas && (nav.pas.aut || is_sec(nav.pas, { aid }) || is_uid(nav.pas, { aid })))
 		if (is_rej(w)) {
-			t.meta.innerText += "（反对者达两名时，本条不公示）";
+			t.meta.innerText += "（反对者达两名，不公示）";
 			[t.meta, t.msg].forEach(el => el.classList.add("rej2"))
 		} else if (!is_ref(w)) {
-			t.meta.innerText += "（推荐人达两名前，本条不公示）";
+			t.meta.innerText += "（推荐人未达两名，不公示）";
 			[t.meta, t.msg].forEach(el => el.classList.add("ref2"))
-		} else if (w.ref.length !== 0) t.meta.innerText += "（已有推荐人，本条不可编辑）"
+		}
+		if (w.ref.length !== 0 && w._id.uid === nav.pas?.uid) t.meta.innerText += "（有推荐人，不可编辑）"
 		if (!froze) switch (w.work) {
 			case "work": {
 				t.msg.innerText = w.msg
@@ -332,6 +333,33 @@ export function rec(
 		}
 		ida(t.rej, w.rej.map(uid => [`${uid}`, r.unam.get(uid)!]))
 		ida(t.ref, w.ref.map(uid => [`${uid}`, r.unam.get(uid)!]))
+		if (nav.pas) {
+			const refresh = async () => {
+				const q = await que<Q.Rec>(`rec?c=work&uid=${w._id.uid}&aid=${w._id.aid}&utc=${w._id.utc}`)
+				if (q) t.rec.replaceWith(rec(c, { ...q, unam: new Map(q.unam), anam: new Map(q.anam) }, q.rec[0]))
+			}
+			putpro(t, "workid", w, refresh)
+			if (!is_uid(nav.pas, { aid })) t.putrej.remove()
+			if (!is_sec(nav.pas, { aid })) t.putref.remove()
+			if (w.ref.length === 0 && w._id.uid === nav.pas.uid) {
+				const prompt1 = w.work === "work"
+					? "输入工作日志（2-256 个字符，\\n 为换行符，留空以删除日志）"
+					: "输入视频标题（2 - 256 个字符，留空以删除日志）"
+				let del = false
+				btn(t.put, t.put.innerText, {
+					prompt1, prompt2: w.work === "work" ? undefined : "输入视频外链",
+					pos: (p1, p2) => {
+						del = !p1
+						return pos("put", del ? { workid: w._id } : w.work === "work"
+							? { workid: w._id, msg: p1!.replaceAll("\\n", "\n") }
+							: { workid: w._id, nam: p1!, src: p2! }
+						)
+					},
+					alert: "无效输入",
+					refresh: () => del ? t.rec.remove() : refresh()
+				})
+			} else t.put.remove()
+		} else t.putpro.remove()
 	} else if (c === "fund") {
 		const f = d as Fund
 		const amount = f.fund > 0 ? `提供支持：+${f.fund}\n` : ""

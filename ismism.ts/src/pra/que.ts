@@ -1,8 +1,8 @@
 import type { Ret } from "./con.ts"
+import { is_id } from "../eid/is.ts"
 import { coll } from "../db.ts"
 import { agd, nid, rec, soc, usr } from "./doc.ts"
 import { id } from "../eid/id.ts"
-import { is_id } from "../eid/is.ts"
 
 export type NId = Ret<typeof nid>
 export type Usr = Ret<typeof usr>
@@ -33,8 +33,9 @@ export async function que(
 		} case "rec": {
 			const c = p.get("c")
 			const [utc, uid, sid, aid] = ["utc", "uid", "sid", "aid"].map(t => parseInt(p.get(t) ?? ""))
-			const id = is_id(uid) ? { uid } : is_id(aid) ? { aid } : is_id(sid) ? { sid } : undefined
 			if (utc >= 0) {
+				const id = is_id(uid) && is_id(aid) ? { uid, aid }
+					: is_id(uid) ? { uid } : is_id(aid) ? { aid } : is_id(sid) ? { sid } : undefined
 				if (c === "work") return await rec(coll.work, utc, id)
 				else if (c === "fund") return await rec(coll.fund, utc, id)
 			} break
@@ -42,4 +43,3 @@ export async function que(
 	}
 	return null
 }
-

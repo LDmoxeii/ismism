@@ -90,7 +90,7 @@ export function is_msg(
 export function is_recid(
 	recid: Rec["_id"]
 ): recid is Rec["_id"] {
-	return is_id(recid.uid) && is_id(recid.aid) && recid.utc > 0
+	return Object.keys(recid).length === 3 && is_id(recid.uid) && is_id(recid.aid) && recid.utc > 0
 }
 
 export function is_actid(

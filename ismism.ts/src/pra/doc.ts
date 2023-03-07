@@ -1,10 +1,10 @@
-import type { Agd, Rec, Soc, Usr } from "../eid/typ.ts"
+import type { Agd, Rec, Soc, Usr, Work } from "../eid/typ.ts"
 import { Coll, coll } from "../db.ts"
 import { rolref } from "../eid/rel.ts"
 import { usr_r } from "../eid/usr.ts"
 import { soc_r } from "../eid/soc.ts"
 import { agd_r } from "../eid/agd.ts"
-import { nrec, rec_f } from "../eid/rec.ts"
+import { nrec, rec_f, rec_r } from "../eid/rec.ts"
 import { id, idnam, nid_of_adm } from "../eid/id.ts"
 import { aut_r } from "../eid/aut.ts"
 
@@ -71,18 +71,25 @@ export async function rec<
 	c: Coll<T>,
 	utc: T["_id"]["utc"],
 	id?: { uid: T["_id"]["uid"] } | { aid: T["_id"]["aid"] } | { sid: Soc["_id"] }
+		| { uid: T["_id"]["uid"], aid: T["_id"]["aid"] }
 ) {
 	let r = null
 	if (!id) r = await rec_f(c, utc)
-	else if ("uid" in id) r = await rec_f(c, utc, { uid: [id.uid] })
+	else if ("uid" in id && "aid" in id) {
+		r = await rec_r(c, { ...id, utc })
+		if (!r) return null
+		r = [r]
+	} else if ("uid" in id) r = await rec_f(c, utc, { uid: [id.uid] })
 	else if ("aid" in id) { r = await rec_f(c, utc, id) }
 	else {
 		const s = await soc_r(id.sid, { uid: 1 })
 		if (s) r = await rec_f(c, utc, { uid: s.uid })
 	}
 	if (r) {
+		const uid = r.map(r => r._id.uid) // deno-lint-ignore no-explicit-any
+		if ((c as any) === coll.work) uid.push(...(r as any as Work[]).flatMap(r => [...r.rej, ...r.ref]))
 		const [unam, anam] = await Promise.all([
-			idnam(coll.usr, r.map(r => r._id.uid)),
+			idnam(coll.usr, uid),
 			idnam(coll.agd, r.map(r => r._id.aid)),
 		])
 		return { rec: r, unam, anam }

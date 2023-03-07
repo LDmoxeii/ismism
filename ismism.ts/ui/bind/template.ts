@@ -137,7 +137,7 @@ const template = {
 	},
 
 	rec: {
-		tid: "rec" as const,
+		tid: "rec" as const, rec: t("article"),
 		unam: t("a"), anam: t("a"),
 		meta: t("section"),
 		msg: t("section"),

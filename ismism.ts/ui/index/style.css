@@ -250,7 +250,7 @@ section>span>a:not(:first-child):before,
 section>p>a:not(:first-child):before,
 section>p>span>a:not(:first-child):before {
 	content: "、";
-	color: initial;
+	color: var(--gray);
 }
 
 @media (hover: hover) {
@@ -314,6 +314,7 @@ article.rec>section.msg>a {
 }
 
 article.rec>section.meta.rej2,
+article.rec>section.msg.rej2,
 article.rec>section.msg.rej2:empty::before {
 	color: var(--red);
 }
@@ -339,6 +340,7 @@ article.rec>section.re {
 }
 
 article.rec>section.re>section.putpro {
+	margin-left: 2ch;
 	float: right;
 }
 
