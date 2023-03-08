@@ -120,9 +120,9 @@ export function rolref(
 	t: HTMLParagraphElement,
 	u: Usr,
 ) {
-	if (u.aut) ida(t, [[`${u._id}`, `主义主义书记 (${u.ref.length}推荐)`]], "isec")
-	ida(t, u.aref.sec.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}书记 (${r}推荐)`]), "sec")
-	ida(t, u.sref.sec.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}书记 (${r}推荐)`]), "sec")
+	if (u.aut) ida(t, [[`${u._id}`, `主义主义管理员 (${u.ref.length}推荐)`]], "isec")
+	ida(t, u.aref.sec.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}管理员 (${r}推荐)`]), "sec")
+	ida(t, u.sref.sec.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}管理员 (${r}推荐)`]), "sec")
 	ida(t, u.aref.uid.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}志愿者 (${r}推荐)`]), "uid")
 	ida(t, u.sref.uid.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}志愿者 (${r}推荐)`]), "uid")
 	ida(t, u.aref.res.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}申请人 (${r}推荐)`]), "res")
@@ -143,7 +143,7 @@ export function rel(
 	t: Section["rel"],
 	d: Soc | Agd,
 ) {
-	label(t.sec, `书记：（${d.sec.length}/${lim_sec}）`)
+	label(t.sec, `管理员：（${d.sec.length}/${lim_sec}）`)
 	ida(t.sec, d.sec.map(r => [`${r}`, d.unam.get(r)!]))
 	label(t.uid, `志愿者：（${d.uid.length}/${d.uidlim}）`)
 	ida(t.uid, d.uid.map(r => [`${r}`, d.unam.get(r)!]))
@@ -260,13 +260,13 @@ export function putrel(
 	if (!nav.pas) { t.putrel.remove(); return }
 	const namid = new Map([...d.unam.entries()].map(([u, nam]) => [nam, u]))
 	if (d.ref.includes(nav.pas.uid)) btn(t.putsec, t.putsec.innerText, {
-		prompt1: "输入要增加或删除的书记名",
+		prompt1: "输入要增加或删除的管理员名",
 		pos: p1 => {
 			const uid = namid.get(p1 ?? "")
 			if (!uid) return null
 			return pos<DocU>("put", { [id]: d._id, rol: "sec", uid, add: !d.sec.includes(uid) })
 		},
-		alert: `无效书记名或书记已满\n增删的书记需先作为申请人或其它出现在${id === "sid" ? "社团" : "活动"}名单`,
+		alert: `无效管理员名或管理员已满\n增删的管理员需先作为申请人或其它出现在${id === "sid" ? "社团" : "活动"}名单`,
 		refresh: async () => { await navpas(); refresh() },
 	}); else t.putsec.remove() // deno-lint-ignore no-explicit-any
 	if (is_sec(nav.pas, { [id]: d._id } as any)) btn(t.putuid, t.putuid.innerText, {
