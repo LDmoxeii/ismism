@@ -162,7 +162,7 @@ const template = {
 		intro: t("textarea"),
 		uidlim: t("input"), reslim: t("input"),
 		account: t("input"), budget: t("input"), fund: t("input"), expense: t("input"),
-		put: t("button"), cancel: t("button"),
+		putn: t("button"), put: t("button"), cancel: t("button"),
 	},
 
 	idn: {

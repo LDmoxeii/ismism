@@ -587,6 +587,10 @@ section>p.goal>div>span {
 	text-align: center;
 }
 
+button.putn {
+	background: var(--red) !important;
+}
+
 a.idnam {
 	display: block;
 	font-size: var(--title);

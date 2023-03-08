@@ -1,6 +1,6 @@
 import type { Fund, Id, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
-import type { DocC, DocU } from "../../src/db.ts"
+import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
@@ -422,7 +422,7 @@ function pre(
 
 function put(
 	nam: "用户" | "社团" | "活动",
-	id: Usr | Soc,
+	id: Usr | Soc | Agd,
 ) {
 	if (!nav.pas) return
 	navnid()
@@ -482,6 +482,17 @@ function put(
 			break
 		}
 	}
+	if (nam === "用户" || !nav.pas.aut || !is_re(nav.pas)) t.putn.remove()
+	else btn(t.putn, `删除${nam}`, {
+		prompt1: `确认要删除的${nam}名称\n只能删除${nam === "社团" ? "无志愿者的社团" : "无工作日志，无支持记录的活动"}`,
+		confirm: `确认要删除${nam}?`,
+		pos: p1 => {
+			if (p1 !== id.nam) return null
+			return pos<DocD>("put", { [nam === "社团" ? "sid" : "aid"]: id._id })
+		},
+		alert: `${nam}名称有误\n${nam === "社团" ? "或社团仍有志愿者" : "或活动仍有工作日志或支持记录"}`,
+		refresh: () => navhash(nam === "社团" ? "soc" : "agd"),
+	})
 	btn(t.put, t.put.innerText, {
 		pos: async () => {
 			const rs = await Promise.all(p().map(b => pos<DocU>("put", b)))

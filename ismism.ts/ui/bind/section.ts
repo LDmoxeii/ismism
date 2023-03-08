@@ -224,7 +224,7 @@ export function rec(
 	label(t.recwork, `工作日志：（${d.nrec.work}）`)
 	label(t.recfund, `支持记录：（${d.nrec.fund}）`)
 	if (froze) { [t.recwork, t.recfund].forEach(el => el.classList.add("froze")); return }
-	const utc = { work: 0, fund: 0 }
+	const utc = { work: d.nrec.work > 0 ? 0 : -1, fund: d.nrec.fund > 0 ? 0 : -1 }
 	const lrec = async (c: "work" | "fund") => {
 		const p = t[`rec${c}`]
 		if (utc[c] < 0 || p.scrollTop > 0) return
@@ -236,11 +236,19 @@ export function rec(
 		for (const r of rc.rec) p.prepend(arec(c, rc, r))
 		setTimeout(() => p.scrollTop = p.scrollHeight - h, 100)
 	}
-	lrec("work"); t.recwork.addEventListener("scroll", () => lrec("work"))
-	lrec("fund"); t.recfund.addEventListener("scroll", () => lrec("fund"));
-	[t.recwork, t.recfund].map(r => r.parentElement as HTMLDetailsElement).forEach(d =>
-		d.addEventListener("toggle", () => { if (d.open) d.scrollIntoView(false) })
-	)
+	t.recwork.addEventListener("scroll", () => lrec("work"))
+	t.recfund.addEventListener("scroll", () => lrec("fund"))
+	const [dwork, dfund] = [t.recwork, t.recfund].map(r => r.parentElement as HTMLDetailsElement)
+	dwork.addEventListener("toggle", async () => {
+		if (!dwork.open) return
+		if (utc.work === 0) await lrec("work")
+		dwork.scrollIntoView(false)
+	})
+	dfund.addEventListener("toggle", async () => {
+		if (!dfund.open) return
+		if (utc.fund === 0) await lrec("fund")
+		dfund.scrollIntoView(false)
+	})
 }
 
 export function putrel(
