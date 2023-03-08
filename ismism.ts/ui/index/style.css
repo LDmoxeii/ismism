@@ -164,6 +164,10 @@ section>details>summary {
 	cursor: pointer;
 }
 
+section>details:focus section>details>summary:focus {
+	outline: none;
+}
+
 section>details>p {
 	display: block;
 	background: var(--lightgray);

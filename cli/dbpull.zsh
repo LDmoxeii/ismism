@@ -7,5 +7,5 @@ cd dbexport
 zip -r ~/work/ismism/dbexport/dbexport-$(date +%Y%m%d-%H%M).zip .
 cd ..
 
-deno run --allow-all cli/dbreset.js
+deno run -A cli/dbset.js
 zsh cli/dbimport.zsh dbexport
