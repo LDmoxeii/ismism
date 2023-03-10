@@ -164,7 +164,8 @@ section>details>summary {
 	cursor: pointer;
 }
 
-section>details:focus section>details>summary:focus {
+section>details:focus,
+section>details>summary:focus {
 	outline: none;
 }
 
