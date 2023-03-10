@@ -12,9 +12,11 @@ import { lim_re, lim_sec } from "../../src/eid/is.ts"
 export function label(
 	el: HTMLElement,
 	s: string,
+	append = false
 ) {
 	const l = el.previousElementSibling as HTMLLabelElement
-	l.innerText = s
+	if (append) l.innerText += s
+	else l.innerText = s
 }
 
 export function txt(
@@ -120,9 +122,9 @@ export function rolref(
 	t: HTMLParagraphElement,
 	u: Usr,
 ) {
-	if (u.aut) ida(t, [[`${u._id}`, `主义主义管理员 (${u.ref.length}推荐)`]], "isec")
-	ida(t, u.aref.sec.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}管理员 (${r}推荐)`]), "sec")
-	ida(t, u.sref.sec.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}管理员 (${r}推荐)`]), "sec")
+	if (u.aut) ida(t, [[`${u._id}`, `管理员 (${u.ref.length}推荐)`]], "isec")
+	ida(t, u.aref.sec.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}联络员 (${r}推荐)`]), "sec")
+	ida(t, u.sref.sec.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}联络员 (${r}推荐)`]), "sec")
 	ida(t, u.aref.uid.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}志愿者 (${r}推荐)`]), "uid")
 	ida(t, u.sref.uid.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}志愿者 (${r}推荐)`]), "uid")
 	ida(t, u.aref.res.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}申请人 (${r}推荐)`]), "res")
@@ -133,9 +135,9 @@ export function re(
 	t: Section["re"],
 	u: Usr,
 ) {
-	label(t.urej, `反对：（${u.urej.length}/${lim_re}）`)
+	label(t.urej, `（${u.urej.length}/${lim_re}）`, true)
 	ida(t.urej, u.urej.map(r => [`${r}`, u.unam.get(r)!]))
-	label(t.uref, `推荐：（${u.uref.length}/${lim_re}）`)
+	label(t.uref, `（${u.uref.length}/${lim_re}）`, true)
 	ida(t.uref, u.uref.map(r => [`${r}`, u.unam.get(r)!]))
 }
 
@@ -143,11 +145,11 @@ export function rel(
 	t: Section["rel"],
 	d: Soc | Agd,
 ) {
-	label(t.sec, `管理员：（${d.sec.length}/${lim_sec}）`)
+	label(t.sec, `（${d.sec.length}/${lim_sec}）`, true)
 	ida(t.sec, d.sec.map(r => [`${r}`, d.unam.get(r)!]))
-	label(t.uid, `志愿者：（${d.uid.length}/${d.uidlim}）`)
+	label(t.uid, `（${d.uid.length}/${d.uidlim}）`, true)
 	ida(t.uid, d.uid.map(r => [`${r}`, d.unam.get(r)!]))
-	label(t.res, `申请人：（${d.res.length}/${d.reslim}）`)
+	label(t.res, `（${d.res.length}/${d.reslim}）`, true)
 	ida(t.res, d.res.map(r => [`${r}`, d.unam.get(r)!]))
 }
 
@@ -221,8 +223,8 @@ export function rec(
 	d: Usr | Soc | Agd,
 	froze: boolean,
 ) {
-	label(t.recwork, `工作日志：（${d.nrec.work}）`)
-	label(t.recfund, `支持记录：（${d.nrec.fund}）`)
+	label(t.recwork, `（${d.nrec.work}）`, true)
+	label(t.recfund, `（${d.nrec.fund}）`, true)
 	if (froze) { [t.recwork, t.recfund].forEach(el => el.classList.add("froze")); return }
 	const utc = { work: d.nrec.work > 0 ? 0 : -1, fund: d.nrec.fund > 0 ? 0 : -1 }
 	const lrec = async (c: "work" | "fund") => {
@@ -260,13 +262,13 @@ export function putrel(
 	if (!nav.pas) { t.putrel.remove(); return }
 	const namid = new Map([...d.unam.entries()].map(([u, nam]) => [nam, u]))
 	if (d.ref.includes(nav.pas.uid)) btn(t.putsec, t.putsec.innerText, {
-		prompt1: "输入要增加或删除的管理员名",
+		prompt1: "输入要增加或删除的联络员名",
 		pos: p1 => {
 			const uid = namid.get(p1 ?? "")
 			if (!uid) return null
 			return pos<DocU>("put", { [id]: d._id, rol: "sec", uid, add: !d.sec.includes(uid) })
 		},
-		alert: `无效管理员名或管理员已满\n增删的管理员需先作为申请人或其它出现在${id === "sid" ? "社团" : "活动"}名单`,
+		alert: `无效联络员名或联络员已满\n增删的联络员需先作为申请人或其它出现在${id === "sid" ? "社团" : "活动"}名单`,
 		refresh: async () => { await navpas(); refresh() },
 	}); else t.putsec.remove() // deno-lint-ignore no-explicit-any
 	if (is_sec(nav.pas, { [id]: d._id } as any)) btn(t.putuid, t.putuid.innerText, {
