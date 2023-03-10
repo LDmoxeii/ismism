@@ -57,7 +57,7 @@ Deno.test("pre", async () => {
 		act_c({ _id: actid[0], exp: utc + 1000, act: "fund", aid: 1, msg: "msg" }),
 		act_c({ _id: actid[1], exp: utc + 1000, act: "fund", aid: 2, msg: "msg" }),
 		act_c({ _id: actid[2], exp: utc + 1000, act: "nbr", uid: 1 }),
-		aut_c({ _id: 1 }),
+		aut_c({ _id: 1, aut: ["aut", "lit"] }),
 	])
 	assertEquals([1, null, 1, null], [
 		await pos({}, "pre", json({ actid: actid[0], nbr: nbr[0], adm1, adm2 })),
@@ -103,7 +103,7 @@ Deno.test("pro", async () => {
 		await usr_c(nbr[0], "四川", "成都"), usr_u(1, { $set: { ref: [1, 2] } }),
 		await usr_c(nbr[1], "广东", "汕头"), usr_u(2, { $set: { ref: [1, 2] } }),
 		await usr_c(nbr[2], "广东", "汕头"), usr_u(3, { $set: { ref: [2] } }),
-		aut_c({ _id: 1 }), aut_c({ _id: 2 }),
+		aut_c({ _id: 1, aut: ["aut", "wsl"] }), aut_c({ _id: 2, aut: ["aut", "wsl"] }),
 		...[0, 2].map(n => pos(p, "pas", json({ nbr: nbr[n], sms: false }))),
 		await soc_c("团体", "四川", "成都"), soc_u(1, { $set: { ref: [1, 2] } }),
 		await agd_c("活动", "四川", "成都"), agd_u(1, { $set: { ref: [2], uid: [3] } }),
@@ -152,7 +152,7 @@ Deno.test("put", async () => {
 		await soc_c("社团", "江苏", "苏州"), soc_u(1, { $set: { ref: [1, 2] } }),
 		await agd_c("活动", "江苏", "苏州"), agd_u(1, { $set: { ref: [1, 2] } }),
 		rec_c(coll.work, { _id: workid, ref: [], rej: [], work: "work", msg: "msg" }),
-		aut_c({ _id: 1 }),
+		aut_c({ _id: 1, aut: ["aut", "wsl"] }),
 		pos(p, "pas", json({ nbr, sms: false })),
 	])
 	const code = await usr_r({ _id: 1 }, { pcode: 1 })

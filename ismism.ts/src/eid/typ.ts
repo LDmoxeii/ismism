@@ -51,6 +51,7 @@ export type Fund = Rec & {
 
 export type Aut = {
 	_id: Usr["_id"],
+	aut: ("aut" | "wsl" | "lit")[],
 }
 export type Act = {
 	_id: string,

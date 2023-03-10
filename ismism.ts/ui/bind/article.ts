@@ -2,6 +2,7 @@ import type { Fund, Id, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
+import { is_aut } from "../../src/eid/is.ts"
 import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida } from "./section.ts"
@@ -77,7 +78,7 @@ export async function usr(
 	const q = await que<Q.Usr>(`usr?uid=${uid}`)
 	if (!q) return idn(`${uid}`, "用户")
 	const u: Usr = { ...q, unam: new Map(q.unam), snam: new Map(q.snam), anam: new Map(q.anam) }
-	const froze = is_rej(u) && !(nav.pas && (nav.pas.aut || is_sec(nav.pas)))
+	const froze = is_rej(u) && !(nav.pas && (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas)))
 
 	navnid()
 	main.innerHTML = ""
@@ -165,7 +166,7 @@ export async function soc(
 		if (!d) continue
 
 		const s: Soc = { ...d, unam: new Map(d.unam) }
-		const froze = is_rej(s) && !(nav.pas && (nav.pas.aut || is_sec(nav.pas, { sid: s._id })))
+		const froze = is_rej(s) && !(nav.pas && (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { sid: s._id })))
 
 		const t = bind("soc")
 		idnam(t, `s${s._id}`, s.nam, meta(t, s))
@@ -176,11 +177,11 @@ export async function soc(
 		else t.intro.innerText = s.intro
 
 		if (nav.pas) {
-			if (nav.pas.aut || is_sec(nav.pas, { sid: s._id }))
+			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { sid: s._id }))
 				t.put.addEventListener("click", () => put("社团", s))
 			else t.put.remove()
 			putrel(t, "sid", s, () => soc(s._id))
-			putpro(t, "sid", s, nav.pas.aut ? () => soc(s._id) : undefined)
+			putpro(t, "sid", s, is_aut(nav.pas.aut, "aut") ? () => soc(s._id) : undefined)
 		} else {
 			t.pos.remove()
 			t.putrel.remove()
@@ -212,7 +213,7 @@ export async function agd(
 		if (!d) continue
 
 		const a: Agd = { ...d, unam: new Map(d.unam) }
-		const froze = is_rej(a) && !(nav.pas && (nav.pas.aut || is_sec(nav.pas, { aid: a._id })))
+		const froze = is_rej(a) && !(nav.pas && (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { aid: a._id })))
 
 		const t = bind("agd")
 		idnam(t, `a${a._id}`, a.nam, meta(t, a))
@@ -226,7 +227,7 @@ export async function agd(
 		else t.intro.innerText = a.intro
 
 		if (nav.pas) {
-			if (nav.pas.aut || is_sec(nav.pas, { aid: a._id }))
+			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { aid: a._id }))
 				t.put.addEventListener("click", () => put("活动", a))
 			else t.put.remove()
 			if (is_sec(nav.pas, { aid: a._id })) {
@@ -280,7 +281,7 @@ export async function agd(
 				refresh: () => agd(a._id),
 			}); else t.prework.remove()
 			putrel(t, "aid", a, () => agd(a._id))
-			putpro(t, "aid", a, nav.pas.aut ? () => agd(a._id) : undefined)
+			putpro(t, "aid", a, is_aut(nav.pas.aut, "aut") ? () => agd(a._id) : undefined)
 		} else {
 			t.pos.remove()
 			t.putrel.remove()
@@ -310,7 +311,7 @@ export function rec(
 	t.meta.innerText = utc_short(d._id.utc)
 	if (c === "work") {
 		const w = d as Work
-		const froze = !is_re(w) && !(nav.pas && (nav.pas.aut || is_sec(nav.pas, { aid }) || is_uid(nav.pas, { aid })))
+		const froze = !is_re(w) && !(nav.pas && (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { aid }) || is_uid(nav.pas, { aid })))
 		if (is_rej(w)) {
 			t.meta.innerText += "（反对者达两名，不公示）";
 			[t.meta, t.msg].forEach(el => el.classList.add("rej2"))
@@ -455,7 +456,7 @@ function put(
 			const s = id as Soc
 			t.uidlim.value = `${s.uidlim}`
 			t.reslim.value = `${s.reslim}`
-			const [isaut, issec] = [nav.pas.aut, is_sec(nav.pas, { sid: id._id })]
+			const [isaut, issec] = [is_aut(nav.pas.aut, "aut"), is_sec(nav.pas, { sid: id._id })]
 			t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = !isaut
 			t.intro.readOnly = t.reslim.readOnly = !issec
 			p = () => [
@@ -472,7 +473,7 @@ function put(
 			t.budget.value = `${a.budget}`
 			t.fund.value = `${a.fund}`
 			t.expense.value = `${a.expense}`
-			const [isaut, issec] = [nav.pas.aut, is_sec(nav.pas, { aid: id._id })]
+			const [isaut, issec] = [is_aut(nav.pas.aut, "aut"), is_sec(nav.pas, { aid: id._id })]
 			t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = !isaut;
 			[t.intro, t.reslim, t.account, t.budget, t.fund, t.expense].forEach(el => el.readOnly = !issec)
 			p = () => [
@@ -483,7 +484,7 @@ function put(
 			break
 		}
 	}
-	if (nam === "用户" || !nav.pas.aut || !is_re(nav.pas)) t.putn.remove()
+	if (nam === "用户" || !is_aut(nav.pas.aut, "aut") || !is_re(nav.pas)) t.putn.remove()
 	else btn(t.putn, `删除${nam}`, {
 		prompt1: `确认要删除的${nam}名称\n只能删除${nam === "社团" ? "无志愿者的社团" : "无工作日志，无支持记录的活动"}`,
 		confirm: `确认要删除${nam}?`,
@@ -492,7 +493,7 @@ function put(
 			return pos<DocD>("put", { [nam === "社团" ? "sid" : "aid"]: id._id })
 		},
 		alert: `${nam}名称有误\n${nam === "社团" ? "或社团仍有志愿者" : "或活动仍有工作日志或支持记录"}`,
-		refresh: () => navhash(nam === "社团" ? "soc" : "agd"),
+		refresh: () => nam === "社团" ? soc() : agd(),
 	})
 	btn(t.put, t.put.innerText, {
 		pos: async () => {

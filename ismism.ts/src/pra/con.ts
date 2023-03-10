@@ -1,7 +1,7 @@
 import type { Usr, Re, Agd, Soc, Work, Rel, Id } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import type { UpdateRel } from "../eid/rel.ts"
-import { is_id, is_msg, is_recid, is_url, req_re } from "../eid/is.ts"
+import { is_aut, is_id, is_msg, is_recid, is_url, req_re } from "../eid/is.ts"
 
 // deno-lint-ignore no-explicit-any
 export type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
@@ -51,12 +51,12 @@ export function is_res(
 export function is_pre_usr(
 	pas: Pas
 ): boolean {
-	return (pas.aut || is_sec(pas)) && is_re(pas)
+	return (is_aut(pas.aut, "aut") || is_sec(pas)) && is_re(pas)
 }
 function is_pre_rel(
 	pas: Pas
 ): boolean {
-	return pas.aut && is_re(pas)
+	return is_aut(pas.aut, "aut") && is_re(pas)
 }
 export function is_pre_soc(
 	pas: Pas
@@ -120,7 +120,7 @@ function is_put_idrel(
 	id: { sid: Soc["_id"] } | { aid: Agd["_id"] },
 	p: PutIdRel | UpdateRel | null,
 ): boolean {
-	if (p === null) return pas.aut && is_re(pas)
+	if (p === null) return is_aut(pas.aut, "aut") && is_re(pas)
 	if ("nam" in p) return is_pre_rel(pas)
 	else if ("intro" in p) return is_sec(pas, id)
 	else if ("rol" in p) switch (p.rol) {

@@ -36,7 +36,7 @@ export async function usr(
 		idnam(coll.soc, Object.values(sref).flatMap(s => s.map(p => p[0]))),
 		idnam(coll.agd, Object.values(aref).flatMap(s => s.map(p => p[0]))),
 	])
-	return { ...u, aut: aut ? true : false, urej, uref, sref, aref, unam, snam, anam, nrec: nr }
+	return { ...u, aut: aut ? aut.aut : [], urej, uref, sref, aref, unam, snam, anam, nrec: nr }
 }
 
 export async function soc(

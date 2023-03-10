@@ -1,4 +1,4 @@
-import type { Usr } from "../eid/typ.ts"
+import type { Aut, Usr } from "../eid/typ.ts"
 import { coll, DocR, DocU } from "../db.ts"
 import { jwt_sign, jwt_verify } from "../ont/jwt.ts"
 import { usr_r, usr_u } from "../eid/usr.ts"
@@ -13,7 +13,7 @@ export type Pas = {
 	rej: Usr["rej"],
 	ref: Usr["ref"],
 	nam: Usr["nam"],
-	aut: boolean,
+	aut: Aut["aut"],
 	sid: Rol,
 	aid: Rol,
 }
@@ -29,7 +29,7 @@ async function pas_of_usr(
 		uid: u._id,
 		rej: u.rej, ref: u.ref,
 		nam: u.nam,
-		aut: aut ? true : false,
+		aut: aut ? aut.aut : [],
 		sid, aid,
 	}
 }

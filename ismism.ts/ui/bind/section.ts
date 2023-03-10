@@ -7,7 +7,7 @@ import { utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
 import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
-import { lim_re, lim_sec } from "../../src/eid/is.ts"
+import { is_aut, lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
 	el: HTMLElement,
@@ -122,7 +122,7 @@ export function rolref(
 	t: HTMLParagraphElement,
 	u: Usr,
 ) {
-	if (u.aut) ida(t, [[`${u._id}`, `管理员 (${u.ref.length}推荐)`]], "isec")
+	if (is_aut(u.aut, "aut")) ida(t, [[`${u._id}`, `管理员 (${u.ref.length}推荐)`]], "isec")
 	ida(t, u.aref.sec.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}联络员 (${r}推荐)`]), "sec")
 	ida(t, u.sref.sec.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}联络员 (${r}推荐)`]), "sec")
 	ida(t, u.aref.uid.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}志愿者 (${r}推荐)`]), "uid")

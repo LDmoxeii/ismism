@@ -1,4 +1,4 @@
-import { Act, Agd, Id, Rec, Usr } from "./typ.ts"
+import { Act, Agd, Aut, Id, Rec, Usr } from "./typ.ts"
 
 export const req_re = 2
 export const lim_re = 64
@@ -91,6 +91,13 @@ export function is_recid(
 	recid: Rec["_id"]
 ): recid is Rec["_id"] {
 	return Object.keys(recid).length === 3 && is_id(recid.uid) && is_id(recid.aid) && recid.utc > 0
+}
+
+export function is_aut(
+	aut: Aut["aut"],
+	a: Aut["aut"][0],
+): a is Aut["aut"][0] {
+	return aut.includes(a)
 }
 
 export function is_actid(
