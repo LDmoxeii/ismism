@@ -11,11 +11,8 @@ import { utc_medium, utc_short } from "../../src/ont/utc.ts"
 
 export function pas(
 ) {
+	if (nav.pas) { navhash(`${nav.pas.uid}`); return }
 	if (navhash("pas")) return
-	if (nav.pas) {
-		pos("pas", { uid: nav.pas.uid })
-		navpas(null)
-	}
 
 	navnid()
 	main.innerHTML = ""
@@ -98,7 +95,10 @@ export async function usr(
 		if (nav.pas.uid === uid) {
 			pas_a.innerText = u.nam
 			t.put.addEventListener("click", () => put("用户", u))
-			t.pas.addEventListener("click", pas)
+			t.pas.addEventListener("click", async () => {
+				await pos("pas", { uid: nav.pas!.uid })
+				navpas(null)
+			})
 			if (is_pre_usr(nav.pas)) t.preusr.addEventListener("click", () => pre("用户"))
 			else t.preusr.remove()
 			if (is_pre_soc(nav.pas)) t.presoc.addEventListener("click", () => pre("社团"))
