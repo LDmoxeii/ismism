@@ -116,8 +116,8 @@ Deno.test("rec", async () => {
 
 Deno.test("md", async () => {
 	assertEquals([], await md_f(coll.wsl, 0))
-	assertEquals(1, await md_c(coll.wsl, { nam: "标题", md: "##md", uid: 1 }))
-	assertEquals(2, await md_c(coll.wsl, { nam: "标题", md: "##md", uid: 1 }))
+	assertEquals(1, await md_c(coll.wsl, { nam: "标题", uid: 1 }))
+	assertEquals(2, await md_c(coll.wsl, { nam: "标题", uid: 1 }))
 	assertEquals(1, await md_u(coll.wsl, 1, { $set: { md: "#md2", uid: 2 } }))
 	const md = await md_r(coll.wsl, 1)
 	assertEquals(md!.md, "#md2")

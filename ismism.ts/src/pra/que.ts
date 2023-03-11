@@ -1,7 +1,7 @@
 import type { Ret } from "./con.ts"
 import { is_id } from "../eid/is.ts"
 import { coll } from "../db.ts"
-import { agd, nid, rec, soc, usr } from "./doc.ts"
+import { agd, md, nid, rec, soc, usr } from "./doc.ts"
 import { id } from "../eid/id.ts"
 
 export type NId = Ret<typeof nid>
@@ -9,6 +9,7 @@ export type Usr = Ret<typeof usr>
 export type Soc = Ret<typeof soc>
 export type Agd = Ret<typeof agd>
 export type Rec = Ret<typeof rec>
+export type Md = Ret<typeof md>
 
 export async function que(
 	f: string,
@@ -39,6 +40,11 @@ export async function que(
 				if (c === "work") return await rec(coll.work, utc, id)
 				else if (c === "fund") return await rec(coll.fund, utc, id)
 			} break
+		} case "md": {
+			const [wslid, litid] = ["wslid", "litid"].map(t => parseInt(p.get(t) ?? ""))
+			const f = p.get("f") === null ? false : true
+			if (wslid >= 0) return await md(coll.wsl, wslid, f)
+			else if (litid >= 0) return await md(coll.lit, litid, f)
 		}
 	}
 	return null

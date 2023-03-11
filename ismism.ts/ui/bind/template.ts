@@ -145,6 +145,14 @@ const template = {
 		...section.putpro, put: t("button"),
 	},
 
+	md: {
+		tid: "md" as const,
+		...section.idnam,
+		utc: t("span"), utcp: t("span"), unam: t("span"),
+		md: t("section"),
+		put: t("button"),
+	},
+
 	pre: {
 		tid: "pre" as const,
 		...section.idnam,
@@ -162,6 +170,14 @@ const template = {
 		intro: t("textarea"),
 		uidlim: t("input"), reslim: t("input"),
 		account: t("input"), budget: t("input"), fund: t("input"), expense: t("input"),
+		putn: t("button"), put: t("button"), cancel: t("button"),
+	},
+
+	putmd: {
+		tid: "putmd" as const,
+		...section.idnam,
+		pnam: t("input"),
+		md: t("textarea"),
 		putn: t("button"), put: t("button"), cancel: t("button"),
 	},
 

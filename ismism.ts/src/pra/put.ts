@@ -1,12 +1,14 @@
-import type { Agd, Soc, Usr, Work } from "../eid/typ.ts"
+import type { Agd, Lit, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import { usr_u } from "../eid/usr.ts"
 import { coll, DocU } from "../db.ts"
-import { is_put_agd, is_put_soc, is_put_work, PutAgd, PutSoc } from "./con.ts"
+import { is_put_agd, is_put_lit, is_put_soc, is_put_work, is_put_wsl, PutAgd, PutLit, PutSoc, PutWsl } from "./con.ts"
 import { soc_d, soc_r, soc_u } from "../eid/soc.ts"
 import { agd_d, agd_u } from "../eid/agd.ts"
 import { nrec, rec_d, rec_r, rec_u } from "../eid/rec.ts"
 import { rel_u } from "../eid/rel.ts"
+import { is_id } from "../eid/is.ts"
+import { md_d, md_r, md_u } from "../eid/md.ts"
 
 export function put_usr(
 	pas: Pas,
@@ -62,4 +64,30 @@ export async function put_work(
 	const w = await rec_r(coll.work, workid, { ref: 1, work: 1 })
 	if (!w || !is_put_work(pas, w, p)) return null
 	return p === null ? rec_d(coll.work, workid) : rec_u(coll.work, workid, { $set: p })
+}
+
+export async function put_wsl(
+	pas: Pas,
+	wslid: Wsl["_id"],
+	p: PutWsl,
+): DocU {
+	if (!is_id(wslid)) return null
+	const wsl = await md_r(coll.wsl, wslid, { uid: 1 })
+	if (!wsl || !is_put_wsl(pas, wsl, p)) return null
+	return p === null ? md_d(coll.wsl, wslid) : md_u(coll.wsl, wslid, {
+		$set: { ...p, utcp: Date.now() }
+	})
+}
+
+export async function put_lit(
+	pas: Pas,
+	litid: Lit["_id"],
+	p: PutLit,
+): DocU {
+	if (!is_id(litid)) return null
+	const lit = await md_r(coll.lit, litid, { uid: 1 })
+	if (!lit || !is_put_lit(pas, lit, p)) return null
+	return p === null ? md_d(coll.lit, litid) : md_u(coll.lit, litid, {
+		$set: { ...p, utcp: Date.now() }
+	})
 }

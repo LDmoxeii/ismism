@@ -2,9 +2,10 @@ import { assertEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts"
 import { coll, db } from "../src/db.ts"
 import { agd_c, agd_u } from "../src/eid/agd.ts"
 import { rec_c } from "../src/eid/rec.ts"
+import { md_c } from "../src/eid/md.ts"
 import { soc_c, soc_u } from "../src/eid/soc.ts"
 import { usr_c } from "../src/eid/usr.ts"
-import { Agd, que, Rec, Soc, Usr } from "../src/pra/que.ts"
+import { Agd, Md, que, Rec, Soc, Usr } from "../src/pra/que.ts"
 
 await db("tst", true)
 const utc = Date.now()
@@ -28,6 +29,9 @@ await Promise.all([
 	rec_c(coll.work, { _id: { uid: 2, aid: 1, utc: utc + 1 }, rej: [], ref: [], work: "video", nam: "nam", src: "src" }),
 	rec_c(coll.fund, { _id: { uid: 1, aid: 1, utc }, fund: 100, msg: "fund" }),
 	rec_c(coll.fund, { _id: { uid: 3, aid: 2, utc: utc + 1 }, fund: 100, msg: "fund" }),
+	await md_c(coll.wsl, { nam: "标题一", uid: 1 }),
+	md_c(coll.wsl, { nam: "标题二", uid: 2 }),
+	md_c(coll.lit, { nam: "标题一", uid: 2 }),
 ])
 
 export function p(
@@ -36,9 +40,12 @@ export function p(
 		uid?: number,
 		sid?: number,
 		aid?: number,
+		wslid?: number,
+		litid?: number,
 		utc?: number,
 		adm1?: string,
 		adm2?: string,
+		f?: "",
 	}
 ) {
 	return new URLSearchParams(Object.entries(obj).map(([k, v]) => [k, `${v}`]))
@@ -91,4 +98,17 @@ Deno.test("rec", async () => {
 	assertEquals(work_utc, work_uid1)
 	assertEquals(fund?.rec.slice(0, 1), fund_aid2?.rec)
 	assertEquals(fund_aid2, fund_sid2)
+})
+
+Deno.test("md", async () => {
+	const wsl = await que("md", p({ wslid: 0, f: "" })) as Md
+	const lit = await que("md", p({ litid: 0, f: "" })) as Md
+	assertEquals(wsl!.md.length, 2)
+	assertEquals(lit!.md.length, 1)
+	const wsl_1 = await que("md", p({ wslid: 2, f: "" })) as Md
+	const wsl_2 = await que("md", p({ wslid: 2, })) as Md
+	const lit_3 = await que("md", p({ litid: 3, f: "" })) as Md
+	assertEquals(wsl_1!.md, wsl!.md.slice(1))
+	assertEquals(wsl_2!.md, wsl!.md.slice(0, 1))
+	assertEquals(lit_3!.md.length, 1)
 })

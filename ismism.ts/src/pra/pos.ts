@@ -2,9 +2,9 @@ import type { PutAgd, PutSoc, Ret } from "./con.ts"
 import type { Re } from "../eid/typ.ts"
 import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
-import { pre_agd, pre_fund, pre_soc, pre_usr, pre_work } from "./pre.ts"
+import { pre_agd, pre_fund, pre_lit, pre_soc, pre_usr, pre_work, pre_wsl } from "./pre.ts"
 import { pro_agd, pro_soc, pro_usr, pro_work } from "./pro.ts"
-import { put_agd, put_soc, put_usr, put_work } from "./put.ts"
+import { put_agd, put_lit, put_soc, put_usr, put_work, put_wsl } from "./put.ts"
 
 export type PasPos = {
 	jwt?: string | null,
@@ -54,7 +54,7 @@ export async function pos(
 
 		case "pre": {
 			p.etag = utc_etag()
-			const { aid, actid, nbr, adm1, adm2, snam, anam, msg, nam, src } = json
+			const { aid, actid, nbr, adm1, adm2, snam, anam, msg, nam, src, wslnam, litnam } = json
 			if (typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof nbr === "string") {
 					if (typeof actid === "string") return pre_usr({ actid }, nbr, adm1, adm2)
@@ -67,6 +67,8 @@ export async function pos(
 				if (typeof msg === "string") return pre_work(p.pas, aid, { msg })
 				else if (typeof nam === "string" && typeof src === "string") return pre_work(p.pas, aid, { nam, src })
 			} else if (typeof actid === "string" && p.pas) return pre_fund(p.pas, actid)
+			else if (typeof wslnam === "string" && p.pas) return pre_wsl(p.pas, wslnam)
+			else if (typeof litnam === "string" && p.pas) return pre_lit(p.pas, litnam)
 			break
 		}
 
@@ -87,7 +89,12 @@ export async function pos(
 		case "put": {
 			if (!p.pas) break
 			p.etag = utc_etag()
-			const { nam, adm1, adm2, sid, aid, workid, uidlim, intro, reslim, account, budget, fund, expense, goal, img, rol, add, uid, msg, src } = json
+			const {
+				sid, aid, workid, wslid, litid,
+				nam, adm1, adm2, intro, md,
+				uidlim, reslim, account, budget, fund, expense,
+				goal, img, rol, add, uid, msg, src
+			} = json
 			if (typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof intro === "string") return put_usr(p.pas, { nam, adm1, adm2, intro })
 				else if (typeof uidlim === "number") {
@@ -115,6 +122,13 @@ export async function pos(
 				else if (typeof img === "object") return put_agd(p.pas, aid, { img })
 				else return put_agd(p.pas, aid, null)
 			} else if (typeof sid === "number") return put_soc(p.pas, sid, null)
+			else if (typeof wslid === "number") {
+				if (typeof nam === "string" && typeof md === "string") return put_wsl(p.pas, wslid, { nam, md })
+				else return put_wsl(p.pas, wslid, null)
+			} else if (typeof litid === "number") {
+				if (typeof nam === "string" && typeof md === "string") return put_lit(p.pas, litid, { nam, md })
+				else return put_lit(p.pas, litid, null)
+			}
 			break
 		}
 	}

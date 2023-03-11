@@ -1,7 +1,7 @@
-import type { Usr, Re, Agd, Soc, Work, Rel, Id } from "../eid/typ.ts"
+import type { Usr, Re, Agd, Soc, Work, Rel, Id, Md, Wsl, Lit } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import type { UpdateRel } from "../eid/rel.ts"
-import { is_aut, is_id, is_msg, is_recid, is_url, req_re } from "../eid/is.ts"
+import { is_aut, is_id, is_md, is_msg, is_nam, is_recid, is_url, req_re } from "../eid/is.ts"
 
 // deno-lint-ignore no-explicit-any
 export type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
@@ -74,6 +74,16 @@ export function is_pre_work(
 ): boolean {
 	return is_uid(pas, { aid })
 }
+export function is_pre_wsl(
+	pas: Pas
+): boolean {
+	return is_aut(pas.aut, "wsl") && is_re(pas)
+}
+export function is_pre_lit(
+	pas: Pas
+): boolean {
+	return is_aut(pas.aut, "lit") && is_re(pas)
+}
 
 export function is_pro_usr(
 	pas: Pas,
@@ -114,6 +124,9 @@ export type PutAgd = PutSoc
 	| Pick<Agd, "intro" | "reslim" | "account" | "budget" | "fund" | "expense">
 	| Pick<Agd, "goal"> | Pick<Agd, "img">
 export type PutWork = { msg: string } | { nam: string, src: string }
+export type PutMd = { nam: Md["nam"], md: Md["md"] } | null
+export type PutWsl = PutMd
+export type PutLit = PutMd
 
 function is_put_idrel(
 	pas: Pas,
@@ -155,4 +168,25 @@ export function is_put_work(
 		|| "msg" in p && is_msg(p.msg) && work.work === "work"
 		|| "src" in p && is_msg(p.nam) && is_url(p.src) && work.work === "video"
 	)
+}
+function is_put_md(
+	pas: Pas,
+	md: Pick<Md, "uid">,
+	p: PutMd,
+): boolean {
+	return pas.uid === md.uid && (p === null || is_nam(p.nam) && is_md(p.md))
+}
+export function is_put_wsl(
+	pas: Pas,
+	wsl: Pick<Wsl, "uid">,
+	p: PutWsl,
+): boolean {
+	return is_put_md(pas, wsl, p) && is_pre_wsl(pas)
+}
+export function is_put_lit(
+	pas: Pas,
+	lit: Pick<Lit, "uid">,
+	p: PutLit,
+): boolean {
+	return is_put_md(pas, lit, p) && is_pre_lit(pas)
 }

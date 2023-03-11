@@ -1,13 +1,14 @@
-import type { Act, Agd, Fund, Soc, Usr, Work } from "../eid/typ.ts"
+import type { Act, Agd, Fund, Lit, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
-import { is_pre_agd, is_pre_soc, is_pre_usr, is_pre_work } from "./con.ts"
+import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl } from "./con.ts"
 import { coll, DocC } from "../db.ts"
 import { act_r, act_u } from "../eid/act.ts"
 import { usr_c, usr_u } from "../eid/usr.ts"
 import { soc_c } from "../eid/soc.ts"
 import { agd_c } from "../eid/agd.ts"
 import { rec_c } from "../eid/rec.ts"
-import { is_id, is_msg, is_url } from "../eid/is.ts"
+import { md_c } from "../eid/md.ts"
+import { is_id, is_msg, is_nam, is_url } from "../eid/is.ts"
 
 export async function pre_usr(
 	pa: { pas: Pas } | { actid: Act["_id"] },
@@ -82,4 +83,20 @@ export async function pre_fund(
 	const utc = Date.now()
 	await act_u(actid, { $set: { exp: utc } })
 	return rec_c(coll.fund, { _id: { uid: pas.uid, aid: a.aid, utc }, fund: 0, msg: a.msg })
+}
+
+export async function pre_wsl(
+	pas: Pas,
+	nam: Wsl["nam"],
+): DocC<Wsl["_id"]> {
+	if (!is_nam(nam) || !is_pre_wsl(pas)) return null
+	return await md_c(coll.wsl, { uid: pas.uid, nam })
+}
+
+export async function pre_lit(
+	pas: Pas,
+	nam: Lit["nam"],
+): DocC<Lit["_id"]> {
+	if (!is_nam(nam) || !is_pre_lit(pas)) return null
+	return await md_c(coll.lit, { uid: pas.uid, nam })
 }

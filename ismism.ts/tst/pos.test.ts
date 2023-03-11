@@ -11,6 +11,7 @@ import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { rec_c, rec_d, rec_f } from "../src/eid/rec.ts"
 import { act_c, act_d } from "../src/eid/act.ts"
 import { lim_re } from "../src/eid/is.ts"
+import { md_c, md_d, md_r } from "../src/eid/md.ts"
 
 await db("tst", true)
 await jwk_set("testkey")
@@ -73,10 +74,11 @@ Deno.test("pre", async () => {
 	const pcode = await usr_r({ _id: 1 }, { pcode: 1 })
 	await pos(p, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
 	const jwt = p.jwt
-	assertEquals([2, 1, 1], await Promise.all([
+	assertEquals([2, 1, 1, 1], await Promise.all([
 		pos({ jwt }, "pre", json({ nbr: nbr[2], adm1, adm2 })),
 		pos({ jwt }, "pre", json({ snam: "社团", adm1, adm2 })),
 		pos({ jwt }, "pre", json({ anam: "活动", adm1, adm2 })),
+		pos({ jwt }, "pre", json({ litnam: "标题" }))
 	]))
 	await agd_u(1, { $set: { ref: [1, 2], uid: [1] } })
 	await pos({ jwt }, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
@@ -89,7 +91,7 @@ Deno.test("pre", async () => {
 	await Promise.all([
 		usr_d(1), usr_d(2), soc_d(1), agd_d(1),
 		rec_d(coll.fund, w[0]), rec_d(coll.work, w[1]), rec_d(coll.work, w[2]),
-		aut_d(1), ...actid.map(act_d),
+		aut_d(1), ...actid.map(act_d), md_d(coll.lit, 1),
 	])
 })
 
@@ -151,6 +153,7 @@ Deno.test("put", async () => {
 		await usr_c(nbr, "四川", "成都"), usr_u(1, { $set: { ref: [1, 2] } }),
 		await soc_c("社团", "江苏", "苏州"), soc_u(1, { $set: { ref: [1, 2] } }),
 		await agd_c("活动", "江苏", "苏州"), agd_u(1, { $set: { ref: [1, 2] } }),
+		await md_c(coll.wsl, { nam: "标题", uid: 1 }),
 		rec_c(coll.work, { _id: workid, ref: [], rej: [], work: "work", msg: "msg" }),
 		aut_c({ _id: 1, aut: ["aut", "wsl"] }),
 		pos(p, "pas", json({ nbr, sms: false })),
@@ -162,6 +165,7 @@ Deno.test("put", async () => {
 	const su = { sid: 1, nam: "社团一", adm1: "广东", adm2: "汕头", uidlim: 8 }
 	const au = { aid: 1, nam: "活动一", adm1: "广东", adm2: "汕头", uidlim: 8 }
 	const aus = { aid: 1, intro: "简介", reslim: 10, account: "http明细", budget: 9, fund: 9, expense: 9 }
+	const mdu = { wslid: 1, nam: "标题二", md: "#123" }
 	await Promise.all([
 		pos({ jwt }, "put", json(uu)),
 		pos({ jwt }, "put", json(su)),
@@ -174,6 +178,7 @@ Deno.test("put", async () => {
 		pos({ jwt }, "put", json({ aid: 1, rol: "uid", uid: 2, add: true })),
 		pos({ jwt }, "put", json({ workid, msg: "updated" })),
 		pos({ jwt }, "put", json({ aid: 1 })),
+		pos({ jwt }, "put", json(mdu)),
 	])
 	assertEquals({ _id: 1, ...uu }, await usr_r({ _id: 1 }, { nam: 1, adm1: 1, adm2: 1, intro: 1 }))
 	assertEquals({ _id: 1, nam: su.nam, uidlim: su.uidlim }, await soc_r(1, { nam: 1, uidlim: 1 }))
@@ -185,7 +190,11 @@ Deno.test("put", async () => {
 	}, await agd_r(1, {
 		nam: 1, intro: 1, sec: 1, uid: 1, res: 1, uidlim: 1, reslim: 1, expense: 1,
 	}))
+	const wsl = await md_r(coll.wsl, 1, { nam: 1, md: 1, utc: 1, utcp: 1 })
+	assert(wsl!.utcp > wsl!.utc)
+	assertEquals({ nam: mdu.nam, md: mdu.md }, { nam: wsl!.nam, md: wsl!.md })
 	await pos({ jwt }, "put", json({ aid: 1, rol: "uid" }))
 	assertEquals({ _id: 1, uid: [] }, await agd_r(1, { uid: 1 }))
 	assertEquals([{ _id: workid, ref: [], rej: [], work: "work", msg: "updated" }], await rec_f(coll.work, 0))
+	await Promise.all([usr_d(1), soc_d(1), agd_d(1), md_d(coll.wsl, 1), rec_d(coll.work, workid), aut_d(1)])
 })

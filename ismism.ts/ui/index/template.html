@@ -295,6 +295,25 @@
 	</article>
 </template>
 
+<template id="md">
+	<section>
+		<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
+	</section>
+	<hr>
+	<section class="meta">
+		发布时间：<span class="utc"></span><br>
+		最后更新：<span class="utcp"></span><br>
+		文章编辑：<span class="unam"></span><br>
+	</section>
+	<hr>
+	<section class="md">
+	</section>
+	<hr>
+	<section class="flex">
+		<button class="put">编辑</button>
+	</section>
+</template>
+
 <template id="pre">
 	<article>
 		<section>
@@ -391,6 +410,30 @@
 			<button class="cancel">取消</button>
 		</section>
 		<hr>
+	</article>
+</template>
+
+<template id="putmd">
+	<article>
+		<section>
+			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
+		</section>
+		<hr>
+		<section class="flex">
+			<label>标题：（2-16个中文字符）</label>
+			<input class="pnam" type="text" maxlength="16" required />
+		</section>
+		<hr>
+		<section>
+			<label>正文：（0 / 16384 个字符）</label>
+			<textarea class="md" maxlength="16384"></textarea>
+		</section>
+		<hr>
+		<section class="flex">
+			<button class="putn">删除</button>
+			<button class="put">确认</button>
+			<button class="cancel">取消</button>
+		</section>
 	</article>
 </template>
 

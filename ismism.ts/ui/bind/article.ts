@@ -1,4 +1,4 @@
-import type { Fund, Id, Work } from "../../src/eid/typ.ts"
+import type { Fund, Id, Md, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
@@ -370,12 +370,33 @@ export function rec(
 	return t.bind
 }
 
-export function wsl(
+export async function md(
+	c: "wsl" | "lit",
+	id: Md["_id"],
+	op: "one" | "many" | "continue",
 ) {
+	if (op === "one" && navhash(`${c}${id}`)) return
+	if ((op === "many" || op === "continue") && navhash(c)) return
+	const f = op === "one" ? "" : `&f`
+	const md = await que<Q.Md>(`md?${c}id=${id}${f}`)
 
-}
-export function lit(
-) {
+	if (op === "one" && (!md || md.md.length === 0)) return idn(`${c}${id}`, "文章")
+	if (op !== "continue") main.innerHTML = ""
+	if (!md) return
+
+	const unam = new Map(md.unam)
+	for (const m of md.md) {
+		const t = bind("md")
+		idnam(t, `${c}${m._id}`, m.nam)
+		t.utc.innerText = utc_medium(m.utc)
+		t.utcp.innerText = utc_medium(m.utcp)
+		ida(t.unam, [[`${m.uid}`, unam.get(m.uid)!]])
+		t.md.innerText = m.md
+		if (nav.pas && is_aut(nav.pas.aut, c)) {
+			if (is_re(nav.pas)) t.put.addEventListener("click", () => putmd())
+			else t.put.disabled = true
+		} else t.put.remove()
+	}
 
 }
 
@@ -506,6 +527,11 @@ function put(
 	t.cancel.addEventListener("click", r)
 
 	main.append(t.bind)
+}
+
+function putmd(
+) {
+
 }
 
 export function idn(

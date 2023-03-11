@@ -109,7 +109,7 @@ export function meta(
 	id: Usr | Soc,
 ) {
 	t.adm.innerText = `${id.adm1} ${id.adm2}`
-	t.utc.innerText = `${utc_medium(id.utc)}`
+	t.utc.innerText = utc_medium(id.utc)
 	ida(t.rej, id.rej.map(r => [`${r}`, id.unam.get(r)!]))
 	ida(t.ref, id.ref.map(r => [`${r}`, id.unam.get(r)!]))
 	let cls = null

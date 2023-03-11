@@ -2,7 +2,7 @@
 import type { Pas } from "../../src/pra/pas.ts"
 import type { NId } from "../../src/pra/que.ts"
 import { adm } from "../../src/ont/adm.ts"
-import { pas, soc, usr, agd, wsl, lit, idn } from "./article.ts"
+import { pas, soc, usr, agd, md, idn } from "./article.ts"
 import { adm1, adm2, pas_a, pos, que } from "./template.ts"
 
 export const nav: {
@@ -109,8 +109,10 @@ window.addEventListener("hashchange", () => {
 	else if (nav.hash === "" || nav.hash === "agd") agd()
 	else if (nav.hash.startsWith("agd")) agd(nav.hash.substring(3))
 	else if (/^a\d+$/.test(nav.hash)) agd(parseInt(nav.hash.substring(1)))
-	else if (nav.hash === "wsl") wsl()
-	else if (nav.hash === "lit") lit()
+	else if (nav.hash === "wsl") md("wsl", 0, "many")
+	else if (nav.hash.startsWith("wsl")) md("wsl", parseInt(nav.hash.substring(3)), "one")
+	else if (nav.hash === "lit") md("lit", 0, "many")
+	else if (nav.hash.startsWith("lit")) md("lit", parseInt(nav.hash.substring(3)), "one")
 	else idn(nav.hash, "链接")
 })
 

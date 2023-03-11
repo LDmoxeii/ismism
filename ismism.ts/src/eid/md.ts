@@ -11,9 +11,9 @@ async function md_n(
 
 export async function md_c(
 	c: Coll<Md>,
-	md: Omit<Md, "_id" | "utc" | "utcp">,
+	md: Pick<Md, "nam" | "uid">,
 ): DocC<Md["_id"]> {
-	if (!is_id(md.uid) || !is_nam(md.nam) || !is_md(md.md)) return null
+	if (!is_id(md.uid) || !is_nam(md.nam)) return null
 	const utc = Date.now()
 	try {
 		return await c.insertOne({
@@ -22,18 +22,21 @@ export async function md_c(
 			utc: utc,
 			utcp: utc,
 			uid: md.uid,
-			md: md.md
+			md: "",
 		}) as Md["_id"]
 	}
 	catch { return null }
 }
 
-export async function md_r(
+export async function md_r<
+	P extends keyof Md,
+>(
 	c: Coll<Md>,
 	_id: Md["_id"],
-): DocR<Md> {
+	projection?: Partial<{ [K in P]: 1 }>,
+): DocR<Pick<Md, "_id" | P>> {
 	if (!is_id(_id)) return null
-	return await c.findOne({ _id }) ?? null
+	return await c.findOne({ _id }, { projection }) ?? null
 }
 
 export async function md_f(

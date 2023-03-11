@@ -1,4 +1,4 @@
-import type { Agd, Rec, Soc, Usr, Work } from "../eid/typ.ts"
+import type { Agd, Md, Rec, Soc, Usr, Work } from "../eid/typ.ts"
 import { Coll, coll } from "../db.ts"
 import { rolref } from "../eid/rel.ts"
 import { usr_r } from "../eid/usr.ts"
@@ -7,6 +7,7 @@ import { agd_r } from "../eid/agd.ts"
 import { nrec, rec_f, rec_r } from "../eid/rec.ts"
 import { id, idnam, nid_of_adm } from "../eid/id.ts"
 import { aut_r } from "../eid/aut.ts"
+import { md_f, md_r } from "../eid/md.ts"
 
 export async function nid(
 ) {
@@ -95,4 +96,20 @@ export async function rec<
 		return { rec: r, unam, anam }
 	}
 	return null
+}
+
+export async function md(
+	c: Coll<Md>,
+	id: Md["_id"],
+	f: boolean,
+) {
+	let md
+	if (f) md = await md_f(c, id)
+	else {
+		const r = await md_r(c, id)
+		md = r ? [r] : null
+	}
+	if (!md) return null
+	const unam = await idnam(coll.usr, md.map(m => m.uid))
+	return { md, unam }
 }
