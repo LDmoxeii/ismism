@@ -1,4 +1,4 @@
-import type { Act, Agd, Aut, Fund, Soc, Usr, Work } from "./eid/typ.ts"
+import type { Act, Agd, Aut, Fund, Lit, Soc, Usr, Work, Wsl } from "./eid/typ.ts"
 import { Collection, MongoClient, UpdateFilter } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
 
 const conn = new MongoClient()
@@ -18,6 +18,9 @@ export async function db(
 		fund: db.collection<Fund>("fund"),
 		act: db.collection<Act>("act"),
 		aut: db.collection<Aut>("aut"),
+
+		wsl: db.collection<Wsl>("wsl"),
+		lit: db.collection<Lit>("lit"),
 	}
 
 	if (reset) {

@@ -6,6 +6,7 @@ import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { nrec, rec_c, rec_d, rec_f, rec_r, rec_u } from "../src/eid/rec.ts"
 import { rolref, rol } from "../src/eid/rel.ts"
 import { nid } from "../src/eid/id.ts"
+import { md_c, md_f, md_r, md_u } from "../src/eid/md.ts"
 
 await db("tst", true)
 
@@ -113,3 +114,12 @@ Deno.test("rec", async () => {
 	assertEquals(await nrec(), { work: 0, fund: 0 })
 })
 
+Deno.test("md", async () => {
+	assertEquals([], await md_f(coll.wsl, 0))
+	assertEquals(1, await md_c(coll.wsl, { nam: "标题", md: "##md", uid: 1 }))
+	assertEquals(2, await md_c(coll.wsl, { nam: "标题", md: "##md", uid: 1 }))
+	assertEquals(1, await md_u(coll.wsl, 1, { $set: { md: "#md2", uid: 2 } }))
+	const md = await md_r(coll.wsl, 1)
+	assertEquals(md!.md, "#md2")
+	assertEquals([md], await md_f(coll.wsl, 2))
+})

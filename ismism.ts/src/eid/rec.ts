@@ -1,6 +1,6 @@
 import type { Rec } from "./typ.ts"
 import { coll, Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import { is_id, is_idl, is_recid, lim_rec, lim_uid_max } from "./is.ts"
+import { is_id, is_idl, is_recid, lim_rec_f, lim_uid_max } from "./is.ts"
 
 export async function rec_c<
 	T extends Rec
@@ -38,7 +38,7 @@ export async function rec_f<
 		...id && "uid" in id ? { "_id.uid": { $in: id.uid } } : {},
 		...utc > 0 ? { "_id.utc": { $lt: utc } } : {},
 	} // deno-lint-ignore no-explicit-any
-	return await c.find(f as any, { sort: { "_id.utc": -1 }, limit: lim_rec }).toArray() as T[]
+	return await c.find(f as any, { sort: { "_id.utc": -1 }, limit: lim_rec_f }).toArray() as T[]
 }
 
 export async function rec_u<

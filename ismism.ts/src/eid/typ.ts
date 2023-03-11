@@ -65,3 +65,14 @@ export type Act = {
 	uid: number,
 })
 
+export type Md = {
+	_id: number,
+	nam: string,
+	utc: number,
+	utcp: number,
+	uid: Usr["_id"],
+	md: string,
+}
+
+export type Wsl = Md
+export type Lit = Md

@@ -1,4 +1,4 @@
-import { Act, Agd, Aut, Id, Rec, Usr } from "./typ.ts"
+import { Act, Agd, Aut, Id, Md, Rec, Usr } from "./typ.ts"
 
 export const req_re = 2
 export const lim_re = 64
@@ -17,8 +17,10 @@ export const lim_img = 9
 export const lim_goal = 9
 export const lim_url = 128
 export const lim_msg = 256
+export const lim_md = lim_intro * 8
 
-export const lim_rec = 32
+export const lim_rec_f = 32
+export const lim_md_f = 8
 
 export function is_lim(
 	n: number,
@@ -104,4 +106,10 @@ export function is_actid(
 	actid: Act["_id"]
 ): actid is Act["_id"] {
 	return typeof actid === "string" && 6 <= actid.length && actid.length <= lim_url
+}
+
+export function is_md(
+	md: string
+): md is Md["md"] {
+	return typeof md === "string" && md.length <= lim_md
 }
