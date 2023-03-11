@@ -139,8 +139,8 @@ function is_put_idrel(
 	else if ("rol" in p) switch (p.rol) {
 		case "sec": return is_pre_rel(pas)
 		case "uid": return "uid" in p && p.uid === pas.uid && p.add === false || is_sec(pas, id)
-		case "res": return "uid" in p && p.uid === pas.uid && (p.add === false || is_re(pas))
-			|| !("uid" in p) && is_sec(pas, id)
+		case "res": return "uid" in p && p.uid === pas.uid && (p.add === false || !is_rej(pas))
+			|| !("uid" in p) && (is_aut(pas.aut, "aut") || is_sec(pas, id))
 	}
 	return false
 }

@@ -6,7 +6,7 @@ export const lim_re = 64
 export const lim_sec = 8
 export const lim_uid_def = lim_re
 export const lim_uid_max = lim_re * lim_sec / req_re
-export const lim_res_def = 0
+export const lim_res_def = 16
 export const lim_res_max = 64
 
 export const len_code = 6

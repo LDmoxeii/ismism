@@ -118,7 +118,7 @@ window.addEventListener("hashchange", () => {
 
 export async function load(
 ) {
-	console.log("ismism-20230308")
+	console.log("ismism-20230311")
 	console.log(`\n主义主义开发小组！成员招募中！\n\n发送自我介绍至网站维护邮箱，或微信联系 728 万大可\n \n`)
 	await navpas()
 	window.dispatchEvent(new Event("hashchange"))

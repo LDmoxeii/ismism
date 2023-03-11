@@ -6,7 +6,7 @@ import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
-import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
+import { is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
 import { is_aut, lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
@@ -280,9 +280,14 @@ export function putrel(
 		},
 		alert: `无效志愿者名或志愿者已满\n增删的志愿者需先作为申请人或志愿者出现在${id === "sid" ? "社团" : "活动"}名单`,
 		refresh: async () => { await navpas(); refresh() },
-	}); else t.putuid.remove()
+	}); else t.putuid.remove() // deno-lint-ignore no-explicit-any
+	if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { [id]: d._id } as any)) btn(t.putresn, t.putresn.innerText, d.res.length > 0 ? {
+		confirm: "清空申请人名单？",
+		pos: () => pos<DocU>("put", { [id]: d._id, rol: "res" }),
+		refresh,
+	} : undefined); else t.putresn.remove()
 	const [isuid, isres] = [d.uid.includes(nav.pas.uid), d.res.includes(nav.pas.uid)]
-	if (!isuid && is_re(d) || isres) btn(t.putres, isres ? "取消申请" : "申请加入", !isres && d.res.length >= d.reslim ? undefined : {
+	if (!isuid && !is_rej(d) || isres) btn(t.putres, isres ? "取消申请" : "申请加入", !isres && d.res.length >= d.reslim ? undefined : {
 		pos: () => pos<DocU>("put", { [id]: d._id, rol: "res", uid: nav.pas!.uid, add: !isres }),
 		refresh,
 		alert: "申请人已满",

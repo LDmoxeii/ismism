@@ -73,7 +73,7 @@ const section = {
 	},
 
 	putrel: {
-		putrel: t("section"), putsec: t("button"), putuid: t("button"), putres: t("button"),
+		putrel: t("section"), putsec: t("button"), putuid: t("button"), putresn: t("button"), putres: t("button"),
 	},
 
 	putpro: {
