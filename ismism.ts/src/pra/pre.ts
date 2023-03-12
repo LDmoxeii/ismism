@@ -1,14 +1,15 @@
-import type { Act, Agd, Fund, Lit, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
+import type { Act, Agd, Aut, Fund, Lit, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
-import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl } from "./con.ts"
+import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl, is_pre_aut } from "./con.ts"
 import { coll, DocC } from "../db.ts"
 import { act_r, act_u } from "../eid/act.ts"
-import { usr_c, usr_u } from "../eid/usr.ts"
+import { usr_c, usr_r, usr_u } from "../eid/usr.ts"
 import { soc_c } from "../eid/soc.ts"
 import { agd_c } from "../eid/agd.ts"
 import { rec_c } from "../eid/rec.ts"
 import { md_c } from "../eid/md.ts"
-import { is_id, is_msg, is_nam, is_url } from "../eid/is.ts"
+import { is_aut, is_id, is_msg, is_nam, is_url } from "../eid/is.ts"
+import { aut_c, aut_d, aut_r, aut_u } from "../eid/aut.ts"
 
 export async function pre_usr(
 	pa: { pas: Pas } | { actid: Act["_id"] },
@@ -83,6 +84,26 @@ export async function pre_fund(
 	const utc = Date.now()
 	await act_u(actid, { $set: { exp: utc } })
 	return rec_c(coll.fund, { _id: { uid: pas.uid, aid: a.aid, utc }, fund: 0, msg: a.msg })
+}
+
+export async function pre_aut(
+	pas: Pas,
+	nam: Usr["nam"],
+	aut: Aut["aut"][0],
+): DocC<Aut["_id"]> {
+	if (aut === "aut" || !is_nam(nam) || !is_pre_aut(pas)) return null
+	const { _id } = await usr_r({ nam }, {}) ?? {}
+	if (!is_id(_id!)) return null
+	const a = await aut_r(_id)
+	if (a) {
+		if (is_aut(a.aut, aut) && a.aut.length === 1) {
+			await aut_d(_id)
+			return _id
+		}
+		const u = await aut_u(_id, is_aut(a.aut, aut) ? { $pull: { aut } } : { $addToSet: { aut } })
+		return u && u > 0 ? _id : null
+	}
+	return aut_c({ _id, aut: [aut] })
 }
 
 export async function pre_wsl(

@@ -5,7 +5,7 @@ import { coll, db } from "../src/db.ts"
 import { usr_c, usr_d, usr_r, usr_u } from "../src/eid/usr.ts"
 import { jwk_set } from "../src/ont/jwt.ts"
 import { PasCode, PasPos, pos } from "../src/pra/pos.ts"
-import { aut_c, aut_d } from "../src/eid/aut.ts"
+import { aut_c, aut_d, aut_r } from "../src/eid/aut.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { rec_c, rec_d, rec_f } from "../src/eid/rec.ts"
@@ -58,7 +58,7 @@ Deno.test("pre", async () => {
 		act_c({ _id: actid[0], exp: utc + 1000, act: "fund", aid: 1, msg: "msg" }),
 		act_c({ _id: actid[1], exp: utc + 1000, act: "fund", aid: 2, msg: "msg" }),
 		act_c({ _id: actid[2], exp: utc + 1000, act: "nbr", uid: 1 }),
-		aut_c({ _id: 1, aut: ["aut", "lit"] }),
+		aut_c({ _id: 1, aut: ["aut"] }),
 	])
 	assertEquals([1, null, 1, null], [
 		await pos({}, "pre", json({ actid: actid[0], nbr: nbr[0], adm1, adm2 })),
@@ -69,17 +69,22 @@ Deno.test("pre", async () => {
 	assertEquals({ _id: 1, nbr: nbr[1] }, await usr_r({ _id: 1 }, { nbr: 1 }))
 	await Promise.all([
 		pos(p, "pas", json({ nbr: nbr[1], sms: false })),
-		usr_u(1, { $set: { ref: [1, 2] } }),
+		usr_u(1, { $set: { nam: "用户一", ref: [1, 2] } }),
 	])
 	const pcode = await usr_r({ _id: 1 }, { pcode: 1 })
 	await pos(p, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
 	const jwt = p.jwt
-	assertEquals([2, 1, 1, 1], await Promise.all([
+	assertEquals([2, 1, 1, 1, 1, 1, null, 1], await Promise.all([
 		pos({ jwt }, "pre", json({ nbr: nbr[2], adm1, adm2 })),
 		pos({ jwt }, "pre", json({ snam: "社团", adm1, adm2 })),
 		pos({ jwt }, "pre", json({ anam: "活动", adm1, adm2 })),
-		pos({ jwt }, "pre", json({ litnam: "标题" }))
+		pos({ jwt }, "pre", json({ nam: "用户一", aut: "wsl" })),
+		await pos({ jwt }, "pre", json({ nam: "用户一", aut: "lit" })),
+		pos({ jwt }, "pre", json({ nam: "用户一", aut: "lit" })),
+		pos({ jwt }, "pre", json({ nam: "用户二", aut: "lit" })),
+		pos({ jwt }, "pre", json({ wslnam: "标题" }))
 	]))
+	assertEquals({ _id: 1, aut: ["aut", "wsl"] }, await aut_r(1))
 	await agd_u(1, { $set: { ref: [1, 2], uid: [1] } })
 	await pos({ jwt }, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
 	const w = [

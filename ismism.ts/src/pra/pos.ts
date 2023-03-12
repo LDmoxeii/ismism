@@ -2,7 +2,7 @@ import type { PutAgd, PutSoc, Ret } from "./con.ts"
 import type { Re } from "../eid/typ.ts"
 import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
-import { pre_agd, pre_fund, pre_lit, pre_soc, pre_usr, pre_work, pre_wsl } from "./pre.ts"
+import { pre_agd, pre_aut, pre_fund, pre_lit, pre_soc, pre_usr, pre_work, pre_wsl } from "./pre.ts"
 import { pro_agd, pro_soc, pro_usr, pro_work } from "./pro.ts"
 import { put_agd, put_lit, put_soc, put_usr, put_work, put_wsl } from "./put.ts"
 
@@ -54,7 +54,7 @@ export async function pos(
 
 		case "pre": {
 			p.etag = utc_etag()
-			const { aid, actid, nbr, adm1, adm2, snam, anam, msg, nam, src, wslnam, litnam } = json
+			const { aid, actid, nbr, adm1, adm2, snam, anam, msg, nam, src, aut, wslnam, litnam } = json
 			if (typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof nbr === "string") {
 					if (typeof actid === "string") return pre_usr({ actid }, nbr, adm1, adm2)
@@ -67,6 +67,7 @@ export async function pos(
 				if (typeof msg === "string") return pre_work(p.pas, aid, { msg })
 				else if (typeof nam === "string" && typeof src === "string") return pre_work(p.pas, aid, { nam, src })
 			} else if (typeof actid === "string" && p.pas) return pre_fund(p.pas, actid)
+			else if (typeof nam === "string" && ["wsl", "lit"].includes(aut) && p.pas) return pre_aut(p.pas, nam, aut)
 			else if (typeof wslnam === "string" && p.pas) return pre_wsl(p.pas, wslnam)
 			else if (typeof litnam === "string" && p.pas) return pre_lit(p.pas, litnam)
 			break

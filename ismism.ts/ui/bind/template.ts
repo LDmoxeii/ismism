@@ -72,6 +72,10 @@ const section = {
 		recwork: t("p"), recfund: t("p"),
 	},
 
+	wsllit: {
+		wsllit: t("section"), prewsla: t("button"), prelita: t("button"), prewsl: t("button"), prelit: t("button"),
+	},
+
 	putrel: {
 		putrel: t("section"), putsec: t("button"), putuid: t("button"), putresn: t("button"), putres: t("button"),
 	},
@@ -102,7 +106,7 @@ const template = {
 		...section.rec,
 		pos: t("section"), put: t("button"), pas: t("button"),
 		pre: t("section"), preusr: t("button"), presoc: t("button"), preagd: t("button"), prefund: t("button"),
-		prewsl: t("button"), prelit: t("button"),
+		...section.wsllit,
 		...section.putpro,
 	},
 

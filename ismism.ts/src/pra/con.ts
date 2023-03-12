@@ -74,6 +74,11 @@ export function is_pre_work(
 ): boolean {
 	return is_uid(pas, { aid })
 }
+export function is_pre_aut(
+	pas: Pas
+): boolean {
+	return is_aut(pas.aut, "aut") && is_re(pas)
+}
 export function is_pre_wsl(
 	pas: Pas
 ): boolean {

@@ -1,13 +1,13 @@
-import type { Work } from "../../src/eid/typ.ts"
-import type { DocU } from "../../src/db.ts"
+import type { Lit, Work, Wsl } from "../../src/eid/typ.ts"
+import type { DocC, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { Agd, Soc, Usr, rec as arec } from "./article.ts"
+import { Agd, Soc, Usr, rec as arec, usr, md } from "./article.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
-import { is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
-import { is_aut, lim_re, lim_sec } from "../../src/eid/is.ts"
+import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
+import { is_aut, is_nam, lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
 	el: HTMLElement,
@@ -294,6 +294,38 @@ export function putrel(
 		refresh,
 		alert: "申请人已满",
 	}); else t.putres.disabled = true
+}
+
+export function wsllit(
+	t: Section["wsllit"],
+) {
+	if (!nav.pas) { t.wsllit.remove(); return }
+	if (is_aut(nav.pas.aut, "aut")) {
+		btn(t.prewsla, t.prewsla.innerText, is_re(nav.pas) ? {
+			prompt1: "输入要增删的法律援助编辑的用户名",
+			pos: nam => is_nam(nam!) ? pos<DocC<Usr["_id"]>>("pre", { nam, aut: "wsl" }) : null,
+			alert: "无效用户名",
+			refresh: async uid => { if (uid === nav.pas!.uid) await navpas(); usr(uid) },
+		} : undefined)
+		btn(t.prelita, t.prelita.innerText, is_re(nav.pas) ? {
+			prompt1: "输入要增删的理论学习编辑的用户名",
+			pos: nam => is_nam(nam!) ? pos<DocC<Usr["_id"]>>("pre", { nam, aut: "lit" }) : null,
+			alert: "无效用户名",
+			refresh: async uid => { if (uid === nav.pas!.uid) await navpas(); usr(uid) },
+		} : undefined)
+	} else[t.prewsla, t.prelita].forEach(el => el.remove())
+	if (is_aut(nav.pas.aut, "wsl")) btn(t.prewsl, t.prewsl.innerText, is_re(nav.pas) ? {
+		prompt1: "输入文章标题：（2-16个中文字符）",
+		pos: wslnam => is_nam(wslnam!) ? pos<DocC<Wsl["_id"]>>("pre", { wslnam }) : null,
+		alert: "无效标题\n文章标题为 2-16 个中文字符",
+		refresh: wslid => md("wsl", wslid, "one"),
+	} : undefined); else t.prewsl.remove()
+	if (is_aut(nav.pas.aut, "lit")) btn(t.prelit, t.prelit.innerText, is_re(nav.pas) ? {
+		prompt1: "输入文章标题：（2-16个中文字符）",
+		pos: litnam => is_nam(litnam!) ? pos<DocC<Lit["_id"]>>("pre", { litnam }) : null,
+		alert: "无效标题\n文章标题为 2-16 个中文字符",
+		refresh: litid => md("lit", litid, "one"),
+	} : undefined); else t.prelit.remove()
 }
 
 export function putpro(

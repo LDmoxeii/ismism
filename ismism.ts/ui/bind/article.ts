@@ -1,11 +1,11 @@
-import type { Fund, Id, Lit, Md, Work, Wsl } from "../../src/eid/typ.ts"
+import type { Fund, Id, Md, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { is_aut } from "../../src/eid/is.ts"
 import { is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
-import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida } from "./section.ts"
+import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit } from "./section.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
 import { is_actid, is_goal, is_img, is_msg, is_nam, is_nbr, is_url, } from "../../src/eid/is.ts"
 import { utc_medium, utc_short } from "../../src/ont/utc.ts"
@@ -119,29 +119,13 @@ export async function usr(
 				pos: (actid) => actid ? pos("pre", { actid }) : null,
 				refresh: () => usr(u._id),
 			})
-			if (is_aut(nav.pas.aut, "wsl")) btn(t.prewsl, t.prewsl.innerText, is_re(nav.pas) ? {
-				prompt1: "输入文章标题：（2-16个中文字符）",
-				pos: (wslnam) => is_nam(wslnam!) ? pos<DocC<Wsl["_id"]>>("pre", { wslnam }) : null,
-				alert: "无效标题\n文章标题为 2-16 个中文字符",
-				refresh: (wslid) => md("wsl", wslid, "one"),
-			} : undefined); else t.prewsl.remove()
-			if (is_aut(nav.pas.aut, "lit")) btn(t.prelit, t.prelit.innerText, is_re(nav.pas) ? {
-				prompt1: "输入文章标题：（2-16个中文字符）",
-				pos: (litnam) => is_nam(litnam!) ? pos<DocC<Lit["_id"]>>("pre", { litnam }) : null,
-				alert: "无效标题\n文章标题为 2-16 个中文字符",
-				refresh: (litid) => md("lit", litid, "one"),
-			} : undefined); else t.prelit.remove()
+			wsllit(t)
 			t.putpro.remove()
 		} else {
-			t.pos.remove()
-			t.pre.remove()
+			[t.pos, t.pre, t.wsllit].forEach(el => el.remove())
 			putpro(t, "uid", u, is_pro_usr(nav.pas, "rej", u._id) ? () => usr(u._id) : undefined)
 		}
-	} else {
-		t.pos.remove()
-		t.pre.remove()
-		t.putpro.remove()
-	}
+	} else[t.pos, t.pre, t.wsllit, t.putpro].forEach(el => el.remove())
 
 	main.append(t.bind)
 }
