@@ -403,6 +403,7 @@ export async function md(
 	if (op !== "continue") { navnid(); main.innerHTML = "" }
 	if (!q) return
 
+	const { marked } = await import("https://cdn.jsdelivr.net/npm/marked@latest/lib/marked.esm.js")
 	const unam = new Map(q.unam)
 	for (const m of q.md) {
 		const t = bind("md")
@@ -410,7 +411,7 @@ export async function md(
 		t.utc.innerText = utc_medium(m.utc)
 		t.utcp.innerText = utc_medium(m.utcp)
 		ida(t.unam, [[`${m.uid}`, unam.get(m.uid)!]])
-		t.md.innerText = m.md
+		t.md.innerHTML = marked.parse(m.md)
 		if (nav.pas && m.uid === nav.pas.uid && is_aut(nav.pas.aut, c)) {
 			if (is_re(nav.pas)) t.put.addEventListener("click", () => putmd(c, m))
 			else t.put.disabled = true

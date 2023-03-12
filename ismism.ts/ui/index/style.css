@@ -593,6 +593,28 @@ section>p.goal>div>span {
 	text-align: center;
 }
 
+section.md p {
+	margin: initial;
+	padding: initial;
+}
+
+section.md a {
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
+section.md img {
+	width: 85%;
+	margin: 6px 7.5%;
+	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+}
+
+@media (hover: hover) {
+	section.md a:hover {
+		color: var(--amber) !important;
+	}
+}
+
 button.putn {
 	background: var(--red) !important;
 }
