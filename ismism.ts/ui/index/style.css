@@ -62,6 +62,7 @@ a:focus {
 
 button {
 	font-size: 1em;
+	white-space: nowrap;
 	color: inherit;
 	background: none;
 	border: none;

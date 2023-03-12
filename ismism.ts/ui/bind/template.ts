@@ -102,6 +102,7 @@ const template = {
 		...section.rec,
 		pos: t("section"), put: t("button"), pas: t("button"),
 		pre: t("section"), preusr: t("button"), presoc: t("button"), preagd: t("button"), prefund: t("button"),
+		prewsl: t("button"), prelit: t("button"),
 		...section.putpro,
 	},
 

@@ -1,9 +1,9 @@
-import type { Fund, Id, Md, Work } from "../../src/eid/typ.ts"
+import type { Fund, Id, Lit, Md, Work, Wsl } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { is_aut } from "../../src/eid/is.ts"
-import { is_pre_agd, is_pre_soc, is_pre_usr, is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
+import { is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida } from "./section.ts"
 import { bind, main, pas_a, pos, que } from "./template.ts"
@@ -100,12 +100,18 @@ export async function usr(
 				await pos("pas", { uid: nav.pas!.uid })
 				navpas(null)
 			})
-			if (is_pre_usr(nav.pas)) t.preusr.addEventListener("click", () => pre("用户"))
-			else t.preusr.remove()
-			if (is_pre_soc(nav.pas)) t.presoc.addEventListener("click", () => pre("社团"))
-			else t.presoc.remove()
-			if (is_pre_agd(nav.pas)) t.preagd.addEventListener("click", () => pre("活动"))
-			else t.preagd.remove()
+			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas)) {
+				if (is_re(nav.pas)) t.preusr.addEventListener("click", () => pre("用户"))
+				else t.preusr.disabled = true
+			} else t.preusr.remove()
+			if (is_aut(nav.pas.aut, "aut")) {
+				if (is_re(nav.pas)) t.presoc.addEventListener("click", () => pre("社团"))
+				else t.presoc.disabled = true
+			} else t.presoc.remove()
+			if (is_aut(nav.pas.aut, "aut")) {
+				if (is_re(nav.pas)) t.preagd.addEventListener("click", () => pre("活动"))
+				else t.preagd.disabled = true
+			} else t.preagd.remove()
 			btn(t.prefund, t.prefund.innerText, {
 				prompt1: "输入订单号",
 				confirm: "订单号只能激活或绑定一位用户。确认使用？",
@@ -113,6 +119,18 @@ export async function usr(
 				pos: (actid) => actid ? pos("pre", { actid }) : null,
 				refresh: () => usr(u._id),
 			})
+			if (is_aut(nav.pas.aut, "wsl")) btn(t.prewsl, t.prewsl.innerText, is_re(nav.pas) ? {
+				prompt1: "输入文章标题：（2-16个中文字符）",
+				pos: (wslnam) => is_nam(wslnam!) ? pos<DocC<Wsl["_id"]>>("pre", { wslnam }) : null,
+				alert: "无效标题\n文章标题为 2-16 个中文字符",
+				refresh: (wslid) => md("wsl", wslid, "one"),
+			} : undefined); else t.prewsl.remove()
+			if (is_aut(nav.pas.aut, "lit")) btn(t.prelit, t.prelit.innerText, is_re(nav.pas) ? {
+				prompt1: "输入文章标题：（2-16个中文字符）",
+				pos: (litnam) => is_nam(litnam!) ? pos<DocC<Lit["_id"]>>("pre", { litnam }) : null,
+				alert: "无效标题\n文章标题为 2-16 个中文字符",
+				refresh: (litid) => md("lit", litid, "one"),
+			} : undefined); else t.prelit.remove()
 			t.putpro.remove()
 		} else {
 			t.pos.remove()
@@ -375,29 +393,35 @@ export async function md(
 	id: Md["_id"],
 	op: "one" | "many" | "continue",
 ) {
+	nav.cont = null
 	if (op === "one" && navhash(`${c}${id}`)) return
 	if ((op === "many" || op === "continue") && navhash(c)) return
 	const f = op === "one" ? "" : `&f`
-	const md = await que<Q.Md>(`md?${c}id=${id}${f}`)
+	const q = await que<Q.Md>(`md?${c}id=${id}${f}`)
 
-	if (op === "one" && (!md || md.md.length === 0)) return idn(`${c}${id}`, "文章")
-	if (op !== "continue") main.innerHTML = ""
-	if (!md) return
+	if (op === "one" && (!q || q.md.length === 0)) return idn(`${c}${id}`, "文章")
+	if (op !== "continue") { navnid(); main.innerHTML = "" }
+	if (!q) return
 
-	const unam = new Map(md.unam)
-	for (const m of md.md) {
+	const unam = new Map(q.unam)
+	for (const m of q.md) {
 		const t = bind("md")
 		idnam(t, `${c}${m._id}`, m.nam)
 		t.utc.innerText = utc_medium(m.utc)
 		t.utcp.innerText = utc_medium(m.utcp)
 		ida(t.unam, [[`${m.uid}`, unam.get(m.uid)!]])
 		t.md.innerText = m.md
-		if (nav.pas && is_aut(nav.pas.aut, c)) {
-			if (is_re(nav.pas)) t.put.addEventListener("click", () => putmd())
+		if (nav.pas && m.uid === nav.pas.uid && is_aut(nav.pas.aut, c)) {
+			if (is_re(nav.pas)) t.put.addEventListener("click", () => putmd(c, m))
 			else t.put.disabled = true
 		} else t.put.remove()
+		main.append(t.bind)
 	}
 
+	if (op !== "one") setTimeout(() => {
+		nav.cont = q.md.length === 0 ? null
+			: () => md(c, q.md[q.md.length - 1]._id, "continue")
+	}, 100)
 }
 
 function pre(
@@ -530,8 +554,31 @@ function put(
 }
 
 function putmd(
+	c: "wsl" | "lit",
+	m: Md,
 ) {
+	if (!nav.pas) return
 
+	main.innerHTML = ""
+	const t = bind("putmd")
+
+	idnam(t, `${c}${m._id}`, "编辑文章")
+	t.pnam.value = m.nam
+	txt(t.md, "正文", m.md)
+
+	btn(t.putn, t.putn.innerText, {
+		confirm: "删除文章？",
+		pos: () => pos<DocD>("put", { [`${c}id`]: m._id }),
+		refresh: () => md(c, 0, "many")
+	})
+	btn(t.put, t.put.innerText, {
+		pos: () => pos<DocU>("put", { [`${c}id`]: m._id, nam: t.pnam.value, md: t.md.value.trim() }),
+		alert: `无效输入\n文章标题为 2-16 个中文字符\n正文最长 ${t.md.maxLength} 个字符`,
+		refresh: () => md(c, m._id, "one")
+	})
+	t.cancel.addEventListener("click", () => md(c, m._id, "one"))
+
+	main.append(t.bind)
 }
 
 export function idn(

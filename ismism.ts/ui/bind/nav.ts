@@ -9,10 +9,12 @@ export const nav: {
 	pas: Pas | null,
 	hash: string,
 	nid: NId | null,
+	cont: (() => void) | null,
 } = {
 	pas: null,
 	hash: "",
 	nid: null,
+	cont: null,
 }
 
 export async function navpas(
@@ -101,6 +103,7 @@ export function navhash(
 
 window.addEventListener("hashchange", () => {
 	nav.hash = decodeURI(location.hash).substring(1)
+	nav.cont = null
 	if (nav.hash === "pas") pas()
 	else if (/^\d+$/.test(nav.hash)) usr(parseInt(nav.hash))
 	else if (nav.hash === "soc") soc()
@@ -114,6 +117,10 @@ window.addEventListener("hashchange", () => {
 	else if (nav.hash === "lit") md("lit", 0, "many")
 	else if (nav.hash.startsWith("lit")) md("lit", parseInt(nav.hash.substring(3)), "one")
 	else idn(nav.hash, "链接")
+})
+
+window.addEventListener("scroll", () => {
+	if (nav.cont && window.innerHeight + window.scrollY >= document.body.offsetHeight) nav.cont()
 })
 
 export async function load(

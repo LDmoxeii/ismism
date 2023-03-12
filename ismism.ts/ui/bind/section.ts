@@ -123,6 +123,8 @@ export function rolref(
 	u: Usr,
 ) {
 	if (is_aut(u.aut, "aut")) ida(t, [[`${u._id}`, `管理员 (${u.ref.length}推荐)`]], "isec")
+	if (is_aut(u.aut, "wsl")) ida(t, [[`${u._id}`, `法律援助编辑 (${u.ref.length}推荐)`]], "sec")
+	if (is_aut(u.aut, "lit")) ida(t, [[`${u._id}`, `理论学习编辑 (${u.ref.length}推荐)`]], "sec")
 	ida(t, u.aref.sec.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}联络员 (${r}推荐)`]), "sec")
 	ida(t, u.sref.sec.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}联络员 (${r}推荐)`]), "sec")
 	ida(t, u.aref.uid.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}志愿者 (${r}推荐)`]), "uid")

@@ -93,6 +93,8 @@
 			<button class="presoc">添加社团</button>
 			<button class="preagd">添加活动</button>
 			<button class="prefund">添加支持</button>
+			<button class="prewsl">添加法律援助文章</button>
+			<button class="prelit">添加理论学习文章</button>
 		</section>
 		<hr>
 		<section class="putpro flex">
@@ -298,22 +300,25 @@
 </template>
 
 <template id="md">
-	<section>
-		<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
-	</section>
-	<hr>
-	<section class="meta">
-		发布时间：<span class="utc"></span><br>
-		最后更新：<span class="utcp"></span><br>
-		文章编辑：<span class="unam"></span><br>
-	</section>
-	<hr>
-	<section class="md">
-	</section>
-	<hr>
-	<section class="flex">
-		<button class="put">编辑</button>
-	</section>
+	<article>
+		<section>
+			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
+		</section>
+		<hr>
+		<section class="meta">
+			发布时间：<span class="utc"></span><br>
+			最后更新：<span class="utcp"></span><br>
+			文章编辑：<span class="unam"></span><br>
+		</section>
+		<hr>
+		<section class="md">
+		</section>
+		<hr>
+		<section class="flex">
+			<button class="put">编辑</button>
+		</section>
+		<hr>
+	</article>
 </template>
 
 <template id="pre">
@@ -426,6 +431,10 @@
 			<input class="pnam" type="text" maxlength="16" required />
 		</section>
 		<hr>
+		<section class="meta">
+			正文支持 <code>Markdown</code> 文本样式
+		</section>
+		<hr>
 		<section>
 			<label>正文：（0 / 16384 个字符）</label>
 			<textarea class="md" maxlength="16384"></textarea>
@@ -436,6 +445,7 @@
 			<button class="put">确认</button>
 			<button class="cancel">取消</button>
 		</section>
+		<hr>
 	</article>
 </template>
 
