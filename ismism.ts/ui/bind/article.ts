@@ -478,6 +478,7 @@ function put(
 	switch (nam) {
 		case "用户": {
 			[t.uidlim, t.reslim, t.account, t.budget, t.fund, t.expense].forEach(el => el.parentElement?.remove())
+			t.meta.remove()
 			p = () => [{ uid: id._id, ...pid(), intro: t.intro.value.trim() }]
 			r = () => usr(id._id)
 			break
