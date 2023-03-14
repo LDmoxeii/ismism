@@ -1,13 +1,13 @@
-import type { Lit, Work, Wsl } from "../../src/eid/typ.ts"
-import type { DocC, DocU } from "../../src/db.ts"
+import type { Md, Work } from "../../src/eid/typ.ts"
+import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { Agd, Soc, Usr, rec as arec, usr, md } from "./article.ts"
+import { Agd, Soc, Usr, rec as arec, usr, md, put } from "./article.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
 import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
-import { is_aut, is_nam, lim_re, lim_sec } from "../../src/eid/is.ts"
+import { is_aut, is_id, is_md, is_nam, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
 	el: HTMLElement,
@@ -25,6 +25,7 @@ export function txt(
 	s?: string,
 ) {
 	if (s) t.value = s
+	label(t, `${n}：（${t.value.length}/${t.maxLength} 个字符）`)
 	t.addEventListener("input", () => {
 		label(t, `${n}：（${t.value.length}/${t.maxLength} 个字符）`)
 		t.style.height = "auto"
@@ -64,23 +65,17 @@ export function btn<
 	b: HTMLButtonElement,
 	s: string,
 	c?: {
-		prompt1?: string,
-		prompt2?: string,
 		confirm?: string,
-		pos: (p1?: string, p2?: string) => T,
+		pos: () => T,
 		alert?: string,
 		refresh: (r: NonNullable<Awaited<T>>) => void,
 	}
 ) {
 	b.innerText = s
 	if (c) b.addEventListener("click", async () => {
-		const p1 = c.prompt1 ? prompt(c.prompt1) : undefined
-		if (p1 === null) return
-		const p2 = c.prompt2 ? prompt(c.prompt2) : undefined
-		if (p2 === null) return
 		if (!c.confirm || confirm(c.confirm)) {
 			b.disabled = true
-			const r = await c.pos(p1, p2)
+			const r = await c.pos()
 			if (c.alert) {
 				if (r === null) { alert(c.alert); b.disabled = false; return }
 			} else {
@@ -263,26 +258,26 @@ export function putrel(
 ) {
 	if (!nav.pas) { t.putrel.remove(); return }
 	const namid = new Map([...d.unam.entries()].map(([u, nam]) => [nam, u]))
-	if (d.ref.includes(nav.pas.uid)) btn(t.putsec, t.putsec.innerText, {
-		prompt1: "输入要增加或删除的联络员名",
-		pos: p1 => {
-			const uid = namid.get(p1 ?? "")
-			if (!uid) return null
-			return pos<DocU>("put", { [id]: d._id, rol: "sec", uid, add: !d.sec.includes(uid) })
+	if (d.ref.includes(nav.pas.uid)) t.putsec.addEventListener("click", () => put(
+		`${id === "sid" ? "s" : "a"}${d._id}`, t.putsec.innerText, {
+		nam: { p1: "用户名：" }, val: {}, p: "put",
+		b: p => {
+			const uid = namid.get(p.p1 ?? "")
+			return uid ? { [id]: d._id, rol: "sec", uid, add: !d.sec.includes(uid) } : null
 		},
-		alert: `无效联络员名或联络员已满\n增删的联络员需先作为申请人或其它出现在${id === "sid" ? "社团" : "活动"}名单`,
-		refresh: async () => { await navpas(); refresh() },
-	}); else t.putsec.remove() // deno-lint-ignore no-explicit-any
-	if (is_sec(nav.pas, { [id]: d._id } as any)) btn(t.putuid, t.putuid.innerText, {
-		prompt1: "输入要增加或删除的志愿者名",
-		pos: p1 => {
-			const uid = namid.get(p1 ?? "")
-			if (!uid) return null
-			return pos<DocU>("put", { [id]: d._id, rol: "uid", uid, add: !d.uid.includes(uid) })
+		a: `无效用户名或联络员已满\n增删的联络员需先作为申请人或其它出现在${id === "sid" ? "社团" : "活动"}名单`,
+		r: refresh,
+	})); else t.putsec.remove() // deno-lint-ignore no-explicit-any
+	if (is_sec(nav.pas, { [id]: d._id } as any)) t.putuid.addEventListener("click", () => put(
+		`${id === "sid" ? "s" : "a"}${d._id}`, t.putuid.innerText, {
+		nam: { p1: "用户名：" }, val: {}, p: "put",
+		b: p => {
+			const uid = namid.get(p.p1 ?? "")
+			return uid ? { [id]: d._id, rol: "uid", uid, add: !d.uid.includes(uid) } : null
 		},
-		alert: `无效志愿者名或志愿者已满\n增删的志愿者需先作为申请人或志愿者出现在${id === "sid" ? "社团" : "活动"}名单`,
-		refresh: async () => { await navpas(); refresh() },
-	}); else t.putuid.remove() // deno-lint-ignore no-explicit-any
+		a: `无效志愿者名或志愿者已满\n增删的志愿者需先作为申请人或志愿者出现在${id === "sid" ? "社团" : "活动"}名单`,
+		r: refresh,
+	})); else t.putuid.remove() // deno-lint-ignore no-explicit-any
 	if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { [id]: d._id } as any)) btn(t.putresn, t.putresn.innerText, d.res.length > 0 ? {
 		confirm: "清空申请人名单？",
 		pos: () => pos<DocU>("put", { [id]: d._id, rol: "res" }),
@@ -301,31 +296,38 @@ export function wsllit(
 ) {
 	if (!nav.pas) { t.wsllit.remove(); return }
 	if (is_aut(nav.pas.aut, "aut")) {
-		btn(t.prewsla, t.prewsla.innerText, is_re(nav.pas) ? {
-			prompt1: "输入要增删的法律援助编辑的用户名",
-			pos: nam => is_nam(nam!) ? pos<DocC<Usr["_id"]>>("pre", { nam, aut: "wsl" }) : null,
-			alert: "无效用户名",
-			refresh: async uid => { if (uid === nav.pas!.uid) await navpas(); usr(uid) },
-		} : undefined)
-		btn(t.prelita, t.prelita.innerText, is_re(nav.pas) ? {
-			prompt1: "输入要增删的理论学习编辑的用户名",
-			pos: nam => is_nam(nam!) ? pos<DocC<Usr["_id"]>>("pre", { nam, aut: "lit" }) : null,
-			alert: "无效用户名",
-			refresh: async uid => { if (uid === nav.pas!.uid) await navpas(); usr(uid) },
-		} : undefined)
+		for (const c of ["wsl", "lit"] as const) {
+			const el = t[`pre${c}a`]
+			if (is_re(nav.pas)) el.addEventListener("click", () => put(`${nav.pas!.uid}`, el.innerText, {
+				nam: { p1: "用户名：" }, val: {}, p: "pre",
+				b: p => p.p1 && is_nam(p.p1) ? { nam: p.p1, aut: c } : null,
+				a: "无效用户名",
+				r: async (uid?: Usr["_id"]) => {
+					if (!uid) return usr(nav.pas!.uid)
+					if (uid === nav.pas!.uid) await navpas()
+					usr(uid)
+				},
+			})); else el.disabled = true
+		}
 	} else[t.prewsla, t.prelita].forEach(el => el.remove())
-	if (is_aut(nav.pas.aut, "wsl")) btn(t.prewsl, t.prewsl.innerText, is_re(nav.pas) ? {
-		prompt1: "输入文章标题：（2-16个中文字符）",
-		pos: wslnam => is_nam(wslnam!) ? pos<DocC<Wsl["_id"]>>("pre", { wslnam }) : null,
-		alert: "无效标题\n文章标题为 2-16 个中文字符",
-		refresh: wslid => md("wsl", wslid, "one"),
-	} : undefined); else t.prewsl.remove()
-	if (is_aut(nav.pas.aut, "lit")) btn(t.prelit, t.prelit.innerText, is_re(nav.pas) ? {
-		prompt1: "输入文章标题：（2-16个中文字符）",
-		pos: litnam => is_nam(litnam!) ? pos<DocC<Lit["_id"]>>("pre", { litnam }) : null,
-		alert: "无效标题\n文章标题为 2-16 个中文字符",
-		refresh: litid => md("lit", litid, "one"),
-	} : undefined); else t.prelit.remove()
+	for (const c of ["wsl", "lit"] as const) {
+		const el = t[`pre${c}`]
+		if (is_aut(nav.pas.aut, c)) {
+			if (is_re(nav.pas)) el.addEventListener("click", async () => {
+				const id = await pos<DocC<Md["_id"]>>("pre", { [`${c}nam`]: "新建文章" })
+				if (id && is_id(id)) put(`${c}${id}`, el.innerText, {
+					nam: { p1: "标题：（2-16个中文字符）", pa: "正文 Markdown" }, val: {}, lim_pa: lim_md, p: "put",
+					b: p => {
+						if (!p.p1 || !p.pa || !is_nam(p.p1) || !is_md(p.pa)) return null
+						return { [`${c}id`]: id, nam: p.p1, md: p.pa.trim() }
+					},
+					a: `无效输入\n标题为 2-16 个中文字符\n正文最长 ${lim_md} 个字符`,
+					d: () => pos<DocD>("put", { [`${c}id`]: id }),
+					r: r => r === undefined ? md(c, 0, "many") : md(c, id, "one"),
+				})
+			}); else el.disabled = true
+		} else el.remove()
+	}
 }
 
 export function putpro(

@@ -1,12 +1,12 @@
 import type { Fund, Id, Md, Work } from "../../src/eid/typ.ts"
-import type { Pas, PasCode, PreUsr } from "../../src/pra/pos.ts"
+import type { Pas, PasCode, Pos, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { is_aut } from "../../src/eid/is.ts"
+import { is_aut, is_md, lim_md, lim_url } from "../../src/eid/is.ts"
 import { is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
-import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit } from "./section.ts"
-import { bind, main, pas_a, pos, que } from "./template.ts"
+import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit, label } from "./section.ts"
+import { bind, main, pas_a, pos, PosB, que, utc_refresh } from "./template.ts"
 import { is_actid, is_goal, is_img, is_msg, is_nam, is_nbr, is_url, } from "../../src/eid/is.ts"
 import { utc_medium, utc_short } from "../../src/ont/utc.ts"
 
@@ -95,7 +95,7 @@ export async function usr(
 	if (nav.pas) {
 		if (nav.pas.uid === uid) {
 			pas_a.innerText = u.nam
-			t.put.addEventListener("click", () => put("用户", u))
+			t.put.addEventListener("click", () => putid("用户", u))
 			t.pas.addEventListener("click", async () => {
 				await pos("pas", { uid: nav.pas!.uid })
 				navpas(null)
@@ -112,13 +112,12 @@ export async function usr(
 				if (is_re(nav.pas)) t.preagd.addEventListener("click", () => pre("活动"))
 				else t.preagd.disabled = true
 			} else t.preagd.remove()
-			btn(t.prefund, t.prefund.innerText, {
-				prompt1: "输入订单号",
-				confirm: "订单号只能激活或绑定一位用户。确认使用？",
-				alert: "无效订单号，或订单号已被使用",
-				pos: (actid) => actid ? pos("pre", { actid }) : null,
-				refresh: () => usr(u._id),
-			})
+			t.prefund.addEventListener("click", () => put(`${uid}`, t.prefund.innerText, {
+				nam: { p1: `订单号：（6-${lim_url} 个字符）` }, val: {}, p: "pre",
+				b: p => p.p1 && is_actid(p.p1) ? { actid: p.p1 } : null,
+				a: "无效订单号，或订单号已被使用",
+				r: () => usr(uid)
+			}))
 			wsllit(t)
 			t.putpro.remove()
 		} else {
@@ -180,7 +179,7 @@ export async function soc(
 
 		if (nav.pas) {
 			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { sid: s._id }))
-				t.put.addEventListener("click", () => put("社团", s))
+				t.put.addEventListener("click", () => putid("社团", s))
 			else t.put.remove()
 			putrel(t, "sid", s, () => soc(s._id))
 			putpro(t, "sid", s, is_aut(nav.pas.aut, "aut") ? () => soc(s._id) : undefined)
@@ -230,58 +229,53 @@ export async function agd(
 
 		if (nav.pas) {
 			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { aid: a._id }))
-				t.put.addEventListener("click", () => put("活动", a))
+				t.put.addEventListener("click", () => putid("活动", a))
 			else t.put.remove()
 			if (is_sec(nav.pas, { aid: a._id })) {
-				btn(t.putimg, t.putimg.innerText, {
-					prompt1: "输入要增删或编辑的图片名（2-16个中文字符）",
-					prompt2: "输入图片外链，或留空以删除图片",
-					alert: "无效输入，或图片数已达上限（9张）",
-					pos: (nam, src) => {
-						if (!is_nam(nam!)) return null
-						let img = a.img.filter(m => m.nam !== nam)
-						if (src && src.length > 0) img = [{ nam, src }, ...img]
-						return is_img(img) ? pos("put", { aid: a._id, img }) : null
+				t.putimg.addEventListener("click", () => put(`a${a._id}`, t.putimg.innerText, {
+					nam: { p1: "图片名：（2-16 个中文字符）", p2: "图片外链：（最长 128 个字符，或留空以删除图片）" }, val: {}, p: "put",
+					b: p => {
+						if (!p.p1 || !is_nam(p.p1)) return null
+						let img = a.img.filter(m => m.nam !== p.p1)
+						if (p.p2 && p.p2.length > 0) img = [{ nam: p.p1, src: p.p2 }, ...img]
+						return is_img(img) ? { aid: a._id, img } : null
 					},
-					refresh: () => agd(a._id),
-				})
-				btn(t.putgoal, t.putgoal.innerText, {
-					prompt1: "输入要增删或编辑的目标名（2-16个中文字符）",
-					prompt2: "输入目标进度（0-100），或留空以删除目标",
-					alert: "无效输入，或目标数已达上限（9个）",
-					pos: (nam, pct) => {
-						if (!is_nam(nam!)) return null
-						let g = a.goal.filter(m => m.nam !== nam)
-						if (pct && pct.length > 0) g = [{ nam, pct: parseInt(pct) }, ...g]
-						return is_goal(g) ? pos("put", { aid: a._id, goal: g }) : null
+					a: "无效输入，或图片数已达上限（9张）",
+					r: () => agd(a._id),
+				}))
+				t.putgoal.addEventListener("click", () => put(`a${a._id}`, t.putgoal.innerText, {
+					nam: { p1: "目标名：（2-16 个中文字符）", p2: "目标进度：（0- 100，或留空以删除目标）" }, val: {}, p: "put",
+					b: p => {
+						if (!p.p1 || !is_nam(p.p1)) return null
+						let g = a.goal.filter(m => m.nam !== p.p1)
+						if (p.p2 && p.p2.length > 0) g = [{ nam: p.p1, pct: parseInt(p.p2) }, ...g]
+						return is_goal(g) ? { aid: a._id, goal: g } : null
 					},
-					refresh: () => agd(a._id),
-				})
-				btn(t.prevideo, t.prevideo.innerText, {
-					prompt1: "输入视频标题（2 - 256 个字符）",
-					prompt2: "输入视频外链",
-					alert: "无效输入",
-					pos: (nam, src) => {
-						if (!is_msg(nam!) || !is_url(src!)) return null
-						return pos("pre", { aid: a._id, nam, src })
+					a: "无效输入，或目标数已达上限（9个）",
+					r: () => agd(a._id),
+				}))
+				t.prevideo.addEventListener("click", () => put(`a${a._id}`, t.prevideo.innerText, {
+					nam: { p1: "视频标题：（2-256 个字符）", p2: "视频外链：（最长 128 个字符）" }, val: {}, p: "pre",
+					b: p => {
+						if (!p.p1 || !p.p2 || !is_msg(p.p1) || !is_url(p.p2)) return null
+						return { aid: a._id, nam: p.p1, src: p.p2 }
 					},
-					refresh: () => agd(a._id),
-				})
+					a: "无效输入\n视频标题为 2-256 个字符\n视频外链最长 128 个字符",
+					r: () => agd(a._id),
+				}))
 			} else {
 				t.putimg.remove()
 				t.putgoal.remove()
 				t.prevideo.remove()
 			}
-			if (is_uid(nav.pas, { aid: a._id })) btn(t.prework, t.prework.innerText, {
-				prompt1: "输入工作日志（2-256 个字符，\\n 为换行符）",
-				pos: msg => {
-					if (!is_msg(msg!)) return null
-					msg = msg.replaceAll("\\n", "\n")
-					return pos("pre", { aid: a._id, msg })
+			if (is_uid(nav.pas, { aid: a._id })) t.prework.addEventListener("click", () => put(`a${a._id}`, t.prework.innerText, {
+				nam: { pa: "工作日志" }, val: {}, p: "pre", b: p => {
+					if (!p.pa || !is_msg(p.pa)) return null
+					return { aid: a._id, msg: p.pa.trim() }
 				},
-				alert: "无效输入",
-				refresh: () => agd(a._id),
-			}); else t.prework.remove()
+				a: "无效输入\n工作日志为 2-256 个字符",
+				r: () => agd(a._id),
+			})); else t.prework.remove()
 			putrel(t, "aid", a, () => agd(a._id))
 			putpro(t, "aid", a, is_aut(nav.pas.aut, "aut") ? () => agd(a._id) : undefined)
 		} else {
@@ -345,22 +339,21 @@ export function rec(
 			if (!is_uid(nav.pas, { aid })) t.putrej.remove()
 			if (!is_sec(nav.pas, { aid })) t.putref.remove()
 			if (w.ref.length === 0 && w._id.uid === nav.pas.uid) {
-				const prompt1 = w.work === "work"
-					? "输入工作日志（2-256 个字符，\\n 为换行符，留空以删除日志）"
-					: "输入视频标题（2 - 256 个字符，留空以删除日志）"
-				let del = false
-				btn(t.put, t.put.innerText, {
-					prompt1, prompt2: w.work === "work" ? undefined : "输入视频外链",
-					pos: (p1, p2) => {
-						del = !p1
-						return pos("put", del ? { workid: w._id } : w.work === "work"
-							? { workid: w._id, msg: p1!.replaceAll("\\n", "\n") }
-							: { workid: w._id, nam: p1!, src: p2! }
-						)
-					},
-					alert: "无效输入",
-					refresh: () => del ? t.rec.remove() : refresh()
-				})
+				const nam = w.work === "work" ? { pa: "工作日志" } : { p1: "视频标题：（2-256 个字符）", p2: "视频外链：（最长 128 个字符）" }
+				const val = w.work === "work" ? { pa: w.msg } : { p1: w.nam, p2: w.src }
+				const b = w.work === "work" ? (p: Put) => {
+					if (!p.pa || !is_msg(p.pa)) return null
+					return { workid: w._id, msg: p.pa.trim() }
+				} : (p: Put) => {
+					if (!p.p1 || !p.p2 || !is_msg(p.p1) || !is_url(p.p2)) return null
+					return { workid: w._id, nam: p.p1, src: p.p2 }
+				}
+				const a = w.work === "work" ? "无效输入\n工作日志为 2-256 个字符" : "无效输入\n视频标题为 2-256 个字符\n视频外链最长 128 个字符"
+				t.put.addEventListener("click", () => put(`a${w._id.aid}`, r.anam.get(w._id.aid)!, {
+					nam, val, p: "put", b, a,
+					d: () => pos("put", { workid: w._id }),
+					r: () => usr(w._id.uid)
+				}))
 			} else t.put.remove()
 		} else t.putpro.remove()
 	} else if (c === "fund") {
@@ -397,15 +390,24 @@ export async function md(
 		ida(t.unam, [[`${m.uid}`, unam.get(m.uid)!]])
 		t.md.innerHTML = marked.parse(m.md)
 		if (nav.pas && m.uid === nav.pas.uid && is_aut(nav.pas.aut, c)) {
-			if (is_re(nav.pas)) t.put.addEventListener("click", () => putmd(c, m))
-			else t.put.disabled = true
+			if (is_re(nav.pas)) t.put.addEventListener("click", () => put(
+				`${c}${m._id}`, "编辑文章", {
+				nam: { p1: "标题：（2-16个中文字符）", pa: "正文 Markdown" },
+				val: { p1: m.nam, pa: m.md }, lim_pa: lim_md, p: "put",
+				b: p => {
+					if (!p.p1 || !p.pa || !is_nam(p.p1) || !is_md(p.pa)) return null
+					return { [`${c}id`]: m._id, nam: p.p1, md: p.pa.trim() }
+				},
+				a: `无效输入\n标题为 2-16 个中文字符\n正文最长 ${lim_md} 个字符`,
+				d: () => pos<DocD>("put", { [`${c}id`]: m._id }),
+				r: r => r === undefined ? md(c, 0, "many") : md(c, m._id, "one"),
+			})); else t.put.disabled = true
 		} else t.put.remove()
 		main.append(t.bind)
 	}
 
 	if (op !== "one") setTimeout(() => {
-		nav.cont = q.md.length === 0 ? null
-			: () => md(c, q.md[q.md.length - 1]._id, "continue")
+		nav.cont = q.md.length === 0 ? null : () => md(c, q.md[q.md.length - 1]._id, "continue")
 	}, 100)
 }
 
@@ -452,14 +454,60 @@ function pre(
 	main.append(t.bind)
 }
 
-function put(
+export type Put = { p1?: string, p2?: string, pa?: string }
+export function put(
+	id: string,
+	nam: string,
+	p: {
+		nam: Put,
+		val: Put,
+		lim_pa?: number,
+		p: Pos,
+		b: (p: Put) => PosB | null,
+		a: string,
+		d?: () => Promise<DocD>, // deno-lint-ignore no-explicit-any
+		r: (r?: any) => void,
+	}
+) {
+	if (!nav.pas) return
+
+	main.innerHTML = ""
+	const t = bind("put")
+
+	idnam(t, id, nam)
+	if (p.nam.p1) { label(t.p1, p.nam.p1); t.p1.value = p.val.p1 ?? "" } else t.p1.parentElement!.remove()
+	if (p.nam.p2) { label(t.p2, p.nam.p2); t.p2.value = p.val.p2 ?? "" } else t.p2.parentElement!.remove()
+	if (p.nam.pa) txt(t.pa, p.nam.pa, p.val.pa ?? ""); else t.pa.parentElement!.remove()
+	if (p.lim_pa) t.pa.maxLength = p.lim_pa
+	if (p.d) t.putn.addEventListener("click", async () => {
+		if (!confirm("确认删除？")) return
+		await p.d!()
+		p.r()
+	}); else t.putn.remove()
+	t.put.addEventListener("click", async () => {
+		const b = p.b({
+			...p.nam.p1 ? { p1: t.p1.value } : {},
+			...p.nam.p2 ? { p2: t.p2.value } : {},
+			...p.nam.pa ? { pa: t.pa.value } : {},
+		})
+		if (b === null) return alert(p.a)
+		const r = await pos(p.p, b)
+		if (r === null) return alert(p.a)
+		setTimeout(() => p.r(r), utc_refresh)
+	})
+	t.cancel.addEventListener("click", () => p.r())
+
+	main.append(t.bind)
+}
+
+function putid(
 	nam: "用户" | "社团" | "活动",
 	id: Usr | Soc | Agd,
 ) {
 	if (!nav.pas) return
 	navnid()
 	main.innerHTML = ""
-	const t = bind("put")
+	const t = bind("putid")
 
 	idnam(t, `${id._id}`, `编辑${nam}信息`)
 	t.pnam.value = id.nam
@@ -517,13 +565,9 @@ function put(
 	}
 	if (nam === "用户" || !is_aut(nav.pas.aut, "aut") || !is_re(nav.pas)) t.putn.remove()
 	else btn(t.putn, `删除${nam}`, {
-		prompt1: `确认要删除的${nam}名称\n只能删除${nam === "社团" ? "无志愿者的社团" : "无工作日志，无支持记录的活动"}`,
 		confirm: `确认要删除${nam}?`,
-		pos: p1 => {
-			if (p1 !== id.nam) return null
-			return pos<DocD>("put", { [nam === "社团" ? "sid" : "aid"]: id._id })
-		},
-		alert: `${nam}名称有误\n${nam === "社团" ? "或社团仍有志愿者" : "或活动仍有工作日志或支持记录"}`,
+		pos: () => pos<DocD>("put", { [nam === "社团" ? "sid" : "aid"]: id._id }),
+		alert: `${nam === "社团" ? "社团仍有志愿者" : "活动仍有工作日志或支持记录"}`,
 		refresh: () => nam === "社团" ? soc() : agd(),
 	})
 	btn(t.put, t.put.innerText, {
@@ -535,34 +579,6 @@ function put(
 		refresh: r,
 	})
 	t.cancel.addEventListener("click", r)
-
-	main.append(t.bind)
-}
-
-function putmd(
-	c: "wsl" | "lit",
-	m: Md,
-) {
-	if (!nav.pas) return
-
-	main.innerHTML = ""
-	const t = bind("putmd")
-
-	idnam(t, `${c}${m._id}`, "编辑文章")
-	t.pnam.value = m.nam
-	txt(t.md, "正文", m.md)
-
-	btn(t.putn, t.putn.innerText, {
-		confirm: "删除文章？",
-		pos: () => pos<DocD>("put", { [`${c}id`]: m._id }),
-		refresh: () => md(c, 0, "many")
-	})
-	btn(t.put, t.put.innerText, {
-		pos: () => pos<DocU>("put", { [`${c}id`]: m._id, nam: t.pnam.value, md: t.md.value.trim() }),
-		alert: `无效输入\n文章标题为 2-16 个中文字符\n正文最长 ${t.md.maxLength} 个字符`,
-		refresh: () => md(c, m._id, "one")
-	})
-	t.cancel.addEventListener("click", () => md(c, m._id, "one"))
 
 	main.append(t.bind)
 }

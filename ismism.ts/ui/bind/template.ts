@@ -18,11 +18,12 @@ export async function que<T>(
 	return r.json() as T
 }
 
+export type PosB = Record<string, string | number | boolean | Agd["img"] | Agd["goal"] | Rec["_id"]>
 export async function pos<T>(
-	f: Pos,
-	b: Record<string, string | number | boolean | Agd["img"] | Agd["goal"] | Rec["_id"]>,
+	p: Pos,
+	b: PosB,
 ) {
-	const res = await fetch(`/p/${f}`, {
+	const res = await fetch(`/p/${p}`, {
 		method: "POST",
 		body: JSON.stringify(b)
 	})
@@ -169,20 +170,19 @@ const template = {
 	put: {
 		tid: "put" as const,
 		...section.idnam,
+		p1: t("input"), p2: t("input"), pa: t("textarea"),
+		putn: t("button"), put: t("button"), cancel: t("button"),
+	},
+
+	putid: {
+		tid: "putid" as const,
+		...section.idnam,
 		meta: t("section"),
 		pnam: t("input"),
 		...section.seladm,
 		intro: t("textarea"),
 		uidlim: t("input"), reslim: t("input"),
 		account: t("input"), budget: t("input"), fund: t("input"), expense: t("input"),
-		putn: t("button"), put: t("button"), cancel: t("button"),
-	},
-
-	putmd: {
-		tid: "putmd" as const,
-		...section.idnam,
-		pnam: t("input"),
-		md: t("textarea"),
 		putn: t("button"), put: t("button"), cancel: t("button"),
 	},
 

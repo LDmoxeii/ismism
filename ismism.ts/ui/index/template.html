@@ -364,6 +364,36 @@
 		</section>
 		<hr>
 		<section class="flex">
+			<label>p1</label>
+			<input class="p1" type="text" maxlength="256" />
+		</section>
+		<hr>
+		<section class="flex">
+			<label>p2</label>
+			<input class="p2" type="text" maxlength="256" />
+		</section>
+		<hr>
+		<section>
+			<label>pa</label>
+			<textarea class="pa" maxlength="256"></textarea>
+		</section>
+		<hr>
+		<section class="flex">
+			<button class="putn">删除</button>
+			<button class="put">确认</button>
+			<button class="cancel">取消</button>
+		</section>
+		<hr>
+	</article>
+</template>
+
+<template id="putid">
+	<article>
+		<section>
+			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
+		</section>
+		<hr>
+		<section class="flex">
 			<label>名称：（2-16个中文字符）</label>
 			<input class="pnam" type="text" maxlength="16" required />
 		</section>
@@ -414,35 +444,6 @@
 		<section class="flex">
 			<label>当前支出：</label>
 			<input class="expense" type="text" inputmode="numeric" required />
-		</section>
-		<hr>
-		<section class="flex">
-			<button class="putn">删除</button>
-			<button class="put">确认</button>
-			<button class="cancel">取消</button>
-		</section>
-		<hr>
-	</article>
-</template>
-
-<template id="putmd">
-	<article>
-		<section>
-			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section class="flex">
-			<label>标题：（2-16个中文字符）</label>
-			<input class="pnam" type="text" maxlength="16" required />
-		</section>
-		<hr>
-		<section class="meta">
-			正文支持 <code>Markdown</code> 文本样式
-		</section>
-		<hr>
-		<section>
-			<label>正文：（0 / 16384 个字符）</label>
-			<textarea class="md" maxlength="16384"></textarea>
 		</section>
 		<hr>
 		<section class="flex">
