@@ -106,7 +106,8 @@ const template = {
 		intro: t("p"),
 		...section.rec,
 		pos: t("section"), put: t("button"), pas: t("button"),
-		pre: t("section"), preusr: t("button"), presoc: t("button"), preagd: t("button"), prefund: t("button"),
+		pre: t("section"), preaud: t("button"), preaut: t("button"),
+		preusr: t("button"), presoc: t("button"), preagd: t("button"), prefund: t("button"),
 		...section.wsllit,
 		...section.putpro,
 	},
@@ -149,6 +150,11 @@ const template = {
 		msg: t("section"),
 		re: t("section"), rej: t("span"), ref: t("span"),
 		...section.putpro, put: t("button"),
+	},
+
+	aut: {
+		tid: "aut" as const,
+		sup: t("p"), aud: t("p"), aut: t("p"), wsl: t("p"), lit: t("p"),
 	},
 
 	md: {

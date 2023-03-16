@@ -3,6 +3,7 @@ import type { Coll, DocR, Update } from "../db.ts"
 import { is_id, is_lim, lim_sec, req_re } from "./is.ts"
 import { usr_r } from "./usr.ts"
 import { IdNRef, idnref } from "./re.ts"
+import { aut_g } from "./aut.ts"
 
 export type RolRef = {
 	sec: IdNRef[],
@@ -66,16 +67,18 @@ export async function rolref<
 	_id: Usr["_id"],
 ): DocR<RolRef> {
 	if (!is_id(_id)) return null
-	const [u, sec, uid, res] = await Promise.all([
-		usr_r({ _id }, { ref: 1 }), // deno-lint-ignore no-explicit-any
-		c.find({ sec: _id } as any, { projection: { _id: 1, ref: 1 } }).toArray(), // deno-lint-ignore no-explicit-any
-		c.find({ uid: _id } as any, { projection: { _id: 1, ref: 1, sec: 1 } }).toArray(), // deno-lint-ignore no-explicit-any
-		c.find({ res: _id } as any, { projection: { _id: 1, ref: 1, sec: 1 } }).toArray(),
+	const [u, aut, sec, uid, res] = await Promise.all([
+		usr_r({ _id }, { ref: 1 }),
+		aut_g(), // deno-lint-ignore no-explicit-any
+		c.find({ sec: _id } as any, { projection: { _id: 1 } }).toArray(), // deno-lint-ignore no-explicit-any
+		c.find({ uid: _id } as any, { projection: { _id: 1, sec: 1 } }).toArray(), // deno-lint-ignore no-explicit-any
+		c.find({ res: _id } as any, { projection: { _id: 1, sec: 1 } }).toArray(),
 	])
 	if (!u) return null
+	const ref = [u._id, ...u.ref]
 	return {
-		sec: sec.map(t => idnref(t._id, t.ref, u.ref)),
-		uid: uid.map(t => idnref(t._id, [...t.ref, ...t.sec], u.ref)),
-		res: res.map(t => idnref(t._id, [...t.ref, ...t.sec], u.ref)),
+		sec: sec.map(t => idnref(t._id, aut.aut ?? [], ref)),
+		uid: uid.map(t => idnref(t._id, t.sec, ref)),
+		res: res.map(t => idnref(t._id, t.sec, ref)),
 	}
 }

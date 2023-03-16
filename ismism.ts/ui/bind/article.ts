@@ -2,8 +2,8 @@ import type { Fund, Id, Md, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, Pos, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { is_aut, is_md, lim_md, lim_url } from "../../src/eid/is.ts"
-import { is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
+import { is_aut, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_sup, lim_url, lim_wsl } from "../../src/eid/is.ts"
+import { is_pre_usr, is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit, label } from "./section.ts"
 import { bind, main, pas_a, pos, PosB, que, utc_refresh } from "./template.ts"
@@ -78,13 +78,13 @@ export async function usr(
 	const q = await que<Q.Usr>(`usr?uid=${uid}`)
 	if (!q) return idn(`${uid}`, "用户")
 	const u: Usr = { ...q, unam: new Map(q.unam), snam: new Map(q.snam), anam: new Map(q.anam) }
-	const froze = is_rej(u) && !(nav.pas && (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas)))
+	const froze = is_rej(u) && !(nav.pas && (nav.pas.uid === u._id || is_pre_usr(nav.pas)))
 
 	navnid()
 	main.innerHTML = ""
 	const t = bind("usr")
 
-	idnam(t, `${uid}`, froze ? "" : u.nam, meta(t, u))
+	idnam(t, `${uid}`, froze ? "" : u.nam, meta(t, u, u.aut))
 	rolref(t.rolref, u)
 	re(t, u)
 	srec(t, "uid", u, froze)
@@ -100,18 +100,21 @@ export async function usr(
 				await pos("pas", { uid: nav.pas!.uid })
 				navpas(null)
 			})
-			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas)) {
-				if (is_re(nav.pas)) t.preusr.addEventListener("click", () => pre("用户"))
-				else t.preusr.disabled = true
-			} else t.preusr.remove()
+			for (const a of ["aud", "aut"] as const) {
+				const el = t[`pre${a}`]
+				if (is_aut(nav.pas.aut, "sup")) el.addEventListener("click", () => put(`${uid}`, el.innerText, {
+					nam: { p1: "用户名：" }, val: {}, p: "pre",
+					b: p => p.p1 && is_nam(p.p1) ? { nam: p.p1, aut: a } : null,
+					a: "无效用户名，或已达上限",
+					r: async () => { await navpas(); aut() },
+				})); else el.remove()
+			}
+			if (is_aut(nav.pas.aut) || is_sec(nav.pas)) t.preusr.addEventListener("click", () => pre("用户"))
+			else t.preusr.remove()
 			if (is_aut(nav.pas.aut, "aut")) {
-				if (is_re(nav.pas)) t.presoc.addEventListener("click", () => pre("社团"))
-				else t.presoc.disabled = true
-			} else t.presoc.remove()
-			if (is_aut(nav.pas.aut, "aut")) {
-				if (is_re(nav.pas)) t.preagd.addEventListener("click", () => pre("活动"))
-				else t.preagd.disabled = true
-			} else t.preagd.remove()
+				t.presoc.addEventListener("click", () => pre("社团"))
+				t.preagd.addEventListener("click", () => pre("活动"))
+			} else[t.presoc, t.preagd].forEach(el => el.remove())
 			t.prefund.addEventListener("click", () => put(`${uid}`, t.prefund.innerText, {
 				nam: { p1: `订单号：（6-${lim_url} 个字符）` }, val: {}, p: "pre",
 				b: p => p.p1 && is_actid(p.p1) ? { actid: p.p1 } : null,
@@ -167,7 +170,7 @@ export async function soc(
 		if (!d) continue
 
 		const s: Soc = { ...d, unam: new Map(d.unam) }
-		const froze = is_rej(s) && !(nav.pas && (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { sid: s._id })))
+		const froze = s.rej.length > 0 && !(nav.pas && (is_sec(nav.pas, { sid: s._id }) || is_aut(nav.pas.aut)))
 
 		const t = bind("soc")
 		idnam(t, `s${s._id}`, s.nam, meta(t, s))
@@ -181,8 +184,9 @@ export async function soc(
 			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { sid: s._id }))
 				t.put.addEventListener("click", () => putid("社团", s))
 			else t.put.remove()
-			putrel(t, "sid", s, () => soc(s._id))
-			putpro(t, "sid", s, is_aut(nav.pas.aut, "aut") ? () => soc(s._id) : undefined)
+			putrel(t, "sid", s, async () => { await navpas(); soc(s._id) })
+			if (is_aut(nav.pas.aut, "aud")) putpro(t, "sid", s, () => soc(s._id))
+			else t.putpro.remove()
 		} else {
 			t.pos.remove()
 			t.putrel.remove()
@@ -214,7 +218,7 @@ export async function agd(
 		if (!d) continue
 
 		const a: Agd = { ...d, unam: new Map(d.unam) }
-		const froze = is_rej(a) && !(nav.pas && (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { aid: a._id })))
+		const froze = a.rej.length > 0 && !(nav.pas && (is_sec(nav.pas, { aid: a._id }) || is_aut(nav.pas.aut)))
 
 		const t = bind("agd")
 		idnam(t, `a${a._id}`, a.nam, meta(t, a))
@@ -276,8 +280,9 @@ export async function agd(
 				a: "无效输入\n工作日志为 2-256 个字符",
 				r: () => agd(a._id),
 			})); else t.prework.remove()
-			putrel(t, "aid", a, () => agd(a._id))
-			putpro(t, "aid", a, is_aut(nav.pas.aut, "aut") ? () => agd(a._id) : undefined)
+			putrel(t, "aid", a, async () => { await navpas(); agd(a._id) })
+			if (is_aut(nav.pas.aut, "aud")) putpro(t, "aid", a, () => agd(a._id))
+			else t.putpro.remove()
 		} else {
 			t.pos.remove()
 			t.putrel.remove()
@@ -307,7 +312,11 @@ export function rec(
 	t.meta.innerText = utc_short(d._id.utc)
 	if (c === "work") {
 		const w = d as Work
-		const froze = !is_re(w) && !(nav.pas && (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { aid }) || is_uid(nav.pas, { aid })))
+		const froze = !is_re(w) && !(nav.pas && (
+			w._id.uid === nav.pas.uid
+			|| is_sec(nav.pas, { aid }) || is_uid(nav.pas, { aid })
+			|| is_aut(nav.pas.aut, "aut")
+		))
 		if (is_rej(w)) {
 			t.meta.innerText += "（反对者达两名，不公示）";
 			[t.meta, t.msg].forEach(el => el.classList.add("rej2"))
@@ -363,6 +372,28 @@ export function rec(
 		t.re.remove()
 	}
 	return t.bind
+}
+
+export async function aut(
+) {
+	if (navhash("aut")) return
+	const d = await que<Q.Aut>("aut")
+	const q = { ...d, unam: new Map(d.unam) }
+	const ht = (uid?: Usr["_id"][]) => uid ? uid.map(u => [`${u}`, q.unam.get(u)!] as [string, string]) : []
+
+	navnid()
+	main.innerHTML = ""
+	const t = bind("aut")
+
+	if (nav.pas && (["sup", "aud"] as const).some(a => is_aut(nav.pas!.aut, a))) {
+		label(t.sup, `(${q.aut.sup?.length ?? 0}/${lim_sup}，不公示)`, true); ida(t.sup, ht(q.aut.sup))
+		label(t.aud, `(${q.aut.aud?.length ?? 0}/${lim_aud}，不公示)`, true); ida(t.aud, ht(q.aut.aud))
+	} else[t.sup, t.aud].forEach(el => el.parentElement?.remove())
+	label(t.aut, `(${q.aut.aut?.length ?? 0}/${lim_aut})`, true); ida(t.aut, ht(q.aut.aut))
+	label(t.wsl, `(${q.aut.wsl?.length ?? 0}/${lim_wsl})`, true); ida(t.wsl, ht(q.aut.wsl))
+	label(t.lit, `(${q.aut.lit?.length ?? 0}/${lim_lit})`, true); ida(t.lit, ht(q.aut.lit))
+
+	main.append(t.bind)
 }
 
 export async function md(

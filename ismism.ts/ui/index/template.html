@@ -89,6 +89,8 @@
 		</section>
 		<hr>
 		<section class="pre flex">
+			<button class="preaud">增删审计员</button>
+			<button class="preaut">增删管理员</button>
 			<button class="preusr">添加用户</button>
 			<button class="presoc">添加社团</button>
 			<button class="preagd">添加活动</button>
@@ -304,6 +306,46 @@
 	</article>
 </template>
 
+<template id="aut">
+	<article>
+		<section>
+			<a class="idnam" href="#aut"><code class="id active">aut</code> <span class="nam">网站管理员与编辑</span></a>
+		</section>
+		<hr>
+		<section class="meta">
+			管理员与编辑自动获得管理员集体推荐(7)<br>
+			联络员自动获得对应活动或社团推荐(1)<br>
+			活动与社团只能由管理员集体反对或推荐
+		</section>
+		<hr>
+		<section>
+			<label>超级管理员：</label>
+			<p class="sup"></p>
+		</section>
+		<hr>
+		<section>
+			<label>审计员：</label>
+			<p class="aud"></p>
+		</section>
+		<hr>
+		<section>
+			<label>管理员：</label>
+			<p class="aut"></p>
+		</section>
+		<hr>
+		<section>
+			<label>法律援助编辑：</label>
+			<p class="wsl"></p>
+		</section>
+		<hr>
+		<section>
+			<label>理论学习编辑：</label>
+			<p class="lit"></p>
+		</section>
+		<hr>
+	</article>
+</template>
+
 <template id="md">
 	<article>
 		<section>
@@ -411,8 +453,8 @@
 		</section>
 		<hr>
 		<section class="meta">
-			以上基础信息仅主义主义管理员可编辑<br>
-			以下内容信息仅社团活动联络员可编辑
+			以上基础信息仅管理员可编辑<br>
+			以下内容信息仅联络员可编辑
 		</section>
 		<hr>
 		<section>

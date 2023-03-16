@@ -6,7 +6,7 @@ import { soc_r } from "../eid/soc.ts"
 import { agd_r } from "../eid/agd.ts"
 import { nrec, rec_f, rec_r } from "../eid/rec.ts"
 import { id, idnam, nid_of_adm } from "../eid/id.ts"
-import { aut_r } from "../eid/aut.ts"
+import { aut_g, aut_r } from "../eid/aut.ts"
 import { md_f, md_r } from "../eid/md.ts"
 
 export async function nid(
@@ -46,7 +46,7 @@ export async function soc(
 	const s = await soc_r(_id, { ...pid, ...prel })
 	if (!s) return null
 	const [unam, nr] = await Promise.all([
-		idnam(coll.usr, [...s.rej, ...s.ref, ...s.sec, ...s.uid, ...s.res,]),
+		idnam(coll.usr, [...s.sec, ...s.uid, ...s.res,]),
 		nrec({ uid: s.uid }),
 	])
 	if (!nr) return null
@@ -59,7 +59,7 @@ export async function agd(
 	const a = await agd_r(_id, { ...pid, ...prel, ...pagd })
 	if (!a) return null
 	const [unam, nr] = await Promise.all([
-		idnam(coll.usr, [...a.rej, ...a.ref, ...a.sec, ...a.uid, ...a.res,]),
+		idnam(coll.usr, [...a.sec, ...a.uid, ...a.res,]),
 		nrec({ aid: a._id }),
 	])
 	if (!nr) return null
@@ -96,6 +96,12 @@ export async function rec<
 		return { rec: r, unam, anam }
 	}
 	return null
+}
+
+export async function aut(
+) {
+	const a = await aut_g()
+	return { aut: a, unam: await idnam(coll.usr, Object.values(a).flat()) }
 }
 
 export async function md(

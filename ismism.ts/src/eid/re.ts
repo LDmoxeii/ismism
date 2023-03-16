@@ -1,4 +1,4 @@
-import type { Id, Re, Rel, Usr } from "./typ.ts"
+import type { Id, Re, Usr } from "./typ.ts"
 import { coll, Coll, Update } from "../db.ts"
 import { is_lim, lim_re } from "./is.ts"
 import { nid } from "./id.ts"
@@ -30,9 +30,9 @@ export async function re_u<
 
 export function idnref(
 	id: Id["_id"],
-	idr: Re["ref"] | Rel["sec"],
+	uid: Usr["_id"][],
 	ref: Re["ref"],
 ): IdNRef {
-	const rs = new Set(idr)
-	return [id, ref.filter(r => rs.has(r)).length]
+	const u = new Set(uid)
+	return [id, ref.filter(r => u.has(r)).length]
 }

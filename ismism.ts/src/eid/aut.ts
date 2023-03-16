@@ -17,6 +17,16 @@ export async function aut_r(
 	return await coll.aut.findOne({ _id }) ?? null
 }
 
+export async function aut_g(
+): Promise<{ [A in Aut["aut"][0]]?: Aut["_id"][] }> {
+	const aut = await coll.aut.aggregate([{
+		$unwind: "$aut"
+	}, {
+		$group: { _id: "$aut", uid: { $push: "$_id" } } // deno-lint-ignore no-explicit-any
+	}]).toArray() as any as { _id: Aut["aut"][0], uid: Aut["_id"][] }[]
+	return Object.fromEntries(aut.map(a => [a._id, a.uid]))
+}
+
 export async function aut_u(
 	_id: Aut["_id"],
 	u: Update<Aut>,
@@ -38,4 +48,3 @@ export async function aut_d(
 		return d > 0 ? 1 : 0
 	} catch { return null }
 }
-

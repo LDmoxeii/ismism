@@ -3,11 +3,16 @@ import { Act, Agd, Aut, Id, Md, Rec, Usr } from "./typ.ts"
 export const req_re = 2
 export const lim_re = 64
 
+export const lim_sup = 1
+export const lim_aud = 1
+export const lim_aut = 7
 export const lim_sec = 8
 export const lim_uid_def = lim_re
 export const lim_uid_max = lim_re * lim_sec / req_re
 export const lim_res_def = 16
 export const lim_res_max = 64
+export const lim_wsl = 16
+export const lim_lit = 16
 
 export const len_code = 6
 export const lim_code = 10 ** len_code
@@ -97,9 +102,9 @@ export function is_recid(
 
 export function is_aut(
 	aut: Aut["aut"],
-	a: Aut["aut"][0],
+	a?: Aut["aut"][0],
 ): a is Aut["aut"][0] {
-	return aut.includes(a)
+	return a ? aut.includes(a) : (["sup", "aud", "aut"] as const).some(a => aut.includes(a))
 }
 
 export function is_actid(

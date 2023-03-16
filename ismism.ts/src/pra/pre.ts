@@ -8,8 +8,8 @@ import { soc_c } from "../eid/soc.ts"
 import { agd_c } from "../eid/agd.ts"
 import { rec_c } from "../eid/rec.ts"
 import { md_c } from "../eid/md.ts"
-import { is_aut, is_id, is_msg, is_nam, is_url } from "../eid/is.ts"
-import { aut_c, aut_d, aut_r, aut_u } from "../eid/aut.ts"
+import { is_aut, is_id, is_lim, is_msg, is_nam, is_url, lim_aud, lim_aut, lim_lit, lim_wsl } from "../eid/is.ts"
+import { aut_c, aut_d, aut_g, aut_r, aut_u } from "../eid/aut.ts"
 
 export async function pre_usr(
 	pa: { pas: Pas } | { actid: Act["_id"] },
@@ -91,19 +91,24 @@ export async function pre_aut(
 	nam: Usr["nam"],
 	aut: Aut["aut"][0],
 ): DocC<Aut["_id"]> {
-	if (aut === "aut" || !is_nam(nam) || !is_pre_aut(pas)) return null
+	if (aut === "sup" || !is_nam(nam) || !is_pre_aut(pas)) return null
 	const { _id } = await usr_r({ nam }, {}) ?? {}
+	const lim = aut === "aud" ? lim_aud :
+		aut === "aut" ? lim_aut : aut === "wsl" ? lim_wsl : aut === "lit" ? lim_lit : 0
 	if (!is_id(_id!)) return null
-	const a = await aut_r(_id)
-	if (a) {
-		if (is_aut(a.aut, aut) && a.aut.length === 1) {
-			await aut_d(_id)
-			return _id
+	const [a, g] = await Promise.all([aut_r(_id), aut_g()])
+	if (is_lim((g[aut]?.length ?? 0) + (g[aut]?.includes(_id) ? -1 : 1), lim)) {
+		if (a) {
+			if (is_aut(a.aut, aut) && a.aut.length === 1) {
+				await aut_d(_id)
+				return _id
+			}
+			const u = await aut_u(_id, is_aut(a.aut, aut) ? { $pull: { aut } } : { $addToSet: { aut } })
+			return u && u > 0 ? _id : null
 		}
-		const u = await aut_u(_id, is_aut(a.aut, aut) ? { $pull: { aut } } : { $addToSet: { aut } })
-		return u && u > 0 ? _id : null
+		else return aut_c({ _id, aut: [aut] })
 	}
-	return aut_c({ _id, aut: [aut] })
+	return null
 }
 
 export async function pre_wsl(

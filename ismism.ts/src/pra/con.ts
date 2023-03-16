@@ -51,12 +51,12 @@ export function is_res(
 export function is_pre_usr(
 	pas: Pas
 ): boolean {
-	return (is_aut(pas.aut, "aut") || is_sec(pas)) && is_re(pas)
+	return is_aut(pas.aut) || is_sec(pas)
 }
 function is_pre_rel(
 	pas: Pas
 ): boolean {
-	return is_aut(pas.aut, "aut") && is_re(pas)
+	return is_aut(pas.aut, "aut")
 }
 export function is_pre_soc(
 	pas: Pas
@@ -77,17 +77,17 @@ export function is_pre_work(
 export function is_pre_aut(
 	pas: Pas
 ): boolean {
-	return is_aut(pas.aut, "aut") && is_re(pas)
+	return is_aut(pas.aut, "sup")
 }
 export function is_pre_wsl(
 	pas: Pas
 ): boolean {
-	return is_aut(pas.aut, "wsl") && is_re(pas)
+	return is_aut(pas.aut, "wsl")
 }
 export function is_pre_lit(
 	pas: Pas
 ): boolean {
-	return is_aut(pas.aut, "lit") && is_re(pas)
+	return is_aut(pas.aut, "lit")
 }
 
 export function is_pro_usr(
@@ -100,17 +100,13 @@ export function is_pro_usr(
 }
 export function is_pro_soc(
 	pas: Pas,
-	re: keyof Re,
 ): boolean {
-	if (re !== "rej" && re !== "ref") return false
-	return is_pre_soc(pas)
+	return is_aut(pas.aut, "aud")
 }
 export function is_pro_agd(
 	pas: Pas,
-	re: keyof Re,
 ): boolean {
-	if (re !== "rej" && re !== "ref") return false
-	return is_pre_agd(pas)
+	return is_aut(pas.aut, "aud")
 }
 export function is_pro_work(
 	pas: Pas,
@@ -138,8 +134,7 @@ function is_put_idrel(
 	id: { sid: Soc["_id"] } | { aid: Agd["_id"] },
 	p: PutIdRel | UpdateRel | null,
 ): boolean {
-	if (p === null) return is_aut(pas.aut, "aut") && is_re(pas)
-	if ("nam" in p) return is_pre_rel(pas)
+	if (p === null || "nam" in p) return is_pre_rel(pas)
 	else if ("intro" in p) return is_sec(pas, id)
 	else if ("rol" in p) switch (p.rol) {
 		case "sec": return is_pre_rel(pas)

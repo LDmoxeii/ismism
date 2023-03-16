@@ -7,6 +7,7 @@ import { nrec, rec_c, rec_d, rec_f, rec_r, rec_u } from "../src/eid/rec.ts"
 import { rolref, rol } from "../src/eid/rel.ts"
 import { nid } from "../src/eid/id.ts"
 import { md_c, md_f, md_r, md_u } from "../src/eid/md.ts"
+import { aut_c, aut_d, aut_g } from "../src/eid/aut.ts"
 
 await db("tst", true)
 
@@ -62,17 +63,22 @@ Deno.test("rel", async () => {
 		await soc_c("社团三", "广东", "汕头"),
 	], [1, 1, 2, 3])
 	await Promise.all([
+		aut_c({ _id: 2, aut: ["aut"] }),
+		aut_c({ _id: 3, aut: ["aut"] }),
 		usr_u(1, { $set: { ref: [1, 2, 3] } }),
-		soc_u(1, { $set: { ref: [3, 3, 4], sec: [1, 4, 4], uid: [1, 3], res: [] } }),
-		soc_u(2, { $set: { ref: [2, 3], sec: [1, 4], uid: [1, 3], res: [1, 2] } }),
-		soc_u(3, { $set: { ref: [], sec: [2, 3], uid: [1, 3], res: [1, 2] } }),
+		soc_u(1, { $set: { sec: [1, 4, 4], uid: [1, 3], res: [] } }),
+		soc_u(2, { $set: { sec: [1, 3, 4], uid: [1, 3], res: [1, 2] } }),
+		soc_u(3, { $set: { sec: [2, 3], uid: [1, 3], res: [1, 2] } }),
 	])
 	assertEquals(await rolref(coll.soc, 1), {
-		sec: [[1, 1], [2, 2]],
+		sec: [[1, 2], [2, 2]],
 		uid: [[1, 2], [2, 3], [3, 2]],
 		res: [[2, 3], [3, 2]],
 	})
-	assertEquals(await rol(coll.soc, 1), { sec: [2], uid: [1, 2, 3], res: [2, 3] })
+	assertEquals(await rol(coll.soc, 1), { sec: [1, 2], uid: [1, 2, 3], res: [2, 3] })
+	await Promise.all([
+		aut_d(2), aut_d(3), usr_d(1), soc_d(1), soc_d(2), soc_d(3)
+	])
 })
 
 Deno.test("rec", async () => {
@@ -112,6 +118,16 @@ Deno.test("rec", async () => {
 		id.map(_id => rec_d(coll.fund, _id)),
 	].flat())
 	assertEquals(await nrec(), { work: 0, fund: 0 })
+})
+
+Deno.test("aut", async () => {
+	assertEquals({}, await aut_g())
+	await Promise.all([
+		aut_c({ _id: 1, aut: ["sup", "wsl"] }),
+		aut_c({ _id: 2, aut: ["aud", "aut"] }),
+		aut_c({ _id: 3, aut: ["lit", "wsl"] }),
+	])
+	assertEquals({ aud: [2], aut: [2], lit: [3], sup: [1], wsl: [1, 3] }, await aut_g())
 })
 
 Deno.test("md", async () => {

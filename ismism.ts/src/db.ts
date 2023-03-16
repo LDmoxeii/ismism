@@ -25,7 +25,7 @@ export async function db(
 
 	if (reset) {
 		await db.dropDatabase()
-		c.usr.createIndexes({
+		await c.usr.createIndexes({
 			indexes: [{
 				key: { nam: 1 }, name: "nam", unique: true,
 			}, {

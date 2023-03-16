@@ -1,13 +1,13 @@
 import type { Md, Work } from "../../src/eid/typ.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { Agd, Soc, Usr, rec as arec, usr, md, put } from "./article.ts"
+import { Agd, Soc, Usr, rec as arec, md, put, aut } from "./article.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
 import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
-import { is_aut, is_id, is_md, is_nam, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
+import { is_aut, is_id, is_md, is_nam, lim_aut, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
 	el: HTMLElement,
@@ -101,15 +101,26 @@ export function idnam(
 
 export function meta(
 	t: Section["meta"],
-	id: Usr | Soc,
+	id: Usr | Soc | Agd,
+	ua?: Usr["aut"],
 ) {
 	t.adm.innerText = `${id.adm1} ${id.adm2}`
 	t.utc.innerText = utc_medium(id.utc)
-	ida(t.rej, id.rej.map(r => [`${r}`, id.unam.get(r)!]))
-	ida(t.ref, id.ref.map(r => [`${r}`, id.unam.get(r)!]))
+
+	if (ua) {
+		if (ua.length > 0) ida(t.ref, [["aut", `管理员(${lim_aut})`]])
+		ida(t.rej, id.rej.map(r => [`${r}`, id.unam.get(r)!]))
+		ida(t.ref, id.ref.map(r => [`${r}`, id.unam.get(r)!]))
+	} else {
+		if (id.rej.length > 0) ida(t.rej, [["aut", `管理员(${lim_aut})`]])
+		if (id.ref.length > 0) ida(t.ref, [["aut", `管理员(${lim_aut})`]])
+	}
+
+	const rej = ua && is_rej(id) || !ua && id.rej.length > 0
+	const ref = ua && ua.length === 0 && !is_ref(id) || !ua && id.ref.length === 0
 	let cls = null
-	if (!is_ref(id)) { cls = "green"; t.ref2.classList.add(cls) }
-	if (is_rej(id)) { cls = "red"; t.rej2.classList.add(cls) }
+	if (ref) { cls = "green"; t.ref2.classList.add(cls) }
+	if (rej) { cls = "red"; t.rej2.classList.add(cls) }
 	return cls
 }
 
@@ -117,9 +128,13 @@ export function rolref(
 	t: HTMLParagraphElement,
 	u: Usr,
 ) {
-	if (is_aut(u.aut, "aut")) ida(t, [[`${u._id}`, `管理员 (${u.ref.length}推荐)`]], "isec")
-	if (is_aut(u.aut, "wsl")) ida(t, [[`${u._id}`, `法律援助编辑 (${u.ref.length}推荐)`]], "sec")
-	if (is_aut(u.aut, "lit")) ida(t, [[`${u._id}`, `理论学习编辑 (${u.ref.length}推荐)`]], "sec")
+	if (nav.pas && u._id === nav.pas.uid) {
+		if (is_aut(nav.pas.aut, "sup")) ida(t, [["aut", `超级管理员 (不公示)`]], "isec")
+		if (is_aut(nav.pas.aut, "aud")) ida(t, [["aut", `审计员 (不公示)`]], "isec")
+	}
+	if (is_aut(u.aut, "aut")) ida(t, [["aut", `管理员 (${lim_aut}推荐)`]], "isec")
+	if (is_aut(u.aut, "wsl")) ida(t, [["aut", `法律援助编辑 (${lim_aut}推荐)`]], "sec")
+	if (is_aut(u.aut, "lit")) ida(t, [["aut", `理论学习编辑 (${lim_aut}推荐)`]], "sec")
 	ida(t, u.aref.sec.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}联络员 (${r}推荐)`]), "sec")
 	ida(t, u.sref.sec.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}联络员 (${r}推荐)`]), "sec")
 	ida(t, u.aref.uid.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}志愿者 (${r}推荐)`]), "uid")
@@ -258,7 +273,7 @@ export function putrel(
 ) {
 	if (!nav.pas) { t.putrel.remove(); return }
 	const namid = new Map([...d.unam.entries()].map(([u, nam]) => [nam, u]))
-	if (d.ref.includes(nav.pas.uid)) t.putsec.addEventListener("click", () => put(
+	if (is_aut(nav.pas.aut, "aut")) t.putsec.addEventListener("click", () => put(
 		`${id === "sid" ? "s" : "a"}${d._id}`, t.putsec.innerText, {
 		nam: { p1: "用户名：" }, val: {}, p: "put",
 		b: p => {
@@ -284,7 +299,7 @@ export function putrel(
 		refresh,
 	} : undefined); else t.putresn.remove()
 	const [isuid, isres] = [d.uid.includes(nav.pas.uid), d.res.includes(nav.pas.uid)]
-	if (!isuid && !is_rej(d) || isres) btn(t.putres, isres ? "取消申请" : "申请加入", !isres && d.res.length >= d.reslim ? undefined : {
+	if (!isuid && d.rej.length === 0 && d.ref.length > 0 || isres) btn(t.putres, isres ? "取消申请" : "申请加入", !isres && d.res.length >= d.reslim ? undefined : {
 		pos: () => pos<DocU>("put", { [id]: d._id, rol: "res", uid: nav.pas!.uid, add: !isres }),
 		refresh,
 		alert: "申请人已满",
@@ -298,16 +313,12 @@ export function wsllit(
 	if (is_aut(nav.pas.aut, "aut")) {
 		for (const c of ["wsl", "lit"] as const) {
 			const el = t[`pre${c}a`]
-			if (is_re(nav.pas)) el.addEventListener("click", () => put(`${nav.pas!.uid}`, el.innerText, {
+			el.addEventListener("click", () => put(`${nav.pas!.uid}`, el.innerText, {
 				nam: { p1: "用户名：" }, val: {}, p: "pre",
 				b: p => p.p1 && is_nam(p.p1) ? { nam: p.p1, aut: c } : null,
-				a: "无效用户名",
-				r: async (uid?: Usr["_id"]) => {
-					if (!uid) return usr(nav.pas!.uid)
-					if (uid === nav.pas!.uid) await navpas()
-					usr(uid)
-				},
-			})); else el.disabled = true
+				a: "无效用户名，或已达上限",
+				r: async () => { await navpas(); aut() },
+			}))
 		}
 	} else[t.prewsla, t.prelita].forEach(el => el.remove())
 	for (const c of ["wsl", "lit"] as const) {

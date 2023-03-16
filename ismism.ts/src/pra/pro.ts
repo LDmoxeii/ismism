@@ -26,7 +26,7 @@ export async function pro_soc(
 	sid: Soc["_id"],
 	add: boolean,
 ): DocU {
-	if (!is_pro_soc(pas, re) || !is_id(sid)) return null
+	if (!is_pro_soc(pas) || !is_id(sid)) return null
 	const u = await re_u(coll.soc, sid, { re, add, uid: pas.uid })
 	return u ? soc_u(sid, u) : null
 }
@@ -37,7 +37,7 @@ export async function pro_agd(
 	aid: Agd["_id"],
 	add: boolean,
 ): DocU {
-	if (!is_pro_agd(pas, re) || !is_id(aid)) return null
+	if (!is_pro_agd(pas) || !is_id(aid)) return null
 	const u = await re_u(coll.agd, aid, { re, add, uid: pas.uid })
 	return u ? agd_u(aid, u) : null
 

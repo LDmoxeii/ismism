@@ -67,7 +67,7 @@ export async function pos(
 				if (typeof msg === "string") return pre_work(p.pas, aid, { msg })
 				else if (typeof nam === "string" && typeof src === "string") return pre_work(p.pas, aid, { nam, src })
 			} else if (typeof actid === "string" && p.pas) return pre_fund(p.pas, actid)
-			else if (typeof nam === "string" && ["wsl", "lit"].includes(aut) && p.pas) return pre_aut(p.pas, nam, aut)
+			else if (typeof nam === "string" && ["aud", "aut", "wsl", "lit"].includes(aut) && p.pas) return pre_aut(p.pas, nam, aut)
 			else if (typeof wslnam === "string" && p.pas) return pre_wsl(p.pas, wslnam)
 			else if (typeof litnam === "string" && p.pas) return pre_lit(p.pas, litnam)
 			break

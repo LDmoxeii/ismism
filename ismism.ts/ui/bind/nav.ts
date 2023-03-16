@@ -2,7 +2,7 @@
 import type { Pas } from "../../src/pra/pas.ts"
 import type { NId } from "../../src/pra/que.ts"
 import { adm } from "../../src/ont/adm.ts"
-import { pas, soc, usr, agd, md, idn } from "./article.ts"
+import { pas, aut, soc, usr, agd, md, idn } from "./article.ts"
 import { adm1, adm2, pas_a, pos, que } from "./template.ts"
 
 export const nav: {
@@ -105,6 +105,7 @@ window.addEventListener("hashchange", () => {
 	nav.hash = decodeURI(location.hash).substring(1)
 	nav.cont = null
 	if (nav.hash === "pas") pas()
+	else if (nav.hash === "aut") aut()
 	else if (/^\d+$/.test(nav.hash)) usr(parseInt(nav.hash))
 	else if (nav.hash === "soc") soc()
 	else if (nav.hash.startsWith("soc")) soc(nav.hash.substring(3))
