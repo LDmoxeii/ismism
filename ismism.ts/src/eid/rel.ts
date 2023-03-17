@@ -75,7 +75,7 @@ export async function rolref<
 		c.find({ res: _id } as any, { projection: { _id: 1, sec: 1 } }).toArray(),
 	])
 	if (!u) return null
-	const ref = [u._id, ...u.ref]
+	const ref = u.ref.includes(u._id) ? u.ref : [u._id, ...u.ref]
 	return {
 		sec: sec.map(t => idnref(t._id, aut.aut ?? [], ref)),
 		uid: uid.map(t => idnref(t._id, t.sec, ref)),

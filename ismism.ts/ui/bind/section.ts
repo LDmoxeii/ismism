@@ -310,7 +310,7 @@ export function wsllit(
 	t: Section["wsllit"],
 ) {
 	if (!nav.pas) { t.wsllit.remove(); return }
-	if (is_aut(nav.pas.aut, "aut")) {
+	if (is_aut(nav.pas.aut, "sup")) {
 		for (const c of ["wsl", "lit"] as const) {
 			const el = t[`pre${c}a`]
 			el.addEventListener("click", () => put(`${nav.pas!.uid}`, el.innerText, {
