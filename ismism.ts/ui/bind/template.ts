@@ -70,7 +70,7 @@ const section = {
 	},
 
 	rec: {
-		recwork: t("p"), recfund: t("p"),
+		d30: t("section"), recwork: t("p"), recfund: t("p"),
 	},
 
 	wsllit: {
@@ -141,6 +141,11 @@ const template = {
 	goal: {
 		tid: "goal" as const,
 		circle: svg("circle"), pct: svg("text"), nam: t("span"),
+	},
+
+	d30: {
+		tid: "d30" as const,
+		d30: svg("svg"),
 	},
 
 	rec: {

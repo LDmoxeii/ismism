@@ -8,7 +8,9 @@
 	--red: #f44336;
 	--palegreen: #ddffdd;
 	--green: #4CAF50;
+	--lightamber: #ffe9a8;
 	--amber: #ffc107;
+	--orange: #ff9800;
 	--purple: #673ab7;
 
 	--small: 12px;
@@ -543,6 +545,42 @@ section.acct>svg>text.budget {
 section.acct a.account {
 	text-decoration: underline;
 	text-underline-offset: 4px;
+}
+
+section.d30>div {
+	display: block;
+	width: 11em;
+	font-size: 1em;
+	padding-left: .75em;
+	letter-spacing: .5em;
+	margin: 0 auto;
+	color: var(--gray);
+}
+
+section.d30>svg {
+	display: block;
+	margin: 0 auto;
+	cursor: pointer;
+}
+
+section.d30>svg rect {
+	fill: transparent;
+}
+
+section.d30>svg rect.day {
+	fill: var(--lightgray);
+}
+
+section.d30>svg rect.lo {
+	fill: var(--lightamber) !important;
+}
+
+section.d30>svg rect.mi {
+	fill: var(--amber) !important;
+}
+
+section.d30>svg rect.hi {
+	fill: var(--orange) !important;
 }
 
 section>p.goal:not(:empty) {

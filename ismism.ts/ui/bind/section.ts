@@ -3,11 +3,11 @@ import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
 import { Agd, Soc, Usr, rec as arec, md, put, aut } from "./article.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
-import { utc_medium } from "../../src/ont/utc.ts"
+import { utc_d, utc_date, utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
 import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
-import { is_aut, is_id, is_md, is_nam, lim_aut, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
+import { is_aut, is_id, is_md, is_nam, lim_aut, lim_d30, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
 	el: HTMLElement,
@@ -229,12 +229,33 @@ export function seladm(
 	t.adm1.addEventListener("change", () => selopt(t.adm2, adm.get(t.adm1.value)!))
 }
 
+function d30(
+	s: Section["rec"],
+	d: Usr | Soc | Agd,
+) {
+	const svg = bind("d30").d30
+	const r = svg.getElementsByTagName("rect")
+	const date = new Date(utc_date(Date.now() - lim_d30 * utc_d) + "T00:00:00.000+08:00")
+	const day = (date.getDay() + 6) % 7
+	const t = date.getTime()
+	for (let n = 0; n <= lim_d30; ++n) r[day + n].classList.add("day")
+	d.nrecd30.forEach(([td, nr]) => {
+		if (td < t) return
+		const n = Math.floor((td - t) / utc_d)
+		r[day + n].classList.add(nr <= 4 ? "lo" : nr <= 8 ? "mi" : "hi")
+	})
+	const dwork = s.recwork.parentElement as HTMLDetailsElement
+	svg.addEventListener("click", () => dwork.open = !dwork.open)
+	s.d30.append(svg)
+}
+
 export function rec(
 	t: Section["rec"],
 	id: "uid" | "sid" | "aid",
 	d: Usr | Soc | Agd,
 	froze: boolean,
 ) {
+	d30(t, d)
 	label(t.recwork, `（${d.nrec.work}）`, true)
 	label(t.recfund, `（${d.nrec.fund}）`, true)
 	if (froze) { [t.recwork, t.recfund].forEach(el => el.classList.add("froze")); return }

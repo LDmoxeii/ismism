@@ -1,6 +1,7 @@
 import type { Rec } from "./typ.ts"
 import { coll, Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import { is_id, is_idl, is_recid, lim_rec_f, lim_uid_max } from "./is.ts"
+import { is_id, is_idl, is_recid, lim_d30, lim_rec_f, lim_uid_max } from "./is.ts"
+import { utc_d, utc_date } from "../ont/utc.ts"
 
 export async function rec_c<
 	T extends Rec
@@ -67,6 +68,28 @@ export async function rec_d<
 		const d = await c.deleteOne({ _id })
 		return d > 0 ? 1 : 0
 	} catch { return null }
+}
+
+export async function nrec_d30<
+	T extends Rec
+>(
+	c: Coll<T>,
+	id?: { aid: Rec["_id"]["aid"] } | { uid: Rec["_id"]["uid"][] },
+): Promise<[number, number][]> {
+	if (id && ("aid" in id && !is_id(id.aid) || "uid" in id && !is_idl(id.uid, lim_uid_max))) return []
+	const t = new Date(utc_date(Date.now() - utc_d * lim_d30) + "T00:00:00.000+08:00").getTime()
+	const d = new Map<number, number>()
+	const f = {
+		...id && "aid" in id ? { "_id.aid": id.aid } : {},
+		...id && "uid" in id ? { "_id.uid": { $in: id.uid } } : {},
+		"_id.utc": { $gt: t },
+	} // deno-lint-ignore no-explicit-any
+	const r = await c.find(f as any, { projection: { _id: 0, utc: "$_id.utc" } }).toArray() as any as { utc: number }[]
+	r.forEach(({ utc }) => {
+		const n = t + utc_d * Math.floor((utc - t) / utc_d)
+		d.set(n, (d.get(n) ?? 0) + 1)
+	})
+	return [...d.entries()]
 }
 
 export async function nrec(

@@ -1,4 +1,5 @@
 export const utc_h = 60 * 60 * 1000
+export const utc_d = 24 * utc_h
 
 export function utc_short(
 	utc: number
@@ -14,9 +15,9 @@ export function utc_date(
 	utc: number
 ) {
 	const t = new Date(utc)
-	const y = t.getUTCFullYear()
-	const m = `${t.getUTCMonth() + 1}`.padStart(2, "0")
-	const d = `${t.getUTCDate()}`.padStart(2, "0")
+	const y = t.getFullYear()
+	const m = `${t.getMonth() + 1}`.padStart(2, "0")
+	const d = `${t.getDate()}`.padStart(2, "0")
 	return `${y}-${m}-${d}`
 }
 
