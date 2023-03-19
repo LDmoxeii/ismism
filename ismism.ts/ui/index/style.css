@@ -549,7 +549,7 @@ section.acct a.account {
 
 section.nrecday>svg {
 	display: block;
-	margin: 0 auto;
+	margin: 1ch auto;
 	cursor: pointer;
 }
 
