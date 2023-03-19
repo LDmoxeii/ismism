@@ -72,12 +72,11 @@
 			<p class="intro"></p>
 		</section>
 		<hr>
-		<section class="d30">
-			<label>活动：（最近30天）</label>
-			<hr>
-			<div class="week">一二三四五六日</div>
+		<section class="nrecday">
+			<label>活动：（最近90天）</label>
 			<hr>
 		</section>
+		<hr>
 		<section>
 			<details>
 				<summary>工作日志：</summary>
@@ -156,12 +155,11 @@
 			<p class="intro"></p>
 		</section>
 		<hr>
-		<section class="d30">
-			<label>活动：（最近30天）</label>
-			<hr>
-			<div class="week">一二三四五六日</div>
+		<section class="nrecday">
+			<label>活动：（最近90天）</label>
 			<hr>
 		</section>
+		<hr>
 		<section>
 			<details>
 				<summary>工作日志：</summary>
@@ -257,12 +255,11 @@
 			<p class="res"></p>
 		</section>
 		<hr>
-		<section class="d30">
-			<label>活动：（最近30天）</label>
-			<hr>
-			<div class="week">一二三四五六日</div>
+		<section class="nrecday">
+			<label>活动：（最近90天）</label>
 			<hr>
 		</section>
+		<hr>
 		<section>
 			<details>
 				<summary>工作日志：</summary>
@@ -308,70 +305,148 @@
 	</div>
 </template>
 
-<template id="d30">
-	<svg class="d30" width="11em" height="11em" viewBox="0 0 7 7">
+<template id="nrecday">
+	<svg class="nrecday" width="calc(16em * 1.25)" height="calc(7em * 1.25)" viewBox="0 0 16 7">
 		<g transform="translate(0,0)">
-			<rect x="0.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="1.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="2.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="3.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="4.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="5.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="6.05" y="0" width="0.9" height="0.9"></rect>
+			<text x="0" y="0.5" font-size="0.75" dominant-baseline="central">一</text>
+			<text x="0" y="2.5" font-size="0.75" dominant-baseline="central">三</text>
+			<text x="0" y="4.5" font-size="0.75" dominant-baseline="central">五</text>
+			<text x="0" y="6.5" font-size="0.75" dominant-baseline="central">日</text>
 		</g>
-		<g transform="translate(0,1)">
-			<rect x="0.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="1.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="2.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="3.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="4.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="5.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="6.05" y="0" width="0.9" height="0.9"></rect>
+		<g transform="translate(1,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
 		</g>
-		<g transform="translate(0,2)">
-			<rect x="0.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="1.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="2.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="3.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="4.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="5.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="6.05" y="0" width="0.9" height="0.9"></rect>
+		<g transform="translate(2,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
 		</g>
-		<g transform="translate(0,3)">
-			<rect x="0.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="1.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="2.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="3.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="4.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="5.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="6.05" y="0" width="0.9" height="0.9"></rect>
+		<g transform="translate(3,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
 		</g>
-		<g transform="translate(0,4)">
-			<rect x="0.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="1.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="2.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="3.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="4.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="5.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="6.05" y="0" width="0.9" height="0.9"></rect>
+		<g transform="translate(4,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
 		</g>
-		<g transform="translate(0,5)">
-			<rect x="0.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="1.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="2.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="3.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="4.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="5.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="6.05" y="0" width="0.9" height="0.9"></rect>
+		<g transform="translate(5,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
 		</g>
-		<g transform="translate(0,6)">
-			<rect x="0.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="1.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="2.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="3.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="4.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="5.05" y="0" width="0.9" height="0.9"></rect>
-			<rect x="6.05" y="0" width="0.9" height="0.9"></rect>
+		<g transform="translate(6,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
+		</g>
+		<g transform="translate(7,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
+		</g>
+		<g transform="translate(8,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
+		</g>
+		<g transform="translate(9,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
+		</g>
+		<g transform="translate(10,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
+		</g>
+		<g transform="translate(11,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
+		</g>
+		<g transform="translate(12,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
+		</g>
+		<g transform="translate(13,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
+		</g>
+		<g transform="translate(14,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
+		</g>
+		<g transform="translate(15,0)">
+			<rect x="0" y="0" width="0.9" height="0.9"></rect>
+			<rect x="0" y="1" width="0.9" height="0.9"></rect>
+			<rect x="0" y="2" width="0.9" height="0.9"></rect>
+			<rect x="0" y="3" width="0.9" height="0.9"></rect>
+			<rect x="0" y="4" width="0.9" height="0.9"></rect>
+			<rect x="0" y="5" width="0.9" height="0.9"></rect>
+			<rect x="0" y="6" width="0.9" height="0.9"></rect>
 		</g>
 	</svg>
 </template>

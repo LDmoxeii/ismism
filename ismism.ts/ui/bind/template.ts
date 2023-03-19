@@ -70,7 +70,7 @@ const section = {
 	},
 
 	rec: {
-		d30: t("section"), recwork: t("p"), recfund: t("p"),
+		nrecday: t("section"), recwork: t("p"), recfund: t("p"),
 	},
 
 	wsllit: {
@@ -143,9 +143,9 @@ const template = {
 		circle: svg("circle"), pct: svg("text"), nam: t("span"),
 	},
 
-	d30: {
-		tid: "d30" as const,
-		d30: svg("svg"),
+	nrecday: {
+		tid: "nrecday" as const,
+		nrecday: svg("svg"),
 	},
 
 	rec: {

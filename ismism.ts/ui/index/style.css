@@ -547,39 +547,34 @@ section.acct a.account {
 	text-underline-offset: 4px;
 }
 
-section.d30>div {
-	display: block;
-	width: 11em;
-	font-size: 1em;
-	padding-left: .75em;
-	letter-spacing: .5em;
-	margin: 0 auto;
-	color: var(--gray);
-}
-
-section.d30>svg {
+section.nrecday>svg {
 	display: block;
 	margin: 0 auto;
 	cursor: pointer;
 }
 
-section.d30>svg rect {
+section.nrecday>svg text {
+	text-anchor: start;
+	fill: var(--gray);
+}
+
+section.nrecday>svg rect {
 	fill: transparent;
 }
 
-section.d30>svg rect.day {
+section.nrecday>svg rect.day {
 	fill: var(--lightgray);
 }
 
-section.d30>svg rect.lo {
+section.nrecday>svg rect.lo {
 	fill: var(--lightamber) !important;
 }
 
-section.d30>svg rect.mi {
+section.nrecday>svg rect.mi {
 	fill: var(--amber) !important;
 }
 
-section.d30>svg rect.hi {
+section.nrecday>svg rect.hi {
 	fill: var(--orange) !important;
 }
 

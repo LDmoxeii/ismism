@@ -4,7 +4,7 @@ import { rolref } from "../eid/rel.ts"
 import { usr_r } from "../eid/usr.ts"
 import { soc_r } from "../eid/soc.ts"
 import { agd_r } from "../eid/agd.ts"
-import { nrec, nrec_d30, rec_f, rec_r } from "../eid/rec.ts"
+import { nrec, nrecday, rec_f, rec_r } from "../eid/rec.ts"
 import { id, idnam, nid_of_adm } from "../eid/id.ts"
 import { aut_g, aut_r } from "../eid/aut.ts"
 import { md_f, md_r } from "../eid/md.ts"
@@ -25,11 +25,11 @@ const pagd = { account: 1, budget: 1, fund: 1, expense: 1, goal: 1, img: 1 } as 
 export async function usr(
 	_id: Usr["_id"]
 ) {
-	const [u, aut, urej, uref, sref, aref, nrecd30, nr] = await Promise.all([
+	const [u, aut, urej, uref, sref, aref, nrecd90, nr] = await Promise.all([
 		usr_r({ _id }, pid), aut_r(_id),
 		id(coll.usr, { rej: _id }), id(coll.usr, { ref: _id }),
 		rolref(coll.soc, _id), rolref(coll.agd, _id),
-		nrec_d30(coll.work, { uid: [_id] }), nrec({ uid: [_id] }),
+		nrecday(coll.work, { uid: [_id] }), nrec({ uid: [_id] }),
 	])
 	if (!u || !sref || !aref || !nr) return null
 	const [unam, snam, anam] = await Promise.all([
@@ -37,7 +37,7 @@ export async function usr(
 		idnam(coll.soc, Object.values(sref).flatMap(s => s.map(p => p[0]))),
 		idnam(coll.agd, Object.values(aref).flatMap(s => s.map(p => p[0]))),
 	])
-	return { ...u, aut: aut ? aut.aut : [], urej, uref, sref, aref, unam, snam, anam, nrecd30, nrec: nr }
+	return { ...u, aut: aut ? aut.aut : [], urej, uref, sref, aref, unam, snam, anam, nrecd90, nrec: nr }
 }
 
 export async function soc(
@@ -45,12 +45,12 @@ export async function soc(
 ) {
 	const s = await soc_r(_id, { ...pid, ...prel })
 	if (!s) return null
-	const [unam, nrecd30, nr] = await Promise.all([
+	const [unam, nrecd90, nr] = await Promise.all([
 		idnam(coll.usr, [...s.sec, ...s.uid, ...s.res,]),
-		nrec_d30(coll.work, { uid: s.uid }), nrec({ uid: s.uid }),
+		nrecday(coll.work, { uid: s.uid }), nrec({ uid: s.uid }),
 	])
 	if (!nr) return null
-	return { ...s, unam, nrecd30, nrec: nr }
+	return { ...s, unam, nrecd90, nrec: nr }
 }
 
 export async function agd(
@@ -58,12 +58,12 @@ export async function agd(
 ) {
 	const a = await agd_r(_id, { ...pid, ...prel, ...pagd })
 	if (!a) return null
-	const [unam, nrecd30, nr] = await Promise.all([
+	const [unam, nrecd90, nr] = await Promise.all([
 		idnam(coll.usr, [...a.sec, ...a.uid, ...a.res,]),
-		nrec_d30(coll.work, { aid: a._id }), nrec({ aid: a._id }),
+		nrecday(coll.work, { aid: a._id }), nrec({ aid: a._id }),
 	])
 	if (!nr) return null
-	return { ...a, unam, nrecd30, nrec: nr }
+	return { ...a, unam, nrecd90, nrec: nr }
 }
 
 export async function rec<

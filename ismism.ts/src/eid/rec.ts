@@ -1,6 +1,6 @@
 import type { Rec } from "./typ.ts"
 import { coll, Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import { is_id, is_idl, is_recid, lim_d30, lim_rec_f, lim_uid_max } from "./is.ts"
+import { is_id, is_idl, is_recid, lim_nrecday, lim_rec_f, lim_uid_max } from "./is.ts"
 import { utc_d, utc_date } from "../ont/utc.ts"
 
 export async function rec_c<
@@ -70,14 +70,14 @@ export async function rec_d<
 	} catch { return null }
 }
 
-export async function nrec_d30<
+export async function nrecday<
 	T extends Rec
 >(
 	c: Coll<T>,
 	id?: { aid: Rec["_id"]["aid"] } | { uid: Rec["_id"]["uid"][] },
 ): Promise<[number, number][]> {
 	if (id && ("aid" in id && !is_id(id.aid) || "uid" in id && !is_idl(id.uid, lim_uid_max))) return []
-	const t = new Date(utc_date(Date.now() - utc_d * lim_d30) + "T00:00:00.000+08:00").getTime()
+	const t = new Date(utc_date(Date.now() - utc_d * lim_nrecday) + "T00:00:00.000+08:00").getTime()
 	const d = new Map<number, number>()
 	const f = {
 		...id && "aid" in id ? { "_id.aid": id.aid } : {},
