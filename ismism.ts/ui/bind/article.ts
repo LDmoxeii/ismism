@@ -421,7 +421,7 @@ export async function md(
 		ida(t.unam, [[`${m.uid}`, unam.get(m.uid)!]])
 		t.md.innerHTML = marked.parse(m.md)
 		if (nav.pas && m.uid === nav.pas.uid && is_aut(nav.pas.aut, c)) {
-			if (is_re(nav.pas)) t.put.addEventListener("click", () => put(
+			if (!is_rej(nav.pas)) t.put.addEventListener("click", () => put(
 				`${c}${m._id}`, "编辑文章", {
 				nam: { p1: "标题：（2-16个中文字符）", pa: "正文 Markdown" },
 				val: { p1: m.nam, pa: m.md }, lim_pa: lim_md, p: "put",
@@ -508,8 +508,8 @@ export function put(
 	idnam(t, id, nam)
 	if (p.nam.p1) { label(t.p1, p.nam.p1); t.p1.value = p.val.p1 ?? "" } else t.p1.parentElement!.remove()
 	if (p.nam.p2) { label(t.p2, p.nam.p2); t.p2.value = p.val.p2 ?? "" } else t.p2.parentElement!.remove()
-	if (p.nam.pa) txt(t.pa, p.nam.pa, p.val.pa ?? ""); else t.pa.parentElement!.remove()
 	if (p.lim_pa) t.pa.maxLength = p.lim_pa
+	if (p.nam.pa) txt(t.pa, p.nam.pa, p.val.pa ?? ""); else t.pa.parentElement!.remove()
 	if (p.d) t.putn.addEventListener("click", async () => {
 		if (!confirm("确认删除？")) return
 		await p.d!()

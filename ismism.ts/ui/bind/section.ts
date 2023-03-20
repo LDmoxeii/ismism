@@ -6,7 +6,7 @@ import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_d, utc_date, utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
-import { is_re, is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
+import { is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
 import { is_aut, is_id, is_md, is_nam, lim_aut, lim_nrecday, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
@@ -345,7 +345,7 @@ export function wsllit(
 	for (const c of ["wsl", "lit"] as const) {
 		const el = t[`pre${c}`]
 		if (is_aut(nav.pas.aut, c)) {
-			if (is_re(nav.pas)) el.addEventListener("click", async () => {
+			if (!is_rej(nav.pas)) el.addEventListener("click", async () => {
 				const id = await pos<DocC<Md["_id"]>>("pre", { [`${c}nam`]: "新建文章" })
 				if (id && is_id(id)) put(`${c}${id}`, el.innerText, {
 					nam: { p1: "标题：（2-16个中文字符）", pa: "正文 Markdown" }, val: {}, lim_pa: lim_md, p: "put",
