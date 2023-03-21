@@ -10,7 +10,7 @@ import { is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
 import { is_aut, is_id, is_md, is_nam, lim_aut, lim_nrecday, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
-	el: HTMLElement,
+	el: HTMLElement | SVGSVGElement,
 	s: string,
 	append = false
 ) {
@@ -239,14 +239,17 @@ function nrecday(
 	const day = (date.getDay() + 6) % 7
 	const t = date.getTime()
 	for (let n = 0; n <= lim_nrecday; ++n) r[day + n].classList.add("day")
+	let nrec = 0
 	d.nrecd90.forEach(([td, nr]) => {
 		if (td < t) return
+		nrec += nr
 		const n = Math.floor((td - t) / utc_d)
 		r[day + n].classList.add(nr <= 4 ? "lo" : nr <= 8 ? "mi" : "hi")
 	})
 	const dwork = s.recwork.parentElement as HTMLDetailsElement
 	svg.addEventListener("click", () => dwork.open = !dwork.open)
 	s.nrecday.append(svg)
+	label(svg, `（最近${lim_nrecday}天有${nrec}条工作日志）`, true)
 }
 
 export function rec(

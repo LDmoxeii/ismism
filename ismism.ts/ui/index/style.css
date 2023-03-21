@@ -655,6 +655,10 @@ section.md button {
 	box-shadow: 0 0 2ch 2ch var(--white);
 }
 
+section.md.full button {
+	display: none;
+}
+
 section.md img {
 	width: 85%;
 	margin: 6px 7.5%;
@@ -664,10 +668,6 @@ section.md img {
 @media (hover: hover) {
 	section.md:not(.full):hover {
 		color: var(--gray);
-	}
-
-	section.md.full button {
-		display: none;
 	}
 
 	section.md a:hover {

@@ -13,6 +13,7 @@ cd ismism
 curl http://localhost:728/quit
 nohup deno run --allow-net --allow-read cli/ser.js > log/ismism.log &
 
-tail log/mongo.log log/access.log log/error.log log/nginx.log log/mongod.log log/ismism.log
-echo "\nismism released\n"
+nginx -sreopen; tail -n 10 log/{access,error,ismism}.log
 pgrep -lf nginx; pgrep -lf mongo; pgrep -lf "deno run"
+
+echo "\nismism released\n"

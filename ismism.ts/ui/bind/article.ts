@@ -420,7 +420,8 @@ export async function md(
 		t.utcp.innerText = utc_medium(m.utcp)
 		ida(t.unam, [[`${m.uid}`, unam.get(m.uid)!]])
 		t.md.innerHTML = marked.parse(m.md)
-		setTimeout(() => {
+		if (op === "one") t.md.classList.add("full")
+		else setTimeout(() => {
 			if (t.md.scrollHeight > t.md.clientHeight) {
 				t.md.innerHTML += "<button>... 阅读全文</button>"
 				t.md.addEventListener("click", () => t.md.classList.add("full"))
