@@ -92,7 +92,7 @@ export async function pos(
 			p.etag = utc_etag()
 			const {
 				sid, aid, workid, wslid, litid,
-				nam, adm1, adm2, intro, md,
+				nam, adm1, adm2, intro, md, pin,
 				uidlim, reslim, account, budget, fund, expense,
 				goal, img, rol, add, uid, msg, src
 			} = json
@@ -125,9 +125,11 @@ export async function pos(
 			} else if (typeof sid === "number") return put_soc(p.pas, sid, null)
 			else if (typeof wslid === "number") {
 				if (typeof nam === "string" && typeof md === "string") return put_wsl(p.pas, wslid, { nam, md })
+				else if (typeof pin === "boolean") return put_wsl(p.pas, wslid, { pin })
 				else return put_wsl(p.pas, wslid, null)
 			} else if (typeof litid === "number") {
 				if (typeof nam === "string" && typeof md === "string") return put_lit(p.pas, litid, { nam, md })
+				else if (typeof pin === "boolean") return put_lit(p.pas, litid, { pin })
 				else return put_lit(p.pas, litid, null)
 			}
 			break

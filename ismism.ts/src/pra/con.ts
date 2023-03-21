@@ -125,7 +125,7 @@ export type PutAgd = PutSoc
 	| Pick<Agd, "intro" | "reslim" | "account" | "budget" | "fund" | "expense">
 	| Pick<Agd, "goal"> | Pick<Agd, "img">
 export type PutWork = { msg: string } | { nam: string, src: string }
-export type PutMd = { nam: Md["nam"], md: Md["md"] } | null
+export type PutMd = { nam: Md["nam"], md: Md["md"] } | { pin: boolean } | null
 export type PutWsl = PutMd
 export type PutLit = PutMd
 
@@ -174,7 +174,7 @@ function is_put_md(
 	md: Pick<Md, "uid">,
 	p: PutMd,
 ): boolean {
-	return pas.uid === md.uid && (p === null || is_nam(p.nam) && is_md(p.md))
+	return pas.uid === md.uid && (p === null || "nam" in p && is_nam(p.nam) && is_md(p.md) || "pin" in p)
 }
 export function is_put_wsl(
 	pas: Pas,

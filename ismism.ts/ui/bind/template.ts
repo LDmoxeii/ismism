@@ -167,7 +167,7 @@ const template = {
 		...section.idnam,
 		utc: t("span"), utcp: t("span"), unam: t("span"),
 		md: t("section"),
-		put: t("button"),
+		put: t("button"), putpin: t("button"),
 	},
 
 	pre: {

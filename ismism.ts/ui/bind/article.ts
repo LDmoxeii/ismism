@@ -2,7 +2,7 @@ import type { Fund, Id, Md, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, Pos, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { is_aut, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_sup, lim_url, lim_wsl } from "../../src/eid/is.ts"
+import { is_aut, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_md_pin, lim_sup, lim_url, lim_wsl } from "../../src/eid/is.ts"
 import { is_pre_usr, is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/con.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit, label } from "./section.ts"
@@ -415,25 +415,38 @@ export async function md(
 	const unam = new Map(q.unam)
 	for (const m of q.md) {
 		const t = bind("md")
-		idnam(t, `${c}${m._id}`, m.nam)
+		idnam(t, `${c}${m._id}`, `${m.nam}${m.pin ? "【置顶】" : ""}`)
 		t.utc.innerText = utc_medium(m.utc)
 		t.utcp.innerText = utc_medium(m.utcp)
 		ida(t.unam, [[`${m.uid}`, unam.get(m.uid)!]])
 		t.md.innerHTML = marked.parse(m.md)
+		setTimeout(() => {
+			if (t.md.scrollHeight > t.md.clientHeight) {
+				t.md.innerHTML += "<button>... 阅读全文</button>"
+				t.md.addEventListener("click", () => t.md.classList.add("full"))
+			} else t.md.classList.add("full")
+		}, 50)
 		if (nav.pas && m.uid === nav.pas.uid && is_aut(nav.pas.aut, c)) {
-			if (!is_rej(nav.pas)) t.put.addEventListener("click", () => put(
-				`${c}${m._id}`, "编辑文章", {
-				nam: { p1: "标题：（2-16个中文字符）", pa: "正文 Markdown" },
-				val: { p1: m.nam, pa: m.md }, lim_pa: lim_md, p: "put",
-				b: p => {
-					if (!p.p1 || !p.pa || !is_nam(p.p1) || !is_md(p.pa)) return null
-					return { [`${c}id`]: m._id, nam: p.p1, md: p.pa.trim() }
-				},
-				a: `无效输入\n标题为 2-16 个中文字符\n正文最长 ${lim_md} 个字符`,
-				d: () => pos<DocD>("put", { [`${c}id`]: m._id }),
-				r: r => r === undefined ? md(c, 0, "many") : md(c, m._id, "one"),
-			})); else t.put.disabled = true
-		} else t.put.remove()
+			if (!is_rej(nav.pas)) {
+				t.put.addEventListener("click", () => put(
+					`${c}${m._id}`, "编辑文章", {
+					nam: { p1: "标题：（2-16个中文字符）", pa: "正文 Markdown" },
+					val: { p1: m.nam, pa: m.md }, lim_pa: lim_md, p: "put",
+					b: p => {
+						if (!p.p1 || !p.pa || !is_nam(p.p1) || !is_md(p.pa)) return null
+						return { [`${c}id`]: m._id, nam: p.p1, md: p.pa.trim() }
+					},
+					a: `无效输入\n标题为 2-16 个中文字符\n正文最长 ${lim_md} 个字符`,
+					d: () => pos<DocD>("put", { [`${c}id`]: m._id }),
+					r: r => r === undefined ? md(c, 0, "many") : md(c, m._id, "one"),
+				}))
+				btn(t.putpin, m.pin ? `取消置顶` : "置顶", {
+					pos: () => pos<DocU>("put", { [`${c}id`]: m._id, pin: !m.pin }),
+					refresh: () => md(c, 0, "many"),
+					alert: `最多置顶 ${lim_md_pin} 篇文章`,
+				})
+			} else[t.put, t.putpin].forEach(el => el.disabled = true)
+		} else[t.put, t.putpin].forEach(el => el.remove())
 		main.append(t.bind)
 	}
 

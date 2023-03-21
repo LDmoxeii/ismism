@@ -74,9 +74,9 @@ export async function put_wsl(
 	if (!is_id(wslid)) return null
 	const wsl = await md_r(coll.wsl, wslid, { uid: 1 })
 	if (!wsl || !is_put_wsl(pas, wsl, p)) return null
-	return p === null ? md_d(coll.wsl, wslid) : md_u(coll.wsl, wslid, {
+	return p === null ? md_d(coll.wsl, wslid) : "nam" in p ? md_u(coll.wsl, wslid, {
 		$set: { ...p, utcp: Date.now() }
-	})
+	}) : md_u(coll.wsl, wslid, p.pin ? { $set: { pin: true } } : { $unset: { pin: false } })
 }
 
 export async function put_lit(
@@ -87,7 +87,7 @@ export async function put_lit(
 	if (!is_id(litid)) return null
 	const lit = await md_r(coll.lit, litid, { uid: 1 })
 	if (!lit || !is_put_lit(pas, lit, p)) return null
-	return p === null ? md_d(coll.lit, litid) : md_u(coll.lit, litid, {
+	return p === null ? md_d(coll.lit, litid) : "nam" in p ? md_u(coll.lit, litid, {
 		$set: { ...p, utcp: Date.now() }
-	})
+	}) : md_u(coll.lit, litid, p.pin ? { $set: { pin: true } } : { $unset: { pin: false } })
 }

@@ -26,7 +26,8 @@ export const lim_md = lim_intro * 8
 
 export const lim_nrecday = 90
 export const lim_rec_f = 32
-export const lim_md_f = 8
+export const lim_md_f = 4
+export const lim_md_pin = lim_md_f
 
 export function is_lim(
 	n: number,

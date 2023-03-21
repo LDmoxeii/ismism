@@ -626,6 +626,15 @@ section>p.goal>div>span {
 	text-align: center;
 }
 
+section.md {
+	max-height: 16em;
+	overflow-y: hidden;
+}
+
+section.md.full {
+	max-height: max-content;
+}
+
 section.md p {
 	margin: initial;
 	padding: initial;
@@ -636,6 +645,16 @@ section.md a {
 	text-underline-offset: 4px;
 }
 
+section.md button {
+	position: sticky;
+	bottom: 0;
+	width: 100%;
+	text-align: right;
+	color: var(--darkgray);
+	background: var(--white);
+	box-shadow: 0 0 2ch 2ch var(--white);
+}
+
 section.md img {
 	width: 85%;
 	margin: 6px 7.5%;
@@ -643,6 +662,14 @@ section.md img {
 }
 
 @media (hover: hover) {
+	section.md:not(.full):hover {
+		color: var(--gray);
+	}
+
+	section.md.full button {
+		display: none;
+	}
+
 	section.md a:hover {
 		color: var(--amber) !important;
 	}

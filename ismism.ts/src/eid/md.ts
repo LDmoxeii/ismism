@@ -1,6 +1,6 @@
 import type { Md } from "./typ.ts"
 import type { Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import { is_id, is_md, is_nam, lim_md_f } from "./is.ts"
+import { is_id, is_lim, is_md, is_nam, lim_md_f, lim_md_pin } from "./is.ts"
 
 async function md_n(
 	c: Coll<Md>
@@ -43,8 +43,17 @@ export async function md_f(
 	c: Coll<Md>,
 	id: Md["_id"],
 ): DocR<Md[]> {
-	const f = is_id(id) ? { _id: { $lt: id } } : {}
-	return await c.find(f, { sort: { _id: -1 }, limit: lim_md_f }).toArray() as Md[]
+	const top = !is_id(id)
+	const pin = await c.find({ pin: true }, {
+		sort: { utcp: -1 },
+		projection: top ? undefined : { _id: 1 },
+	}).toArray()
+	const f = {
+		...top ? {} : { $lt: id },
+		$nin: pin.map(p => p._id),
+	}
+	const md = await c.find({ _id: f }, { sort: { _id: -1 }, limit: lim_md_f }).toArray()
+	return top ? [...pin, ...md] : md
 }
 
 export async function md_u(
@@ -57,6 +66,7 @@ export async function md_u(
 		const s = u.$set
 		if (s.nam && !is_nam(s.nam)) return null
 		if (s.md && !is_md(s.md)) return null
+		if (s.pin && !is_lim(await c.countDocuments({ pin: true }) + 1, lim_md_pin)) return null
 	}
 	try {
 		const { matchedCount, modifiedCount } = await c.updateOne({ _id }, u)

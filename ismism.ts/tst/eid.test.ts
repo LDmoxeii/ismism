@@ -72,10 +72,10 @@ Deno.test("rel", async () => {
 	])
 	assertEquals(await rolref(coll.soc, 1), {
 		sec: [[1, 2], [2, 2]],
-		uid: [[1, 2], [2, 3], [3, 2]],
-		res: [[2, 3], [3, 2]],
+		uid: [[1, 1], [2, 2], [3, 2]],
+		res: [[2, 2], [3, 2]],
 	})
-	assertEquals(await rol(coll.soc, 1), { sec: [1, 2], uid: [1, 2, 3], res: [2, 3] })
+	assertEquals(await rol(coll.soc, 1), { sec: [1, 2], uid: [2, 3], res: [2, 3] })
 	await Promise.all([
 		aut_d(2), aut_d(3), usr_d(1), soc_d(1), soc_d(2), soc_d(3)
 	])
@@ -134,8 +134,10 @@ Deno.test("md", async () => {
 	assertEquals([], await md_f(coll.wsl, 0))
 	assertEquals(1, await md_c(coll.wsl, { nam: "标题", uid: 1 }))
 	assertEquals(2, await md_c(coll.wsl, { nam: "标题", uid: 1 }))
-	assertEquals(1, await md_u(coll.wsl, 1, { $set: { md: "#md2", uid: 2 } }))
-	const md = await md_r(coll.wsl, 1)
-	assertEquals(md!.md, "#md2")
-	assertEquals([md], await md_f(coll.wsl, 2))
+	assertEquals(1, await md_u(coll.wsl, 1, { $set: { md: "#md1", uid: 2, pin: true } }))
+	assertEquals(1, await md_u(coll.wsl, 2, { $set: { md: "#md2", uid: 2 } }))
+	const [md1, md2] = await Promise.all([md_r(coll.wsl, 1), md_r(coll.wsl, 2)])
+	assertEquals(md2!.md, "#md2")
+	assertEquals([md1, md2], await md_f(coll.wsl, 0))
+	assertEquals([], await md_f(coll.wsl, 2))
 })

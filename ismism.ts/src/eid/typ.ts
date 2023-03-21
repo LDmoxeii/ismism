@@ -72,6 +72,7 @@ export type Md = {
 	utcp: number,
 	uid: Usr["_id"],
 	md: string,
+	pin?: boolean,
 }
 
 export type Wsl = Md
