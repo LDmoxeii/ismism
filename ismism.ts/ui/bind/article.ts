@@ -112,7 +112,7 @@ export async function usr(
 			if (is_aut(nav.pas.aut) || is_sec(nav.pas)) t.preusr.addEventListener("click", () => pre("用户"))
 			else t.preusr.remove()
 			if (is_aut(nav.pas.aut, "aut")) {
-				t.presoc.addEventListener("click", () => pre("社团"))
+				t.presoc.addEventListener("click", () => pre("小组"))
 				t.preagd.addEventListener("click", () => pre("活动"))
 			} else[t.presoc, t.preagd].forEach(el => el.remove())
 			t.prefund.addEventListener("click", () => put(`${uid}`, t.prefund.innerText, {
@@ -163,7 +163,7 @@ export async function soc(
 	} else ss = await doc<Q.Soc>("soc", sidadm ?? "")
 
 	ss = ss.filter(s => s)
-	if (typeof sidadm === "number" && ss.length === 0) return idn(`s${sidadm}`, "社团")
+	if (typeof sidadm === "number" && ss.length === 0) return idn(`s${sidadm}`, "小组")
 
 	main.innerHTML = ""
 	for (const d of ss) {
@@ -182,7 +182,7 @@ export async function soc(
 
 		if (nav.pas) {
 			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { sid: s._id }))
-				t.put.addEventListener("click", () => putid("社团", s))
+				t.put.addEventListener("click", () => putid("小组", s))
 			else t.put.remove()
 			putrel(t, "sid", s, async () => { await navpas(); soc(s._id) })
 			if (is_aut(nav.pas.aut, "aud")) putpro(t, "sid", s, () => soc(s._id))
@@ -457,7 +457,7 @@ export async function md(
 }
 
 function pre(
-	nam: "用户" | "社团" | "活动",
+	nam: "用户" | "小组" | "活动",
 ) {
 	if (!nav.pas) return
 	navnid()
@@ -476,7 +476,7 @@ function pre(
 			p = () => ({ nbr: t.nbr.value, adm1: t.adm1.value, adm2: t.adm2.value })
 			r = usr
 			break
-		} case "社团": {
+		} case "小组": {
 			t.nbr.parentElement?.remove()
 			p = () => ({ snam: t.pnam.value, adm1: t.adm1.value, adm2: t.adm2.value })
 			r = soc
@@ -546,7 +546,7 @@ export function put(
 }
 
 function putid(
-	nam: "用户" | "社团" | "活动",
+	nam: "用户" | "小组" | "活动",
 	id: Usr | Soc | Agd,
 ) {
 	if (!nav.pas) return
@@ -575,7 +575,7 @@ function putid(
 			p = () => [{ uid: id._id, ...pid(), intro: t.intro.value.trim() }]
 			r = () => usr(id._id)
 			break
-		} case "社团": {
+		} case "小组": {
 			[t.account, t.budget, t.fund, t.expense].forEach(el => el.parentElement?.remove())
 			const s = id as Soc
 			t.uidlim.value = `${s.uidlim}`
@@ -611,9 +611,9 @@ function putid(
 	if (nam === "用户" || !is_aut(nav.pas.aut, "aut") || !is_re(nav.pas)) t.putn.remove()
 	else btn(t.putn, `删除${nam}`, {
 		confirm: `确认要删除${nam}?`,
-		pos: () => pos<DocD>("put", { [nam === "社团" ? "sid" : "aid"]: id._id }),
-		alert: `${nam === "社团" ? "社团仍有志愿者" : "活动仍有工作日志或支持记录"}`,
-		refresh: () => nam === "社团" ? soc() : agd(),
+		pos: () => pos<DocD>("put", { [nam === "小组" ? "sid" : "aid"]: id._id }),
+		alert: `${nam === "小组" ? "小组仍有志愿者" : "活动仍有工作日志或支持记录"}`,
+		refresh: () => nam === "小组" ? soc() : agd(),
 	})
 	btn(t.put, t.put.innerText, {
 		pos: async () => {

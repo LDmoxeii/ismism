@@ -28,7 +28,7 @@ Deno.test("usr", async () => {
 })
 
 Deno.test("soc", async () => {
-	const nam = "社团"
+	const nam = "小组"
 	assert(null === await soc_r(1, {}))
 	const r_c = await soc_c(nam, "四川", "成都")
 	assert(r_c && r_c === 1)
@@ -58,9 +58,9 @@ Deno.test("agd", async () => {
 Deno.test("rel", async () => {
 	assertEquals([
 		await usr_c("11111111111", "四川", "成都"),
-		await soc_c("社团一", "广东", "汕头"),
-		await soc_c("社团二", "四川", "成都"),
-		await soc_c("社团三", "广东", "汕头"),
+		await soc_c("小组一", "广东", "汕头"),
+		await soc_c("小组二", "四川", "成都"),
+		await soc_c("小组三", "广东", "汕头"),
 	], [1, 1, 2, 3])
 	await Promise.all([
 		aut_c({ _id: 2, aut: ["aut"] }),

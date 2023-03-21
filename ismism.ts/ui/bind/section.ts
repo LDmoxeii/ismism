@@ -304,7 +304,7 @@ export function putrel(
 			const uid = namid.get(p.p1 ?? "")
 			return uid ? { [id]: d._id, rol: "sec", uid, add: !d.sec.includes(uid) } : null
 		},
-		a: `无效用户名或联络员已满\n增删的联络员需先作为申请人或其它出现在${id === "sid" ? "社团" : "活动"}名单`,
+		a: `无效用户名或联络员已满\n增删的联络员需先作为申请人或其它出现在${id === "sid" ? "小组" : "活动"}名单`,
 		r: refresh,
 	})); else t.putsec.remove() // deno-lint-ignore no-explicit-any
 	if (is_sec(nav.pas, { [id]: d._id } as any)) t.putuid.addEventListener("click", () => put(
@@ -314,7 +314,7 @@ export function putrel(
 			const uid = namid.get(p.p1 ?? "")
 			return uid ? { [id]: d._id, rol: "uid", uid, add: !d.uid.includes(uid) } : null
 		},
-		a: `无效志愿者名或志愿者已满\n增删的志愿者需先作为申请人或志愿者出现在${id === "sid" ? "社团" : "活动"}名单`,
+		a: `无效志愿者名或志愿者已满\n增删的志愿者需先作为申请人或志愿者出现在${id === "sid" ? "小组" : "活动"}名单`,
 		r: refresh,
 	})); else t.putuid.remove() // deno-lint-ignore no-explicit-any
 	if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { [id]: d._id } as any)) btn(t.putresn, t.putresn.innerText, d.res.length > 0 ? {

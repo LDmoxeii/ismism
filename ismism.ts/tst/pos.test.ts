@@ -76,7 +76,7 @@ Deno.test("pre", async () => {
 	const jwt = p.jwt
 	assertEquals([2, 1, 1, 1, 1, 1, null, 1], await Promise.all([
 		pos({ jwt }, "pre", json({ nbr: nbr[2], adm1, adm2 })),
-		pos({ jwt }, "pre", json({ snam: "社团", adm1, adm2 })),
+		pos({ jwt }, "pre", json({ snam: "小组", adm1, adm2 })),
 		pos({ jwt }, "pre", json({ anam: "活动", adm1, adm2 })),
 		pos({ jwt }, "pre", json({ nam: "用户一", aut: "wsl" })),
 		await pos({ jwt }, "pre", json({ nam: "用户一", aut: "lit" })),
@@ -158,7 +158,7 @@ Deno.test("put", async () => {
 	const workid = { uid: 1, aid: 1, utc }
 	await Promise.all([
 		await usr_c(nbr, "四川", "成都"), usr_u(1, { $set: { ref: [1, 2] } }),
-		await soc_c("社团", "江苏", "苏州"), soc_u(1, { $set: { ref: [1, 2] } }),
+		await soc_c("小组", "江苏", "苏州"), soc_u(1, { $set: { ref: [1, 2] } }),
 		await agd_c("活动", "江苏", "苏州"), agd_u(1, { $set: { ref: [1, 2] } }),
 		await md_c(coll.wsl, { nam: "标题", uid: 1 }),
 		rec_c(coll.work, { _id: workid, ref: [], rej: [], work: "work", msg: "msg" }),
@@ -170,7 +170,7 @@ Deno.test("put", async () => {
 	await pos(p, "pas", json({ nbr, code: code?.pcode?.code }))
 	const jwt = p.jwt
 	const uu = { nam: "用户一", adm1: "广东", adm2: "汕头", intro: "简介" }
-	const su = { sid: 1, nam: "社团一", adm1: "广东", adm2: "汕头", uidlim: 8 }
+	const su = { sid: 1, nam: "小组一", adm1: "广东", adm2: "汕头", uidlim: 8 }
 	const au = { aid: 1, nam: "活动一", adm1: "广东", adm2: "汕头", uidlim: 8 }
 	const aus = { aid: 1, intro: "简介", reslim: 10, account: "http明细", budget: 9, fund: 9, expense: 9 }
 	const mdu = { wslid: 1, nam: "标题二", md: "#123" }
