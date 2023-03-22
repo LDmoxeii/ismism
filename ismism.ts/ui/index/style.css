@@ -675,6 +675,10 @@ section.md img {
 	}
 }
 
+p.intro {
+	white-space: pre-wrap;
+}
+
 button.putn {
 	background: var(--red) !important;
 }
