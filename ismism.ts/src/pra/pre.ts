@@ -64,14 +64,16 @@ export async function pre_agd(
 export async function pre_work(
 	pas: Pas,
 	aid: Agd["_id"],
-	work: { msg: string } | { nam: string, src: string },
+	work: { msg: string } | { nam: string, src: string } | { nam: string, src: string, utcs: number, utce: number },
 ): DocC<Work["_id"]> {
 	if (!is_pre_work(pas, aid)) return null
 	const r = { _id: { uid: pas.uid, aid, utc: Date.now() }, rej: [], ref: [] }
 	if ("msg" in work && is_msg(work.msg))
 		return await rec_c(coll.work, { ...r, work: "work", ...work })
-	else if ("src" in work && is_msg(work.nam) && is_url(work.src))
-		return await rec_c(coll.work, { ...r, work: "video", ...work })
+	else if ("src" in work && is_msg(work.nam) && is_url(work.src)) {
+		if ("utcs" in work) return await rec_c(coll.work, { ...r, work: "live", ...work })
+		else return await rec_c(coll.work, { ...r, work: "video", ...work })
+	}
 	return null
 }
 

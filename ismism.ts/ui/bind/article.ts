@@ -247,15 +247,17 @@ export async function agd(
 					a: "无效输入，或图片数已达上限（9张）",
 					r: () => agd(a._id),
 				}))
-				t.putgoal.addEventListener("click", () => put(`a${a._id}`, t.putgoal.innerText, {
-					nam: { p1: "目标名：（2-16 个中文字符）", p2: "目标进度：（0- 100，或留空以删除目标）" }, val: {}, p: "put",
+				t.prelive.addEventListener("click", () => put(`a${a._id}`, t.prelive.innerText, {
+					nam: {
+						p1: "直播标题：（2-256 个字符）", p2: "直播外链：（最长 128 个字符）",
+						p3: "开播时间：（如 2023-3-26 11:30）", p4: "结束时间：",
+					}, val: {}, p: "pre",
 					b: p => {
-						if (!p.p1 || !is_nam(p.p1)) return null
-						let g = a.goal.filter(m => m.nam !== p.p1)
-						if (p.p2 && p.p2.length > 0) g = [{ nam: p.p1, pct: parseInt(p.p2) }, ...g]
-						return is_goal(g) ? { aid: a._id, goal: g } : null
+						const [utcs, utce] = [p.p3, p.p4].map(d => new Date(d!).getTime())
+						if (!p.p1 || !p.p2 || !is_msg(p.p1) || !is_url(p.p2) || isNaN(utcs) || isNaN(utce)) return null
+						return { aid: a._id, nam: p.p1, src: p.p2, utcs, utce }
 					},
-					a: "无效输入，或目标数已达上限（9个）",
+					a: "无效输入\n直播标题为 2-256 个字符\n直播外链最长 128 个字符\n时间格式为 2023-3-26 11:30",
 					r: () => agd(a._id),
 				}))
 				t.prevideo.addEventListener("click", () => put(`a${a._id}`, t.prevideo.innerText, {
@@ -265,6 +267,17 @@ export async function agd(
 						return { aid: a._id, nam: p.p1, src: p.p2 }
 					},
 					a: "无效输入\n视频标题为 2-256 个字符\n视频外链最长 128 个字符",
+					r: () => agd(a._id),
+				}))
+				t.putgoal.addEventListener("click", () => put(`a${a._id}`, t.putgoal.innerText, {
+					nam: { p1: "目标名：（2-16 个中文字符）", p2: "目标进度：（0- 100，或留空以删除目标）" }, val: {}, p: "put",
+					b: p => {
+						if (!p.p1 || !is_nam(p.p1)) return null
+						let g = a.goal.filter(m => m.nam !== p.p1)
+						if (p.p2 && p.p2.length > 0) g = [{ nam: p.p1, pct: parseInt(p.p2) }, ...g]
+						return is_goal(g) ? { aid: a._id, goal: g } : null
+					},
+					a: "无效输入，或目标数已达上限（9个）",
 					r: () => agd(a._id),
 				}))
 			} else {
@@ -335,6 +348,14 @@ export function rec(
 				a.innerText = w.nam
 				a.href = w.src
 				break
+			} case "live": {
+				const utc = Date.now()
+				t.msg.innerText = `${utc < w.utcs ? "直播预告" : utc < w.utce ? "直播中" : "直播结束"}：`
+				const a = t.msg.appendChild(document.createElement("a"))
+				a.innerText = w.nam
+				a.href = w.src
+				t.msg.append(`\n开播时间：${utc_short(w.utcs)}\n结束时间：${utc_short(w.utce)}`)
+				break
 			}
 		}
 		ida(t.rej, w.rej.map(uid => [`${uid}`, r.unam.get(uid)!]))
@@ -348,16 +369,26 @@ export function rec(
 			if (!is_uid(nav.pas, { aid })) t.putrej.remove()
 			if (!is_sec(nav.pas, { aid })) t.putref.remove()
 			if (w.ref.length === 0 && w._id.uid === nav.pas.uid) {
-				const nam = w.work === "work" ? { pa: "工作日志" } : { p1: "视频标题：（2-256 个字符）", p2: "视频外链：（最长 128 个字符）" }
-				const val = w.work === "work" ? { pa: w.msg } : { p1: w.nam, p2: w.src }
+				const nam = {
+					...w.work === "work" ? { pa: "工作日志" } : {},
+					...w.work === "video" ? { p1: "视频标题：（2-256 个字符）", p2: "视频外链：（最长 128 个字符）" } : {},
+					...w.work === "live" ? { p1: "直播标题：（2-256 个字符）", p2: "直播外链：（最长 128 个字符）", p3: "开播时间：（如 2023-3-26 11:30）", p4: "结束时间：" } : {},
+				}
+				const val = w.work === "work" ? { pa: w.msg } : w.work === "video" ? { p1: w.nam, p2: w.src } : { p1: w.nam, p2: w.src, p3: utc_short(w.utcs), p4: utc_short(w.utce) }
 				const b = w.work === "work" ? (p: Put) => {
 					if (!p.pa || !is_msg(p.pa)) return null
 					return { workid: w._id, msg: p.pa.trim() }
-				} : (p: Put) => {
+				} : w.work === "video" ? (p: Put) => {
 					if (!p.p1 || !p.p2 || !is_msg(p.p1) || !is_url(p.p2)) return null
 					return { workid: w._id, nam: p.p1, src: p.p2 }
+				} : (p: Put) => {
+					const [utcs, utce] = [p.p3, p.p4].map(d => new Date(d!).getTime())
+					if (!p.p1 || !p.p2 || !is_msg(p.p1) || !is_url(p.p2) || isNaN(utcs) || isNaN(utce)) return null
+					return { workid: w._id, nam: p.p1, src: p.p2, utcs, utce }
 				}
-				const a = w.work === "work" ? "无效输入\n工作日志为 2-256 个字符" : "无效输入\n视频标题为 2-256 个字符\n视频外链最长 128 个字符"
+				const a = w.work === "work" ? "无效输入\n工作日志为 2-256 个字符" :
+					w.work === "video" ? "无效输入\n视频标题为 2-256 个字符\n视频外链最长 128 个字符"
+						: "无效输入\n直播标题为 2-256 个字符\n直播外链最长 128 个字符\n时间格式为 2023-3-26 11:30"
 				t.put.addEventListener("click", () => put(`a${w._id.aid}`, r.anam.get(w._id.aid)!, {
 					nam, val, p: "put", b, a,
 					d: () => pos("put", { workid: w._id }),
@@ -499,7 +530,7 @@ function pre(
 	main.append(t.bind)
 }
 
-export type Put = { p1?: string, p2?: string, pa?: string }
+export type Put = { p1?: string, p2?: string, p3?: string, p4?: string, pa?: string }
 export function put(
 	id: string,
 	nam: string,
@@ -522,6 +553,8 @@ export function put(
 	idnam(t, id, nam)
 	if (p.nam.p1) { label(t.p1, p.nam.p1); t.p1.value = p.val.p1 ?? "" } else t.p1.parentElement!.remove()
 	if (p.nam.p2) { label(t.p2, p.nam.p2); t.p2.value = p.val.p2 ?? "" } else t.p2.parentElement!.remove()
+	if (p.nam.p3) { label(t.p3, p.nam.p3); t.p3.value = p.val.p3 ?? "" } else t.p3.parentElement!.remove()
+	if (p.nam.p4) { label(t.p4, p.nam.p4); t.p4.value = p.val.p4 ?? "" } else t.p4.parentElement!.remove()
 	if (p.lim_pa) t.pa.maxLength = p.lim_pa
 	if (p.nam.pa) txt(t.pa, p.nam.pa, p.val.pa ?? ""); else t.pa.parentElement!.remove()
 	if (p.d) t.putn.addEventListener("click", async () => {
@@ -533,6 +566,8 @@ export function put(
 		const b = p.b({
 			...p.nam.p1 ? { p1: t.p1.value } : {},
 			...p.nam.p2 ? { p2: t.p2.value } : {},
+			...p.nam.p3 ? { p3: t.p3.value } : {},
+			...p.nam.p4 ? { p4: t.p4.value } : {},
 			...p.nam.pa ? { pa: t.pa.value } : {},
 		})
 		if (b === null) return alert(p.a)

@@ -58,7 +58,7 @@ export async function put_agd(
 export async function put_work(
 	pas: Pas,
 	workid: Work["_id"],
-	p: { msg: string } | { nam: string, src: string } | null,
+	p: { msg: string } | { nam: string, src: string } | { nam: string, src: string, utcs: number, utce: number } | null,
 ): DocU {
 	if (pas.uid !== workid.uid) return null
 	const w = await rec_r(coll.work, workid, { ref: 1, work: 1 })

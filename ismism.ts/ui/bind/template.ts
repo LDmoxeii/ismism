@@ -133,7 +133,9 @@ const template = {
 		goal: t("p"), intro: t("p"),
 		...section.rel,
 		...section.rec,
-		pos: t("section"), put: t("button"), putimg: t("button"), putgoal: t("button"), prework: t("button"), prevideo: t("button"),
+		pos: t("section"), put: t("button"),
+		putimg: t("button"), putgoal: t("button"),
+		prelive: t("button"), prevideo: t("button"), prework: t("button"),
 		...section.putrel,
 		...section.putpro,
 	},
@@ -181,7 +183,7 @@ const template = {
 	put: {
 		tid: "put" as const,
 		...section.idnam,
-		p1: t("input"), p2: t("input"), pa: t("textarea"),
+		p1: t("input"), p2: t("input"), p3: t("input"), p4: t("input"), pa: t("textarea"),
 		putn: t("button"), put: t("button"), cancel: t("button"),
 	},
 

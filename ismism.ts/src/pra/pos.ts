@@ -54,7 +54,7 @@ export async function pos(
 
 		case "pre": {
 			p.etag = utc_etag()
-			const { aid, actid, nbr, adm1, adm2, snam, anam, msg, nam, src, aut, wslnam, litnam } = json
+			const { aid, actid, nbr, adm1, adm2, snam, anam, msg, nam, src, utcs, utce, aut, wslnam, litnam } = json
 			if (typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof nbr === "string") {
 					if (typeof actid === "string") return pre_usr({ actid }, nbr, adm1, adm2)
@@ -65,7 +65,11 @@ export async function pos(
 				}
 			} else if (typeof aid === "number" && p.pas) {
 				if (typeof msg === "string") return pre_work(p.pas, aid, { msg })
-				else if (typeof nam === "string" && typeof src === "string") return pre_work(p.pas, aid, { nam, src })
+				else if (typeof nam === "string" && typeof src === "string") {
+					if (typeof utcs === "number" && typeof utce === "number")
+						return pre_work(p.pas, aid, { nam, src, utcs, utce })
+					else return pre_work(p.pas, aid, { nam, src })
+				}
 			} else if (typeof actid === "string" && p.pas) return pre_fund(p.pas, actid)
 			else if (typeof nam === "string" && ["aud", "aut", "wsl", "lit"].includes(aut) && p.pas) return pre_aut(p.pas, nam, aut)
 			else if (typeof wslnam === "string" && p.pas) return pre_wsl(p.pas, wslnam)
@@ -94,7 +98,7 @@ export async function pos(
 				sid, aid, workid, wslid, litid,
 				nam, adm1, adm2, intro, md, pin,
 				uidlim, reslim, account, budget, fund, expense,
-				goal, img, rol, add, uid, msg, src
+				goal, img, rol, add, uid, msg, src, utcs, utce,
 			} = json
 			if (typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof intro === "string") return put_usr(p.pas, { nam, adm1, adm2, intro })
@@ -116,8 +120,11 @@ export async function pos(
 				}
 			} else if (typeof workid === "object" && Object.keys(workid).length === 3) {
 				if (typeof msg === "string") return put_work(p.pas, workid, { msg })
-				else if (typeof nam === "string" && typeof src === "string") return put_work(p.pas, workid, { nam, src })
-				else return put_work(p.pas, workid, null)
+				else if (typeof nam === "string" && typeof src === "string") {
+					if (typeof utcs === "number" && typeof utce === "number")
+						return put_work(p.pas, workid, { nam, src, utcs, utce })
+					else return put_work(p.pas, workid, { nam, src })
+				} else return put_work(p.pas, workid, null)
 			} else if (typeof aid === "number") {
 				if (typeof goal === "object") return put_agd(p.pas, aid, { goal })
 				else if (typeof img === "object") return put_agd(p.pas, aid, { img })

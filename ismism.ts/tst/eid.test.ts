@@ -3,11 +3,12 @@ import { coll, db } from "../src/db.ts"
 import { usr_c, usr_r, usr_u, usr_d } from "../src/eid/usr.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
-import { nrec, rec_c, rec_d, rec_f, rec_r, rec_u } from "../src/eid/rec.ts"
+import { nrec, rec_c, rec_d, rec_f, rec_r, rec_u, work_l } from "../src/eid/rec.ts"
 import { rolref, rol } from "../src/eid/rel.ts"
 import { nid } from "../src/eid/id.ts"
 import { md_c, md_f, md_r, md_u } from "../src/eid/md.ts"
 import { aut_c, aut_d, aut_g } from "../src/eid/aut.ts"
+import { utc_h } from "../src/ont/utc.ts"
 
 await db("tst", true)
 
@@ -88,6 +89,10 @@ Deno.test("rec", async () => {
 		{ uid: 2, aid: 4, utc: utc + 100 },
 		{ uid: 1, aid: 4, utc },
 	]
+	const idl = [
+		{ uid: 1, aid: 4, utc: utc + 300 },
+		{ uid: 1, aid: 4, utc: utc + 400 },
+	]
 
 	assertEquals(await nrec(), { work: 0, fund: 0 })
 	assertEquals(await nrec({ aid: 4 }), { work: 0, fund: 0 })
@@ -97,17 +102,30 @@ Deno.test("rec", async () => {
 	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.work, {
 		_id, ref: [_id.uid], rej: [], work: "work", msg: "msg"
 	}))))
+	await rec_c(coll.work, {
+		_id: idl[0], ref: [], rej: [], work: "live",
+		nam: "直播1", src: "https://ismist.cn",
+		utcs: utc - utc_h,
+		utce: utc + utc_h,
+	})
+	await rec_c(coll.work, {
+		_id: idl[1], ref: [], rej: [], work: "live",
+		nam: "直播2", src: "https://ismist.cn",
+		utcs: utc + utc_h,
+		utce: utc + 2 * utc_h,
+	})
 	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.fund, {
 		_id, fund: 32, msg: "msg"
 	}))))
-	assertEquals(await nrec(), { work: 3, fund: 3 })
+	assertEquals(await nrec(), { work: 5, fund: 3 })
 	assertEquals(await nrec({ uid: [2] }), { work: 2, fund: 2 })
-	assertEquals(await nrec({ aid: 4 }), { work: 2, fund: 2 })
+	assertEquals(await nrec({ aid: 4 }), { work: 4, fund: 2 })
 
 	assertEquals((await rec_f(coll.work, utc + 100))!.length, 1)
 	assertEquals((await rec_f(coll.fund, utc + 200))!.map(r => r._id), id.slice(1))
 	assertEquals((await rec_f(coll.work, utc + 300, { uid: [2] }))!.map(r => r._id), id.slice(0, 2))
 	assertEquals((await rec_f(coll.work, 0, { aid: 3 })), [{ _id: id[0], work: "work", msg: "msg", ref: [2], rej: [] }])
+	assertEquals(2, (await work_l())?.length)
 
 	assertEquals(await rec_u(coll.work, id[1], { $set: { msg: "updated" } }), 1)
 	// deno-lint-ignore no-explicit-any
@@ -117,7 +135,7 @@ Deno.test("rec", async () => {
 		id.map(_id => rec_d(coll.work, _id)),
 		id.map(_id => rec_d(coll.fund, _id)),
 	].flat())
-	assertEquals(await nrec(), { work: 0, fund: 0 })
+	assertEquals(await nrec(), { work: 2, fund: 0 })
 })
 
 Deno.test("aut", async () => {

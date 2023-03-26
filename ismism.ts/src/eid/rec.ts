@@ -1,4 +1,4 @@
-import type { Rec } from "./typ.ts"
+import type { Rec, Work } from "./typ.ts"
 import { coll, Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { is_id, is_idl, is_recid, lim_nrecday, lim_rec_f, lim_uid_max } from "./is.ts"
 import { utc_d, utc_date } from "../ont/utc.ts"
@@ -40,6 +40,15 @@ export async function rec_f<
 		...utc > 0 ? { "_id.utc": { $lt: utc } } : {},
 	} // deno-lint-ignore no-explicit-any
 	return await c.find(f as any, { sort: { "_id.utc": -1 }, limit: lim_rec_f }).toArray() as T[]
+}
+
+export async function work_l(
+): DocR<(Work & { work: "live" })[]> {
+	const utc = Date.now()
+	return await coll.work.find(
+		{ work: "live", utce: { $gt: utc } },
+		{ sort: { "_id.utc": -1 } },
+	).toArray() as (Work & { work: "live" })[]
 }
 
 export async function rec_u<

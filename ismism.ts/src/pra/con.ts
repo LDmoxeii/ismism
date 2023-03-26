@@ -124,7 +124,7 @@ export type PutSoc = PutIdRel | UpdateRel
 export type PutAgd = PutSoc
 	| Pick<Agd, "intro" | "reslim" | "account" | "budget" | "fund" | "expense">
 	| Pick<Agd, "goal"> | Pick<Agd, "img">
-export type PutWork = { msg: string } | { nam: string, src: string }
+export type PutWork = { msg: string } | { nam: string, src: string } | { nam: string, src: string, utcs: number, utce: number }
 export type PutMd = { nam: Md["nam"], md: Md["md"] } | { pin: boolean } | null
 export type PutWsl = PutMd
 export type PutLit = PutMd
@@ -166,7 +166,7 @@ export function is_put_work(
 ): boolean {
 	return work._id.uid === pas.uid && work.ref.length === 0 && (p === null
 		|| "msg" in p && is_msg(p.msg) && work.work === "work"
-		|| "src" in p && is_msg(p.nam) && is_url(p.src) && work.work === "video"
+		|| "src" in p && is_msg(p.nam) && is_url(p.src) && (work.work === "video" || work.work === "live")
 	)
 }
 function is_put_md(

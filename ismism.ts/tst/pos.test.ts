@@ -91,11 +91,12 @@ Deno.test("pre", async () => {
 		await pos({ jwt }, "pre", json({ actid: actid[1] })),
 		await pos({ jwt }, "pre", json({ aid: 1, msg: "msg" })),
 		await pos({ jwt }, "pre", json({ aid: 1, nam: "nam", src: "httpsrc" })),
+		await pos({ jwt }, "pre", json({ aid: 1, nam: "nam", src: "httpsrc", utcs: utc, utce: utc + 1000 })),
 	] as Rec["_id"][]
-	assertEquals([2, 1, 1], w.map(w => w.aid))
+	assertEquals([2, 1, 1, 1], w.map(w => w.aid))
 	await Promise.all([
 		usr_d(1), usr_d(2), soc_d(1), agd_d(1),
-		rec_d(coll.fund, w[0]), rec_d(coll.work, w[1]), rec_d(coll.work, w[2]),
+		rec_d(coll.fund, w[0]), rec_d(coll.work, w[1]), rec_d(coll.work, w[2]), rec_d(coll.work, w[3]),
 		aut_d(1), ...actid.map(act_d), md_d(coll.lit, 1),
 	])
 })

@@ -43,6 +43,12 @@ export type Work = Rec & Re & ({
 	work: "video",
 	nam: string,
 	src: string,
+} | {
+	work: "live",
+	nam: string,
+	src: string,
+	utcs: number,
+	utce: number,
 })
 export type Fund = Rec & {
 	fund: number,

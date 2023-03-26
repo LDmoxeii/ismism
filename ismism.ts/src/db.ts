@@ -61,6 +61,12 @@ export async function db(
 				key: { "_id.utc": -1 }, name: "utc"
 			}]
 		})))
+		await c.work.createIndexes({
+			indexes: [{
+				key: { work: 1, utce: -1, "_id.utc": -1 }, name: "live",
+				partialFilterExpression: { work: "live" },
+			}]
+		})
 		await Promise.all([c.wsl, c.lit].map(cl => cl.createIndexes({
 			indexes: [{
 				key: { pin: 1, utcp: -1 }, name: "pin",
