@@ -325,7 +325,8 @@ async function live(
 	label(t.live, `（${live.rec.length}）`, true)
 	label(t.livep, `（${livep.rec.length}）`, true)
 	for (const l of live.rec) t.live.append(rec("work", live, l))
-	for (const l of livep.rec) t.livep.append(rec("work", livep, l))
+	for (const l of livep.rec) t.livep.append(rec("work", livep, l));
+	(t.live.parentElement as HTMLDetailsElement).open = live.rec.length > 0
 
 	main.append(t.bind)
 }
