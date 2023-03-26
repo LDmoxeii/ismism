@@ -43,7 +43,7 @@ export async function rec_f<
 }
 
 export async function work_l(
-): DocR<(Work & { work: "live" })[]> {
+): Promise<(Work & { work: "live" })[]> {
 	const utc = Date.now()
 	return await coll.work.find(
 		{ work: "live", utce: { $gt: utc } },

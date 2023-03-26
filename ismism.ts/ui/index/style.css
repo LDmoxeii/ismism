@@ -278,6 +278,11 @@ div#main {
 	padding: 0;
 }
 
+article.transparent {
+	background: none;
+	box-shadow: none;
+}
+
 article.rec {
 	width: fit-content;
 	margin: 0;

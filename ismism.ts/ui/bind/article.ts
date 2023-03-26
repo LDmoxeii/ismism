@@ -214,6 +214,7 @@ export async function agd(
 	if (typeof aidadm === "number" && aa.length === 0) return idn(`a${aidadm}`, "活动")
 
 	main.innerHTML = ""
+	await live()
 	for (const d of aa) {
 		if (!d) continue
 
@@ -304,6 +305,29 @@ export async function agd(
 
 		main.append(t.bind)
 	}
+}
+
+async function live(
+) {
+	const r = await que<Q.Live>("live")
+	const utc = Date.now()
+	const [unam, anam] = [new Map(r.unam), new Map(r.anam)]
+	const live = {
+		rec: r.live.filter(l => l.utcs < utc && utc < l.utce),
+		unam, anam,
+	}
+	const livep = {
+		rec: r.live.filter(l => utc < l.utcs),
+		unam, anam
+	}
+
+	const t = bind("live")
+	label(t.live, `（${live.rec.length}）`, true)
+	label(t.livep, `（${livep.rec.length}）`, true)
+	for (const l of live.rec) t.live.append(rec("work", live, l))
+	for (const l of livep.rec) t.livep.append(rec("work", livep, l))
+
+	main.append(t.bind)
 }
 
 export type Rec = Omit<NonNullable<Q.Rec>, "unam" | "anam"> & {

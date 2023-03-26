@@ -150,6 +150,11 @@ const template = {
 		nrecday: svg("svg"),
 	},
 
+	live: {
+		tid: "live" as const,
+		live: t("p"), livep: t("p"),
+	},
+
 	rec: {
 		tid: "rec" as const, rec: t("article"),
 		unam: t("a"), anam: t("a"),

@@ -4,7 +4,7 @@ import { rolref } from "../eid/rel.ts"
 import { usr_r } from "../eid/usr.ts"
 import { soc_r } from "../eid/soc.ts"
 import { agd_r } from "../eid/agd.ts"
-import { nrec, nrecday, rec_f, rec_r } from "../eid/rec.ts"
+import { nrec, nrecday, rec_f, rec_r, work_l } from "../eid/rec.ts"
 import { id, idnam, nid_of_adm } from "../eid/id.ts"
 import { aut_g, aut_r } from "../eid/aut.ts"
 import { md_f, md_r } from "../eid/md.ts"
@@ -96,6 +96,18 @@ export async function rec<
 		return { rec: r, unam, anam }
 	}
 	return null
+}
+
+export async function live(
+) {
+	const l = await work_l()
+	const uid = l.map(w => w._id.uid)
+	uid.push(...l.flatMap(r => [...r.rej, ...r.ref]))
+	const [unam, anam] = await Promise.all([
+		idnam(coll.usr, uid),
+		idnam(coll.agd, l.map(w => w._id.aid)),
+	])
+	return { live: l, unam, anam }
 }
 
 export async function aut(
