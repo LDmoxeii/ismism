@@ -249,6 +249,22 @@ export async function agd(
 					a: "无效输入，或图片数已达上限（9张）",
 					r: () => agd(a._id),
 				}))
+				t.putgoal.addEventListener("click", () => put(`a${a._id}`, t.putgoal.innerText, {
+					nam: { p1: "目标名：（2-16 个中文字符）", p2: "目标进度：（0- 100，或留空以删除目标）" }, val: {}, p: "put",
+					b: p => {
+						if (!p.p1 || !is_nam(p.p1)) return null
+						let g = a.goal.filter(m => m.nam !== p.p1)
+						if (p.p2 && p.p2.length > 0) g = [{ nam: p.p1, pct: parseInt(p.p2) }, ...g]
+						return is_goal(g) ? { aid: a._id, goal: g } : null
+					},
+					a: "无效输入，或目标数已达上限（9个）",
+					r: () => agd(a._id),
+				}))
+			} else {
+				t.putimg.remove()
+				t.putgoal.remove()
+			}
+			if (is_uid(nav.pas, { aid: a._id })) {
 				t.prelive.addEventListener("click", () => put(`a${a._id}`, t.prelive.innerText, {
 					nam: {
 						p1: "直播标题：（2-256 个字符）", p2: "直播外链：（最长 128 个字符）",
@@ -271,30 +287,15 @@ export async function agd(
 					a: "无效输入\n视频标题为 2-256 个字符\n视频外链最长 128 个字符",
 					r: () => agd(a._id),
 				}))
-				t.putgoal.addEventListener("click", () => put(`a${a._id}`, t.putgoal.innerText, {
-					nam: { p1: "目标名：（2-16 个中文字符）", p2: "目标进度：（0- 100，或留空以删除目标）" }, val: {}, p: "put",
-					b: p => {
-						if (!p.p1 || !is_nam(p.p1)) return null
-						let g = a.goal.filter(m => m.nam !== p.p1)
-						if (p.p2 && p.p2.length > 0) g = [{ nam: p.p1, pct: parseInt(p.p2) }, ...g]
-						return is_goal(g) ? { aid: a._id, goal: g } : null
+				t.prework.addEventListener("click", () => put(`a${a._id}`, t.prework.innerText, {
+					nam: { pa: "工作日志" }, val: {}, p: "pre", b: p => {
+						if (!p.pa || !is_msg(p.pa)) return null
+						return { aid: a._id, msg: p.pa.trim() }
 					},
-					a: "无效输入，或目标数已达上限（9个）",
+					a: "无效输入\n工作日志为 2-256 个字符",
 					r: () => agd(a._id),
 				}))
-			} else {
-				t.putimg.remove()
-				t.putgoal.remove()
-				t.prevideo.remove()
-			}
-			if (is_uid(nav.pas, { aid: a._id })) t.prework.addEventListener("click", () => put(`a${a._id}`, t.prework.innerText, {
-				nam: { pa: "工作日志" }, val: {}, p: "pre", b: p => {
-					if (!p.pa || !is_msg(p.pa)) return null
-					return { aid: a._id, msg: p.pa.trim() }
-				},
-				a: "无效输入\n工作日志为 2-256 个字符",
-				r: () => agd(a._id),
-			})); else t.prework.remove()
+			} else[t.prelive, t.prevideo, t.prework].forEach(el => el.remove())
 			putrel(t, "aid", a, async () => { await navpas(); agd(a._id) })
 			if (is_aut(nav.pas.aut, "aud")) putpro(t, "aid", a, () => agd(a._id))
 			else t.putpro.remove()
