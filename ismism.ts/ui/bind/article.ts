@@ -97,8 +97,9 @@ export async function usr(
 			pas_a.innerText = u.nam
 			t.put.addEventListener("click", () => putid("用户", u))
 			t.pas.addEventListener("click", async () => {
-				await pos("pas", { uid: nav.pas!.uid })
+				if (nav.pas) await pos("pas", { uid: nav.pas.uid })
 				navpas(null)
+				usr(uid)
 			})
 			for (const a of ["aud", "aut"] as const) {
 				const el = t[`pre${a}`]
