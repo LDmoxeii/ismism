@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.178.0/http/server.ts"
 import { jwk_load } from "./ont/jwt.ts"
-import { utc_etag, utc_short } from "./ont/utc.ts"
+import { utc_short } from "./ont/utc.ts"
 import { pos, PasPos } from "./pra/pos.ts"
 import { que } from "./pra/que.ts"
 
-let etag = utc_etag()
+let etag = ""
 
 function log(
 	utc: number,
@@ -25,10 +25,11 @@ async function route(
 			log(t, "quit")
 			Deno.exit(); break
 		} case "update": {
-			etag = `W/"${t}"`
+			etag = ""
 			log(t, "etag updated")
-			return new Response(null, { status: 200, headers: { etag } })
+			return new Response(null, { status: 200 })
 		} case "q": {
+			if (etag === "") etag = `W/"${t}"`
 			if (req.headers.get("if-none-match")?.includes(etag)) {
 				log(t, `${f}${url.search}`, 304)
 				return new Response(null, { status: 304, headers: { etag } })
@@ -58,4 +59,5 @@ async function route(
 }
 
 await jwk_load()
-serve(route, { port: 728 })
+const port = parseInt(Deno.args[0])
+serve(route, { port: isNaN(port) ? 728 : port })
