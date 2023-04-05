@@ -1,4 +1,4 @@
-import type { Ret } from "./con.ts"
+import type { Ret } from "./can.ts"
 import { is_id } from "../eid/is.ts"
 import { coll } from "../db.ts"
 import { agd, aut, live, md, nid, rec, soc, usr } from "./doc.ts"

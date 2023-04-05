@@ -6,7 +6,7 @@ import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_d, utc_date, utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
-import { is_ref, is_rej, is_sec } from "../../src/pra/con.ts"
+import { is_ref, is_rej, is_sec } from "../../src/pra/can.ts"
 import { is_aut, is_id, is_md, is_nam, lim_aut, lim_nrecday, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
 
 export function label(
@@ -79,7 +79,7 @@ export function btn<
 			if (c.alert) {
 				if (r === null) { alert(c.alert); b.disabled = false; return }
 			} else {
-				if (!r || r <= 0) return
+				if (!r || typeof r === "number" && r <= 0) return
 			}
 			if (r || r === 0) setTimeout(() => c.refresh(r), utc_refresh)
 		}

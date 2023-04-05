@@ -1,7 +1,7 @@
 import type { Agd, Re, Soc, Usr, Work } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import { coll, DocU } from "../db.ts"
-import { is_pro_agd, is_pro_soc, is_pro_usr, is_pro_work } from "./con.ts"
+import { is_pro_agd, is_pro_soc, is_pro_usr, is_pro_work } from "./can.ts"
 import { usr_u } from "../eid/usr.ts"
 import { soc_u } from "../eid/soc.ts"
 import { agd_u } from "../eid/agd.ts"

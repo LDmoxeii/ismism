@@ -1,4 +1,4 @@
-import type { PutAgd, PutSoc, Ret } from "./con.ts"
+import type { PutAgd, PutSoc, Ret } from "./can.ts"
 import type { Re } from "../eid/typ.ts"
 import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"

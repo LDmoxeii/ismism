@@ -1,6 +1,6 @@
 import type { Act, Agd, Aut, Fund, Lit, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
-import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl, is_pre_aut } from "./con.ts"
+import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl, is_pre_aut } from "./can.ts"
 import { coll, DocC } from "../db.ts"
 import { act_r, act_u } from "../eid/act.ts"
 import { usr_c, usr_r, usr_u } from "../eid/usr.ts"
