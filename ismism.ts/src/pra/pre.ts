@@ -1,15 +1,17 @@
-import type { Act, Agd, Aut, Fund, Lit, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
+import type { Act, Agd, Aut, Fund, Lit, Ord, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl, is_pre_aut } from "./can.ts"
 import { coll, DocC } from "../db.ts"
 import { act_r, act_u } from "../eid/act.ts"
 import { usr_c, usr_r, usr_u } from "../eid/usr.ts"
 import { soc_c } from "../eid/soc.ts"
-import { agd_c } from "../eid/agd.ts"
+import { agd_c, agd_r } from "../eid/agd.ts"
 import { rec_c } from "../eid/rec.ts"
 import { md_c } from "../eid/md.ts"
-import { is_aut, is_id, is_lim, is_msg, is_nam, is_url, lim_aud, lim_aut, lim_lit, lim_wsl } from "../eid/is.ts"
+import { is_aut, is_id, is_lim, is_msg, is_nam, is_ordid, is_url, lim_aud, lim_aut, lim_lit, lim_wsl } from "../eid/is.ts"
 import { aut_c, aut_d, aut_g, aut_r, aut_u } from "../eid/aut.ts"
+import { utc_d, utc_h, utc_week } from "../ont/utc.ts"
+import { nord_f, ord_c } from "../eid/ord.ts"
 
 export async function pre_usr(
 	pa: { pas: Pas } | { actid: Act["_id"] },
@@ -59,6 +61,24 @@ export async function pre_agd(
 ): DocC<Agd["_id"]> {
 	if (!is_pre_agd(pas)) return null
 	return await agd_c(nam, adm1, adm2)
+}
+
+export async function pre_ord(
+	nbr: Ord["_id"]["nbr"],
+	aid: Ord["_id"]["aid"],
+): DocC<Ord["_id"]> {
+	const utc = Date.now()
+	const _id = { nbr, aid, utc } as Ord["_id"]
+	if (!is_ordid(_id)) return null
+	const agd = await agd_r(aid, { ordutc: 1, ordlim: 1, ordlimw: 1 })
+	if (!agd || (utc - agd.ordutc > utc_d)) return null
+	const [ordh, ordw, ord] = await Promise.all([
+		nord_f({ nbr, aid, utc: utc - utc_h }),
+		nord_f({ nbr, aid, utc: utc_week(utc) }),
+		nord_f({ aid, utc: agd.ordutc }),
+	])
+	if (ordh > 0 || !is_lim(ordw + 1, agd.ordlimw) || !is_lim(ord + 1, agd.ordlim)) return null
+	return ord_c({ _id, ord: true })
 }
 
 export async function pre_work(

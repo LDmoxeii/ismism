@@ -86,7 +86,7 @@ export async function nrecday<
 	id?: { aid: Rec["_id"]["aid"] } | { uid: Rec["_id"]["uid"][] },
 ): Promise<[number, number][]> {
 	if (id && ("aid" in id && !is_id(id.aid) || "uid" in id && !is_idl(id.uid, lim_uid_max))) return []
-	const t = new Date(utc_date(Date.now() - utc_d * lim_nrecday) + "T00:00:00.000+08:00").getTime()
+	const t = new Date(utc_date(Date.now() - utc_d * lim_nrecday, true)).getTime()
 	const d = new Map<number, number>()
 	const f = {
 		...id && "aid" in id ? { "_id.aid": id.aid } : {},

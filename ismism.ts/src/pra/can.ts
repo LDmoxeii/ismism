@@ -1,4 +1,4 @@
-import type { Usr, Re, Agd, Soc, Work, Rel, Id, Md, Wsl, Lit } from "../eid/typ.ts"
+import type { Usr, Re, Agd, Soc, Work, Rel, Id, Md, Wsl, Lit, Ord } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import type { UpdateRel } from "../eid/rel.ts"
 import { is_aut, is_id, is_md, is_msg, is_nam, is_recid, is_url, req_re } from "../eid/is.ts"
@@ -124,6 +124,7 @@ export type PutSoc = PutIdRel | UpdateRel
 export type PutAgd = PutSoc
 	| Pick<Agd, "intro" | "reslim" | "account" | "budget" | "fund" | "expense">
 	| Pick<Agd, "goal"> | Pick<Agd, "img">
+	| Pick<Agd, "ordlim" | "ordlimw">
 export type PutWork = { msg: string } | { nam: string, src: string } | { nam: string, src: string, utcs: number, utce: number }
 export type PutMd = { nam: Md["nam"], md: Md["md"] } | { pin: boolean } | null
 export type PutWsl = PutMd
@@ -156,8 +157,14 @@ export function is_put_agd(
 	aid: Agd["_id"],
 	p: PutAgd | null,
 ): boolean {
-	if (p !== null && ("goal" in p || "img" in p)) return is_sec(pas, { aid })
+	if (p !== null && ("goal" in p || "img" in p || "ordlim" in p)) return is_sec(pas, { aid })
 	return is_put_idrel(pas, { aid }, p)
+}
+export function is_put_ord(
+	pas: Pas,
+	_id: Ord["_id"],
+): boolean {
+	return is_uid(pas, { aid: _id.aid })
 }
 export function is_put_work(
 	pas: Pas,

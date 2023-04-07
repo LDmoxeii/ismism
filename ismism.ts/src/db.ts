@@ -1,4 +1,4 @@
-import type { Act, Agd, Aut, Fund, Lit, Soc, Usr, Work, Wsl } from "./eid/typ.ts"
+import { Act, Agd, Aut, Fund, Lit, Ord, Soc, Usr, Work, Wsl } from "./eid/typ.ts"
 import { Collection, MongoClient, UpdateFilter } from "https://deno.land/x/mongo@v0.31.1/mod.ts"
 
 const conn = new MongoClient()
@@ -14,6 +14,7 @@ export async function db(
 		usr: db.collection<Usr>("usr"),
 		soc: db.collection<Soc>("soc"),
 		agd: db.collection<Agd>("agd"),
+		ord: db.collection<Ord>("ord"),
 		work: db.collection<Work>("work"),
 		fund: db.collection<Fund>("fund"),
 		act: db.collection<Act>("act"),
@@ -52,6 +53,15 @@ export async function db(
 				key: { res: 1 }, name: "res",
 			}]
 		})))
+		await c.ord.createIndexes({
+			indexes: [{
+				key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
+			}, {
+				key: { "_id.nbr": 1, "_id.utc": -1 }, name: "nbr-utc"
+			}, {
+				key: { "_id.utc": -1 }, name: "utc"
+			}]
+		})
 		await Promise.all([c.work, c.fund].map(cl => cl.createIndexes({
 			indexes: [{
 				key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"

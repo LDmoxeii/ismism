@@ -31,6 +31,14 @@ export type Agd = Soc & {
 	expense: number,
 	goal: { nam: string, pct: number }[],
 	img: { nam: string, src: string }[],
+	ordutc: number,
+	ordlim: number,
+	ordlimw: number,
+}
+
+export type Ord = {
+	_id: { nbr: string, aid: Agd["_id"], utc: number },
+	ord: boolean,
 }
 
 export type Rec = {

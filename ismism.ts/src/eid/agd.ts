@@ -1,7 +1,7 @@
 import type { Agd } from "./typ.ts"
 import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { id_c, id_d, id_n, id_r, id_u } from "./id.ts"
-import { is_goal, is_idl, is_img, is_lim, is_url, lim_res_def, lim_res_max, lim_sec, lim_uid_def, lim_uid_max } from "./is.ts"
+import { is_goal, is_idl, is_img, is_lim, is_url, lim_ord_max, lim_res_def, lim_res_max, lim_sec, lim_uid_def, lim_uid_max } from "./is.ts"
 
 export async function agd_c(
 	nam: Agd["nam"],
@@ -18,6 +18,7 @@ export async function agd_c(
 		reslim: lim_res_def, res: [],
 		account: "", budget: 0, fund: 0, expense: 0,
 		goal: [], img: [],
+		ordutc: 0, ordlim: 0, ordlimw: 0,
 	})
 }
 
@@ -45,6 +46,10 @@ export async function agd_u(
 		if ((s.budget || s.fund || s.expense) && !(is_lim(s.fund!, s.budget!) && is_lim(s.expense!, s.fund!))) return null
 		if (s.goal && !is_goal(s.goal)) return null
 		if (s.img && !is_img(s.img)) return null
+		if (s.ordlim !== undefined) {
+			if (!is_lim(s.ordlim, lim_ord_max) || s.ordlimw === undefined) return null
+			s.ordutc = Date.now()
+		}
 	}
 	return await id_u(coll.agd, aid, u)
 }

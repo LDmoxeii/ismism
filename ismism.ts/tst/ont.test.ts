@@ -3,7 +3,7 @@ import { is_adm, is_adm1, is_adm2, not_adm, not_adm1, not_adm2 } from "../src/on
 import { from_base64, from_hex, from_u8, to_base64, to_hex, to_u8 } from "../src/ont/base.ts"
 import { digest } from "../src/ont/crypt.ts"
 import { jwk_load, jwk_set, jwt_sign, jwt_verify } from "../src/ont/jwt.ts"
-import { utc_date, utc_h, utc_medium, utc_short } from "../src/ont/utc.ts"
+import { utc_date, utc_h, utc_medium, utc_short, utc_week } from "../src/ont/utc.ts"
 
 Deno.test("base", () => {
 	const t = "this is a test 1234"
@@ -25,6 +25,7 @@ Deno.test("utc", () => {
 	const t = Date.now()
 	const [m, s, d] = [utc_medium(t), utc_short(t), utc_date(t)]
 	assert(m.length > s.length && s.length > d.length && d.length > 0)
+	assertEquals(utc_date(utc_week(1680833264135), true), "2023-04-03T00:00:00.000+08:00")
 })
 
 Deno.test("adm", () => {

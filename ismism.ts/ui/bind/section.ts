@@ -235,7 +235,7 @@ function nrecday(
 ) {
 	const svg = bind("nrecday").nrecday
 	const r = svg.getElementsByTagName("rect")
-	const date = new Date(utc_date(Date.now() - lim_nrecday * utc_d) + "T00:00:00.000+08:00")
+	const date = new Date(utc_date(Date.now() - lim_nrecday * utc_d, true))
 	const day = (date.getDay() + 6) % 7
 	const t = date.getTime()
 	for (let n = 0; n <= lim_nrecday; ++n) r[day + n].classList.add("day")

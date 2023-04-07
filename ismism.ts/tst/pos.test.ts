@@ -1,4 +1,4 @@
-import type { Rec } from "../src/eid/typ.ts"
+import type { Ord, Rec } from "../src/eid/typ.ts"
 import type { Pas } from "../src/pra/pas.ts"
 import { assert, assertEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts"
 import { coll, db } from "../src/db.ts"
@@ -12,6 +12,7 @@ import { rec_c, rec_d, rec_f } from "../src/eid/rec.ts"
 import { act_c, act_d } from "../src/eid/act.ts"
 import { lim_re } from "../src/eid/is.ts"
 import { md_c, md_d, md_r } from "../src/eid/md.ts"
+import { ord_c, ord_d, ord_r } from "../src/eid/ord.ts"
 
 await db("tst", true)
 await jwk_set("testkey")
@@ -85,7 +86,13 @@ Deno.test("pre", async () => {
 		pos({ jwt }, "pre", json({ wslnam: "标题" }))
 	]))
 	assertEquals({ _id: 1, aut: ["sup", "aut", "wsl"] }, await aut_r(1))
-	await agd_u(1, { $set: { sec: [1, 2], uid: [1] } })
+	await agd_u(1, { $set: { sec: [1, 2], uid: [1], ordutc: utc - 1000, ordlim: 2, ordlimw: 1 } })
+	const ord = [
+		await pos({}, "pre", json({ aid: 1, nbr: nbr[0] })),
+		await pos({}, "pre", json({ aid: 1, nbr: nbr[0] })),
+		await pos({}, "pre", json({ aid: 1, nbr: nbr[1] })),
+	] as (Ord["_id"] | null)[]
+	assertEquals([2, null], [ord.filter(ordid => ordid !== null).length, ord[1]])
 	await pos({ jwt }, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
 	const w = [
 		await pos({ jwt }, "pre", json({ actid: actid[1] })),
@@ -96,6 +103,7 @@ Deno.test("pre", async () => {
 	assertEquals([2, 1, 1, 1], w.map(w => w.aid))
 	await Promise.all([
 		usr_d(1), usr_d(2), soc_d(1), agd_d(1),
+		...ord.filter(ordid => ordid !== null).map(ordid => ord_d(ordid!)),
 		rec_d(coll.fund, w[0]), rec_d(coll.work, w[1]), rec_d(coll.work, w[2]), rec_d(coll.work, w[3]),
 		aut_d(1), ...actid.map(act_d), md_d(coll.lit, 1),
 	])
@@ -156,11 +164,13 @@ Deno.test("put", async () => {
 	const p: PasPos = {}
 	const nbr = "11111111111"
 	const utc = Date.now()
+	const ordid = { nbr, aid: 1, utc }
 	const workid = { uid: 1, aid: 1, utc }
 	await Promise.all([
 		await usr_c(nbr, "四川", "成都"), usr_u(1, { $set: { ref: [1, 2] } }),
 		await soc_c("小组", "江苏", "苏州"), soc_u(1, { $set: { ref: [1, 2] } }),
-		await agd_c("活动", "江苏", "苏州"), agd_u(1, { $set: { ref: [1, 2] } }),
+		await agd_c("活动", "江苏", "苏州"), agd_u(1, { $set: { ref: [1, 2], sec: [2] } }),
+		await ord_c({ _id: ordid, ord: true }),
 		await md_c(coll.wsl, { nam: "标题", uid: 1 }),
 		rec_c(coll.work, { _id: workid, ref: [], rej: [], work: "work", msg: "msg" }),
 		aut_c({ _id: 1, aut: ["aut", "wsl"] }),
@@ -183,8 +193,9 @@ Deno.test("put", async () => {
 		pos({ jwt }, "put", json(aus)),
 		await pos({ jwt }, "put", json({ aid: 1, rol: "res", uid: 1, add: true })),
 		await pos({ jwt }, "put", json({ aid: 1, rol: "res", uid: 2, add: true })),
-		pos({ jwt }, "put", json({ aid: 1, rol: "uid", uid: 1, add: true })),
+		await pos({ jwt }, "put", json({ aid: 1, rol: "uid", uid: 1, add: true })),
 		pos({ jwt }, "put", json({ aid: 1, rol: "uid", uid: 2, add: true })),
+		pos({ jwt }, "put", json({ ordid, ord: false })),
 		pos({ jwt }, "put", json({ workid, msg: "updated" })),
 		pos({ jwt }, "put", json({ aid: 1 })),
 		pos({ jwt }, "put", json(mdu)),
@@ -193,7 +204,7 @@ Deno.test("put", async () => {
 	assertEquals({ _id: 1, nam: su.nam, uidlim: su.uidlim }, await soc_r(1, { nam: 1, uidlim: 1 }))
 	assertEquals({
 		_id: 1, nam: au.nam, intro: aus.intro,
-		sec: [1], uid: [1], res: [],
+		sec: [2, 1], uid: [1], res: [],
 		uidlim: au.uidlim, reslim: aus.reslim,
 		expense: aus.expense,
 	}, await agd_r(1, {
@@ -204,6 +215,7 @@ Deno.test("put", async () => {
 	assertEquals({ nam: mdu.nam, md: mdu.md }, { nam: wsl!.nam, md: wsl!.md })
 	await pos({ jwt }, "put", json({ aid: 1, rol: "uid" }))
 	assertEquals({ _id: 1, uid: [] }, await agd_r(1, { uid: 1 }))
+	assertEquals({ _id: ordid, ord: false }, await ord_r(ordid))
 	assertEquals([{ _id: workid, ref: [], rej: [], work: "work", msg: "updated" }], await rec_f(coll.work, 0))
-	await Promise.all([usr_d(1), soc_d(1), agd_d(1), md_d(coll.wsl, 1), rec_d(coll.work, workid), aut_d(1)])
+	await Promise.all([usr_d(1), soc_d(1), agd_d(1), md_d(coll.wsl, 1), ord_d(ordid), rec_d(coll.work, workid), aut_d(1)])
 })

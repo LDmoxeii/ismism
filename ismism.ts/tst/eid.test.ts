@@ -9,6 +9,7 @@ import { nid } from "../src/eid/id.ts"
 import { md_c, md_f, md_r, md_u } from "../src/eid/md.ts"
 import { aut_c, aut_d, aut_g } from "../src/eid/aut.ts"
 import { utc_h } from "../src/ont/utc.ts"
+import { ord_c, ord_d, ord_f, ord_r, ord_u } from "../src/eid/ord.ts"
 
 await db("tst", true)
 
@@ -80,6 +81,26 @@ Deno.test("rel", async () => {
 	await Promise.all([
 		aut_d(2), aut_d(3), usr_d(1), soc_d(1), soc_d(2), soc_d(3)
 	])
+})
+
+Deno.test("ord", async () => {
+	const utc = Date.now()
+	const id = [
+		{ nbr: "11111111112", aid: 3, utc: utc + 200 },
+		{ nbr: "11111111112", aid: 4, utc: utc + 100 },
+		{ nbr: "11111111111", aid: 4, utc },
+	]
+	assert(0 === (await ord_f())?.length)
+	assert(0 === (await ord_f({ nbr: id[0].nbr, utc }))?.length)
+
+	assertEquals(id, await Promise.all(id.map(_id => ord_c({ _id, ord: true }))))
+	assertEquals((await ord_f({ utc: utc + 100 }))!.length, 1)
+	assertEquals((await ord_f({ utc: utc + 200 }))!.map(r => r._id), id.slice(1))
+	assertEquals((await ord_f({ nbr: id[0].nbr, utc: utc + 300 }))!.map(r => r._id), id.slice(0, 2))
+	assertEquals((await ord_f({ nbr: id[0].nbr, aid: id[0].aid, utc: id[0].utc + 100 })), [{ _id: id[0], ord: true }])
+	assertEquals(await ord_u(id[1], { $set: { ord: false } }), 1)
+	assertEquals(await ord_r(id[1]), { _id: id[1], ord: false })
+	assertEquals([1, 1, 1], await Promise.all(id.map(ord_d)))
 })
 
 Deno.test("rec", async () => {
