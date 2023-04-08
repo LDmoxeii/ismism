@@ -1,13 +1,14 @@
 import type { Ret } from "./can.ts"
-import { is_id } from "../eid/is.ts"
+import { is_id, is_nbr } from "../eid/is.ts"
 import { coll } from "../db.ts"
-import { agd, aut, live, md, nid, rec, soc, usr } from "./doc.ts"
+import { agd, aut, live, md, nid, ord, rec, soc, usr } from "./doc.ts"
 import { id } from "../eid/id.ts"
 
 export type NId = Ret<typeof nid>
 export type Usr = Ret<typeof usr>
 export type Soc = Ret<typeof soc>
 export type Agd = Ret<typeof agd>
+export type Ord = Ret<typeof ord>
 export type Rec = Ret<typeof rec>
 export type Live = Ret<typeof live>
 export type Aut = Ret<typeof aut>
@@ -33,6 +34,12 @@ export async function que(
 			const [adm1, adm2] = [p.get("adm1"), p.get("adm2")]
 			const aid = await id(coll.agd, adm2 ? { adm2 } : adm1 ? { adm1 } : undefined)
 			return await Promise.all(aid.map(agd))
+		} case "ord": {
+			const nbr = p.get("nbr")
+			const [aid, utc] = ["aid", "utc"].map(t => parseInt(p.get(t) ?? ""))
+			if (nbr && is_nbr(nbr)) return await ord({ nbr, utc })
+			else if (is_id(aid)) return await ord({ aid, utc })
+			break
 		} case "rec": {
 			const c = p.get("c")
 			const [utc, uid, sid, aid] = ["utc", "uid", "sid", "aid"].map(t => parseInt(p.get(t) ?? ""))

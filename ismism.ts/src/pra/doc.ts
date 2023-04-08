@@ -1,4 +1,4 @@
-import type { Agd, Md, Rec, Soc, Usr, Work } from "../eid/typ.ts"
+import type { Agd, Md, Ord, Rec, Soc, Usr, Work } from "../eid/typ.ts"
 import { Coll, coll } from "../db.ts"
 import { rolref } from "../eid/rel.ts"
 import { usr_r } from "../eid/usr.ts"
@@ -8,6 +8,7 @@ import { nrec, nrecday, rec_f, rec_r, work_l } from "../eid/rec.ts"
 import { id, idnam, nid_of_adm } from "../eid/id.ts"
 import { aut_g, aut_r } from "../eid/aut.ts"
 import { md_f, md_r } from "../eid/md.ts"
+import { ord_f } from "../eid/ord.ts"
 
 export async function nid(
 ) {
@@ -20,7 +21,7 @@ export async function nid(
 
 const pid = { nam: 1, rej: 1, ref: 1, utc: 1, adm1: 1, adm2: 1, intro: 1 } as const
 const prel = { sec: 1, uidlim: 1, uid: 1, reslim: 1, res: 1 } as const
-const pagd = { account: 1, budget: 1, fund: 1, expense: 1, goal: 1, img: 1 } as const
+const pagd = { account: 1, budget: 1, fund: 1, expense: 1, goal: 1, img: 1, ordutc: 1, ordlim: 1, ordlimw: 1 } as const
 
 export async function usr(
 	_id: Usr["_id"]
@@ -64,6 +65,14 @@ export async function agd(
 	])
 	if (!nr) return null
 	return { ...a, unam, nrecd90, nrec: nr }
+}
+
+export async function ord(
+	id: Pick<Ord["_id"], "nbr" | "utc"> | Pick<Ord["_id"], "aid" | "utc">
+) {
+	const d = await ord_f(id)
+	if (!d) return null
+	return { ord: d, anam: await idnam(coll.agd, d.map(d => d._id.aid)) }
 }
 
 export async function rec<

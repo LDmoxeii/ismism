@@ -5,7 +5,8 @@ import { rec_c } from "../src/eid/rec.ts"
 import { md_c } from "../src/eid/md.ts"
 import { soc_c, soc_u } from "../src/eid/soc.ts"
 import { usr_c } from "../src/eid/usr.ts"
-import { Agd, Md, que, Rec, Soc, Usr } from "../src/pra/que.ts"
+import { Agd, Md, Ord, que, Rec, Soc, Usr } from "../src/pra/que.ts"
+import { ord_c } from "../src/eid/ord.ts"
 
 await db("tst", true)
 const utc = Date.now()
@@ -24,6 +25,9 @@ await Promise.all([
 	soc_u(2, { $set: { uid: [3] } }),
 	agd_u(1, { $set: { uid: [1, 2, 3] } }),
 	agd_u(2, { $set: { uid: [3] } }),
+	ord_c({ _id: { nbr: "11111111111", aid: 1, utc }, ord: false }),
+	ord_c({ _id: { nbr: "11111111111", aid: 2, utc: utc + 500 }, ord: false }),
+	ord_c({ _id: { nbr: "11111111112", aid: 2, utc: utc + 1000 }, ord: true }),
 	rec_c(coll.work, { _id: { uid: 1, aid: 1, utc }, rej: [], ref: [], work: "work", msg: "work" }),
 	rec_c(coll.work, { _id: { uid: 1, aid: 2, utc }, rej: [], ref: [], work: "work", msg: "work" }),
 	rec_c(coll.work, { _id: { uid: 2, aid: 1, utc: utc + 1 }, rej: [], ref: [], work: "video", nam: "nam", src: "src" }),
@@ -37,6 +41,7 @@ await Promise.all([
 export function p(
 	obj: {
 		c?: string,
+		nbr?: string,
 		uid?: number,
 		sid?: number,
 		aid?: number,
@@ -81,6 +86,17 @@ Deno.test("agd", async () => {
 	assertEquals(a[2]?.nrec, { work: 2, fund: 1 })
 	const a1 = await que("agd", p({ aid: a[2]?._id })) as Agd
 	assertEquals(a[2], a1)
+})
+
+Deno.test("ord", async () => {
+	const ord_nbr1 = await que("ord", p({ nbr: "11111111111", utc: 0 })) as Ord
+	const ord_nbr2 = await que("ord", p({ nbr: "11111111112", utc: 0 })) as Ord
+	const ord_aid = await que("ord", p({ aid: 2, utc: 0 })) as Ord
+	const ord_utc = await que("ord", p({ aid: 2, utc: ord_aid!.ord[0]._id.utc })) as Ord
+	assertEquals(ord_nbr1?.ord.length, 2)
+	assertEquals(ord_nbr2?.ord.length, 1)
+	assertEquals(ord_aid?.ord.length, 2)
+	assertEquals(ord_utc?.ord, ord_aid?.ord.slice(1, 2))
 })
 
 Deno.test("rec", async () => {
