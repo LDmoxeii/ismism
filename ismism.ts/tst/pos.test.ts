@@ -88,9 +88,9 @@ Deno.test("pre", async () => {
 	assertEquals({ _id: 1, aut: ["sup", "aut", "wsl"] }, await aut_r(1))
 	await agd_u(1, { $set: { sec: [1, 2], uid: [1], ordutc: utc - 1000, ordlim: 2, ordlimw: 1 } })
 	const ord = [
-		await pos({}, "pre", json({ aid: 1, nbr: nbr[0] })),
-		await pos({}, "pre", json({ aid: 1, nbr: nbr[0] })),
-		await pos({}, "pre", json({ aid: 1, nbr: nbr[1] })),
+		await pos({}, "pre", json({ aid: 1, nbr: nbr[0], sms: false, msg: "msg" })),
+		await pos({}, "pre", json({ aid: 1, nbr: nbr[0], sms: false, msg: "msg" })),
+		await pos({}, "pre", json({ aid: 1, nbr: nbr[1], sms: false, msg: "msg" })),
 	] as (Ord["_id"] | null)[]
 	assertEquals([2, null], [ord.filter(ordid => ordid !== null).length, ord[1]])
 	await pos({ jwt }, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
@@ -170,7 +170,7 @@ Deno.test("put", async () => {
 		await usr_c(nbr, "四川", "成都"), usr_u(1, { $set: { ref: [1, 2] } }),
 		await soc_c("小组", "江苏", "苏州"), soc_u(1, { $set: { ref: [1, 2] } }),
 		await agd_c("活动", "江苏", "苏州"), agd_u(1, { $set: { ref: [1, 2], sec: [2] } }),
-		await ord_c({ _id: ordid, ord: true }),
+		await ord_c({ _id: ordid, code: 1, ord: true, msg: "msg" }),
 		await md_c(coll.wsl, { nam: "标题", uid: 1 }),
 		rec_c(coll.work, { _id: workid, ref: [], rej: [], work: "work", msg: "msg" }),
 		aut_c({ _id: 1, aut: ["aut", "wsl"] }),
@@ -215,7 +215,7 @@ Deno.test("put", async () => {
 	assertEquals({ nam: mdu.nam, md: mdu.md }, { nam: wsl!.nam, md: wsl!.md })
 	await pos({ jwt }, "put", json({ aid: 1, rol: "uid" }))
 	assertEquals({ _id: 1, uid: [] }, await agd_r(1, { uid: 1 }))
-	assertEquals({ _id: ordid, ord: false }, await ord_r(ordid))
+	assertEquals({ _id: ordid, code: 1, ord: false, msg: "msg" }, await ord_r(ordid))
 	assertEquals([{ _id: workid, ref: [], rej: [], work: "work", msg: "updated" }], await rec_f(coll.work, 0))
 	await Promise.all([usr_d(1), soc_d(1), agd_d(1), md_d(coll.wsl, 1), ord_d(ordid), rec_d(coll.work, workid), aut_d(1)])
 })

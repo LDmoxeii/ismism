@@ -8,10 +8,11 @@ import { soc_c } from "../eid/soc.ts"
 import { agd_c, agd_r } from "../eid/agd.ts"
 import { rec_c } from "../eid/rec.ts"
 import { md_c } from "../eid/md.ts"
-import { is_aut, is_id, is_lim, is_msg, is_nam, is_ordid, is_url, lim_aud, lim_aut, lim_lit, lim_wsl } from "../eid/is.ts"
+import { is_aut, is_id, is_lim, is_msg, is_nam, is_ordid, is_url, len_code, lim_aud, lim_aut, lim_code, lim_lit, lim_wsl } from "../eid/is.ts"
 import { aut_c, aut_d, aut_g, aut_r, aut_u } from "../eid/aut.ts"
 import { utc_d, utc_h, utc_week } from "../ont/utc.ts"
-import { nord_f, ord_c } from "../eid/ord.ts"
+import { nord_f, ord_c, ord_d } from "../eid/ord.ts"
+import { smssend } from "../ont/sms.ts"
 
 export async function pre_usr(
 	pa: { pas: Pas } | { actid: Act["_id"] },
@@ -63,13 +64,17 @@ export async function pre_agd(
 	return await agd_c(nam, adm1, adm2)
 }
 
+const h_code_valid = 1
+
 export async function pre_ord(
 	nbr: Ord["_id"]["nbr"],
 	aid: Ord["_id"]["aid"],
+	msg: Ord["msg"],
+	sms: boolean,
 ): DocC<Ord["_id"]> {
 	const utc = Date.now()
 	const _id = { nbr, aid, utc } as Ord["_id"]
-	if (!is_ordid(_id)) return null
+	if (!is_ordid(_id) || !is_msg(msg)) return null
 	const agd = await agd_r(aid, { ordutc: 1, ordlim: 1, ordlimw: 1 })
 	if (!agd || (utc - agd.ordutc > utc_d)) return null
 	const [ordh, ordw, ord] = await Promise.all([
@@ -78,7 +83,15 @@ export async function pre_ord(
 		nord_f({ aid, utc: agd.ordutc }),
 	])
 	if (ordh > 0 || !is_lim(ordw + 1, agd.ordlimw) || !is_lim(ord + 1, agd.ordlim)) return null
-	return ord_c({ _id, ord: true })
+	const code = Math.round(Math.random() * lim_code)
+	const c = await ord_c({ _id, code, ord: true, msg })
+	if (c && sms) {
+		const { sent } = await smssend(nbr, `${code}`.padStart(len_code, "0"), `${h_code_valid}`)
+		if (sent) return c
+		await ord_d(c)
+		return null
+	}
+	return c
 }
 
 export async function pre_work(

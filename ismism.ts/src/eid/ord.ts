@@ -1,5 +1,5 @@
 import { DocC, DocD, DocR, DocU, Update, coll } from "../db.ts"
-import { is_id, is_nbr, is_ordid, lim_ord_f } from "./is.ts"
+import { is_id, is_msg, is_nbr, is_ordid, lim_ord_f } from "./is.ts"
 import type { Ord } from "./typ.ts"
 
 export async function ord_c(
@@ -45,7 +45,7 @@ export async function ord_u(
 	_id: Ord["_id"],
 	u: Update<Ord>,
 ): DocU {
-	if (!is_ordid(_id)) return null
+	if (!is_ordid(_id) || u.$set && u.$set.msg && !is_msg(u.$set.msg)) return null
 	try {
 		const { matchedCount, modifiedCount } = await coll.ord.updateOne({ _id }, u)
 		if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0

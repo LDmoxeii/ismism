@@ -93,13 +93,13 @@ Deno.test("ord", async () => {
 	assert(0 === (await ord_f())?.length)
 	assert(0 === (await ord_f({ nbr: id[0].nbr, utc }))?.length)
 
-	assertEquals(id, await Promise.all(id.map(_id => ord_c({ _id, ord: true }))))
+	assertEquals(id, await Promise.all(id.map(_id => ord_c({ _id, code: 1, ord: true, msg: "msg" }))))
 	assertEquals((await ord_f({ utc: utc + 100 }))!.length, 1)
 	assertEquals((await ord_f({ utc: utc + 200 }))!.map(r => r._id), id.slice(1))
 	assertEquals((await ord_f({ nbr: id[0].nbr, utc: utc + 300 }))!.map(r => r._id), id.slice(0, 2))
-	assertEquals((await ord_f({ nbr: id[0].nbr, aid: id[0].aid, utc: id[0].utc + 100 })), [{ _id: id[0], ord: true }])
+	assertEquals((await ord_f({ nbr: id[0].nbr, aid: id[0].aid, utc: id[0].utc + 100 })), [{ _id: id[0], code: 1, ord: true, msg: "msg" }])
 	assertEquals(await ord_u(id[1], { $set: { ord: false } }), 1)
-	assertEquals(await ord_r(id[1]), { _id: id[1], ord: false })
+	assertEquals(await ord_r(id[1]), { _id: id[1], code: 1, ord: false, msg: "msg" })
 	assertEquals([1, 1, 1], await Promise.all(id.map(ord_d)))
 })
 

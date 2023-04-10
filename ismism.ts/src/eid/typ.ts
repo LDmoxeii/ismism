@@ -38,7 +38,9 @@ export type Agd = Soc & {
 
 export type Ord = {
 	_id: { nbr: string, aid: Agd["_id"], utc: number },
+	code: number,
 	ord: boolean,
+	msg: string,
 }
 
 export type Rec = {

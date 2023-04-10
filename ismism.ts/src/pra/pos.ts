@@ -54,7 +54,7 @@ export async function pos(
 
 		case "pre": {
 			p.etag = utc_etag()
-			const { aid, actid, nbr, adm1, adm2, snam, anam, msg, nam, src, utcs, utce, aut, wslnam, litnam } = json
+			const { aid, actid, nbr, sms, adm1, adm2, snam, anam, msg, nam, src, utcs, utce, aut, wslnam, litnam } = json
 			if (typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof nbr === "string") {
 					if (typeof actid === "string") return pre_usr({ actid }, nbr, adm1, adm2)
@@ -64,7 +64,7 @@ export async function pos(
 					else if (typeof anam === "string") return pre_agd(p.pas, anam, adm1, adm2)
 				}
 			} else if (typeof aid === "number") {
-				if (typeof nbr === "string") return pre_ord(nbr, aid)
+				if (typeof nbr === "string" && typeof sms === "boolean" && typeof msg === "string") return pre_ord(nbr, aid, msg, sms)
 				else if (!p.pas) break
 				else if (typeof msg === "string") return pre_work(p.pas, aid, { msg })
 				else if (typeof nam === "string" && typeof src === "string") {
