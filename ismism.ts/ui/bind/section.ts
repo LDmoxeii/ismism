@@ -8,6 +8,7 @@ import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
 import { is_ref, is_rej, is_sec } from "../../src/pra/can.ts"
 import { is_aut, is_id, is_md, is_nam, lim_aut, lim_nrecday, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
+import { qrcode as qr } from "https://deno.land/x/qrcode@v2.0.0/mod.ts"
 
 export function label(
 	el: HTMLElement | SVGSVGElement,
@@ -227,6 +228,13 @@ export function seladm(
 	selopt(t.adm2, adm.get(adm1)!)
 	t.adm2.value = adm2
 	t.adm1.addEventListener("change", () => selopt(t.adm2, adm.get(t.adm1.value)!))
+}
+
+export async function qrcode(
+	s: Section["qrcode"],
+	h: string,
+) { // deno-lint-ignore no-explicit-any
+	s.qrcode.src = await qr(`https://${location.hostname}#${h}`) as any as string
 }
 
 function nrecday(

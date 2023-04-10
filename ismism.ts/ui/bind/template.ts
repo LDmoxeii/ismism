@@ -1,4 +1,4 @@
-import type { Rec } from "../../src/eid/typ.ts"
+import type { Ord, Rec } from "../../src/eid/typ.ts"
 import type { Pos } from "../../src/pra/pos.ts"
 import type { Agd } from "./article.ts"
 
@@ -18,7 +18,7 @@ export async function que<T>(
 	return r.json() as T
 }
 
-export type PosB = Record<string, string | number | boolean | Agd["img"] | Agd["goal"] | Rec["_id"]>
+export type PosB = Record<string, string | number | boolean | Agd["img"] | Agd["goal"] | Ord["_id"] | Rec["_id"]>
 export async function pos<T>(
 	p: Pos,
 	b: PosB,
@@ -56,6 +56,10 @@ const section = {
 		sec: t("p"), uid: t("p"), res: t("p"),
 	},
 
+	qrcode: {
+		qrcode: t("img"),
+	},
+
 	cover: {
 		cover: t("section"),
 		imgn: t("div"), prev: t("button"), next: t("button"),
@@ -71,6 +75,10 @@ const section = {
 
 	rec: {
 		nrecday: t("section"), recwork: t("p"), recfund: t("p"),
+	},
+
+	ordl: {
+		ordl: t("p"),
 	},
 
 	wsllit: {
@@ -154,6 +162,21 @@ const template = {
 	live: {
 		tid: "live" as const,
 		live: t("p"), livep: t("p"),
+	},
+
+	ordl: {
+		tid: "ordl" as const,
+		pre: t("button"),
+		...section.ordl,
+		...section.qrcode,
+	},
+
+	ord: {
+		tid: "ord" as const, ord: t("article"),
+		unam: t("a"), anam: t("a"),
+		meta: t("section"),
+		msg: t("section"),
+		put: t("section"), putc: t("button"), puto: t("button"),
 	},
 
 	rec: {

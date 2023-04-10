@@ -74,7 +74,7 @@ export async function pre_ord(
 ): DocC<Ord["_id"]> {
 	const utc = Date.now()
 	const _id = { nbr, aid, utc } as Ord["_id"]
-	if (!is_ordid(_id) || !is_msg(msg)) return null
+	if (!is_ordid(_id)) return null
 	const agd = await agd_r(aid, { ordutc: 1, ordlim: 1, ordlimw: 1 })
 	if (!agd || (utc - agd.ordutc > utc_d)) return null
 	const [ordh, ordw, ord] = await Promise.all([

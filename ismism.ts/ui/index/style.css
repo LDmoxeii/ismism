@@ -283,6 +283,7 @@ article.transparent {
 	box-shadow: none;
 }
 
+article.ord,
 article.rec {
 	width: fit-content;
 	margin: 0;
@@ -290,11 +291,13 @@ article.rec {
 	box-shadow: none;
 }
 
+article.ord>section.nam,
 article.rec>section.nam {
 	justify-content: left;
 	gap: 8px;
 }
 
+article.ord>section.nam>a.anam,
 article.rec>section.nam>a.anam {
 	padding: 0.2ch 1ch;
 	font-size: var(--small);
@@ -302,12 +305,14 @@ article.rec>section.nam>a.anam {
 	color: var(--white);
 }
 
+article.ord>section.meta,
 article.rec>section.meta {
 	padding: 0.5ch;
 	font-size: var(--small);
 	font-style: italic;
 }
 
+article.ord>section.msg,
 article.rec>section.msg {
 	min-width: 240px;
 	width: fit-content;
@@ -337,20 +342,27 @@ article.rec>section.msg.rej2 {
 	background: var(--palered);
 }
 
+article.ord>section.meta.pre,
 article.rec>section.meta.ref2,
-article.rec>section.msg.ref2,
-:empty::before {
+article.rec>section.msg.ref2 {
 	color: var(--green);
 }
 
+article.ord>section.msg.pre,
 article.rec>section.msg.ref2 {
 	background: var(--palegreen);
 }
 
+article.ord>section.put,
 article.rec>section.re {
 	font-size: var(--small);
 	padding: 1em 0;
 	color: var(--gray);
+}
+
+article.ord>section.put {
+	width: 100%;
+	text-align: right;
 }
 
 article.rec>section.re>section.putpro {
@@ -358,12 +370,14 @@ article.rec>section.re>section.putpro {
 	float: right;
 }
 
+article.ord>section.put>button,
 article.rec>section.re>section.putpro>button {
 	background: none;
 }
 
 @media (hover: hover) {
 
+	article.ord button:hover,
 	article.rec a:hover,
 	article.rec button:hover {
 		color: var(--amber);
@@ -683,6 +697,12 @@ section.md img {
 
 p.intro {
 	white-space: pre-wrap;
+}
+
+img.qrcode {
+	display: block;
+	margin: 16px auto;
+	width: 160px;
 }
 
 button.putn {

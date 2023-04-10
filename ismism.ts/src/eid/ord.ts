@@ -5,7 +5,7 @@ import type { Ord } from "./typ.ts"
 export async function ord_c(
 	ord: Ord
 ): DocC<Ord["_id"]> {
-	if (!is_ordid(ord._id)) return null
+	if (!is_ordid(ord._id) || ord.msg.length > 0 && !is_msg(ord.msg)) return null
 	try { return await coll.ord.insertOne(ord) as Ord["_id"] }
 	catch { return null }
 }

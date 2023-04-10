@@ -1,11 +1,11 @@
 import type { Fund, Id, Md, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, Pos, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
-import type * as Q from "../../src/pra/que.ts"
-import { is_aut, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_md_pin, lim_sup, lim_url, lim_wsl } from "../../src/eid/is.ts"
+import * as Q from "../../src/pra/que.ts"
+import { is_aut, is_lim, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_md_pin, lim_sup, lim_url, lim_wsl } from "../../src/eid/is.ts"
 import { is_pre_usr, is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/can.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
-import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit, label } from "./section.ts"
+import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit, label, qrcode } from "./section.ts"
 import { bind, main, pas_a, pos, PosB, que, utc_refresh } from "./template.ts"
 import { is_actid, is_goal, is_img, is_msg, is_nam, is_nbr, is_url, } from "../../src/eid/is.ts"
 import { utc_d, utc_date, utc_medium, utc_short } from "../../src/ont/utc.ts"
@@ -243,7 +243,7 @@ export async function agd(
 			else t.put.remove()
 			if (is_sec(nav.pas, { aid: a._id })) {
 				t.putord.addEventListener("click", () => put(`a${a._id}`, t.putord.innerText, {
-					nam: { p1: "今日份数：（0-128，编辑后重新计数）", p2: "单人单周份数：（周一开始计数）" }, val: { p1: `${a.ordlim}`, p2: `${a.ordlimw}` }, p: "put",
+					nam: { p1: "今日份数：（0-128，编辑后重新计数）", p2: "单人单周份数：（周一起算）" }, val: { p1: `${a.ordlim}`, p2: `${a.ordlimw}` }, p: "put",
 					b: p => {
 						if (!p.p1 || !p.p2) return null
 						return { aid: a._id, ordlim: parseInt(p.p1), ordlimw: parseInt(p.p2) }
@@ -340,25 +340,90 @@ async function live(
 	const t = bind("live")
 	label(t.live, `（${live.rec.length}）`, true)
 	label(t.livep, `（${livep.rec.length}）`, true)
-	for (const l of live.rec) t.live.append(rec("work", live, l))
-	for (const l of livep.rec) t.livep.append(rec("work", livep, l));
+	for (const l of live.rec) t.live.prepend(rec("work", live, l))
+	for (const l of livep.rec) t.livep.prepend(rec("work", livep, l));
 	(t.live.parentElement as HTMLDetailsElement).open = live.rec.length > 0
 
 	main.append(t.bind)
 }
 
-export async function ord(
+export type Ord = Omit<NonNullable<Q.Ord>, "anam"> & {
+	anam: Map<Id["_id"], Id["nam"]>,
+}
+
+export async function ordl(
 	aidutc: string
 ) {
 	const [aid, utc] = aidutc.split("utc").map(parseFloat)
-	const [a, n, d] = await Promise.all([
+	const [a, n] = await Promise.all([
 		que<Q.Agd>(`agd?aid=${aid}`),
 		que<number>(`nord?aid=${aid}&utc=${utc}`),
-		que<Q.Ord>(`ord?aid=${aid}&utc=${0}`),
 	])
-	if (!a || a.ordutc !== utc || !d) return idn(`ord${aid}`, "订单链接")
+	if (!a || a.ordutc !== utc) return idn(`ord${aid}`, "订单链接")
 
-	main.innerHTML = `${JSON.stringify(d)}`
+	main.innerHTML = ""
+	const t = bind("ordl")
+
+	if (is_lim(n + 1, a.ordlim)) t.pre.addEventListener("click", () => put(`a${a._id}`, t.pre.innerText, {
+		nam: { p1: `手机号：（一周可下${a.ordlimw}单，周一起算）`, pa: "留言（选填）" }, val: {}, p: "pre",
+		b: p => {
+			if (!p.p1 || !is_nbr(p.p1)) return null
+			return { nbr: p.p1, aid, msg: p.pa!.trim(), sms: location.hostname === "ismist.cn" }
+		},
+		a: `下单失败\n无效手机号\n或今日订单已满\n或该手机号本周以达${a.ordlimw}单`,
+		r: () => ordl(aidutc),
+	})); else {
+		t.pre.disabled = true
+		t.pre.innerText = "订单已满"
+	}
+
+	label(t.ordl, `（今日 ${n}/${a.ordlim}）`, true)
+	let utrord = 0
+	const lord = async () => {
+		const p = t.ordl
+		if (utrord < 0 || p.scrollTop > 0) return
+		const h = utrord === 0 ? 0 : p.scrollHeight
+		const q = await que<Q.Ord>(`ord?aid=${aid}&utc=${utrord}`)
+		if (!q || q.ord.length === 0) { utrord = -1; return }
+		utrord = q.ord[q.ord.length - 1]._id.utc
+		const l = { ...q, anam: new Map(q.anam) }
+		for (const d of l.ord) p.prepend(ord(aidutc, l, d))
+		setTimeout(() => p.scrollTop = p.scrollHeight - h, 100)
+	}
+	lord()
+	t.ordl.addEventListener("scroll", lord)
+	qrcode(t, `ord${aidutc}`)
+
+	main.append(t.bind)
+}
+
+function ord(
+	aidutc: string,
+	l: Ord,
+	d: Ord["ord"][0],
+): DocumentFragment {
+	const t = bind("ord")
+	const [aid, ordid] = [d._id.aid, d._id]
+	const nbr = `${d._id.nbr.substring(0, 3)}****${d._id.nbr.substring(7)}`
+	const msg = d.msg.length > 0 ? `\n\n留言：${d.msg}` : ""
+	t.unam.innerText = `订单#${d.code}`
+	t.anam.innerText = l.anam.get(aid)!
+	t.anam.href = `#a${aid}`
+	t.meta.innerText = utc_short(d._id.utc)
+	t.msg.innerText = `${d.ord ? "准备中" : "已完成"}\n${nbr}${msg}`
+	if (d.ord) [t.meta, t.msg].forEach(el => el.classList.add("pre"))
+	if (nav.pas && is_uid(nav.pas, { aid })) {
+		btn(t.putc, t.putc.innerText, {
+			pos: () => d.ord ? pos<DocD>("put", { ordid }) : pos<DocU>("put", { ordid, ord: true }),
+			confirm: "取消订单？",
+			refresh: () => ordl(aidutc),
+		})
+		if (d.ord) btn(t.puto, t.puto.innerText, {
+			pos: () => pos<DocU>("put", { ordid, ord: false }),
+			refresh: () => ordl(aidutc),
+		}); else t.puto.remove()
+	} else t.put.remove()
+	return t.bind
 }
 
 export type Rec = Omit<NonNullable<Q.Rec>, "unam" | "anam"> & {
@@ -600,8 +665,6 @@ export function put(
 		r: (r?: any) => void,
 	}
 ) {
-	if (!nav.pas) return
-
 	main.innerHTML = ""
 	const t = bind("put")
 
