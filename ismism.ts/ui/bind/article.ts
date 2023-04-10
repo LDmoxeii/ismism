@@ -395,6 +395,7 @@ export async function ordl(
 	qrcode(t, `ord${aidutc}`)
 
 	main.append(t.bind)
+	setTimeout(() => location.reload(), 15000)
 }
 
 function ord(
