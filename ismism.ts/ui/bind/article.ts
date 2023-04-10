@@ -8,7 +8,7 @@ import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit, label } from "./section.ts"
 import { bind, main, pas_a, pos, PosB, que, utc_refresh } from "./template.ts"
 import { is_actid, is_goal, is_img, is_msg, is_nam, is_nbr, is_url, } from "../../src/eid/is.ts"
-import { utc_medium, utc_short } from "../../src/ont/utc.ts"
+import { utc_d, utc_date, utc_medium, utc_short } from "../../src/ont/utc.ts"
 
 export function pas(
 ) {
@@ -234,10 +234,23 @@ export async function agd(
 		else t.intro.innerText = a.intro
 
 		if (nav.pas) {
+			if (is_sec(nav.pas, { aid: a._id }) || is_uid(nav.pas, { aid: a._id })) {
+				t.ord.parentElement?.classList.remove("none")
+				if (a.ordlim > 0 && Date.now() - a.ordutc < utc_d) ida(t.ord, [[`ord${a._id}utc${a.ordutc}`, utc_date(a.ordutc)]])
+			}
 			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { aid: a._id }))
 				t.put.addEventListener("click", () => putid("活动", a))
 			else t.put.remove()
 			if (is_sec(nav.pas, { aid: a._id })) {
+				t.putord.addEventListener("click", () => put(`a${a._id}`, t.putord.innerText, {
+					nam: { p1: "今日份数：（0-128，编辑后重新计数）", p2: "单人单周份数：（周一开始计数）" }, val: { p1: `${a.ordlim}`, p2: `${a.ordlimw}` }, p: "put",
+					b: p => {
+						if (!p.p1 || !p.p2) return null
+						return { aid: a._id, ordlim: parseInt(p.p1), ordlimw: parseInt(p.p2) }
+					},
+					a: "无效输入",
+					r: () => agd(a._id),
+				}))
 				t.putimg.addEventListener("click", () => put(`a${a._id}`, t.putimg.innerText, {
 					nam: { p1: "图片名：（2-16 个中文字符）", p2: "图片外链：（最长 128 个字符，或留空以删除图片）" }, val: {}, p: "put",
 					b: p => {
@@ -261,6 +274,7 @@ export async function agd(
 					r: () => agd(a._id),
 				}))
 			} else {
+				t.putord.remove()
 				t.putimg.remove()
 				t.putgoal.remove()
 			}
@@ -331,6 +345,20 @@ async function live(
 	(t.live.parentElement as HTMLDetailsElement).open = live.rec.length > 0
 
 	main.append(t.bind)
+}
+
+export async function ord(
+	aidutc: string
+) {
+	const [aid, utc] = aidutc.split("utc").map(parseFloat)
+	const [a, n, d] = await Promise.all([
+		que<Q.Agd>(`agd?aid=${aid}`),
+		que<number>(`nord?aid=${aid}&utc=${utc}`),
+		que<Q.Ord>(`ord?aid=${aid}&utc=${0}`),
+	])
+	if (!a || a.ordutc !== utc || !d) return idn(`ord${aid}`, "订单链接")
+
+	main.innerHTML = `${JSON.stringify(d)}`
 }
 
 export type Rec = Omit<NonNullable<Q.Rec>, "unam" | "anam"> & {

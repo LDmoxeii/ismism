@@ -3,6 +3,7 @@ import { is_id, is_nbr } from "../eid/is.ts"
 import { coll } from "../db.ts"
 import { agd, aut, live, md, nid, ord, rec, soc, usr } from "./doc.ts"
 import { id } from "../eid/id.ts"
+import { nord_f } from "../eid/ord.ts"
 
 export type NId = Ret<typeof nid>
 export type Usr = Ret<typeof usr>
@@ -34,6 +35,9 @@ export async function que(
 			const [adm1, adm2] = [p.get("adm1"), p.get("adm2")]
 			const aid = await id(coll.agd, adm2 ? { adm2 } : adm1 ? { adm1 } : undefined)
 			return await Promise.all(aid.map(agd))
+		} case "nord": {
+			const [aid, utc] = ["aid", "utc"].map(t => parseInt(p.get(t) ?? ""))
+			return await nord_f({ aid, utc })
 		} case "ord": {
 			const nbr = p.get("nbr")
 			const [aid, utc] = ["aid", "utc"].map(t => parseInt(p.get(t) ?? ""))
