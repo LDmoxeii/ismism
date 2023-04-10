@@ -1,4 +1,4 @@
-coll=(usr soc agd work fund act aut wsl lit)
+coll=(usr soc agd ord work fund act aut wsl lit)
 
 for c in $coll; do
 	echo importing $1/$c.json to ismism.$c 

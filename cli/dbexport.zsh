@@ -1,6 +1,6 @@
 rm -rf dbexport
 
-coll=(usr soc agd work fund act aut wsl lit)
+coll=(usr soc agd ord work fund act aut wsl lit)
 
 for c in $coll; do
 	echo exporting ismism.$c to dbexport/$c.json
