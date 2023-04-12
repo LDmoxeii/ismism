@@ -1,4 +1,5 @@
 import { DocC, DocD, DocR, DocU, Update, coll } from "../db.ts"
+import { agd_r } from "./agd.ts"
 import { is_id, is_msg, is_nbr, is_ordid, lim_ord_f } from "./is.ts"
 import type { Ord } from "./typ.ts"
 
@@ -15,6 +16,17 @@ export async function ord_r(
 ): DocR<Ord> {
 	if (!is_ordid(_id)) return null
 	return await coll.ord.findOne({ _id }) ?? null
+}
+
+export async function ord_a(
+	aid: Ord["_id"]["aid"]
+): DocR<Ord[]> {
+	const a = await agd_r(aid, { ordutc: 1 })
+	if (!a) return null
+	return await coll.ord.find({
+		"_id.aid": aid,
+		"_id.utc": { $gt: a.ordutc },
+	}, { sort: { "_id.utc": 1 } }).toArray()
 }
 
 export async function ord_f(

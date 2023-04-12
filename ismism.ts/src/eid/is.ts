@@ -25,6 +25,7 @@ export const lim_msg = 256
 export const lim_md = lim_intro * 8
 export const lim_ord_max = 128
 
+export const lim_ord_a = 8
 export const lim_ord_f = 32
 export const lim_nrecday = 90
 export const lim_rec_f = 32

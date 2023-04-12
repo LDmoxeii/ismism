@@ -2,7 +2,7 @@ import type { Fund, Id, Md, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, Pos, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import * as Q from "../../src/pra/que.ts"
-import { is_aut, is_lim, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_md_pin, lim_sup, lim_url, lim_wsl } from "../../src/eid/is.ts"
+import { is_aut, is_lim, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_md_pin, lim_ord_a, lim_sup, lim_url, lim_wsl } from "../../src/eid/is.ts"
 import { is_pre_usr, is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/can.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit, label, qrcode } from "./section.ts"
@@ -355,15 +355,21 @@ export async function ordl(
 	aidutc: string
 ) {
 	const [aid, utc] = aidutc.split("utc").map(parseFloat)
-	const [a, n] = await Promise.all([
+	const [a, orda] = await Promise.all([
 		que<Q.Agd>(`agd?aid=${aid}`),
-		que<number>(`nord?aid=${aid}&utc=${utc}`),
+		que<Q.Ord>(`ord?aid=${aid}`),
 	])
-	if (!a || a.ordutc !== utc) return idn(`ord${aid}`, "订单链接")
+	if (!a || a.ordutc !== utc || !orda) return idn(`ord${aid}`, "订单链接")
+	const n = orda.ord.length
 
 	main.innerHTML = ""
 	const t = bind("ordl")
 
+	if (nav.refresh === null) t.que.addEventListener("click", () => {
+		nav.refresh = setInterval(() => ordl(aidutc), 15000)
+		t.que.disabled = true
+	})
+	else t.que.disabled = true
 	if (is_lim(n + 1, a.ordlim)) t.pre.addEventListener("click", () => put(`a${a._id}`, t.pre.innerText, {
 		nam: { p1: `手机号：（一周可下${a.ordlimw}单，周一起算）`, pa: "留言（选填）" }, val: {}, p: "pre",
 		b: p => {
@@ -375,6 +381,19 @@ export async function ordl(
 	})); else {
 		t.pre.disabled = true
 		t.pre.innerText = "订单已满"
+	}
+
+	for (const d of orda.ord.filter(d => d.ord).slice(0, lim_ord_a)) {
+		const nbr = `${d._id.nbr.substring(0, 3)}****${d._id.nbr.substring(7)}`
+		const msg = d.msg.length > 0 ? `\n\n留言：${d.msg}` : ""
+		const b = t.orda.appendChild(document.createElement("button"))
+		btn(b, d._id.nbr.substring(7), {
+			confirm: `完成订单? \n\n${nbr}\n验证码：${d.code}${msg}`,
+			pos: () => pos<DocU>("put", { ordid: d._id, ord: false }),
+			alert: `${nbr}\n验证码：${d.code}${msg}`,
+			refresh: () => ordl(aidutc),
+		})
+		if (!nav.pas || !is_uid(nav.pas, { aid })) b.disabled = true
 	}
 
 	label(t.ordl, `（今日 ${n}/${a.ordlim}）`, true)

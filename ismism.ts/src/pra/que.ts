@@ -42,7 +42,7 @@ export async function que(
 			const nbr = p.get("nbr")
 			const [aid, utc] = ["aid", "utc"].map(t => parseInt(p.get(t) ?? ""))
 			if (nbr && is_nbr(nbr)) return await ord({ nbr, utc })
-			else if (is_id(aid)) return await ord({ aid, utc })
+			else if (is_id(aid)) return utc >= 0 ? await ord({ aid, utc }) : await ord({ aid })
 			break
 		} case "rec": {
 			const c = p.get("c")

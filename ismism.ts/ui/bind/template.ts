@@ -78,7 +78,7 @@ const section = {
 	},
 
 	ordl: {
-		ordl: t("p"),
+		orda: t("p"), ordl: t("p"),
 	},
 
 	wsllit: {
@@ -166,7 +166,7 @@ const template = {
 
 	ordl: {
 		tid: "ordl" as const,
-		pre: t("button"),
+		pre: t("button"), que: t("button"),
 		...section.ordl,
 		...section.qrcode,
 	},

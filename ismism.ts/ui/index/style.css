@@ -256,6 +256,7 @@ section>select {
 
 section>span>a:not(:first-child):before,
 section>p>a:not(:first-child):before,
+section>p>button:not(:first-child):before,
 section>p>span>a:not(:first-child):before {
 	content: "、";
 	color: var(--gray);

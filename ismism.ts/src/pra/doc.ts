@@ -8,7 +8,7 @@ import { nrec, nrecday, rec_f, rec_r, work_l } from "../eid/rec.ts"
 import { id, idnam, nid_of_adm } from "../eid/id.ts"
 import { aut_g, aut_r } from "../eid/aut.ts"
 import { md_f, md_r } from "../eid/md.ts"
-import { ord_f } from "../eid/ord.ts"
+import { ord_a, ord_f } from "../eid/ord.ts"
 
 export async function nid(
 ) {
@@ -68,9 +68,9 @@ export async function agd(
 }
 
 export async function ord(
-	id: Pick<Ord["_id"], "nbr" | "utc"> | Pick<Ord["_id"], "aid" | "utc">
+	id: Pick<Ord["_id"], "nbr" | "utc"> | Pick<Ord["_id"], "aid" | "utc"> | Pick<Ord["_id"], "aid">
 ) {
-	const d = await ord_f(id)
+	const d = Object.keys(id).length === 1 && "aid" in id ? await ord_a(id.aid) : await ord_f(id)
 	if (!d) return null
 	return { ord: d, anam: await idnam(coll.agd, d.map(d => d._id.aid)) }
 }

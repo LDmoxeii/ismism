@@ -10,11 +10,13 @@ export const nav: {
 	hash: string,
 	nid: NId | null,
 	cont: (() => void) | null,
+	refresh: null | number,
 } = {
 	pas: null,
 	hash: "",
 	nid: null,
 	cont: null,
+	refresh: null,
 }
 
 export async function navpas(
@@ -104,6 +106,8 @@ export function navhash(
 window.addEventListener("hashchange", () => {
 	nav.hash = decodeURI(location.hash).substring(1)
 	nav.cont = null
+	if (nav.refresh) clearInterval(nav.refresh)
+	nav.refresh = null
 	if (nav.hash === "pas") pas()
 	else if (nav.hash === "aut") aut()
 	else if (/^\d+$/.test(nav.hash)) usr(parseInt(nav.hash))
@@ -127,7 +131,7 @@ window.addEventListener("scroll", () => {
 
 export async function load(
 ) {
-	console.log("ismism-20230410")
+	console.log("ismism-20230412")
 	console.log(`\n主义主义开发小组！成员招募中！\n\n发送自我介绍至网站维护邮箱，或微信联系 728 万大可\n \n`)
 	await navpas()
 	window.dispatchEvent(new Event("hashchange"))
