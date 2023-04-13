@@ -32,7 +32,7 @@ export async function smssend(
 	})
 	const alg = "TC3-HMAC-SHA256"
 	const t = Math.round(Date.now() / 1000)
-	const d = utc_date(t * 1000)
+	const d = utc_date(t * 1000, false, true)
 	const scope = `${d}/${tc.service}/tc3_request`
 	const sigheader = "content-type;host"
 	const content_type = "application/json; charset=utf-8"
@@ -69,6 +69,7 @@ ${to_hex(await digest(req))}`
 		body,
 	})
 	const json = await res.json() as SendResponse
+	console.log(d, json)
 	return {
 		json, sent: json.Response.SendStatusSet[0]?.Code === "Ok"
 	}

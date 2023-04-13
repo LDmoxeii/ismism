@@ -14,8 +14,15 @@ export function utc_medium(
 export function utc_date(
 	utc: number,
 	zone = false,
+	utcd = false,
 ) {
 	const t = new Date(utc)
+	if (utcd) {
+		const y = t.getUTCFullYear()
+		const m = `${t.getUTCMonth() + 1}`.padStart(2, "0")
+		const d = `${t.getUTCDate()}`.padStart(2, "0")
+		return `${y}-${m}-${d}`
+	}
 	const y = t.getFullYear()
 	const m = `${t.getMonth() + 1}`.padStart(2, "0")
 	const d = `${t.getDate()}`.padStart(2, "0")
