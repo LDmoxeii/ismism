@@ -5,6 +5,7 @@
 ## 网站结构
 
 - `ismist.cn` 域名
+  - `index.html` 网站主页
   - `ismist.cn/q/` query api 读接口
   - `ismist.cn/p/` post api 写接口
 - 服务器
