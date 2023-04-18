@@ -2,7 +2,7 @@ import { assertEquals, assertNotEquals } from "./mod.ts"
 import { from_base64, from_hex, from_u8, to_base64, to_hex, to_u8 } from "../src/ont/base.ts"
 import { utc_day, utc_dt, utc_week } from "../src/ont/utc.ts"
 import { jwk_set, jwt_sign, jwt_verify } from "../src/ont/jwt.ts"
-import { adm2, is_adm, is_adm1, is_adm2 } from "../src/ont/adm.ts"
+import { is_adm, is_adm1, is_adm2 } from "../src/ont/adm.ts"
 
 Deno.test("base", () => {
 	const t = "this is a test 1234"

@@ -37,7 +37,6 @@
   - `stop.zsh` 关闭
   - `log.zsh` 日志统计
   - `ser.js`* 数据服务
-  - `dbset.js`* 数据库重置
   - `dbimport.zsh` 数据库导入
   - `dbexport.zsh` 数据库导出
   - `dbpull.zsh` 数据库同步到本地
@@ -45,6 +44,7 @@
   - `cli` 命令
     - `bundle.ts` 打包
     - `dbset.ts` 数据库重置
+    - `smssend.ts` 短信测试
   - `src` 源代码
     - `mod.ts` 库引用
     - `ont` 基础操作
