@@ -46,6 +46,15 @@
     - `bundle.ts` 打包
     - `dbset.ts` 数据库重置
   - `src` 源代码
+    - `mod.ts` 库引用
+    - `ont` 基础操作
+      - `base.ts` 进制转换
+      - `utc.ts` 标准时间
+      - `json.ts` 基础类型
+      - `crypt.ts` 加密计算
+      - `jwt.ts` 签名计算
+      - `adm.ts` 行政区
+      - `sms.ts` 短信服务
   - `tst` 测试
   - `ui` 用户界面
 
@@ -60,4 +69,5 @@
 
 #### 用户端
 
-- 网页浏览器
+- 网页浏览器，如 Chrome, Firefox, Safari, 微信浏览器等
+  > 兼容性大于 `es2022`

@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "./mod.ts"
+import { assertEquals, assertNotEquals } from "./mod.ts"
 import { from_base64, from_hex, from_u8, to_base64, to_hex, to_u8 } from "../src/ont/base.ts"
 import { utc_day, utc_dt, utc_week } from "../src/ont/utc.ts"
 import { jwk_set, jwt_sign, jwt_verify } from "../src/ont/jwt.ts"
+import { adm2, is_adm, is_adm1, is_adm2 } from "../src/ont/adm.ts"
 
 Deno.test("base", () => {
 	const t = "this is a test 1234"
@@ -34,12 +35,18 @@ Deno.test("jwt", async () => {
 	const json = { uid: 1000, nam: "nam", utc: Date.now() }
 	assertEquals(null, await jwt_verify(""))
 	const token = await jwt_sign(json)
-	assert(token.length > 0 && token.split(".").length == 2)
+	assertEquals([true, 2], [token.length > 0, token.split(".").length])
 	assertEquals(null, await jwt_verify(token.substring(1)))
 	assertEquals(await jwt_verify(token), json)
 	await jwk_set("anotherkey")
-	assert(null == await jwt_verify(token))
+	assertEquals(null, await jwt_verify(token))
 	const token2 = await jwt_sign(json)
-	assert(token != token2)
+	assertNotEquals(token, token2)
 	assertEquals(await jwt_verify(token2), json)
+})
+
+Deno.test("adm", () => {
+	assertEquals([true, true, false], [is_adm("四川", "成都"), is_adm("广东", "汕头"), is_adm("广东", "成都")])
+	assertEquals([true, true, false], [is_adm1("四川"), is_adm1("广东"), is_adm1("成都")])
+	assertEquals([true, true, false], [is_adm2("成都"), is_adm2("汕头"), is_adm2("四川")])
 })
