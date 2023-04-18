@@ -8,7 +8,10 @@
 				"$deno-test"
 			],
 			"group": "test",
-			"label": "deno: test"
+			"label": "deno: test",
+			"presentation": {
+				"clear": true
+			}
 		}
 	]
 }
