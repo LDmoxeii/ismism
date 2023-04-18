@@ -1,6 +1,7 @@
-import { assertEquals } from "./mod.ts"
+import { assert, assertEquals } from "./mod.ts"
 import { from_base64, from_hex, from_u8, to_base64, to_hex, to_u8 } from "../src/ont/base.ts"
 import { utc_day, utc_dt, utc_week } from "../src/ont/utc.ts"
+import { jwk_set, jwt_sign, jwt_verify } from "../src/ont/jwt.ts"
 
 Deno.test("base", () => {
 	const t = "this is a test 1234"
@@ -27,4 +28,18 @@ Deno.test("utc", () => {
 	assertEquals("2023-04-17", utc_dt(utc, "padutc"))
 	assertEquals("2023-4-18 00:00", utc_dt(utc_day(utc)))
 	assertEquals("2023-04-17", utc_dt(utc_week(utc), "pad"))
+})
+
+Deno.test("jwt", async () => {
+	const json = { uid: 1000, nam: "nam", utc: Date.now() }
+	assertEquals(null, await jwt_verify(""))
+	const token = await jwt_sign(json)
+	assert(token.length > 0 && token.split(".").length == 2)
+	assertEquals(null, await jwt_verify(token.substring(1)))
+	assertEquals(await jwt_verify(token), json)
+	await jwk_set("anotherkey")
+	assert(null == await jwt_verify(token))
+	const token2 = await jwt_sign(json)
+	assert(token != token2)
+	assertEquals(await jwt_verify(token2), json)
 })
