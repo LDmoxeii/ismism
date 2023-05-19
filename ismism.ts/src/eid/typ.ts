@@ -7,8 +7,8 @@ export type Id = {
 	intro: string,
 }
 export type Re = {
-	rej: Usr["_id"][],
-	ref: Usr["_id"][],
+	rej?: Usr["_id"][],
+	ref?: Usr["_id"][],
 }
 export type Rel = {
 	sec: Usr["_id"][],
@@ -50,11 +50,7 @@ export type Work = Rec & Re & {
 export type Video = Rec & Re & {
 	nam: string,
 	src: string,
-}
-export type Live = Rec & Re & {
-	nam: string,
-	src: string,
-	utc: { start: number, end: number },
+	utc?: { start: number, end: number },
 }
 export type Ord = Rec & {
 	nam: string,
@@ -68,6 +64,17 @@ export type Dst = {
 	_id: { rd: number, aid: Agd["_id"], uid?: Usr["_id"] },
 }
 
+export type Md = {
+	_id: number,
+	nam: string,
+	utc: { pre: number, put: number },
+	uid: Usr["_id"],
+	md: string,
+	pin?: boolean,
+}
+export type Wsl = Md
+export type Lit = Md
+
 export type Aut = {
 	_id: Usr["_id"],
 	aut: ("sup" | "aud" | "aut" | "wsl" | "lit")[],
@@ -80,14 +87,3 @@ export type Act = {
 	itm: Itm[],
 	rd?: Dst["_id"]["rd"],
 }
-
-export type Md = {
-	_id: number,
-	nam: string,
-	utc: { pre: number, put: number },
-	uid: Usr["_id"],
-	md: string,
-	pin?: boolean,
-}
-export type Wsl = Md
-export type Lit = Md

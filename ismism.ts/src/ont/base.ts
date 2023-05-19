@@ -1,4 +1,4 @@
-import { base64, hex } from "../mod.ts"
+import { base64, hex } from "./mod.ts"
 
 const te = new TextEncoder()
 const td = new TextDecoder()
