@@ -11,9 +11,7 @@ export const lim_code = 10 ** len_code
 export const lst_re = 2
 export const lim_re = 64
 
-export const lim_sec = 8
-export const lim_uid = 128
-export const lim_res = 64
+export const lim_rel = { sec: 8, uid: 128, res: 64 }
 
 export const lim_itm = 16
 export const lim_loc = 16
