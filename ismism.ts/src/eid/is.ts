@@ -50,6 +50,11 @@ export function is_idl(
 ) {
 	return id.length <= lim && id.every(is_id)
 }
+export function is_utc(
+	utc: number
+) {
+	return Number.isInteger(utc)
+}
 export function is_nam(
 	nam: string
 ) {
