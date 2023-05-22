@@ -4,6 +4,7 @@
 		{
 			"type": "deno",
 			"command": "test",
+			"args": ["--allow-net"],
 			"problemMatcher": [
 				"$deno-test"
 			],

@@ -47,7 +47,7 @@ export async function id_u<
 	u: Update<T>,
 ): DocU {
 	if (!is_id(_id)) return null
-	const s = u["$set"]
+	const s = u.$set
 	if (s) {
 		if (s.nam && !is_nam(s.nam)) return null
 		if ((s.adm1 || s.adm2) && !((s.adm1 && s.adm2) && is_adm(s.adm1, s.adm2))) return null

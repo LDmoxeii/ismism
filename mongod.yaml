@@ -1,0 +1,10 @@
+systemLog:
+  destination: file
+  path: log/mongo.log
+  logAppend: false
+storage:
+  dbPath: db
+net:
+  bindIp: 127.0.0.1, ::1
+setParameter:
+  notablescan: 1

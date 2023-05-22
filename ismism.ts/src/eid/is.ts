@@ -58,6 +58,11 @@ export function is_nam(
 ) {
 	return typeof nam === "string" && /^[\u4E00-\u9FFF]{2,16}$/.test(nam)
 }
+export function is_nbr(
+	nbr: string
+) {
+	return typeof nbr === "string" && /^1\d{10}$/.test(nbr)
+}
 export function is_intro(
 	intro: Id["intro"]
 ) {
@@ -77,7 +82,7 @@ export function is_src(
 export function is_itm(
 	itm: Itm
 ) {
-	return Object.keys(itm).length === 3 && is_nam(itm.nam) && itm.rmb >= 0 && itm.amt >= 0
+	return Object.keys(itm).length === 4 && is_nam(itm.nam) && itm.rmb >= 0 && itm.amt >= 0 && is_msg(itm.msg)
 }
 export function is_loc(
 	loc: Mnu["loc"][0]
@@ -92,6 +97,7 @@ export function is_mnu(
 		&& Object.keys(mnu.utc).length === 2 && mnu.utc.end >= mnu.utc.start
 		&& Object.keys(mnu.lim).length === 3 && mnu.lim.amt >= 0 && mnu.lim.sum >= 0 && mnu.lim.week >= 0
 		&& mnu.itm.every(is_itm) && mnu.loc.every(is_loc)
+		&& new Set(mnu.itm.map(t => t.nam)).size === mnu.itm.length
 }
 export function is_acc(
 	acc: Agd["acc"]

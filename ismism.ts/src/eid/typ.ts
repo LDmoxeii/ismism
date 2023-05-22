@@ -19,6 +19,7 @@ export type Itm = {
 	nam: string,
 	rmb: number,
 	amt: number,
+	msg: string,
 }
 export type Mnu = {
 	nam: string,
@@ -55,6 +56,7 @@ export type Video = Rec & Re & {
 export type Ord = Rec & {
 	nam: string,
 	itm: Itm[],
+	msg: "",
 	fin: boolean,
 	rev?: { uid: Usr["_id"][], mrk: number, msg: string },
 	loc?: Mnu["loc"][0],
