@@ -386,8 +386,9 @@ export async function ordl(
 	for (const d of orda.ord.filter(d => d.ord).slice(0, lim_ord_a)) {
 		const nbr = `${d._id.nbr.substring(0, 3)}****${d._id.nbr.substring(7)}`
 		const msg = d.msg.length > 0 ? `\n\n留言：${d.msg}` : ""
+		const msgs = d.msg.length > 0 ? `（${d.msg.substring(0, 5)}）` : ""
 		const b = t.orda.appendChild(document.createElement("button"))
-		btn(b, d._id.nbr.substring(7), {
+		btn(b, `${d._id.nbr.substring(7)}${msgs}`, {
 			confirm: `完成订单? \n\n${nbr}\n验证码：${d.code}${msg}`,
 			pos: () => pos<DocU>("put", { ordid: d._id, ord: false }),
 			alert: `${nbr}\n验证码：${d.code}${msg}`,
