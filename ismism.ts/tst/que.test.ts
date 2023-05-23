@@ -71,21 +71,19 @@ Deno.test("usr", async () => {
 })
 
 Deno.test("soc", async () => {
-	const s = await que("soc", p({})) as Soc[]
-	assertEquals(s!.length, 3)
-	assertEquals(s[2]?.nrec, { work: 3, fund: 2 })
-	assertEquals(s[0]?.nrec, { work: 0, fund: 0 })
-	const s1 = await que("soc", p({ sid: s[2]?._id })) as Soc
-	assertEquals(s[2], s1)
+	const s = await que("soc", p({})) as [number, string][]
+	assertEquals(s, [[1, "小组一"], [2, "小组二"], [3, "小组三"]])
+	const s1 = await que("soc", p({ sid: s[0][0] })) as Soc
+	assertEquals(s1?.nam, s[0][1])
+	assertEquals(s1?.nrec, { work: 3, fund: 2 })
 })
 
 Deno.test("agd", async () => {
-	const a = await que("agd", p({})) as Agd[]
-	assertEquals(a!.length, 3)
-	assertEquals(a[1]?.nrec, { work: 1, fund: 1 })
-	assertEquals(a[2]?.nrec, { work: 2, fund: 1 })
-	const a1 = await que("agd", p({ aid: a[2]?._id })) as Agd
-	assertEquals(a[2], a1)
+	const a = await que("agd", p({})) as [number, string][]
+	assertEquals(a, [[1, "活动一"], [2, "活动二"], [3, "活动三"]])
+	const a1 = await que("agd", p({ aid: a[0][0] })) as Agd
+	assertEquals(a1?.nam, a[0][1])
+	assertEquals(a1?.nrec, { work: 2, fund: 1 })
 })
 
 Deno.test("ord", async () => {

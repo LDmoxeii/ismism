@@ -710,6 +710,14 @@ button.putn {
 	background: var(--red) !important;
 }
 
+a.id {
+	display: block;
+}
+
+a.id:not(:first-child):before {
+	content: none;
+}
+
 a.idnam {
 	display: block;
 	font-size: var(--title);

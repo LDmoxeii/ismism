@@ -65,6 +65,42 @@ export function pas(
 
 }
 
+function doc<T>(
+	q: "soc" | "agd",
+	adm: string,
+) {
+	const [a1, a2] = (adm).split("-")
+	if (a2) {
+		navnid(q, a1, a2)
+		return que<T[]>(`${q}?adm2=${a2}`)
+	} else if (a1) {
+		navnid(q, a1)
+		return que<T[]>(`${q}?adm1=${a1}`)
+	} else {
+		navnid(q)
+		return que<T[]>(q)
+	}
+}
+
+export async function id(
+	h: "agd" | "soc",
+	adm?: string,
+) {
+	const idl = await doc<[Id["_id"], Id["nam"]]>(h, adm ?? "")
+
+	main.innerHTML = ""
+	await live()
+	const t = bind("id")
+
+	const c = h === "agd" ? "活动公示" : "同城小组"
+	idnam(t, `${h}${adm ?? ""}`, c)
+	t.meta.innerText = "网站本月将开启\"以太假说\"杯评选活动的投票通道\n请参赛小组将图片、视频、介绍添加至小组的活动页面"
+	label(t.idl, `${adm ?? ""} 共 ${idl.length} 个（按注册时间排序）`)
+	ida(t.idl, idl.map(n => [`${h.substring(0, 1)}${n[0]}`, n[1]]), "id")
+
+	main.append(t.bind)
+}
+
 export type Usr = Omit<NonNullable<Q.Usr>, "unam" | "snam" | "anam"> & {
 	unam: Map<Id["_id"], Id["nam"]>,
 	snam: Map<Id["_id"], Id["nam"]>,
@@ -133,38 +169,17 @@ export async function usr(
 	main.append(t.bind)
 }
 
-function doc<T>(
-	q: "soc" | "agd",
-	adm: string,
-) {
-	const [a1, a2] = (adm).split("-")
-	if (a2) {
-		navnid(q, a1, a2)
-		return que<T[]>(`${q}?adm2=${a2}`)
-	} else if (a1) {
-		navnid(q, a1)
-		return que<T[]>(`${q}?adm1=${a1}`)
-	} else {
-		navnid(q)
-		return que<T[]>(q)
-	}
-}
-
 export type Soc = Omit<NonNullable<Q.Soc>, "unam"> & {
 	unam: Map<Id["_id"], Id["nam"]>,
 }
 export async function soc(
-	sidadm?: number | string
+	sid: number
 ) {
-	if (navhash(typeof sidadm === "number" ? `s${sidadm}` : `soc${sidadm ?? ""}`)) return
-	let ss: Q.Soc[]
-	if (typeof sidadm === "number") {
-		ss = [await que<Q.Soc>(`soc?sid=${sidadm}`)]
-		navnid()
-	} else ss = await doc<Q.Soc>("soc", sidadm ?? "")
+	if (navhash(`s${sid}`)) return
+	const ss: Q.Soc[] = [await que<Q.Soc>(`soc?sid=${sid}`)].filter(s => s)
+	navnid()
 
-	ss = ss.filter(s => s)
-	if (typeof sidadm === "number" && ss.length === 0) return idn(`s${sidadm}`, "小组")
+	if (ss.length === 0) return idn(`s${sid}`, "小组")
 
 	main.innerHTML = ""
 	for (const d of ss) {
@@ -202,17 +217,13 @@ export type Agd = Omit<NonNullable<Q.Agd>, "unam"> & {
 	unam: Map<Id["_id"], Id["nam"]>,
 }
 export async function agd(
-	aidadm?: number | string
+	aid: number
 ) {
-	if (navhash(typeof aidadm === "number" ? `a${aidadm}` : `agd${aidadm ?? ""}`)) return
-	let aa: Q.Agd[]
-	if (typeof aidadm === "number") {
-		aa = [await que<Q.Agd>(`agd?aid=${aidadm}`)]
-		navnid()
-	} else aa = await doc<Q.Agd>("agd", aidadm ?? "")
+	if (navhash(`a${aid}`)) return
+	const aa: Q.Agd[] = [await que<Q.Agd>(`agd?aid=${aid}`)].filter(a => a)
+	navnid()
 
-	aa = aa.filter(a => a)
-	if (typeof aidadm === "number" && aa.length === 0) return idn(`a${aidadm}`, "活动")
+	if (aa.length === 0) return idn(`a${aid}`, "活动")
 
 	main.innerHTML = ""
 	await live()
@@ -720,17 +731,17 @@ export function put(
 
 function putid(
 	nam: "用户" | "小组" | "活动",
-	id: Usr | Soc | Agd,
+	d: Usr | Soc | Agd,
 ) {
 	if (!nav.pas) return
 	navnid()
 	main.innerHTML = ""
 	const t = bind("putid")
 
-	idnam(t, `${id._id}`, `编辑${nam}信息`)
-	t.pnam.value = id.nam
-	seladm(t, id.adm1, id.adm2)
-	txt(t.intro, "简介", id.intro)
+	idnam(t, `${d._id}`, `编辑${nam}信息`)
+	t.pnam.value = d.nam
+	seladm(t, d.adm1, d.adm2)
+	txt(t.intro, "简介", d.intro)
 
 	const pid = () => ({ nam: t.pnam.value, adm1: t.adm1.value, adm2: t.adm2.value, })
 	const paut = () => ({ uidlim: parseInt(t.uidlim.value) })
@@ -745,48 +756,48 @@ function putid(
 		case "用户": {
 			[t.uidlim, t.reslim, t.account, t.budget, t.fund, t.expense].forEach(el => el.parentElement?.remove())
 			t.meta.remove()
-			p = () => [{ uid: id._id, ...pid(), intro: t.intro.value.trim() }]
-			r = () => usr(id._id)
+			p = () => [{ uid: d._id, ...pid(), intro: t.intro.value.trim() }]
+			r = () => usr(d._id)
 			break
 		} case "小组": {
 			[t.account, t.budget, t.fund, t.expense].forEach(el => el.parentElement?.remove())
-			const s = id as Soc
+			const s = d as Soc
 			t.uidlim.value = `${s.uidlim}`
 			t.reslim.value = `${s.reslim}`
-			const [isaut, issec] = [is_aut(nav.pas.aut, "aut"), is_sec(nav.pas, { sid: id._id })]
+			const [isaut, issec] = [is_aut(nav.pas.aut, "aut"), is_sec(nav.pas, { sid: d._id })]
 			t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = !isaut
 			t.intro.readOnly = t.reslim.readOnly = !issec
 			p = () => [
-				...isaut ? [{ sid: id._id, ...pid(), ...paut() }] : [],
-				...issec ? [{ sid: id._id, ...psoc() }] : [],
+				...isaut ? [{ sid: d._id, ...pid(), ...paut() }] : [],
+				...issec ? [{ sid: d._id, ...psoc() }] : [],
 			]
-			r = () => soc(id._id)
+			r = () => soc(d._id)
 			break
 		} case "活动": {
-			const a = id as Agd
+			const a = d as Agd
 			t.uidlim.value = `${a.uidlim}`
 			t.reslim.value = `${a.reslim}`
 			t.account.value = a.account
 			t.budget.value = `${a.budget}`
 			t.fund.value = `${a.fund}`
 			t.expense.value = `${a.expense}`
-			const [isaut, issec] = [is_aut(nav.pas.aut, "aut"), is_sec(nav.pas, { aid: id._id })]
+			const [isaut, issec] = [is_aut(nav.pas.aut, "aut"), is_sec(nav.pas, { aid: d._id })]
 			t.pnam.readOnly = t.adm1.disabled = t.adm2.disabled = t.uidlim.readOnly = !isaut;
 			[t.intro, t.reslim, t.account, t.budget, t.fund, t.expense].forEach(el => el.readOnly = !issec)
 			p = () => [
-				...isaut ? [{ aid: id._id, ...pid(), ...paut() }] : [],
-				...issec ? [{ aid: id._id, ...psoc(), ...pagd() }] : [],
+				...isaut ? [{ aid: d._id, ...pid(), ...paut() }] : [],
+				...issec ? [{ aid: d._id, ...psoc(), ...pagd() }] : [],
 			]
-			r = () => agd(id._id)
+			r = () => agd(d._id)
 			break
 		}
 	}
 	if (nam === "用户" || !is_aut(nav.pas.aut, "aut") || !is_re(nav.pas)) t.putn.remove()
 	else btn(t.putn, `删除${nam}`, {
 		confirm: `确认要删除${nam}?`,
-		pos: () => pos<DocD>("put", { [nam === "小组" ? "sid" : "aid"]: id._id }),
+		pos: () => pos<DocD>("put", { [nam === "小组" ? "sid" : "aid"]: d._id }),
 		alert: `${nam === "小组" ? "小组仍有志愿者" : "活动仍有工作日志或支持记录"}`,
-		refresh: () => nam === "小组" ? soc() : agd(),
+		refresh: () => nam === "小组" ? id("soc") : id("agd"),
 	})
 	btn(t.put, t.put.innerText, {
 		pos: async () => {

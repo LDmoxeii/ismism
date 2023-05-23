@@ -2,7 +2,7 @@ import type { Ret } from "./can.ts"
 import { is_id, is_nbr } from "../eid/is.ts"
 import { coll } from "../db.ts"
 import { agd, aut, live, md, nid, ord, rec, soc, usr } from "./doc.ts"
-import { id } from "../eid/id.ts"
+import { id, idnam } from "../eid/id.ts"
 import { nord_f } from "../eid/ord.ts"
 
 export type NId = Ret<typeof nid>
@@ -28,13 +28,11 @@ export async function que(
 		} case "soc": {
 			if (p.has("sid")) return await soc(parseInt(p.get("sid") ?? ""))
 			const [adm1, adm2] = [p.get("adm1"), p.get("adm2")]
-			const sid = await id(coll.soc, adm2 ? { adm2 } : adm1 ? { adm1 } : undefined)
-			return await Promise.all(sid.map(soc))
+			return await idnam(coll.soc, await id(coll.soc, adm2 ? { adm2 } : adm1 ? { adm1 } : undefined))
 		} case "agd": {
 			if (p.has("aid")) return await agd(parseInt(p.get("aid") ?? ""))
 			const [adm1, adm2] = [p.get("adm1"), p.get("adm2")]
-			const aid = await id(coll.agd, adm2 ? { adm2 } : adm1 ? { adm1 } : undefined)
-			return await Promise.all(aid.map(agd))
+			return await idnam(coll.agd, await id(coll.agd, adm2 ? { adm2 } : adm1 ? { adm1 } : undefined))
 		} case "nord": {
 			const [aid, utc] = ["aid", "utc"].map(t => parseInt(p.get(t) ?? ""))
 			return await nord_f({ aid, utc })

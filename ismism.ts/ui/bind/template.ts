@@ -105,6 +105,13 @@ const template = {
 		hint: t("section"),
 	},
 
+	id: {
+		tid: "id" as const,
+		...section.idnam,
+		meta: t("section"),
+		idl: t("p"),
+	},
+
 	usr: {
 		tid: "usr" as const,
 		...section.idnam,
