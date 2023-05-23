@@ -7,7 +7,7 @@ import { utc_d, utc_date, utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
 import { bind, pos, que, Section, utc_refresh } from "./template.ts"
 import { is_ref, is_rej, is_sec } from "../../src/pra/can.ts"
-import { is_aut, is_id, is_md, is_nam, lim_aut, lim_nrecday, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
+import { is_aut, is_id, is_md, is_nam, lim_nrecday, lim_md, lim_re, lim_sec } from "../../src/eid/is.ts"
 import { qrcode as qr } from "https://deno.land/x/qrcode@v2.0.0/mod.ts"
 
 export function label(
@@ -101,7 +101,7 @@ export function idnam(
 }
 
 export function meta(
-	t: Section["meta"],
+	t: Section["meta_usr" | "meta_id"],
 	id: Usr | Soc | Agd,
 	ua?: Usr["aut"],
 ) {
@@ -109,19 +109,19 @@ export function meta(
 	t.utc.innerText = utc_medium(id.utc)
 
 	if (ua) {
-		if (ua.length > 0) ida(t.ref, [["aut", `管理员(${lim_aut})`]])
-		ida(t.rej, id.rej.map(r => [`${r}`, id.unam.get(r)!]))
+		if (ua.length > 0) ida(t.ref, [["aut", "本平台管理团队"]])
+		if ("rej" in t) ida(t.rej, id.rej.map(r => [`${r}`, id.unam.get(r)!]))
 		ida(t.ref, id.ref.map(r => [`${r}`, id.unam.get(r)!]))
-	} else {
-		if (id.rej.length > 0) ida(t.rej, [["aut", `管理员(${lim_aut})`]])
-		if (id.ref.length > 0) ida(t.ref, [["aut", `管理员(${lim_aut})`]])
-	}
+	} else if (id.ref.length > 0) ida(t.ref, [["aut", "本平台管理团队"]])
 
 	const rej = ua && is_rej(id) || !ua && id.rej.length > 0
 	const ref = ua && ua.length === 0 && !is_ref(id) || !ua && id.ref.length === 0
 	let cls = null
-	if (ref) { cls = "green"; t.ref2.classList.add(cls) }
-	if (rej) { cls = "red"; t.rej2.classList.add(cls) }
+	if (ref) cls = "green"
+	if (rej) {
+		cls = "red"
+		if ("rej2" in t) t.rej2.classList.add(cls)
+	}
 	return cls
 }
 
@@ -133,15 +133,15 @@ export function rolref(
 		if (is_aut(nav.pas.aut, "sup")) ida(t, [["aut", `超级管理员 (不公示)`]], "isec")
 		if (is_aut(nav.pas.aut, "aud")) ida(t, [["aut", `审计员 (不公示)`]], "isec")
 	}
-	if (is_aut(u.aut, "aut")) ida(t, [["aut", `管理员 (${lim_aut}推荐)`]], "isec")
-	if (is_aut(u.aut, "wsl")) ida(t, [["aut", `法律援助编辑 (${lim_aut}推荐)`]], "sec")
-	if (is_aut(u.aut, "lit")) ida(t, [["aut", `理论学习编辑 (${lim_aut}推荐)`]], "sec")
-	ida(t, u.aref.sec.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}联络员 (${r}推荐)`]), "sec")
-	ida(t, u.sref.sec.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}联络员 (${r}推荐)`]), "sec")
-	ida(t, u.aref.uid.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}志愿者 (${r}推荐)`]), "uid")
-	ida(t, u.sref.uid.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}志愿者 (${r}推荐)`]), "uid")
-	ida(t, u.aref.res.map(([a, r]) => [`a${a}`, `${u.anam.get(a)}申请人 (${r}推荐)`]), "res")
-	ida(t, u.sref.res.map(([a, r]) => [`s${a}`, `${u.snam.get(a)}申请人 (${r}推荐)`]), "res")
+	if (is_aut(u.aut, "aut")) ida(t, [["aut", `本平台管理团队`]], "isec")
+	if (is_aut(u.aut, "wsl")) ida(t, [["aut", `法律援助编辑`]], "sec")
+	if (is_aut(u.aut, "lit")) ida(t, [["aut", `理论学习编辑`]], "sec")
+	ida(t, u.arol.sec.map(id => [`a${id}`, `${u.anam.get(id)}联络员`]), "sec")
+	ida(t, u.srol.sec.map(id => [`s${id}`, `${u.snam.get(id)}联络员`]), "sec")
+	ida(t, u.arol.uid.map(id => [`a${id}`, `${u.anam.get(id)}志愿者`]), "uid")
+	ida(t, u.srol.uid.map(id => [`s${id}`, `${u.snam.get(id)}志愿者`]), "uid")
+	ida(t, u.arol.res.map(id => [`a${id}`, `${u.anam.get(id)}申请人`]), "res")
+	ida(t, u.srol.res.map(id => [`s${id}`, `${u.snam.get(id)}申请人`]), "res")
 }
 
 export function re(

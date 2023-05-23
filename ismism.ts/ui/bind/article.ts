@@ -792,7 +792,7 @@ function putid(
 			break
 		}
 	}
-	if (nam === "用户" || !is_aut(nav.pas.aut, "aut") || !is_re(nav.pas)) t.putn.remove()
+	if (nam === "用户" || !is_aut(nav.pas.aut, "aut") || is_rej(nav.pas)) t.putn.remove()
 	else btn(t.putn, `删除${nam}`, {
 		confirm: `确认要删除${nam}?`,
 		pos: () => pos<DocD>("put", { [nam === "小组" ? "sid" : "aid"]: d._id }),

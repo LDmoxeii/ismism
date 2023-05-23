@@ -38,10 +38,14 @@ const section = {
 		idnam: t("a"), id: t("code"), nam: t("span"),
 	},
 
-	meta: {
+	meta_usr: {
 		adm: t("span"), utc: t("span"),
 		rej: t("span"), ref: t("span"),
-		rej2: t("em"), ref2: t("em"),
+		rej2: t("em"),
+	},
+
+	meta_id: {
+		adm: t("span"), utc: t("span"), ref: t("span"),
 	},
 
 	seladm: {
@@ -115,7 +119,7 @@ const template = {
 	usr: {
 		tid: "usr" as const,
 		...section.idnam,
-		...section.meta,
+		...section.meta_usr,
 		rolref: t("p"),
 		...section.re,
 		intro: t("p"),
@@ -130,7 +134,7 @@ const template = {
 	soc: {
 		tid: "soc" as const,
 		...section.idnam,
-		...section.meta,
+		...section.meta_id,
 		...section.rel,
 		intro: t("p"),
 		...section.rec,
@@ -142,7 +146,7 @@ const template = {
 	agd: {
 		tid: "agd" as const,
 		...section.idnam,
-		...section.meta,
+		...section.meta_id,
 		...section.cover,
 		...section.acct,
 		goal: t("p"), intro: t("p"),

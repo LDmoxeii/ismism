@@ -4,8 +4,8 @@ import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl
 import { coll, DocC } from "../db.ts"
 import { act_r, act_u } from "../eid/act.ts"
 import { usr_c, usr_r, usr_u } from "../eid/usr.ts"
-import { soc_c } from "../eid/soc.ts"
-import { agd_c, agd_r } from "../eid/agd.ts"
+import { soc_c, soc_u } from "../eid/soc.ts"
+import { agd_c, agd_r, agd_u } from "../eid/agd.ts"
 import { rec_c } from "../eid/rec.ts"
 import { md_c } from "../eid/md.ts"
 import { is_aut, is_id, is_lim, is_msg, is_nam, is_ordid, is_url, len_code, lim_aud, lim_aut, lim_code, lim_lit, lim_wsl } from "../eid/is.ts"
@@ -51,7 +51,9 @@ export async function pre_soc(
 	adm2: string,
 ): DocC<Soc["_id"]> {
 	if (!is_pre_soc(pas)) return null
-	return await soc_c(nam, adm1, adm2)
+	const sid = await soc_c(nam, adm1, adm2)
+	if (sid) await soc_u(sid, { $set: { ref: [pas.uid] } })
+	return sid
 }
 
 export async function pre_agd(
@@ -61,7 +63,9 @@ export async function pre_agd(
 	adm2: string,
 ): DocC<Agd["_id"]> {
 	if (!is_pre_agd(pas)) return null
-	return await agd_c(nam, adm1, adm2)
+	const aid = await agd_c(nam, adm1, adm2)
+	if (aid) await agd_u(aid, { $set: { ref: [pas.uid] } })
+	return aid
 }
 
 const h_code_valid = 1

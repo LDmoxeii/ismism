@@ -4,7 +4,7 @@ import { usr_c, usr_r, usr_u, usr_d } from "../src/eid/usr.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { nrec, rec_c, rec_d, rec_f, rec_r, rec_u, work_l } from "../src/eid/rec.ts"
-import { rolref, rol } from "../src/eid/rel.ts"
+import { rol } from "../src/eid/rel.ts"
 import { nid } from "../src/eid/id.ts"
 import { md_c, md_f, md_r, md_u } from "../src/eid/md.ts"
 import { aut_c, aut_d, aut_g } from "../src/eid/aut.ts"
@@ -72,12 +72,7 @@ Deno.test("rel", async () => {
 		soc_u(2, { $set: { sec: [1, 3, 4], uid: [1, 3], res: [1, 2] } }),
 		soc_u(3, { $set: { sec: [2, 3], uid: [1, 3], res: [1, 2] } }),
 	])
-	assertEquals(await rolref(coll.soc, 1), {
-		sec: [[1, 2], [2, 2]],
-		uid: [[1, 1], [2, 2], [3, 2]],
-		res: [[2, 2], [3, 2]],
-	})
-	assertEquals(await rol(coll.soc, 1), { sec: [1, 2], uid: [2, 3], res: [2, 3] })
+	assertEquals(await rol(coll.soc, 1), { sec: [1, 2], uid: [1, 2, 3], res: [2, 3] })
 	await Promise.all([
 		aut_d(2), aut_d(3), usr_d(1), soc_d(1), soc_d(2), soc_d(3)
 	])

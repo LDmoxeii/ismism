@@ -1,10 +1,8 @@
-import type { Id, Re, Usr } from "./typ.ts"
+import type { Re, Usr } from "./typ.ts"
 import { coll, Coll, Update } from "../db.ts"
 import { is_lim, lim_re } from "./is.ts"
 import { nid } from "./id.ts"
 
-export type NRef = number
-export type IdNRef = [Id["_id"], NRef]
 export type UpdateRe = {
 	re: keyof Re,
 	add: boolean,
@@ -26,13 +24,4 @@ export async function re_u<
 		if (!is_lim(nre, lim_re - 1) || !re || !is_lim(re[u.re].length, lim_re - 1)) return null // deno-lint-ignore no-explicit-any
 		return { $addToSet: { [u.re]: u.uid } } as any // deno-lint-ignore no-explicit-any
 	} else return { $pull: { [u.re]: u.uid } } as any
-}
-
-export function idnref(
-	id: Id["_id"],
-	uid: Usr["_id"][],
-	ref: Re["ref"],
-): IdNRef {
-	const u = new Set(uid)
-	return [id, ref.filter(r => u.has(r)).length]
 }

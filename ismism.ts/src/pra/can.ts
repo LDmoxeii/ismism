@@ -26,25 +26,25 @@ export function is_sec(
 	pas: Pas,
 	sec?: { sid: Soc["_id"] } | { aid: Agd["_id"] }
 ): boolean {
-	if (!sec) return (pas.sid.sec.length > 0 || pas.aid.sec.length > 0) && is_re(pas)
-	if ("sid" in sec) return pas.sid.sec.includes(sec.sid) && is_re(pas)
-	if ("aid" in sec) return pas.aid.sec.includes(sec.aid) && is_re(pas)
+	if (!sec) return (pas.sid.sec.length > 0 || pas.aid.sec.length > 0) && !is_rej(pas)
+	if ("sid" in sec) return pas.sid.sec.includes(sec.sid) && !is_rej(pas)
+	if ("aid" in sec) return pas.aid.sec.includes(sec.aid) && !is_rej(pas)
 	return false
 }
 export function is_uid(
 	pas: Pas,
 	uid: { sid: Soc["_id"] } | { aid: Agd["_id"] }
 ): boolean {
-	if ("sid" in uid) return pas.sid.uid.includes(uid.sid) && is_re(pas)
-	if ("aid" in uid) return pas.aid.uid.includes(uid.aid) && is_re(pas)
+	if ("sid" in uid) return pas.sid.uid.includes(uid.sid) && !is_rej(pas)
+	if ("aid" in uid) return pas.aid.uid.includes(uid.aid) && !is_rej(pas)
 	return false
 }
 export function is_res(
 	pas: Pas,
 	res: { sid: Soc["_id"] } | { aid: Agd["_id"] }
 ): boolean {
-	if ("sid" in res) return pas.sid.res.includes(res.sid) && is_re(pas)
-	if ("aid" in res) return pas.aid.res.includes(res.aid) && is_re(pas)
+	if ("sid" in res) return pas.sid.res.includes(res.sid) && !is_rej(pas)
+	if ("aid" in res) return pas.aid.res.includes(res.aid) && !is_rej(pas)
 	return false
 }
 
