@@ -116,9 +116,9 @@ export async function pos(
 				if (typeof add === "boolean" && typeof uid === "number") {
 					if (typeof sid === "number") return put_soc(p.pas, sid, { rol, add, uid } as PutSoc)
 					else if (typeof aid === "number") return put_agd(p.pas, aid, { rol, add, uid } as PutAgd)
-				} else {
-					if (typeof sid === "number") return put_soc(p.pas, sid, { rol } as PutSoc)
-					else if (typeof aid === "number") return put_agd(p.pas, aid, { rol } as PutAgd)
+				} else if (typeof add === "boolean") {
+					if (typeof sid === "number") return put_soc(p.pas, sid, { rol, add } as PutSoc)
+					else if (typeof aid === "number") return put_agd(p.pas, aid, { rol, add } as PutAgd)
 				}
 			} else if (typeof ordid === "object" && Object.keys(ordid).length === 3) {
 				if (typeof ord === "boolean") return put_ord(p.pas, ordid, { ord })

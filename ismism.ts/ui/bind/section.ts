@@ -307,8 +307,9 @@ export function putrel(
 	const namid = new Map([...d.unam.entries()].map(([u, nam]) => [nam, u]))
 	if (is_aut(nav.pas.aut, "aut")) t.putsec.addEventListener("click", () => put(
 		`${id === "sid" ? "s" : "a"}${d._id}`, t.putsec.innerText, {
-		nam: { p1: "用户名：" }, val: {}, p: "put",
+		nam: { p1: "用户名：（留空以将所有申请人添加为联络员）" }, val: {}, p: "put",
 		b: p => {
+			if (p.p1 === "") return { [id]: d._id, rol: "sec", add: true }
 			const uid = namid.get(p.p1 ?? "")
 			return uid ? { [id]: d._id, rol: "sec", uid, add: !d.sec.includes(uid) } : null
 		},
@@ -317,8 +318,9 @@ export function putrel(
 	})); else t.putsec.remove() // deno-lint-ignore no-explicit-any
 	if (is_sec(nav.pas, { [id]: d._id } as any)) t.putuid.addEventListener("click", () => put(
 		`${id === "sid" ? "s" : "a"}${d._id}`, t.putuid.innerText, {
-		nam: { p1: "用户名：" }, val: {}, p: "put",
+		nam: { p1: "用户名：（留空以将所有申请人添加为志愿者）" }, val: {}, p: "put",
 		b: p => {
+			if (p.p1 === "") return { [id]: d._id, rol: "uid", add: true }
 			const uid = namid.get(p.p1 ?? "")
 			return uid ? { [id]: d._id, rol: "uid", uid, add: !d.uid.includes(uid) } : null
 		},

@@ -8,7 +8,8 @@ export type Rol = {
 	res: Id["_id"][],
 }
 export type UpdateRel = {
-	rol: keyof Rol
+	rol: keyof Rol,
+	add: boolean,
 } | {
 	rol: keyof Rol,
 	add: boolean,
@@ -22,7 +23,7 @@ export async function rel_u<
 	_id: T["_id"],
 	u: UpdateRel,
 ): Promise<Update<T> | null> {
-	if ("add" in u && u.add) {
+	if (u.add && "uid" in u && is_id(u.uid)) {
 		const projection = {
 			[u.rol]: 1,
 			...u.rol === "sec" ? {} : { [`${u.rol}lim`]: 1 },
@@ -36,8 +37,22 @@ export async function rel_u<
 			$addToSet: { [u.rol]: u.uid },
 			...u.rol === "uid" ? { $pull: { res: u.uid } } : {} // deno-lint-ignore no-explicit-any
 		} as any // deno-lint-ignore no-explicit-any
-	} else if ("add" in u && !u.add) return { $pull: { [u.rol]: u.uid } } as any // deno-lint-ignore no-explicit-any 
-	else return { $set: { [u.rol]: [] } } as any
+	} else if (!u.add && "uid" in u && is_id(u.uid)) return { $pull: { [u.rol]: u.uid } } as any
+	else if (u.add && u.rol !== "res") {
+		const projection = {
+			[u.rol]: 1,
+			...u.rol === "sec" ? {} : { [`${u.rol}lim`]: 1 },
+			res: 1,
+		} // deno-lint-ignore no-explicit-any
+		const rel = await c.findOne({ _id } as any, { projection })
+		if (!rel) return null
+		const lim = u.rol === "sec" ? lim_sec : rel ? rel[`${u.rol}lim`] : 0
+		const id = [...new Set([...rel[u.rol], ...rel.res])].slice(0, lim)
+		return {
+			$set: { [u.rol]: id, res: rel.res.filter(n => !id.includes(n)) }, // deno-lint-ignore no-explicit-any
+		} as any  // deno-lint-ignore no-explicit-any
+	} else if (!u.add) return { $set: { [u.rol]: [] } } as any
+	return null
 }
 
 export async function rol<

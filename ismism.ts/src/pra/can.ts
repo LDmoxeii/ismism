@@ -141,7 +141,7 @@ function is_put_idrel(
 		case "sec": return is_pre_rel(pas)
 		case "uid": return "uid" in p && p.uid === pas.uid && p.add === false || is_sec(pas, id)
 		case "res": return "uid" in p && p.uid === pas.uid && (p.add === false || !is_rej(pas))
-			|| !("uid" in p) && (is_aut(pas.aut, "aut") || is_sec(pas, id))
+			|| p.add === false && !("uid" in p) && (is_aut(pas.aut, "aut") || is_sec(pas, id))
 	}
 	return false
 }
