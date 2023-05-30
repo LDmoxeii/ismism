@@ -52,9 +52,9 @@ export async function id_u<
 	if (!is_id(_id)) return null
 	if ("$set" in u && u.$set) {
 		const s = u.$set
-		if (s.nam && !is_nam(s.nam)) return null
-		if ((s.adm1 || u.adm2) && !is_adm([s.adm1, s.adm2])) return null
-		if (s.intro && !is_intro(s.intro)) return null
+		if ("nam" in s && !is_nam(s.nam!)) return null
+		if (("adm1" in s || "adm2" in s) && !is_adm([s.adm1, s.adm2])) return null
+		if ("intro" in s && !is_intro(s.intro!)) return null
 		if (s.rej && !is_idl(s.rej, lim_re)) return null
 		if (s.ref && !is_idl(s.ref, lim_re)) return null
 	}
