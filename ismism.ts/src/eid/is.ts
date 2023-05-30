@@ -1,4 +1,4 @@
-import { Act, Agd, Aut, Id, Md, Ord, Rec, Usr } from "./typ.ts"
+import { Act, Agd, Aut, Dst, Id, Md, Ord, Rec, Usr } from "./typ.ts"
 
 export const req_re = 2
 export const lim_re = 64
@@ -22,6 +22,7 @@ export const lim_img = 9
 export const lim_goal = 9
 export const lim_url = 128
 export const lim_msg = 256
+export const lim_json = lim_intro * 8
 export const lim_md = lim_intro * 8
 export const lim_ord_max = 128
 
@@ -31,6 +32,7 @@ export const lim_nrecday = 90
 export const lim_rec_f = 32
 export const lim_md_f = 4
 export const lim_md_pin = lim_md_f
+export const lim_rd = 1
 
 export function is_lim(
 	n: number,
@@ -98,6 +100,11 @@ export function is_msg(
 ): msg is string {
 	return typeof msg === "string" && 2 <= msg.length && msg.length <= lim_msg
 }
+export function is_json(
+	json: string
+): json is string {
+	return typeof json === "string" && json.length <= lim_json
+}
 
 export function is_ordid(
 	ordid: Ord["_id"]
@@ -109,6 +116,14 @@ export function is_recid(
 	recid: Rec["_id"]
 ): recid is Rec["_id"] {
 	return Object.keys(recid).length === 3 && is_id(recid.uid) && is_id(recid.aid) && recid.utc > 0
+}
+
+export function is_dstid(
+	dstid: Dst["_id"]
+): dstid is Dst["_id"] {
+	const l = Object.keys(dstid).length
+	return 1 <= l && l <= 3 && is_lim(dstid.rd, lim_rd)
+		&& (l === 2 && is_id(dstid.aid!) || l === 3 && is_id(dstid.uid!))
 }
 
 export function is_aut(
