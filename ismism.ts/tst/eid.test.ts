@@ -10,7 +10,7 @@ import { md_c, md_f, md_r, md_u } from "../src/eid/md.ts"
 import { aut_c, aut_d, aut_g } from "../src/eid/aut.ts"
 import { utc_h } from "../src/ont/utc.ts"
 import { ord_c, ord_d, ord_f, ord_r, ord_u } from "../src/eid/ord.ts"
-import { dst_c, dst_f, dst_n } from "../src/eid/dst.ts"
+import { dst_c, dst_f, dst_n, dst_r } from "../src/eid/dst.ts"
 import { lim_rd } from "../src/eid/is.ts"
 
 await db("tst", true)
@@ -158,14 +158,16 @@ Deno.test("rec", async () => {
 
 Deno.test("dst", async () => {
 	assertEquals(0, await dst_n({ rd: lim_rd, aid: 1 }))
+	const rd = { _id: { rd: lim_rd }, json: JSON.stringify({ nam: "nam", c: 32 }) }
 	await Promise.all([
-		dst_c({ _id: { rd: lim_rd }, json: JSON.stringify({ nam: "nam", c: 32 }) }),
+		dst_c(rd),
 		dst_c({ _id: { rd: lim_rd, aid: 1 } }),
 		dst_c({ _id: { rd: lim_rd, aid: 2 } }),
 		dst_c({ _id: { rd: lim_rd, aid: 1, uid: 1 } }),
 		dst_c({ _id: { rd: lim_rd, aid: 1, uid: 2 } }),
 		dst_c({ _id: { rd: lim_rd, aid: 2, uid: 2 } }),
-	])
+	]) // deno-lint-ignore no-explicit-any
+	assertEquals(rd as any, await dst_r({ rd: lim_rd }))
 	assertEquals(2, await dst_n({ rd: lim_rd, aid: 1 }))
 	assertEquals(1, await dst_n({ rd: lim_rd, uid: 1 }))
 	assertEquals([{ _id: { rd: lim_rd, aid: 1 } }, { _id: { rd: lim_rd, aid: 2 } }], await dst_f({ rd: lim_rd }))

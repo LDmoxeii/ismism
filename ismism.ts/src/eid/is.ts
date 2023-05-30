@@ -123,7 +123,7 @@ export function is_dstid(
 ): dstid is Dst["_id"] {
 	const l = Object.keys(dstid).length
 	return 1 <= l && l <= 3 && is_lim(dstid.rd, lim_rd)
-		&& (l === 2 && is_id(dstid.aid!) || l === 3 && is_id(dstid.uid!))
+		&& (l === 1 || l === 2 && is_id(dstid.aid!) || l === 3 && is_id(dstid.uid!))
 }
 
 export function is_aut(

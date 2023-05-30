@@ -5,8 +5,10 @@ import { rec_c } from "../src/eid/rec.ts"
 import { md_c } from "../src/eid/md.ts"
 import { soc_c, soc_u } from "../src/eid/soc.ts"
 import { usr_c } from "../src/eid/usr.ts"
-import { Agd, Md, Ord, que, Rec, Soc, Usr } from "../src/pra/que.ts"
+import { Agd, Dst, Md, Ord, que, Rec, Soc, Usr } from "../src/pra/que.ts"
 import { ord_c } from "../src/eid/ord.ts"
+import { dst_c } from "../src/eid/dst.ts";
+import { lim_rd } from "../src/eid/is.ts";
 
 await db("tst", true)
 const utc = Date.now()
@@ -33,6 +35,12 @@ await Promise.all([
 	rec_c(coll.work, { _id: { uid: 2, aid: 1, utc: utc + 1 }, rej: [], ref: [], work: "video", nam: "nam", src: "src" }),
 	rec_c(coll.fund, { _id: { uid: 1, aid: 1, utc }, fund: 100, msg: "fund" }),
 	rec_c(coll.fund, { _id: { uid: 3, aid: 2, utc: utc + 1 }, fund: 100, msg: "fund" }),
+	dst_c({ _id: { rd: lim_rd }, json: JSON.stringify({ nam: "nam", c: 32 }) }),
+	dst_c({ _id: { rd: lim_rd, aid: 1 } }),
+	dst_c({ _id: { rd: lim_rd, aid: 2 } }),
+	dst_c({ _id: { rd: lim_rd, aid: 1, uid: 1 } }),
+	dst_c({ _id: { rd: lim_rd, aid: 1, uid: 2 } }),
+	dst_c({ _id: { rd: lim_rd, aid: 2, uid: 2 } }),
 	await md_c(coll.wsl, { nam: "标题一", uid: 1 }),
 	md_c(coll.wsl, { nam: "标题二", uid: 2 }),
 	md_c(coll.lit, { nam: "标题一", uid: 2 }),
@@ -112,6 +120,12 @@ Deno.test("rec", async () => {
 	assertEquals(work_utc, work_uid1)
 	assertEquals(fund?.rec.slice(0, 1), fund_aid2?.rec)
 	assertEquals(fund_aid2, fund_sid2)
+})
+
+Deno.test("dst", async () => {
+	const dst = await que("dst", p({})) as Dst
+	assertEquals({ nam: "nam", c: 32 }, JSON.parse(dst?.rd!))
+	assertEquals([{ aid: 1, ndst: 2 }, { aid: 2, ndst: 1 }], dst?.dst)
 })
 
 Deno.test("md", async () => {

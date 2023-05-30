@@ -9,6 +9,8 @@ import { id, idnam, nid_of_adm } from "../eid/id.ts"
 import { aut_g, aut_r } from "../eid/aut.ts"
 import { md_f, md_r } from "../eid/md.ts"
 import { ord_a, ord_f } from "../eid/ord.ts"
+import { dst_f, dst_n, dst_r } from "../eid/dst.ts"
+import { lim_rd } from "../eid/is.ts"
 
 export async function nid(
 ) {
@@ -117,6 +119,19 @@ export async function live(
 		idnam(coll.agd, l.map(w => w._id.aid)),
 	])
 	return { live: l, unam, anam }
+}
+
+export async function dst(
+) {
+	const [rd, rdaid] = await Promise.all([
+		dst_r({ rd: lim_rd }), dst_f({ rd: lim_rd })
+	])
+	if (rd === null || rdaid === null) return null
+	const aid = rdaid.map(r => r._id.aid!)
+	const ndst = await Promise.all(aid.map(a => dst_n({ rd: lim_rd, aid: a })))
+	const dst = aid.map((aid, n) => ({ aid, ndst: ndst[n] ?? 0 })).sort((a, b) => b.ndst - a.ndst)
+	const anam = await idnam(coll.agd, aid)
+	return { rd: rd.json, dst, anam }
 }
 
 export async function aut(

@@ -1,7 +1,7 @@
 import type { Ret } from "./can.ts"
 import { is_id, is_nbr } from "../eid/is.ts"
 import { coll } from "../db.ts"
-import { agd, aut, live, md, nid, ord, rec, soc, usr } from "./doc.ts"
+import { agd, aut, dst, live, md, nid, ord, rec, soc, usr } from "./doc.ts"
 import { id, idnam } from "../eid/id.ts"
 import { nord_f } from "../eid/ord.ts"
 
@@ -12,6 +12,7 @@ export type Agd = Ret<typeof agd>
 export type Ord = Ret<typeof ord>
 export type Rec = Ret<typeof rec>
 export type Live = Ret<typeof live>
+export type Dst = Ret<typeof dst>
 export type Aut = Ret<typeof aut>
 export type Md = Ret<typeof md>
 
@@ -53,6 +54,8 @@ export async function que(
 			} break
 		} case "live": {
 			return await live()
+		} case "dst": {
+			return await dst()
 		} case "aut": {
 			return await aut()
 		} case "md": {
