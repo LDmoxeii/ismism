@@ -74,6 +74,11 @@ export function is_pre_work(
 ): boolean {
 	return is_uid(pas, { aid })
 }
+export function is_pre_dst(
+	pas: Pas,
+): boolean {
+	return is_aut(pas.aut, "aut")
+}
 export function is_pre_aut(
 	pas: Pas
 ): boolean {
@@ -175,6 +180,11 @@ export function is_put_work(
 		|| "msg" in p && is_msg(p.msg) && work.work === "work"
 		|| "src" in p && is_msg(p.nam) && is_url(p.src) && (work.work === "video" || work.work === "live")
 	)
+}
+export function is_put_dst(
+	pas: Pas,
+): boolean {
+	return is_aut(pas.aut, "aut")
 }
 function is_put_md(
 	pas: Pas,

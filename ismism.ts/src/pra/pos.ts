@@ -2,9 +2,9 @@ import type { PutAgd, PutSoc, Ret } from "./can.ts"
 import type { Re } from "../eid/typ.ts"
 import { utc_etag } from "../ont/utc.ts"
 import { pas, Pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
-import { pre_agd, pre_aut, pre_fund, pre_lit, pre_ord, pre_soc, pre_usr, pre_work, pre_wsl } from "./pre.ts"
+import { pre_agd, pre_aut, pre_dst, pre_fund, pre_lit, pre_ord, pre_soc, pre_usr, pre_work, pre_wsl } from "./pre.ts"
 import { pro_agd, pro_soc, pro_usr, pro_work } from "./pro.ts"
-import { put_agd, put_lit, put_ord, put_soc, put_usr, put_work, put_wsl } from "./put.ts"
+import { put_agd, put_dst, put_lit, put_ord, put_soc, put_usr, put_work, put_wsl } from "./put.ts"
 
 export type PasPos = {
 	jwt?: string | null,
@@ -54,7 +54,7 @@ export async function pos(
 
 		case "pre": {
 			p.etag = utc_etag()
-			const { aid, actid, nbr, sms, adm1, adm2, snam, anam, msg, nam, src, utcs, utce, aut, wslnam, litnam } = json
+			const { aid, rd, actid, nbr, sms, adm1, adm2, snam, anam, msg, nam, src, utcs, utce, aut, wslnam, litnam } = json
 			if (typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof nbr === "string") {
 					if (typeof actid === "string") return pre_usr({ actid }, nbr, adm1, adm2)
@@ -66,6 +66,7 @@ export async function pos(
 			} else if (typeof aid === "number") {
 				if (typeof nbr === "string" && typeof sms === "boolean" && typeof msg === "string") return pre_ord(nbr, aid, msg, sms)
 				else if (!p.pas) break
+				else if (typeof rd === "number") return pre_dst(p.pas, { rd, aid })
 				else if (typeof msg === "string") return pre_work(p.pas, aid, { msg })
 				else if (typeof nam === "string" && typeof src === "string") {
 					if (typeof utcs === "number" && typeof utce === "number")
@@ -100,7 +101,7 @@ export async function pos(
 				sid, aid, ordid, workid, wslid, litid,
 				nam, adm1, adm2, intro, ord, md, pin,
 				uidlim, reslim, account, budget, fund, expense, ordlim, ordlimw,
-				goal, img, rol, add, uid, msg, src, utcs, utce,
+				goal, img, rol, add, uid, msg, src, utcs, utce, rd,
 			} = json
 			if (typeof nam === "string" && typeof adm1 === "string" && typeof adm2 === "string") {
 				if (typeof intro === "string") return put_usr(p.pas, { nam, adm1, adm2, intro })
@@ -130,7 +131,9 @@ export async function pos(
 						return put_work(p.pas, workid, { nam, src, utcs, utce })
 					else return put_work(p.pas, workid, { nam, src })
 				} else return put_work(p.pas, workid, null)
-			} else if (typeof aid === "number") {
+			} else if (typeof rd === "string") {
+				return put_dst(p.pas, rd)
+			} if (typeof aid === "number") {
 				if (typeof goal === "object") return put_agd(p.pas, aid, { goal })
 				else if (typeof img === "object") return put_agd(p.pas, aid, { img })
 				else if (typeof ordlim === "number" && typeof ordlimw === "number")

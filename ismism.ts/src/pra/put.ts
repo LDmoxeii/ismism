@@ -1,15 +1,16 @@
-import type { Agd, Lit, Ord, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
+import type { Agd, Dst, Lit, Ord, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import { usr_u } from "../eid/usr.ts"
 import { coll, DocU } from "../db.ts"
-import { is_put_agd, is_put_lit, is_put_ord, is_put_soc, is_put_work, is_put_wsl, PutAgd, PutLit, PutSoc, PutWsl } from "./can.ts"
+import { is_put_agd, is_put_dst, is_put_lit, is_put_ord, is_put_soc, is_put_work, is_put_wsl, PutAgd, PutLit, PutSoc, PutWsl } from "./can.ts"
 import { soc_d, soc_r, soc_u } from "../eid/soc.ts"
 import { agd_d, agd_u } from "../eid/agd.ts"
 import { nrec, rec_d, rec_r, rec_u } from "../eid/rec.ts"
 import { rel_u } from "../eid/rel.ts"
-import { is_id } from "../eid/is.ts"
+import { is_id, lim_rd } from "../eid/is.ts"
 import { md_d, md_r, md_u } from "../eid/md.ts"
 import { ord_d, ord_u } from "../eid/ord.ts"
+import { dst_u } from "../eid/dst.ts"
 
 export function put_usr(
 	pas: Pas,
@@ -74,6 +75,14 @@ export async function put_work(
 	const w = await rec_r(coll.work, workid, { ref: 1, work: 1 })
 	if (!w || !is_put_work(pas, w, p)) return null
 	return p === null ? rec_d(coll.work, workid) : rec_u(coll.work, workid, { $set: p })
+}
+
+export async function put_dst(
+	pas: Pas,
+	rd: NonNullable<Dst["json"]>,
+): DocU {
+	if (!is_put_dst(pas)) return null
+	return await dst_u(lim_rd, rd)
 }
 
 export async function put_wsl(

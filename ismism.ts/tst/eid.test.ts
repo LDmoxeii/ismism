@@ -171,6 +171,7 @@ Deno.test("dst", async () => {
 	assertEquals(2, await dst_n({ rd: lim_rd, aid: 1 }))
 	assertEquals(1, await dst_n({ rd: lim_rd, uid: 1 }))
 	assertEquals([{ _id: { rd: lim_rd, aid: 1 } }, { _id: { rd: lim_rd, aid: 2 } }], await dst_f({ rd: lim_rd }))
+	assertEquals(null, await dst_c({ _id: { rd: lim_rd, aid: 1 } }))
 })
 
 Deno.test("aut", async () => {

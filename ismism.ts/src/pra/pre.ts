@@ -1,6 +1,6 @@
-import type { Act, Agd, Aut, Fund, Lit, Ord, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
+import type { Act, Agd, Aut, Dst, Fund, Lit, Ord, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
-import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl, is_pre_aut } from "./can.ts"
+import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl, is_pre_aut, is_pre_dst } from "./can.ts"
 import { coll, DocC } from "../db.ts"
 import { act_r, act_u } from "../eid/act.ts"
 import { usr_c, usr_r, usr_u } from "../eid/usr.ts"
@@ -13,6 +13,7 @@ import { aut_c, aut_d, aut_g, aut_r, aut_u } from "../eid/aut.ts"
 import { utc_d, utc_h, utc_week } from "../ont/utc.ts"
 import { nord_f, ord_c, ord_d } from "../eid/ord.ts"
 import { smssend } from "../ont/sms.ts"
+import { dst_c } from "../eid/dst.ts"
 
 export async function pre_usr(
 	pa: { pas: Pas } | { actid: Act["_id"] },
@@ -123,6 +124,14 @@ export async function pre_fund(
 	const utc = Date.now()
 	await act_u(actid, { $set: { exp: utc } })
 	return rec_c(coll.fund, { _id: { uid: pas.uid, aid: a.aid, utc }, fund: 0, msg: a.msg })
+}
+
+export async function pre_dst(
+	pas: Pas,
+	dstid: Dst["_id"],
+): DocC<Dst["_id"]> {
+	if (!is_pre_dst(pas)) return null
+	return await dst_c({ _id: dstid })
 }
 
 export async function pre_aut(

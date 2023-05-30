@@ -10,9 +10,10 @@ import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { rec_c, rec_d, rec_f } from "../src/eid/rec.ts"
 import { act_c, act_d } from "../src/eid/act.ts"
-import { lim_re } from "../src/eid/is.ts"
+import { lim_rd, lim_re } from "../src/eid/is.ts"
 import { md_c, md_d, md_r } from "../src/eid/md.ts"
 import { ord_c, ord_d, ord_r } from "../src/eid/ord.ts"
+import { dst_c, dst_r } from "../src/eid/dst.ts"
 
 await db("tst", true)
 await jwk_set("testkey")
@@ -101,6 +102,11 @@ Deno.test("pre", async () => {
 		await pos({ jwt }, "pre", json({ aid: 1, nam: "nam", src: "httpsrc", utcs: utc, utce: utc + 1000 })),
 	] as Rec["_id"][]
 	assertEquals([2, 1, 1, 1], w.map(w => w.aid))
+	const dst = await Promise.all([
+		pos({ jwt }, "pre", json({ rd: lim_rd, aid: 1 })),
+		pos({ jwt }, "pre", json({ rd: lim_rd, aid: 2 })),
+	])
+	assertEquals([{ rd: lim_rd, aid: 1 }, { rd: lim_rd, aid: 2 }], dst)
 	await Promise.all([
 		usr_d(1), usr_d(2), soc_d(1), agd_d(1),
 		...ord.filter(ordid => ordid !== null).map(ordid => ord_d(ordid!)),
@@ -175,6 +181,7 @@ Deno.test("put", async () => {
 		rec_c(coll.work, { _id: workid, ref: [], rej: [], work: "work", msg: "msg" }),
 		aut_c({ _id: 1, aut: ["aut", "wsl"] }),
 		aut_c({ _id: 2, aut: ["aut", "lit"] }),
+		dst_c({ _id: { rd: lim_rd }, json: "" }),
 		pos(p, "pas", json({ nbr, sms: false })),
 	])
 	const code = await usr_r({ _id: 1 }, { pcode: 1 })
@@ -185,6 +192,7 @@ Deno.test("put", async () => {
 	const au = { aid: 1, nam: "活动一", adm1: "广东", adm2: "汕头", uidlim: 8 }
 	const aus = { aid: 1, intro: "简介", reslim: 10, account: "http明细", budget: 9, fund: 9, expense: 9 }
 	const mdu = { wslid: 1, nam: "标题二", md: "#123" }
+	const rd = JSON.stringify({ nam: "比赛", sale: 32 })
 	await Promise.all([
 		pos({ jwt }, "put", json(uu)),
 		pos({ jwt }, "put", json(su)),
@@ -198,6 +206,7 @@ Deno.test("put", async () => {
 		pos({ jwt }, "put", json({ ordid, ord: false })),
 		pos({ jwt }, "put", json({ workid, msg: "updated" })),
 		pos({ jwt }, "put", json({ aid: 1 })),
+		pos({ jwt }, "put", json({ rd })),
 		pos({ jwt }, "put", json(mdu)),
 	])
 	assertEquals({ _id: 1, ...uu }, await usr_r({ _id: 1 }, { nam: 1, adm1: 1, adm2: 1, intro: 1 }))
@@ -221,5 +230,6 @@ Deno.test("put", async () => {
 	assertEquals({ _id: 1, sec: [1], res: [] }, await agd_r(1, { sec: 1, res: 1 }))
 	assertEquals({ _id: ordid, code: 1, ord: false, msg: "msg" }, await ord_r(ordid))
 	assertEquals([{ _id: workid, ref: [], rej: [], work: "work", msg: "updated" }], await rec_f(coll.work, 0))
+	assertEquals({ _id: { rd: lim_rd }, json: rd }, await dst_r({ rd: lim_rd }))
 	await Promise.all([usr_d(1), soc_d(1), agd_d(1), md_d(coll.wsl, 1), ord_d(ordid), rec_d(coll.work, workid), aut_d(1)])
 })
