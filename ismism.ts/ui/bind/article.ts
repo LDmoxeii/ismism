@@ -2,7 +2,7 @@ import type { Fund, Id, Md, Work } from "../../src/eid/typ.ts"
 import type { Pas, PasCode, Pos, PreUsr } from "../../src/pra/pos.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import * as Q from "../../src/pra/que.ts"
-import { is_aut, is_lim, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_md_pin, lim_ord_a, lim_sup, lim_url, lim_wsl } from "../../src/eid/is.ts"
+import { is_aut, is_id, is_lim, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_md_pin, lim_ord_a, lim_rd, lim_sup, lim_url, lim_wsl } from "../../src/eid/is.ts"
 import { is_pre_usr, is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/can.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit, label, qrcode } from "./section.ts"
@@ -238,7 +238,7 @@ export async function agd(
 		rel(t, a)
 		cover(t, a)
 		acct(t, a)
-		goal(t.goal, a)
+		goal(t.goal, a.goal.sort((m, n) => m.pct - n.pct))
 		srec(t, "aid", a, froze)
 
 		if (froze) [t.nam, t.intro].forEach(el => el.classList.add("froze"))
@@ -554,6 +554,64 @@ export function rec(
 		t.re.remove()
 	}
 	return t.bind
+}
+
+type Rd = {
+	nam: string,
+	img: string,
+	intro: string,
+	sale: number,
+	goal: number[],
+	prize: string[],
+}
+
+export async function dst(
+) {
+	if (navhash("")) return
+	const d = await que<Q.Dst>("dst")
+	if (!d) return
+	const q = { ...d, rd: d.rd ? JSON.parse(d.rd) as Rd : null, anam: new Map(d.anam) }
+
+	navnid()
+	main.innerHTML = ""
+	const t = bind("dst")
+
+	idnam(t, "dst", q.rd?.nam ?? "")
+	if (q.rd) {
+		t.img.src = q.rd.img
+		t.intro.innerText = q.rd.intro
+		goal(t.goal, q.rd.goal.map((g, n) => ({ nam: `${g}箱\n${q.rd!.prize[n]}`, pct: Math.round(100 * Math.min(1, q.rd!.sale / g)) })))
+	}
+	label(t.idl, `（共${q.dst.length}个）`, true)
+	ida(t.idl, q.dst.map(d => [`a${d.aid}`, `${q.anam.get(d.aid)}（${d.ndst}票）`]), "id")
+
+	if (nav.pas && is_aut(nav.pas.aut, "aut")) {
+		t.put.addEventListener("click", () => put("dst", t.put.innerText, {
+			nam: { p1: "投票名称：", p2: "图片外链：", p3: "销售目标：（例：100-衣服,1000-标牌,10000-汽车）", p4: "当前销量：（箱）", pa: "简介" },
+			val: { p1: q.rd?.nam, p2: q.rd?.img, p3: q.rd?.goal.map((g, n) => `${g}-${q.rd!.prize[n]}`).join(",") ?? "", p4: `${q.rd?.sale ?? 0}`, pa: q.rd?.intro },
+			lim_pa: lim_md, p: "put", b: p => {
+				const gp = p.p3?.split(",") ?? []
+				const rd = JSON.stringify({
+					nam: p.p1, img: p.p2, intro: p.pa, sale: parseInt(p.p4!),
+					goal: gp.map(s => parseInt(s.split("-")[0])),
+					prize: gp.map(s => s.split("-")[1]),
+				})
+				return { rd }
+			}, a: "无效输入。编辑失败",
+			r: dst,
+		}))
+		t.preaid.addEventListener("click", () => put("dst", t.preaid.innerText, {
+			nam: { p1: "活动ID号：（例：活动 #a10 的ID号是 10）" }, val: {}, p: "pre", b: p => {
+				const aid = parseInt(p.p1 ?? "")
+				if (!is_id(aid)) return null
+				return { rd: lim_rd, aid }
+			}, a: "无效输入", r: dst,
+		}))
+	} else[t.put, t.preaid].forEach(el => el.remove())
+	if (nav.pas) t.preuid.disabled = true
+	else t.preuid.remove()
+
+	main.append(t.bind)
 }
 
 export async function aut(

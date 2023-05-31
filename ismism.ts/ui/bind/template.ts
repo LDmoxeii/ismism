@@ -199,6 +199,13 @@ const template = {
 		...section.putpro, put: t("button"),
 	},
 
+	dst: {
+		tid: "dst" as const,
+		...section.idnam,
+		img: t("img"), intro: t("p"), goal: t("p"), idl: t("p"),
+		put: t("button"), preaid: t("button"), preuid: t("button"),
+	},
+
 	aut: {
 		tid: "aut" as const,
 		sup: t("p"), aud: t("p"), aut: t("p"), wsl: t("p"), lit: t("p"),

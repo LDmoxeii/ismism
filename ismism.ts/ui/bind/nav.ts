@@ -2,7 +2,7 @@
 import type { Pas } from "../../src/pra/pas.ts"
 import type { NId } from "../../src/pra/que.ts"
 import { adm } from "../../src/ont/adm.ts"
-import { pas, aut, soc, usr, agd, ordl, md, idn, id } from "./article.ts"
+import { pas, aut, soc, usr, agd, ordl, md, idn, id, dst } from "./article.ts"
 import { adm1, adm2, pas_a, pos, que } from "./template.ts"
 
 export const nav: {
@@ -98,7 +98,7 @@ export async function navnid(
 export function navhash(
 	h: string
 ): boolean {
-	if (nav.hash === h || nav.hash === "" && h === "agd") return false
+	if (nav.hash === h || nav.hash === "" && h === "dst") return false
 	location.href = `#${h}`
 	return true
 }
@@ -109,12 +109,13 @@ window.addEventListener("hashchange", () => {
 	if (nav.refresh) clearInterval(nav.refresh)
 	nav.refresh = null
 	if (nav.hash === "pas") pas()
+	else if (nav.hash === "" || nav.hash === "dst") dst()
 	else if (nav.hash === "aut") aut()
 	else if (/^\d+$/.test(nav.hash)) usr(parseInt(nav.hash))
 	else if (nav.hash === "soc") id("soc")
 	else if (nav.hash.startsWith("soc")) id("soc", nav.hash.substring(3))
 	else if (/^s\d+$/.test(nav.hash)) soc(parseInt(nav.hash.substring(1)))
-	else if (nav.hash === "" || nav.hash === "agd") id("agd")
+	else if (nav.hash === "agd") id("agd")
 	else if (nav.hash.startsWith("agd")) id("agd", nav.hash.substring(3))
 	else if (/^a\d+$/.test(nav.hash)) agd(parseInt(nav.hash.substring(1)))
 	else if (nav.hash.startsWith("ord")) ordl(nav.hash.substring(3))
