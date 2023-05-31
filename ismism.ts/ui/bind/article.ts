@@ -611,7 +611,14 @@ export async function dst(
 	if (nav.pas) t.preuid.disabled = true
 	else t.preuid.remove()
 
+
+	const ti = bind("imgl")
+	for (const d of q.dst) {
+		for (const src of d.img)
+			ti.imgl.innerHTML += `<a href="#a${d.aid}"><img src="${src}" loading="lazy"></a>`
+	}
 	main.append(t.bind)
+	main.append(ti.bind)
 }
 
 export async function aut(

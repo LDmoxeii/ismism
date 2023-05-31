@@ -206,6 +206,11 @@ const template = {
 		put: t("button"), preaid: t("button"), preuid: t("button"),
 	},
 
+	imgl: {
+		tid: "imgl" as const,
+		imgl: t("section"),
+	},
+
 	aut: {
 		tid: "aut" as const,
 		sup: t("p"), aud: t("p"), aut: t("p"), wsl: t("p"), lit: t("p"),

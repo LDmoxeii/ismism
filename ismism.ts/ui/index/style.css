@@ -526,6 +526,42 @@ section.cover>img {
 	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
 }
 
+section.imgl {
+	column-count: 5;
+	column-gap: 0px;
+}
+
+section.imgl a,
+section.imgl img {
+	display: block;
+	width: 100% !important;
+}
+
+@media (max-width: 1200px) {
+	section.imgl {
+		column-count: 4;
+	}
+}
+
+@media (max-width: 1000px) {
+	section.imgl {
+		column-count: 3;
+	}
+}
+
+@media (max-width: 800px) {
+	section.imgl {
+		column-count: 2;
+	}
+}
+
+@media (max-width: 400px) {
+	section.imgl {
+		column-count: 1;
+	}
+}
+
+
 section.acct>div>:last-child {
 	float: right;
 }
