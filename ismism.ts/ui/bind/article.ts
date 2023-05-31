@@ -590,7 +590,7 @@ export async function dst(
 			nam: { p1: "投票名称：", p2: "图片外链：", p3: "销售目标：（例：100-衣服,1000-标牌,10000-汽车）", p4: "当前销量：（箱）", pa: "简介" },
 			val: { p1: q.rd?.nam, p2: q.rd?.img, p3: q.rd?.goal.map((g, n) => `${g}-${q.rd!.prize[n]}`).join(",") ?? "", p4: `${q.rd?.sale ?? 0}`, pa: q.rd?.intro },
 			lim_pa: lim_md, p: "put", b: p => {
-				const gp = p.p3?.split(",") ?? []
+				const gp = p.p3 && p.p3.length > 0 ? p.p3.split(",") : []
 				const rd = JSON.stringify({
 					nam: p.p1, img: p.p2, intro: p.pa, sale: parseInt(p.p4!),
 					goal: gp.map(s => parseInt(s.split("-")[0])),
