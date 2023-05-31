@@ -580,7 +580,7 @@ export async function dst(
 	if (q.rd) {
 		t.img.src = q.rd.img
 		t.intro.innerText = q.rd.intro
-		goal(t.goal, q.rd.goal.map((g, n) => ({ nam: `${g}箱\n${q.rd!.prize[n]}`, pct: Math.round(100 * Math.min(1, q.rd!.sale / g)) })))
+		goal(t.goal, q.rd.goal.map((g, n) => ({ nam: `${g}箱\n${q.rd?.prize[n] ?? ""}`, pct: Math.round(100 * Math.min(1, q.rd!.sale / g)) })))
 	}
 	label(t.idl, `（共${q.dst.length}个）`, true)
 	ida(t.idl, q.dst.map(d => [`a${d.aid}`, `${q.anam.get(d.aid)}（${d.ndst}票）`]), "id")
