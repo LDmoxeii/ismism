@@ -63,6 +63,8 @@ export type Work = Rec & Re & ({
 export type Fund = Rec & {
 	fund: number,
 	msg: string,
+	rd?: Dst["_id"]["rd"],
+	unit?: number,
 }
 
 export type Dst = {
@@ -81,6 +83,8 @@ export type Act = {
 	act: "fund",
 	aid: Agd["_id"],
 	msg: string,
+	rd?: Dst["_id"]["rd"],
+	unit?: number,
 } | {
 	act: "nbr",
 	uid: number,

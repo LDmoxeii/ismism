@@ -123,7 +123,11 @@ export async function pre_fund(
 	if (!a || a.act !== "fund") return null
 	const utc = Date.now()
 	await act_u(actid, { $set: { exp: utc } })
-	return rec_c(coll.fund, { _id: { uid: pas.uid, aid: a.aid, utc }, fund: 0, msg: a.msg })
+	return rec_c(coll.fund, {
+		_id: { uid: pas.uid, aid: a.aid, utc }, fund: 0, msg: a.msg,
+		...a.rd ? { rd: a.rd } : {},
+		...a.unit ? { unit: a.unit } : {},
+	})
 }
 
 export async function pre_dst(

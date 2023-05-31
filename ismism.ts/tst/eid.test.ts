@@ -133,7 +133,7 @@ Deno.test("rec", async () => {
 		utce: utc + 2 * utc_h,
 	})
 	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.fund, {
-		_id, fund: 32, msg: "msg"
+		_id, fund: 32, msg: "msg", rd: 1, unit: 3,
 	}))))
 	assertEquals(await nrec(), { work: 5, fund: 3 })
 	assertEquals(await nrec({ uid: [2] }), { work: 2, fund: 2 })
