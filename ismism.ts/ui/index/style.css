@@ -535,6 +535,15 @@ section.imgl a,
 section.imgl img {
 	display: block;
 	width: 100% !important;
+	transition: 0.15s all;
+}
+
+
+@media (hover: hover) {
+	section.imgl img:hover {
+		z-index: 728;
+		transform: scale(2);
+	}
 }
 
 @media (max-width: 1200px) {
