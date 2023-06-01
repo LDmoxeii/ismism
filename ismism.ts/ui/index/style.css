@@ -540,9 +540,10 @@ section.imgl img {
 
 
 @media (hover: hover) {
+
+	section.imgl a:hover,
 	section.imgl img:hover {
-		z-index: 728;
-		transform: scale(2);
+		transform: scale(1.75) translateZ(-100px);
 	}
 }
 
