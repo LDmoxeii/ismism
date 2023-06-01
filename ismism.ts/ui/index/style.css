@@ -543,7 +543,7 @@ section.imgl img {
 
 	section.imgl a:hover,
 	section.imgl img:hover {
-		transform: scale(1.75) translateZ(-100px);
+		transform: scale(1.5) translateZ(-100px);
 	}
 }
 
