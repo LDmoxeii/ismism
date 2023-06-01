@@ -78,6 +78,12 @@ export async function db(
 				partialFilterExpression: { work: "live" },
 			}]
 		})
+		await c.fund.createIndexes({
+			indexes: [{
+				key: { rd: 1, "_id.uid": 1, "_id.utc": -1 }, name: "rd",
+				partialFilterExpression: { rd: { $exists: true } },
+			}]
+		})
 		await c.dst.createIndexes({
 			indexes: [{
 				key: { "_id.rd": 1, "_id.aid": 1, "_id.uid": 1 }, name: "rd-aid-uid",

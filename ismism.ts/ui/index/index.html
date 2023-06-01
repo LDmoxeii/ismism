@@ -48,9 +48,8 @@
 	for (const n of document.getElementsByTagName("nav")) n.addEventListener("wheel", e => {
 		if (e.deltaX != 0) return
 		e.preventDefault()
-		const s = n.querySelector("li").scrollWidth
-		if (e.deltaY > 0) n.scrollLeft -= s
-		else if (e.deltaY < 0) n.scrollLeft += s
+		if (e.deltaY > 0) n.scrollLeft -= 60
+		else if (e.deltaY < 0) n.scrollLeft += 60
 	})
 </script>
 
