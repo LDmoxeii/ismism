@@ -125,7 +125,7 @@ Deno.test("rec", async () => {
 Deno.test("dst", async () => {
 	const dst = await que("dst", p({})) as Dst
 	assertEquals({ nam: "nam", c: 32 }, JSON.parse(dst?.rd!))
-	assertEquals([{ aid: 1, ndst: 2 }, { aid: 2, ndst: 1 }], dst?.dst)
+	assertEquals([{ adm1: "四川", aid: 1, ndst: 2, img: [] }, { adm1: "江苏", aid: 2, ndst: 1, img: [] }], dst?.dst)
 })
 
 Deno.test("md", async () => {

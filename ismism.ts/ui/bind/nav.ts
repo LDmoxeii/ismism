@@ -2,7 +2,7 @@
 import type { Pas } from "../../src/pra/pas.ts"
 import type { NId } from "../../src/pra/que.ts"
 import { adm } from "../../src/ont/adm.ts"
-import { pas, aut, soc, usr, agd, ordl, md, idn, id, dst } from "./article.ts"
+import { pas, aut, soc, usr, agd, ordl, md, idn, id, dst, imgl } from "./article.ts"
 import { adm1, adm2, pas_a, pos, que } from "./template.ts"
 
 export const nav: {
@@ -98,7 +98,7 @@ export async function navnid(
 export function navhash(
 	h: string
 ): boolean {
-	if (nav.hash === h || nav.hash === "" && h === "dst") return false
+	if (nav.hash === h) return false
 	location.href = `#${h}`
 	return true
 }
@@ -109,7 +109,8 @@ window.addEventListener("hashchange", () => {
 	if (nav.refresh) clearInterval(nav.refresh)
 	nav.refresh = null
 	if (nav.hash === "pas") pas()
-	else if (nav.hash === "" || nav.hash === "dst") dst()
+	else if (nav.hash === "") dst()
+	else if (nav.hash.startsWith("dst")) imgl(nav.hash.substring(3))
 	else if (nav.hash === "aut") aut()
 	else if (/^\d+$/.test(nav.hash)) usr(parseInt(nav.hash))
 	else if (nav.hash === "soc") id("soc")

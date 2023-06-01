@@ -208,6 +208,8 @@ const template = {
 
 	imgl: {
 		tid: "imgl" as const,
+		...section.idnam,
+		adm1: t("p"),
 		...section.cover,
 		imgl: t("section"),
 	},

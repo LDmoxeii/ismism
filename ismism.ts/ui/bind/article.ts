@@ -565,12 +565,15 @@ type Rd = {
 	prize: string[],
 }
 
+export type Dst = Omit<NonNullable<Q.Dst>, "rd" | "anam"> & {
+	rd: Rd | null, anam: Map<Id["_id"], Id["nam"]>,
+}
 export async function dst(
 ) {
 	if (navhash("")) return
 	const d = await que<Q.Dst>("dst")
 	if (!d) return
-	const q = { ...d, rd: d.rd ? JSON.parse(d.rd) as Rd : null, anam: new Map(d.anam) }
+	const q: Dst = { ...d, rd: d.rd ? JSON.parse(d.rd) as Rd : null, anam: new Map(d.anam) }
 
 	navnid()
 	main.innerHTML = ""
@@ -611,27 +614,44 @@ export async function dst(
 	if (nav.pas) t.preuid.disabled = true
 	else t.preuid.remove()
 
+	main.append(t.bind)
+	imgl()
+}
 
-	const ti = bind("imgl")
-	for (const d of q.dst) {
+export async function imgl(
+	adm1?: string,
+) {
+	const d = await que<Q.Dst>("dst")
+	if (!d) return
+	const q: Dst = { ...d, rd: d.rd ? JSON.parse(d.rd) as Rd : null, anam: new Map(d.anam) }
+
+	navnid()
+	if (adm1 !== undefined) main.innerHTML = ""
+	const t = bind("imgl")
+
+	const an = [...new Set(q.dst.map(d => d.adm1))].map(a => ({ adm1: a, n: q.dst.filter(d => d.adm1 === a).length })).sort((u, v) => v.n - u.n)
+	idnam(t, `dst${adm1 ?? ""}`, `参赛作品${adm1 ? `（${adm1}）` : ""}`)
+	ida(t.adm1, an.map(an => [`dst${an.adm1}`, `${an.adm1}(${an.n})`]))
+
+	for (const d of adm1 ? q.dst.filter(d => d.adm1 === adm1) : q.dst) {
 		for (const src of d.img)
-			ti.imgl.innerHTML += `<a class="none" href="#a${d.aid}" target="_blank" rel="noopener noreferrer"><img src="${src}"></a>`
+			t.imgl.innerHTML += `<a class="none" href="#a${d.aid}" target="_blank" rel="noopener noreferrer"><img src="${src}"></a>`
 	}
-	const imgl = ti.imgl.getElementsByTagName("a")
+	const imgl = t.imgl.getElementsByTagName("a")
 	let n = 0
 	const img = (d: number) => {
 		imgl[n].classList.add("none")
-		ti.imgn.innerText = `第 ${n + 1} / ${imgl.length} 张`
-		const aid = imgl[n].hash.substring(1)
-		ti.imgnam.innerText = `${aid} ${q.anam.get(parseInt(aid.substring(1)))}`
 		n = ((n + d) % imgl.length + imgl.length) % imgl.length;
+		t.imgn.innerText = `第 ${n + 1} / ${imgl.length} 张`
+		const aid = imgl[n].hash.substring(1)
+		t.imgnam.innerText = `${aid} ${q.anam.get(parseInt(aid.substring(1)))}`
 		imgl[n].classList.remove("none")
 	}
-	ti.prev.addEventListener("click", () => img(-1))
-	ti.next.addEventListener("click", () => img(+1))
+	t.prev.addEventListener("click", () => img(-1))
+	t.next.addEventListener("click", () => img(+1))
 	img(0)
+
 	main.append(t.bind)
-	main.append(ti.bind)
 }
 
 export async function aut(

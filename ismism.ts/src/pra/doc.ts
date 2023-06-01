@@ -129,8 +129,8 @@ export async function dst(
 	if (rd === null || rdaid === null) return null
 	const aid = rdaid.map(r => r._id.aid!)
 	const ndst = await Promise.all(aid.map(a => dst_n({ rd: lim_rd, aid: a })))
-	const img = await Promise.all(aid.map(a => agd_r(a, { img: 1 })))
-	const dst = aid.map((aid, n) => ({ aid, ndst: ndst[n] ?? 0, img: img[n]?.img.map(m => m.src) ?? [] })).sort((a, b) => b.ndst - a.ndst)
+	const img = await Promise.all(aid.map(a => agd_r(a, { adm1: 1, img: 1 })))
+	const dst = aid.map((aid, n) => ({ adm1: img[n]!.adm1, aid, ndst: ndst[n] ?? 0, img: img[n]?.img.map(m => m.src) ?? [] })).sort((a, b) => b.ndst - a.ndst)
 	const anam = await idnam(coll.agd, aid)
 	return { rd: rd.json, dst, anam }
 }
