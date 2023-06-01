@@ -134,7 +134,7 @@ export async function pre_dst(
 	pas: Pas,
 	dstid: Dst["_id"],
 ): DocC<Dst["_id"]> {
-	if (!is_pre_dst(pas)) return null
+	if (dstid.uid !== pas.uid && !is_pre_dst(pas)) return null
 	return await dst_c({ _id: dstid })
 }
 

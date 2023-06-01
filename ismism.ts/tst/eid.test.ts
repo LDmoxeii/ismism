@@ -3,7 +3,7 @@ import { coll, db } from "../src/db.ts"
 import { usr_c, usr_r, usr_u, usr_d } from "../src/eid/usr.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
-import { nrec, rec_c, rec_d, rec_f, rec_r, rec_u, work_l } from "../src/eid/rec.ts"
+import { fund_f, nrec, rec_c, rec_d, rec_f, rec_r, rec_u, work_l, work_n } from "../src/eid/rec.ts"
 import { rol } from "../src/eid/rel.ts"
 import { nid } from "../src/eid/id.ts"
 import { md_c, md_f, md_r, md_u } from "../src/eid/md.ts"
@@ -137,6 +137,8 @@ Deno.test("rec", async () => {
 	}))))
 	assertEquals(await nrec(), { work: 5, fund: 3 })
 	assertEquals(await nrec({ uid: [2] }), { work: 2, fund: 2 })
+	assertEquals(await work_n(2), 2)
+	assertEquals([{ _id: id[2], fund: 32, msg: "msg", rd: 1, unit: 3, }], await fund_f({ rd: 1, "_id.uid": 1 }))
 	assertEquals(await nrec({ aid: 4 }), { work: 4, fund: 2 })
 
 	assertEquals((await rec_f(coll.work, utc + 100))!.length, 1)

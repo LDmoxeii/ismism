@@ -42,6 +42,7 @@ const section = {
 		adm: t("span"), utc: t("span"),
 		rej: t("span"), ref: t("span"),
 		rej2: t("em"),
+		dst: t("span")
 	},
 
 	meta_id: {

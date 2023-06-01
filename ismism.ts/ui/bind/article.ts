@@ -94,7 +94,7 @@ export async function id(
 
 	const c = h === "agd" ? "活动公示" : "同城小组"
 	idnam(t, `${h}${adm ?? ""}`, c)
-	t.meta.innerText = "网站本月将开启\"以太假说\"杯评选活动的投票通道\n请参赛小组将图片、视频、介绍添加至小组的活动页面"
+	t.meta.innerText = "\"以太假说\"杯投票通道已开启\n详情查看网站首页，可投票数查看用户页面"
 	label(t.idl, `${adm ?? ""} 共 ${idl.length} 个（按注册时间排序）`)
 	ida(t.idl, idl.map(n => [`${h.substring(0, 1)}${n[0]}`, n[1]]), "id")
 
@@ -586,7 +586,7 @@ export async function dst(
 		goal(t.goal, q.rd.goal.map((g, n) => ({ nam: `${g}箱\n${q.rd?.prize[n] ?? ""}`, pct: Math.round(100 * Math.min(1, q.rd!.sale / g)) })))
 	}
 	label(t.idl, `（共${q.dst.length}个）`, true)
-	ida(t.idl, q.dst.map(d => [`a${d.aid}`, `${q.anam.get(d.aid)}（${d.ndst}票）`]), "id")
+	ida(t.idl, q.dst.map(d => [`a${d.aid}`, `a${d.aid} ${q.anam.get(d.aid)}（${d.ndst}票）` + (nav.pas && nav.pas?.dst.includes(d.aid) ? "（已投）" : "")]), "id")
 
 	if (nav.pas && is_aut(nav.pas.aut, "aut")) {
 		t.put.addEventListener("click", () => put("dst", t.put.innerText, {
@@ -611,8 +611,16 @@ export async function dst(
 			}, a: "无效输入", r: dst,
 		}))
 	} else[t.put, t.preaid].forEach(el => el.remove())
-	if (nav.pas) t.preuid.disabled = true
-	else t.preuid.remove()
+	if (nav.pas) {
+		if (nav.pas.dst.length < nav.pas.limdst) t.preuid.addEventListener("click", () => put("dst", "投票", {
+			nam: { p1: "参赛活动ID：（如：a1）" }, val: {}, p: "pre", b: p => {
+				const aid = parseInt(p.p1?.substring(1) ?? "")
+				if (q.dst.findIndex(d => d.aid === aid) < 0) return null
+				return { rd: lim_rd, aid, uid: nav.pas!.uid }
+			}, a: "无效活动ID，或已为该ID投过票",
+			r: () => { navpas().then(dst) }
+		})); else t.preuid.disabled = true
+	} else t.preuid.remove()
 
 	main.append(t.bind)
 	imgl()

@@ -122,6 +122,12 @@ export function meta(
 		cls = "red"
 		if ("rej2" in t) t.rej2.classList.add(cls)
 	}
+
+	if ("dst" in t) {
+		if (nav.pas && nav.pas.uid === id._id)
+			t.dst.innerText = `\n\n票数：${nav.pas.dst.length}/${nav.pas.limdst} （已投/可投）`
+		else t.dst.remove()
+	}
 	return cls
 }
 

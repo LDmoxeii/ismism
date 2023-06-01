@@ -1,4 +1,4 @@
-import type { Rec, Work } from "./typ.ts"
+import type { Fund, Rec, Work } from "./typ.ts"
 import { coll, Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
 import { is_id, is_idl, is_recid, lim_nrecday, lim_rec_f, lim_uid_max } from "./is.ts"
 import { utc_d, utc_date } from "../ont/utc.ts"
@@ -49,6 +49,18 @@ export async function work_l(
 		{ work: "live", utce: { $gt: utc } },
 		{ sort: { "_id.utc": -1 } },
 	).toArray() as (Work & { work: "live" })[]
+}
+
+export async function work_n(
+	uid: Work["_id"]["uid"]
+): Promise<number> {
+	return await coll.work.countDocuments({ work: "work", "_id.uid": uid })
+}
+
+export async function fund_f(
+	f: { rd: Fund["rd"], "_id.uid": Fund["_id"]["uid"] }
+): Promise<(Fund & { rd: number, unit: number })[]> {
+	return await coll.fund.find(f).toArray() as (Fund & { rd: number, unit: number })[]
 }
 
 export async function rec_u<

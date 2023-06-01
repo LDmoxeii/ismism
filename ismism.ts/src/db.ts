@@ -74,6 +74,9 @@ export async function db(
 		})))
 		await c.work.createIndexes({
 			indexes: [{
+				key: { work: 1, "_id.uid": 1 }, name: "work",
+				partialFilterExpression: { work: "work" },
+			}, {
 				key: { work: 1, utce: -1, "_id.utc": -1 }, name: "live",
 				partialFilterExpression: { work: "live" },
 			}]

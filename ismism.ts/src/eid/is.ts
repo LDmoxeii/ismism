@@ -33,6 +33,7 @@ export const lim_rec_f = 32
 export const lim_md_f = 4
 export const lim_md_pin = lim_md_f
 export const lim_rd = 1
+export const lim_dst = 20
 
 export function is_lim(
 	n: number,

@@ -1,4 +1,4 @@
-import type { Aut, Usr } from "../eid/typ.ts"
+import type { Aut, Usr, Agd } from "../eid/typ.ts"
 import { coll, DocR, DocU } from "../db.ts"
 import { jwt_sign, jwt_verify } from "../ont/jwt.ts"
 import { usr_r, usr_u } from "../eid/usr.ts"
@@ -6,7 +6,9 @@ import { aut_r } from "../eid/aut.ts"
 import { utc_h } from "../ont/utc.ts"
 import { smssend } from "../ont/sms.ts"
 import { rol, Rol } from "../eid/rel.ts"
-import { is_ptoken, len_code, lim_code } from "../eid/is.ts"
+import { is_ptoken, len_code, lim_code, lim_dst, lim_rd } from "../eid/is.ts"
+import { fund_f, work_n } from "../eid/rec.ts"
+import { dst_f } from "../eid/dst.ts"
 
 export type Pas = {
 	uid: Usr["_id"],
@@ -16,13 +18,25 @@ export type Pas = {
 	aut: Aut["aut"],
 	sid: Rol,
 	aid: Rol,
+	limdst: number,
+	dst: Agd["_id"][],
+}
+
+function limdst(
+	fund: number,
+	work: number,
+): number {
+	const f = Math.round(0.5 * (fund + Math.floor(fund / 7)))
+	const w = work >= 3 ? 4 : (work >= 1 ? 2 : 0)
+	return Math.min(lim_dst, f + w)
 }
 
 async function pas_of_usr(
 	u: Pick<Usr, "_id" | "nam" | "rej" | "ref">
 ): DocR<Pas> {
-	const [aut, sid, aid] = await Promise.all([
+	const [aut, sid, aid, fund, work, dst] = await Promise.all([
 		aut_r(u._id), rol(coll.soc, u._id), rol(coll.agd, u._id),
+		fund_f({ rd: lim_rd, "_id.uid": u._id }), work_n(u._id), dst_f({ rd: lim_rd, uid: u._id })
 	])
 	if (!sid || !aid) return null
 	return {
@@ -31,6 +45,8 @@ async function pas_of_usr(
 		nam: u.nam,
 		aut: aut ? aut.aut : [],
 		sid, aid,
+		limdst: limdst(fund.reduceRight((a, b) => a + b.unit, 0), work),
+		dst: dst ? dst.map(d => d._id.aid!) : [],
 	}
 }
 
