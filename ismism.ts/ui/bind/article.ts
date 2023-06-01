@@ -615,8 +615,21 @@ export async function dst(
 	const ti = bind("imgl")
 	for (const d of q.dst) {
 		for (const src of d.img)
-			ti.imgl.innerHTML += `<a href="#a${d.aid}"><img src="${src}" loading="lazy"></a>`
+			ti.imgl.innerHTML += `<a class="none" href="#a${d.aid}" target="_blank" rel="noopener noreferrer"><img src="${src}"></a>`
 	}
+	const imgl = ti.imgl.getElementsByTagName("a")
+	let n = 0
+	const img = (d: number) => {
+		imgl[n].classList.add("none")
+		ti.imgn.innerText = `第 ${n + 1} / ${imgl.length} 张`
+		const aid = imgl[n].hash.substring(1)
+		ti.imgnam.innerText = `${aid} ${q.anam.get(parseInt(aid.substring(1)))}`
+		n = ((n + d) % imgl.length + imgl.length) % imgl.length;
+		imgl[n].classList.remove("none")
+	}
+	ti.prev.addEventListener("click", () => img(-1))
+	ti.next.addEventListener("click", () => img(+1))
+	img(0)
 	main.append(t.bind)
 	main.append(ti.bind)
 }
