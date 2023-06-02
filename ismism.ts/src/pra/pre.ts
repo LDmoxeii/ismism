@@ -30,7 +30,11 @@ export async function pre_usr(
 				const utc = Date.now()
 				await Promise.all([
 					act_u(pa.actid, { $set: { exp: utc } }),
-					rec_c(coll.fund, { _id: { uid, aid: a.aid, utc }, fund: 0, msg: a.msg }),
+					rec_c(coll.fund, {
+						_id: { uid, aid: a.aid, utc }, fund: 0, msg: a.msg,
+						...a.rd ? { rd: a.rd } : {},
+						...a.unit ? { unit: a.unit } : {},
+					}),
 				])
 				return uid
 			} case "nbr": {
