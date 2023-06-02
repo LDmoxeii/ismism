@@ -586,7 +586,11 @@ export async function dst(
 		goal(t.goal, q.rd.goal.map((g, n) => ({ nam: `${g}箱\n${q.rd?.prize[n] ?? ""}`, pct: Math.round(100 * Math.min(1, q.rd!.sale / g)) })))
 	}
 	label(t.idl, `（共${q.dst.length}个）`, true)
-	ida(t.idl, q.dst.map(d => [`a${d.aid}`, `a${d.aid} ${q.anam.get(d.aid)}（${d.ndst}票）` + (nav.pas && nav.pas?.dst.includes(d.aid) ? "（已投）" : "")]), "id")
+	ida(t.idl, q.dst.map(d => {
+		const n = nav.pas && nav.pas?.dst.find(t => t[0] === d.aid)
+		const c = n ? `（已投${n[1]}票）` : ""
+		return [`a${d.aid}`, `a${d.aid} ${q.anam.get(d.aid)}（${d.ndst}票）${c}`]
+	}), "id")
 
 	if (nav.pas && is_aut(nav.pas.aut, "aut")) {
 		t.put.addEventListener("click", () => put("dst", t.put.innerText, {
@@ -612,8 +616,9 @@ export async function dst(
 		}))
 	} else[t.put, t.preaid].forEach(el => el.remove())
 	if (nav.pas) {
-		if (nav.pas.dst.length < nav.pas.limdst) t.preuid.addEventListener("click", () => put("dst", "投票", {
+		if (nav.pas.dst.reduceRight((a, b) => a + b[1], 0) < nav.pas.limdst || nav.pas.redst) t.preuid.addEventListener("click", () => put("dst", "投票", {
 			nam: { p1: "参赛活动ID：（如：a1）" }, val: {}, p: "pre", b: p => {
+				if (p.p1 === "dst") return { rd: lim_rd, uid: nav.pas!.uid }
 				const aid = parseInt(p.p1?.substring(1) ?? "")
 				if (q.dst.findIndex(d => d.aid === aid) < 0) return null
 				return { rd: lim_rd, aid, uid: nav.pas!.uid }

@@ -1,4 +1,4 @@
-import type { Ord, Rec } from "../../src/eid/typ.ts"
+import type { Dst, Ord, Rec } from "../../src/eid/typ.ts"
 import type { Pos } from "../../src/pra/pos.ts"
 import type { Agd } from "./article.ts"
 
@@ -18,7 +18,7 @@ export async function que<T>(
 	return r.json() as T
 }
 
-export type PosB = Record<string, string | number | boolean | Agd["img"] | Agd["goal"] | Ord["_id"] | Rec["_id"]>
+export type PosB = Record<string, string | number | boolean | Agd["img"] | Agd["goal"] | Ord["_id"] | Rec["_id"]> | Dst["_id"]
 export async function pos<T>(
 	p: Pos,
 	b: PosB,

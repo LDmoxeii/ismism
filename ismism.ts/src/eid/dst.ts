@@ -1,5 +1,5 @@
-import type { Agd, Dst } from "./typ.ts"
-import { DocC, DocR, DocU, coll } from "../db.ts"
+import type { Agd, Dst, Usr } from "./typ.ts"
+import { DocC, DocD, DocR, DocU, coll } from "../db.ts"
 import { is_dstid, is_id, is_json, is_lim, lim_rd } from "./is.ts"
 
 export async function dst_c(
@@ -18,7 +18,7 @@ export async function dst_r(
 }
 
 export async function dst_f(
-	_id: { rd: Dst["_id"]["rd"], uid?: Agd["_id"] }
+	_id: { rd: Dst["_id"]["rd"], uid?: Usr["_id"] }
 ) {
 	if (!is_lim(_id.rd, lim_rd) || "uid" in _id && !is_id(_id.uid!)) return null
 	const f = {
@@ -39,6 +39,19 @@ export async function dst_n(
 	return is_lim(_id.rd, lim_rd) ? await coll.dst.countDocuments(f) : null
 }
 
+export async function dst_a(
+	_id: Dst["_id"]
+): DocU {
+	const d = await dst_r(_id)
+	try {
+		if (d) {
+			const { matchedCount, modifiedCount } = await coll.dst.updateOne({ _id }, { $inc: { dst: d.dst ? 1 : 2 } })
+			if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
+			else return null
+		} else return await dst_c({ _id, dst: 1 }) ? 1 : null
+	} catch { return null }
+}
+
 export async function dst_u(
 	rd: Dst["_id"]["rd"],
 	json: NonNullable<Dst["json"]>,
@@ -49,5 +62,15 @@ export async function dst_u(
 		const { matchedCount, modifiedCount } = await coll.dst.updateOne({ _id: { rd } } as any, { $set: { json } })
 		if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
 		else return null
+	} catch { return null }
+}
+
+export async function dst_d(
+	_id: { rd: Dst["_id"]["rd"], uid: Usr["_id"] }
+): DocD {
+	if (!is_lim(_id.rd, lim_rd) || !is_id(_id.uid)) return null
+	try {
+		const d = await coll.dst.deleteMany({ "_id.rd": _id.rd, "_id.uid": _id.uid })
+		return d > 0 ? 1 : 0
 	} catch { return null }
 }

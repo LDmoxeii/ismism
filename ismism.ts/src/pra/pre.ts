@@ -1,7 +1,7 @@
 import type { Act, Agd, Aut, Dst, Fund, Lit, Ord, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl, is_pre_aut, is_pre_dst } from "./can.ts"
-import { coll, DocC } from "../db.ts"
+import { coll, DocC, DocU } from "../db.ts"
 import { act_r, act_u } from "../eid/act.ts"
 import { usr_c, usr_r, usr_u } from "../eid/usr.ts"
 import { soc_c, soc_u } from "../eid/soc.ts"
@@ -13,7 +13,7 @@ import { aut_c, aut_d, aut_g, aut_r, aut_u } from "../eid/aut.ts"
 import { utc_d, utc_h, utc_week } from "../ont/utc.ts"
 import { nord_f, ord_c, ord_d } from "../eid/ord.ts"
 import { smssend } from "../ont/sms.ts"
-import { dst_c } from "../eid/dst.ts"
+import { dst_a, dst_c, dst_d } from "../eid/dst.ts"
 
 export async function pre_usr(
 	pa: { pas: Pas } | { actid: Act["_id"] },
@@ -133,9 +133,11 @@ export async function pre_fund(
 export async function pre_dst(
 	pas: Pas,
 	dstid: Dst["_id"],
-): DocC<Dst["_id"]> {
-	if (dstid.uid !== pas.uid && !is_pre_dst(pas)) return null
-	return await dst_c({ _id: dstid })
+): DocU {
+	if (!dstid.uid && is_pre_dst(pas)) return await dst_c({ _id: dstid }) ? 1 : null
+	if (dstid.uid === pas.uid && pas.redst && !dstid.aid) return await dst_d({ rd: dstid.rd, uid: dstid.uid })
+	if (dstid.uid === pas.uid && is_id(dstid.aid!) && is_lim(pas.dst.reduceRight((a, b) => a + b[1], 1), pas.limdst)) return await dst_a(dstid)
+	return null
 }
 
 export async function pre_aut(

@@ -70,6 +70,7 @@ export type Fund = Rec & {
 export type Dst = {
 	_id: { rd: number, aid?: Agd["_id"], uid?: Usr["_id"] },
 	json?: string,
+	dst?: number,
 }
 
 export type Aut = {

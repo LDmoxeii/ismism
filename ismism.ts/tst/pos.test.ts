@@ -106,7 +106,7 @@ Deno.test("pre", async () => {
 		pos({ jwt }, "pre", json({ rd: lim_rd, aid: 1 })),
 		pos({ jwt }, "pre", json({ rd: lim_rd, aid: 2 })),
 	])
-	assertEquals([{ rd: lim_rd, aid: 1 }, { rd: lim_rd, aid: 2 }], dst)
+	assertEquals([1, 1], dst)
 	await Promise.all([
 		usr_d(1), usr_d(2), soc_d(1), agd_d(1),
 		...ord.filter(ordid => ordid !== null).map(ordid => ord_d(ordid!)),

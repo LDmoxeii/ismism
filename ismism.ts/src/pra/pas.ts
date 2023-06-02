@@ -18,8 +18,9 @@ export type Pas = {
 	aut: Aut["aut"],
 	sid: Rol,
 	aid: Rol,
+	redst: boolean,
 	limdst: number,
-	dst: Agd["_id"][],
+	dst: [Agd["_id"], number][],
 }
 
 function limdst(
@@ -45,8 +46,9 @@ async function pas_of_usr(
 		nam: u.nam,
 		aut: aut ? aut.aut : [],
 		sid, aid,
+		redst: dst ? dst.findIndex(d => d.dst === undefined) >= 0 : false,
 		limdst: limdst(fund.reduceRight((a, b) => a + b.unit, 0), work),
-		dst: dst ? dst.map(d => d._id.aid!) : [],
+		dst: dst ? dst.map(d => [d._id.aid!, d.dst ?? 1]) : [],
 	}
 }
 

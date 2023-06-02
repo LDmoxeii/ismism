@@ -125,7 +125,7 @@ export function meta(
 
 	if ("dst" in t) {
 		if (nav.pas && nav.pas.uid === id._id)
-			t.dst.innerText = `\n\n票数：${nav.pas.dst.length}/${nav.pas.limdst} （已投/可投）`
+			t.dst.innerText = `\n\n票数：${nav.pas.dst.reduceRight((a, b) => a + b[1], 0)}/${nav.pas.limdst} （已投/可投）`
 		else t.dst.remove()
 	}
 	return cls
