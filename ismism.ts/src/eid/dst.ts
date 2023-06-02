@@ -36,7 +36,9 @@ export async function dst_n(
 		..."aid" in _id ? { "_id.aid": _id.aid, "_id.uid": { $exists: true } } : {},
 		..."uid" in _id ? { "_id.uid": _id.uid } : {},
 	}
-	return is_lim(_id.rd, lim_rd) ? await coll.dst.countDocuments(f) : null
+	return is_lim(_id.rd, lim_rd)
+		? (await coll.dst.find(f).toArray()).reduceRight((a, b) => a + (b.dst ?? 1), 0)
+		: null
 }
 
 export async function dst_a(
