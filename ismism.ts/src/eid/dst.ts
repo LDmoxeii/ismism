@@ -46,7 +46,7 @@ export async function dst_a(
 ): DocU {
 	const d = await dst_r(_id)
 	try {
-		if (d) {
+		if (d && (d.dst ? d.dst : 1) <= 4) {
 			const { matchedCount, modifiedCount } = await coll.dst.updateOne({ _id }, { $inc: { dst: d.dst ? 1 : 2 } })
 			if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
 			else return null

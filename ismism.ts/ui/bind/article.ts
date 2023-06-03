@@ -577,6 +577,7 @@ export async function dst(
 
 	navnid()
 	main.innerHTML = ""
+	await live()
 	const t = bind("dst")
 
 	idnam(t, "dst", q.rd?.nam ?? "")
