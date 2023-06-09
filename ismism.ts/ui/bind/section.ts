@@ -335,7 +335,7 @@ export function putrel(
 	})); else t.putuid.remove() // deno-lint-ignore no-explicit-any
 	if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { [id]: d._id } as any)) btn(t.putresn, t.putresn.innerText, d.res.length > 0 ? {
 		confirm: "清空申请人名单？",
-		pos: () => pos<DocU>("put", { [id]: d._id, rol: "res" }),
+		pos: () => pos<DocU>("put", { [id]: d._id, rol: "res", add: false }),
 		refresh,
 	} : undefined); else t.putresn.remove()
 	const [isuid, isres] = [d.uid.includes(nav.pas.uid), d.res.includes(nav.pas.uid)]
