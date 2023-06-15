@@ -6,7 +6,8 @@ import { is_aut, is_id, is_lim, is_md, lim_aud, lim_aut, lim_lit, lim_md, lim_md
 import { is_pre_usr, is_pro_usr, is_re, is_ref, is_rej, is_sec, is_uid } from "../../src/pra/can.ts"
 import { nav, navhash, navnid, navpas } from "./nav.ts"
 import { acct, btn, cover, goal, idnam, meta, putpro, putrel, re, rec as srec, rel, rolref, seladm, txt, ida, wsllit, label, qrcode } from "./section.ts"
-import { bind, main, pas_a, pos, PosB, que, utc_refresh } from "./template.ts"
+import { bind, main, pas_a, utc_refresh } from "./template.ts"
+import { pos, PosB, que, } from "./fetch.ts"
 import { is_actid, is_goal, is_img, is_msg, is_nam, is_nbr, is_url, } from "../../src/eid/is.ts"
 import { utc_d, utc_date, utc_medium, utc_short } from "../../src/ont/utc.ts"
 

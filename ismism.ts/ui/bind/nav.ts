@@ -3,7 +3,8 @@ import type { Pas } from "../../src/pra/pas.ts"
 import type { NId } from "../../src/pra/que.ts"
 import { adm } from "../../src/ont/adm.ts"
 import { pas, aut, soc, usr, agd, ordl, md, idn, id, dst, imgl } from "./article.ts"
-import { adm1, adm2, pas_a, pos, que } from "./template.ts"
+import { adm1, adm2, pas_a } from "./template.ts"
+import { pos, que } from "./fetch.ts"
 
 export const nav: {
 	pas: Pas | null,

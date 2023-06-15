@@ -16,6 +16,9 @@
 				"ui/",
 				"cli/",
 				"tst/"
+			],
+			"exclude": [
+				"**/*.js"
 			]
 		},
 		"rules": {
@@ -25,7 +28,9 @@
 			"include": [
 				"ban-untagged-todo"
 			],
-			"exclude": []
+			"exclude": [
+				"**/*.js"
+			]
 		}
 	}
 }

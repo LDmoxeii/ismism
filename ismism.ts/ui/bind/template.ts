@@ -1,34 +1,8 @@
-import type { Dst, Ord, Rec } from "../../src/eid/typ.ts"
-import type { Pos } from "../../src/pra/pos.ts"
-import type { Agd } from "./article.ts"
-
 export const utc_refresh = 750
-export let utc_etag = Date.now()
 export const main = document.getElementById("main")! as HTMLDivElement
 export const pas_a = document.getElementById("pas_a")! as HTMLAnchorElement
 export const adm1 = document.getElementById("adm1")! as HTMLMenuElement
 export const adm2 = document.getElementById("adm2")! as HTMLMenuElement
-
-export async function que<T>(
-	q: string
-) {
-	const r = await fetch(`/q/${q}`)
-	const etag = r.headers.get("etag")?.substring(3)
-	if (etag) utc_etag = parseInt(etag)
-	return r.json() as T
-}
-
-export type PosB = Record<string, string | number | boolean | Agd["img"] | Agd["goal"] | Ord["_id"] | Rec["_id"]> | Dst["_id"]
-export async function pos<T>(
-	p: Pos,
-	b: PosB,
-) {
-	const res = await fetch(`/p/${p}`, {
-		method: "POST",
-		body: JSON.stringify(b)
-	})
-	return res.json() as T
-}
 
 const t: typeof document.createElement = (s: string) => document.createElement(s)
 const svg = <S extends keyof SVGElementTagNameMap>(s: S) => document.createElementNS("http://www.w3.org/2000/svg", s)
