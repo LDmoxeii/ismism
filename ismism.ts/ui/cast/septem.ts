@@ -263,17 +263,17 @@ function proj_to(
 
 export function init(
 	canvas: HTMLCanvasElement,
-	data: { vert: Float32Array, tex: Float32Array, norm: Float32Array, idx: Uint8Array }
+	mesh: { vert: Float32Array, tex: Float32Array, norm: Float32Array, idx: Uint8Array }
 ) {
 	const gl = canvas.getContext("webgl", { preserveDrawingBuffer: true })!
 	gl.getExtension("OES_standard_derivatives")
 	const p = program(gl, vert, frag)
 	texture(gl)
 	gl.uniform1i(gl.getUniformLocation(p, tag.tex), 0)
-	buffer(gl, data.vert, { loc: gl.getAttribLocation(p, tag.vert_a), size: 3 })
-	buffer(gl, data.tex, { loc: gl.getAttribLocation(p, tag.tex_a), size: 2 })
-	buffer(gl, data.norm, { loc: gl.getAttribLocation(p, tag.norm_a), size: 3 })
-	buffer(gl, data.idx)
+	buffer(gl, mesh.vert, { loc: gl.getAttribLocation(p, tag.vert_a), size: 3 })
+	buffer(gl, mesh.tex, { loc: gl.getAttribLocation(p, tag.tex_a), size: 2 })
+	buffer(gl, mesh.norm, { loc: gl.getAttribLocation(p, tag.norm_a), size: 3 })
+	buffer(gl, mesh.idx)
 	prog = {
 		canvas, gl,
 		pos: gl.getUniformLocation(p, tag.pos)!,
@@ -283,7 +283,7 @@ export function init(
 		aether: gl.getUniformLocation(p, tag.aether)!,
 		dtex: gl.getUniformLocation(p, tag.dtex)!,
 		src: gl.getUniformLocation(p, tag.src)!,
-		len: data.idx.length
+		len: mesh.idx.length
 	}
 }
 

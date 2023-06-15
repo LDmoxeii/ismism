@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-window-prefix
 import type { Pas } from "../../src/pra/pos.ts"
 import { pos } from "../bind/fetch.ts"
+import { mesh, sw } from "./mesh.ts"
 import { init, render } from "./septem.ts"
 
 const pas = await pos<Pas | null>("pas", {})
@@ -35,83 +36,7 @@ document.ondrop = e => {
 file.oninput = () => file_r(file.files)
 img.onload = () => tex = img
 
-const sw = 0.5
-const sh = 1.0
-const data = {
-	vert: new Float32Array([
-		-sw, -sh, -0.01,
-		sw, -sh, -0.01,
-		sw, sh, -0.01,
-		-sw, sh, -0.01,
-
-		-sw, -sh, 0.01,
-		sw, -sh, 0.01,
-		sw, sh, 0.01,
-		-sw, sh, 0.01,
-
-		-sw, -sh, -0.01,
-		sw, -sh, -0.01,
-		sw, sh, -0.01,
-		-sw, sh, -0.01,
-
-		-sw, -sh, 0.01,
-		sw, -sh, 0.01,
-		sw, sh, 0.01,
-		-sw, sh, 0.01,
-	]),
-	tex: new Float32Array([
-		1.0, 0.0,
-		0.0, 0.0,
-		0.0, 1.0,
-		1.0, 1.0,
-
-		0.0, 0.0,
-		1.0, 0.0,
-		1.0, 1.0,
-		0.0, 1.0,
-
-		0.0, 0.0,
-		0.0, 0.0,
-		0.0, 0.0,
-		0.0, 0.0,
-
-		0.0, 0.0,
-		0.0, 0.0,
-		0.0, 0.0,
-		0.0, 0.0,
-	]),
-	norm: new Float32Array([
-		0, 0, -1,
-		0, 0, -1,
-		0, 0, -1,
-		0, 0, -1,
-
-		0, 0, 1,
-		0, 0, 1,
-		0, 0, 1,
-		0, 0, 1,
-
-		-1, 0, 0,
-		1, 0, 0,
-		1, 0, 0,
-		-1, 0, 0,
-
-		-1, 0, 0,
-		1, 0, 0,
-		1, 0, 0,
-		-1, 0, 0,
-	]),
-	idx: new Uint8Array([
-		0, 3, 1, 1, 3, 2,
-		4, 5, 7, 7, 5, 6,
-		...[0, 1, 4, 4, 1, 5,
-			5, 1, 6, 6, 1, 2,
-			2, 3, 6, 6, 3, 7,
-			7, 3, 4, 4, 3, 0].map(n => n + 8)
-	])
-}
-
-init(trg, data)
+init(trg, mesh)
 
 let tex: TexImageSource = blk
 let tframe = 0
@@ -122,9 +47,10 @@ let dp = 0
 let dz = 0
 let z = 0
 let orient: [number, number, number] | null = null
+let hint = ""
 const dts = new Array<number>(30).fill(0)
-
 let pscale = 1.0
+
 function resize(
 ) {
 	pscale = Math.max(Math.floor(window.devicePixelRatio), 1)
@@ -134,34 +60,38 @@ function resize(
 resize()
 window.addEventListener("resize", resize)
 
-document.body.addEventListener("keypress", e => {
-	if (e.key == " ") {
-		pause = !pause
-		dp = dz = z = 0
-		e.preventDefault()
+if (dbg) {
+	document.body.addEventListener("keypress", e => {
+		if (e.key == " ") {
+			pause = !pause
+			dp = dz = z = 0
+			e.preventDefault()
+		}
+	})
+	document.body.addEventListener("keydown", e => {
+		if (e.key == "a") dp = -1
+		else if (e.key == "d") dp = 1
+		else if (e.key == "w") dz = 1
+		else if (e.key == "s") dz = -1
+	})
+	document.body.addEventListener("keyup", e => {
+		if (e.key == "a" || e.key == "d") dp = 0
+		else if (e.key == "w" || e.key == "s") dz = 0
+	})
+}
+
+document.addEventListener("click", async () => { // deno-lint-ignore no-explicit-any
+	const doe = DeviceOrientationEvent as any
+	if (orient == null && doe.requestPermission) {
+		const stat = await (doe.requestPermission() as Promise<"granted" | "denied">)
+		if (stat !== "granted") orient = null
 	}
 })
-document.body.addEventListener("keydown", e => {
-	if (e.key == "a") dp = -1
-	else if (e.key == "d") dp = 1
-	else if (e.key == "w") dz = 1
-	else if (e.key == "s") dz = -1
-})
-document.body.addEventListener("keyup", e => {
-	if (e.key == "a" || e.key == "d") dp = 0
-	else if (e.key == "w" || e.key == "s") dz = 0
-})
-resize()
-
-// deno-lint-ignore no-explicit-any
-const doe = DeviceOrientationEvent as any
-document.addEventListener("click", () => {
-	if (orient == null && doe.requestPermission) doe.requestPermission()
-	pause = !pause
-})
 window.addEventListener("deviceorientation", e => {
-	if (e.alpha != null && e.beta != null && e.gamma != null)
+	if (e.alpha != null && e.beta != null && e.gamma != null) {
 		orient = [e.alpha, e.beta, e.gamma]
+		hint = ""
+	} else hint = "\n\n点击屏幕以查看卡片"
 })
 
 function frame(
@@ -181,11 +111,12 @@ function frame(
 			+ `t: ${(t / 1000).toFixed(1)}\n`
 			+ `orient: ${orient?.map(v => v.toFixed(0))}\n`) : "")
 		+ (pas?.nam ?? "")
+		+ hint
 	let x = 0.5 * sw * Math.sin(t / 1500)
 	let zoom = 5 * Math.sin(t / 7000)
 	let ry = t / 4000
 	if (orient) {
-		x = 1.5 * sw * Math.sin(orient[0] / 180 * Math.PI)
+		x = sw * Math.sin(orient[0] / 180 * Math.PI)
 		zoom = 5 * Math.sin((45 - orient[1]) / 180 * Math.PI)
 		ry = -orient[2] / 180 * Math.PI
 	}
