@@ -9,6 +9,7 @@ const file = document.getElementById("file") as HTMLInputElement
 const img = document.getElementById("img") as HTMLImageElement
 const txt = document.getElementById("txt") as HTMLElement
 const trg = document.getElementById("trg") as HTMLCanvasElement
+const dbg = location.search.startsWith("?dbg")
 
 function file_r(
 	fs?: FileList | null
@@ -34,27 +35,29 @@ document.ondrop = e => {
 file.oninput = () => file_r(file.files)
 img.onload = () => tex = img
 
+const sw = 0.5
+const sh = 1.0
 const data = {
 	vert: new Float32Array([
-		-0.5, -1.0, -0.01,
-		0.5, -1.0, -0.01,
-		0.5, 1.0, -0.01,
-		-0.5, 1.0, -0.01,
+		-sw, -sh, -0.01,
+		sw, -sh, -0.01,
+		sw, sh, -0.01,
+		-sw, sh, -0.01,
 
-		-0.5, -1.0, 0.01,
-		0.5, -1.0, 0.01,
-		0.5, 1.0, 0.01,
-		-0.5, 1.0, 0.01,
+		-sw, -sh, 0.01,
+		sw, -sh, 0.01,
+		sw, sh, 0.01,
+		-sw, sh, 0.01,
 
-		-0.5, -1.0, -0.01,
-		0.5, -1.0, -0.01,
-		0.5, 1.0, -0.01,
-		-0.5, 1.0, -0.01,
+		-sw, -sh, -0.01,
+		sw, -sh, -0.01,
+		sw, sh, -0.01,
+		-sw, sh, -0.01,
 
-		-0.5, -1.0, 0.01,
-		0.5, -1.0, 0.01,
-		0.5, 1.0, 0.01,
-		-0.5, 1.0, 0.01,
+		-sw, -sh, 0.01,
+		sw, -sh, 0.01,
+		sw, sh, 0.01,
+		-sw, sh, 0.01,
 	]),
 	tex: new Float32Array([
 		1.0, 0.0,
@@ -112,55 +115,83 @@ init(trg, data)
 
 let tex: TexImageSource = blk
 let tframe = 0
-let nframe = 0
 let tpause = 0
-let dpause = 0
+let nframe = 0
 let pause = false
-let z = 0
+let dp = 0
 let dz = 0
-const ndt = 30
-const dt = new Array<number>(ndt)
+let z = 0
+let orient: [number, number, number] | null = null
+const dts = new Array<number>(30).fill(0)
 
+let pscale = 1.0
 function resize(
 ) {
-	trg.width = trg.clientHeight / trg.height * trg.width
+	pscale = Math.max(Math.floor(window.devicePixelRatio), 1)
+	trg.width = window.innerWidth * pscale
+	trg.height = window.innerHeight * pscale
 }
+resize()
 window.addEventListener("resize", resize)
+
 document.body.addEventListener("keypress", e => {
 	if (e.key == " ") {
 		pause = !pause
-		z = 0
+		dp = dz = z = 0
 		e.preventDefault()
 	}
 })
 document.body.addEventListener("keydown", e => {
-	if (e.key == "a") dpause = -1
-	else if (e.key == "d") dpause = 1
+	if (e.key == "a") dp = -1
+	else if (e.key == "d") dp = 1
 	else if (e.key == "w") dz = 1
 	else if (e.key == "s") dz = -1
 })
 document.body.addEventListener("keyup", e => {
-	if (e.key == "a" || e.key == "d") dpause = 0
+	if (e.key == "a" || e.key == "d") dp = 0
 	else if (e.key == "w" || e.key == "s") dz = 0
 })
 resize()
 
+// deno-lint-ignore no-explicit-any
+const doe = DeviceOrientationEvent as any
+document.addEventListener("click", () => {
+	if (orient == null && doe.requestPermission) doe.requestPermission()
+	pause = !pause
+})
+window.addEventListener("deviceorientation", e => {
+	if (e.alpha != null && e.beta != null && e.gamma != null)
+		orient = [e.alpha, e.beta, e.gamma]
+})
+
 function frame(
 	t: DOMHighResTimeStamp
 ) {
-	const d = t - tframe
-	dt[nframe++ % ndt] = d
+	const dt = t - tframe
 	tframe = t
-	txt.innerText = `fps: ${Math.round(1000 * ndt / dt.reduceRight((a, b) => a + b))}\n`
-		+ (pas?.nam ?? "")
+	dts[nframe++ % dts.length] = dt
+
 	if (pause) {
-		tpause += dpause * d
-		z += dz * d / 1000
-		t = tpause
+		z += dz * dt / 1000
+		t = tpause = tpause + dp * dt
 	} else tpause = t
-	render(
-		{ fov: 20 + 5 * Math.sin(t / 7000) }, {
-		obj: [{ xyz: [0.5 * Math.sin(t / 1500), 0, z - 6], ry: t / 4000, tex },],
+	txt.innerText = `fps: ${Math.round(1000 * dts.length / dts.reduceRight((a, b) => a + b))}\n`
+		+ (dbg ? (`res: ${trg.width} x ${trg.height}\n`
+			+ `pratio: ${window.devicePixelRatio.toFixed(1)}, pscale: ${pscale}\n`
+			+ `t: ${(t / 1000).toFixed(1)}\n`
+			+ `orient: ${orient?.map(v => v.toFixed(0))}\n`) : "")
+		+ (pas?.nam ?? "")
+	let x = 0.5 * sw * Math.sin(t / 1500)
+	let zoom = 5 * Math.sin(t / 7000)
+	let ry = t / 4000
+	if (orient) {
+		x = 1.5 * sw * Math.sin(orient[0] / 180 * Math.PI)
+		zoom = 5 * Math.sin((45 - orient[1]) / 180 * Math.PI)
+		ry = -orient[2] / 180 * Math.PI
+	}
+	if (img.complete) render(
+		{ fov: 20 + zoom }, {
+		obj: [{ xyz: [x, 0, z - 6], ry, tex },],
 		aether: Math.max(-Math.sin(t / 6000), 0),
 		time: t / 1000,
 		src: [6, 32, 6, 6, 6, -6]
