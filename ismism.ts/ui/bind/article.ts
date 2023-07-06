@@ -107,6 +107,12 @@ export type Usr = Omit<NonNullable<Q.Usr>, "unam" | "snam" | "anam"> & {
 	snam: Map<Id["_id"], Id["nam"]>,
 	anam: Map<Id["_id"], Id["nam"]>,
 }
+export function unam_i(
+	nam: string
+): string {
+	return /^\d+$/.test(nam) ? nam : `${nam[0]}${"x".repeat(nam.length - 1)}`
+}
+
 export async function usr(
 	uid: number
 ) {
@@ -114,6 +120,10 @@ export async function usr(
 
 	const q = await que<Q.Usr>(`usr?uid=${uid}`)
 	if (!q) return idn(`${uid}`, "用户")
+	if (null === nav.pas) {
+		q.nam = unam_i(q.nam) + "（登陆后显示全名）"
+		q.unam.forEach(u => u[1] = unam_i(u[1]))
+	}
 	const u: Usr = { ...q, unam: new Map(q.unam), snam: new Map(q.snam), anam: new Map(q.anam) }
 	const froze = is_rej(u) && !(nav.pas && (nav.pas.uid === u._id || is_pre_usr(nav.pas)))
 
@@ -186,6 +196,7 @@ export async function soc(
 	for (const d of ss) {
 		if (!d) continue
 
+		if (null === nav.pas) d.unam.forEach(u => u[1] = unam_i(u[1]))
 		const s: Soc = { ...d, unam: new Map(d.unam) }
 		const froze = s.rej.length > 0 && !(nav.pas && (is_sec(nav.pas, { sid: s._id }) || is_aut(nav.pas.aut)))
 
@@ -231,6 +242,7 @@ export async function agd(
 	for (const d of aa) {
 		if (!d) continue
 
+		if (null === nav.pas) d.unam.forEach(u => u[1] = unam_i(u[1]))
 		const a: Agd = { ...d, unam: new Map(d.unam) }
 		const froze = a.rej.length > 0 && !(nav.pas && (is_sec(nav.pas, { aid: a._id }) || is_aut(nav.pas.aut)))
 
@@ -338,6 +350,7 @@ export async function agd(
 async function live(
 ) {
 	const r = await que<Q.Live>("live")
+	if (null === nav.pas) r.unam.forEach(u => u[1] = unam_i(u[1]))
 	const utc = Date.now()
 	const [unam, anam] = [new Map(r.unam), new Map(r.anam)]
 	const live = {
@@ -673,6 +686,7 @@ export async function aut(
 ) {
 	if (navhash("aut")) return
 	const d = await que<Q.Aut>("aut")
+	if (null === nav.pas) d.unam.forEach(u => u[1] = unam_i(u[1]))
 	const q = { ...d, unam: new Map(d.unam) }
 	const ht = (uid?: Usr["_id"][]) => uid ? uid.map(u => [`${u}`, q.unam.get(u)!] as [string, string]) : []
 
@@ -702,11 +716,13 @@ export async function md(
 	const f = op === "one" ? "" : `&f`
 	const q = await que<Q.Md>(`md?${c}id=${id}${f}`)
 
+
 	if (op === "one" && (!q || q.md.length === 0)) return idn(`${c}${id}`, "文章")
 	if (op !== "continue") { navnid(); main.innerHTML = "" }
 	if (!q) return
 
 	const { marked } = await import("https://cdn.jsdelivr.net/npm/marked@latest/lib/marked.esm.js")
+	if (null === nav.pas) q.unam.forEach(u => u[1] = unam_i(u[1]))
 	const unam = new Map(q.unam)
 	for (const m of q.md) {
 		const t = bind("md")

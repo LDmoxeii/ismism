@@ -14,16 +14,3 @@
 
 	console.log(`\n/index.html: ${ui.length}\nindex: ${index.length}\ntemplate: ${template.length}\nstyle: ${style.length}\nbind: ${bind.length}`)
 }
-
-{
-	const [index, bind] = await Promise.all([
-		Deno.readTextFile("./ui/cast/cast.html"),
-		Deno.readTextFile("./ui/cast/bind.js"),
-	])
-	const ui = index.replace("<script></script>", `<script type="module">\n${bind}\n</script>`)
-
-	Deno.writeTextFileSync("../ui/cast.html", ui)
-
-	console.log(`\n/cast.html: ${ui.length}\nindex: ${index.length}\nbind: ${bind.length}`)
-}
-

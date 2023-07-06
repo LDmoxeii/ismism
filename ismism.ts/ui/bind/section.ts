@@ -1,7 +1,7 @@
 import type { Md, Work } from "../../src/eid/typ.ts"
 import type { DocC, DocD, DocU } from "../../src/db.ts"
 import type * as Q from "../../src/pra/que.ts"
-import { Agd, Soc, Usr, rec as arec, md, put, aut } from "./article.ts"
+import { Agd, Soc, Usr, rec as arec, md, put, aut, unam_i } from "./article.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { utc_d, utc_date, utc_medium } from "../../src/ont/utc.ts"
 import { nav, navpas } from "./nav.ts"
@@ -285,6 +285,7 @@ export function rec(
 		const rec = await que<Q.Rec>(`rec?c=${c}&${id}=${d._id}&utc=${utc[c]}`)
 		if (!rec || rec.rec.length === 0) { utc[c] = -1; return }
 		utc[c] = rec.rec[rec.rec.length - 1]._id.utc
+		if (null === nav.pas) rec.unam.forEach(u => u[1] = unam_i(u[1]))
 		const rc = { ...rec, unam: new Map(rec.unam), anam: new Map(rec.anam) }
 		for (const r of rc.rec) p.prepend(arec(c, rc, r))
 		setTimeout(() => p.scrollTop = p.scrollHeight - h, 100)
