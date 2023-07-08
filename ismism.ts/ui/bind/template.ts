@@ -1,8 +1,19 @@
 export const utc_refresh = 750
 export const main = document.getElementById("main")! as HTMLDivElement
+export const agd_a = document.getElementById("agd_a")! as HTMLAnchorElement
+export const soc_a = document.getElementById("soc_a")! as HTMLAnchorElement
 export const pas_a = document.getElementById("pas_a")! as HTMLAnchorElement
 export const adm1 = document.getElementById("adm1")! as HTMLMenuElement
 export const adm2 = document.getElementById("adm2")! as HTMLMenuElement
+
+export const claim = `称谓解释：
+鉴于部分参与者尚未完成公司、个体户注册，本比赛以工益互助组，工益组，工益小组等称谓对各参赛单元进行划分。该分组方式目的在于便于进行区分各参赛单元。如各小组筹备注册完成，应更改或标注经营主体名称。
+各参赛单元的以参赛行为表明其同意该分类方式，亦同意配合主办方开展促销活动。
+
+免责声明：
+归焉公司与本网站仅为参赛单元提供比赛展示成果汇总公示服务，不参与各参赛单元的设计活动与线下活动。本站所展示的参赛作品为各小组自行设计。各参赛单元所进行的线下活动和归焉公司无任何关系。`
+
+agd_a.title = soc_a.title = claim
 
 const t: typeof document.createElement = (s: string) => document.createElement(s)
 const svg = <S extends keyof SVGElementTagNameMap>(s: S) => document.createElementNS("http://www.w3.org/2000/svg", s)
