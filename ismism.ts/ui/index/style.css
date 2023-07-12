@@ -273,6 +273,21 @@ section>p>span>a:not(:first-child):before {
 	}
 }
 
+div#banner {
+	font-size: var(--large);
+	text-align: center;
+	margin: 0;
+	padding: .8ch;
+	margin-bottom: 1ch;
+	background: var(--lightamber);
+}
+
+div#banner>a {
+	font-weight: bold;
+	text-decoration: underline;
+	text-underline-offset: 4px;
+}
+
 div#main {
 	max-width: 1080px;
 	margin: 0 auto;
