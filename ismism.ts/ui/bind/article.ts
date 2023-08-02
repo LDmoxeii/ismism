@@ -630,17 +630,8 @@ export async function dst(
 			}, a: "无效输入", r: dst,
 		}))
 	} else[t.put, t.preaid].forEach(el => el.remove())
-	if (nav.pas) {
-		if (nav.pas.dst.reduceRight((a, b) => a + b[1], 0) < nav.pas.limdst || nav.pas.redst) t.preuid.addEventListener("click", () => put("dst", "投票", {
-			nam: { p1: "参赛活动ID：（如：a1）" }, val: {}, p: "pre", b: p => {
-				if (p.p1 === "dst") return { rd: lim_rd, uid: nav.pas!.uid }
-				const aid = parseInt(p.p1?.substring(1) ?? "")
-				if (q.dst.findIndex(d => d.aid === aid) < 0) return null
-				return { rd: lim_rd, aid, uid: nav.pas!.uid }
-			}, a: "无效活动ID，或已为该ID投过票",
-			r: () => { navpas().then(dst) }
-		})); else t.preuid.disabled = true
-	} else t.preuid.remove()
+	if (nav.pas) t.preuid.disabled = true
+	else t.preuid.remove()
 
 	main.append(t.bind)
 	imgl()
