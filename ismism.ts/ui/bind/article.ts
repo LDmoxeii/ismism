@@ -93,7 +93,7 @@ export async function id(
 	await live()
 	const t = bind("id")
 
-	const c = h === "agd" ? "活动公示" : "同城小组"
+	const c = h === "agd" ? "活动公示" : "同城俱乐部"
 	idnam(t, `${h}${adm ?? ""}`, c)
 	t.meta.innerText = "\"以太假说\"杯投票通道已开启\n详情查看网站首页，可投票数查看用户页面\n\n" + claim
 	label(t.idl, `${adm ?? ""} 共 ${idl.length} 个（按注册时间排序）`)
@@ -137,7 +137,7 @@ export async function usr(
 	srec(t, "uid", u, froze)
 
 	if (froze) [t.nam, t.intro].forEach(el => el.classList.add("froze"))
-	else t.intro.innerText = u.intro
+	else t.intro.innerText = ""//u.intro
 
 	if (nav.pas) {
 		if (nav.pas.uid === uid) {
@@ -206,7 +206,7 @@ export async function soc(
 		srec(t, "sid", s, froze)
 
 		if (froze) [t.nam, t.intro].forEach(el => el.classList.add("froze"))
-		else t.intro.innerText = s.intro
+		else t.intro.innerText = "" // s.intro
 
 		if (nav.pas) {
 			if (is_aut(nav.pas.aut, "aut") || is_sec(nav.pas, { sid: s._id }))
@@ -255,7 +255,7 @@ export async function agd(
 		srec(t, "aid", a, froze)
 
 		if (froze) [t.nam, t.intro].forEach(el => el.classList.add("froze"))
-		else t.intro.innerText = a.intro
+		else t.intro.innerText = "" //a.intro
 
 		if (nav.pas) {
 			if (is_sec(nav.pas, { aid: a._id }) || is_uid(nav.pas, { aid: a._id })) {
