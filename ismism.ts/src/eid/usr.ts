@@ -1,5 +1,5 @@
 import type { Usr } from "./typ.ts"
-import { DocC, DocD, DocR, DocU, Proj, Update, coll } from "./db.ts"
+import { DocC, DocD, DocR, DocU, Proj, Updt, coll } from "./db.ts"
 import { is_lim, is_nbr, lim_code, lim_jwt } from "./is.ts"
 import { id_c, id_d, id_n, id_r, id_u } from "./id.ts"
 
@@ -12,7 +12,7 @@ export async function usr_c(
 	const _id = await id_n(coll.usr)
 	return id_c(coll.usr, {
 		_id, utc: Date.now(), nam: `${_id}`,
-		nbr, adm1, adm2, intro: "",
+		nbr, adm1, adm2, msg: "",
 	})
 }
 
@@ -28,7 +28,7 @@ export async function usr_r<
 
 export async function usr_u(
 	_id: Usr["_id"],
-	u: Update<Usr>,
+	u: Updt<Usr>,
 ): DocU {
 	const s = u.$set
 	if (s?.nbr && !is_nbr(s.nbr)
