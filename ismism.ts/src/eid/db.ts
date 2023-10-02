@@ -37,6 +37,11 @@ const rec: IndexOptions[] = [{
 }, {
 	key: { "_id.soc": 1, "_id.utc": -1 }, name: "soc-utc",
 }]
+const utc: IndexOptions[] = [{
+	key: { "utc.eft": -1, "utc.exp": -1 }, name: "utc",
+}, {
+	key: { "utc.exp": -1 }, name: "utc-exp",
+}]
 const msg: IndexOptions[] = [{
 	key: { pin: 1, "utc.put": -1 }, name: "pin",
 	partialFilterExpression: { pin: { $exists: true } }
@@ -68,7 +73,7 @@ export async function db(
 		await c.soc.createIndexes({ indexes: [...nam, ...adm, ...sec] })
 		await c.agd.createIndexes({ indexes: [...nam, ...adm, ...soc] })
 
-		await c.cdt.createIndexes({ indexes: [...rec] })
+		await c.cdt.createIndexes({ indexes: [...rec, ...utc] })
 		await c.dbt.createIndexes({ indexes: [...rec] })
 		await c.ern.createIndexes({ indexes: [...rec] })
 

@@ -1,5 +1,6 @@
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
-import { db } from "../src/eid/db.ts"
+import { db, coll } from "../src/eid/db.ts"
+import { rec_c, rec_d, rec_f, rec_r, rec_s } from "../src/eid/rec.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { usr_c, usr_d, usr_r, usr_u } from "../src/eid/usr.ts"
 import { assertEquals } from "./mod.ts"
@@ -48,4 +49,20 @@ Deno.test("agd", async () => {
 	await agd_u(1, { $set: { msg: "msg" } })
 	assertEquals(await agd_r(1, { msg: 1 }), { _id: 1, msg: "msg", })
 	assertEquals(1, await agd_d(1))
+})
+
+Deno.test("rec", async () => {
+	const [usr, soc, utc, msg, amt] = [1, 2, 1, "msg", 1]
+	await Promise.all([
+		rec_c(coll.cdt, { _id: { usr, soc, utc }, msg, amt, utc: { eft: 1, exp: 2 } }),
+		rec_c(coll.cdt, { _id: { usr, soc, utc: utc + 1 }, msg, amt, utc: { eft: 2, exp: 5 } }),
+		rec_c(coll.cdt, { _id: { usr, soc, utc: utc + 2 }, msg, amt, utc: { eft: 3, exp: 5 } }),
+	])
+	assertEquals([await rec_r(coll.cdt, { usr, soc, utc })], await rec_f(coll.cdt, { usr }, utc + 1))
+	assertEquals(3, await rec_s(coll.cdt, { usr }, {}))
+	assertEquals(2, await rec_s(coll.cdt, { soc }, { now: 4 }))
+	assertEquals(1, await rec_s(coll.cdt, { usr }, { eft: 2 }))
+	assertEquals(3, await rec_s(coll.cdt, { usr }, { exp: 6 }))
+	assertEquals(1, await rec_d(coll.cdt, { usr, soc, utc }))
+	assertEquals(2, await rec_s(coll.cdt, { usr }, { exp: 6 }))
 })
