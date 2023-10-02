@@ -1,6 +1,6 @@
 import type { Id } from "./typ.ts"
-import type { Coll, DocC, DocD, DocR, DocU, Proj, Update } from "./db.ts"
-import { is_id, is_intro, is_nam, is_utc } from "./is.ts"
+import type { Coll, DocC, DocD, DocR, DocU, Fltr, Proj, Updt } from "./db.ts"
+import { is_id, is_msg, is_nam, is_utc, lim_msg_id } from "./is.ts"
 import { is_adm } from "../ont/adm.ts"
 
 export async function id_n<
@@ -22,7 +22,7 @@ export async function id_c<
 		&& is_utc(id.utc)
 		&& (is_nam(id.nam) || id.nam === `${id._id}`)
 		&& is_adm(id.adm1, id.adm2)
-		&& is_intro(id.intro)
+		&& is_msg(id.msg, lim_msg_id)
 	if (!is) return null
 	try { return await c.insertOne(id) as T["_id"] } catch { return null }
 }
@@ -36,7 +36,7 @@ export async function id_r<
 	p: Proj<T, P>,
 ): DocR<Pick<T, "_id" | P>> {
 	if (f._id && !is_id(f._id) || f.nam && !is_nam(f.nam)) return null
-	return await c.findOne(f, { projection: p }) ?? null
+	return await c.findOne(f as Fltr<T>, { projection: p }) ?? null
 }
 
 export async function id_u<
@@ -44,14 +44,14 @@ export async function id_u<
 >(
 	c: Coll<T>,
 	_id: T["_id"],
-	u: Update<T>,
+	u: Updt<T>,
 ): DocU {
 	if (!is_id(_id)) return null
 	const s = u.$set
 	if (s) {
 		if (s.nam && !is_nam(s.nam)) return null
 		if ((s.adm1 || s.adm2) && !((s.adm1 && s.adm2) && is_adm(s.adm1, s.adm2))) return null
-		if (s.intro && !is_intro(s.intro)) return null
+		if (s.msg && !is_msg(s.msg, lim_msg_id)) return null
 	}
 	try { // deno-lint-ignore no-explicit-any
 		const { matchedCount, modifiedCount } = await c.updateOne({ _id } as any, u)

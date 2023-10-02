@@ -23,7 +23,7 @@ export type Agd = Id & {
 export type Rec = {
 	_id: { usr: Usr["_id"], soc: Soc["_id"], utc: number },
 	msg: string,
-	key: string,
+	nam: string,
 	amt: number,
 	sec?: Usr["_id"],
 }
