@@ -44,6 +44,9 @@ export type Wsl = Msg
 export type Lit = Msg
 
 export type Aut = {
-	_id: Usr["_id"],
-	aut: ("sup" | "aut" | "wsl" | "lit")[],
+	_id: 1,
+	sup: Usr["_id"][],
+	aut: Usr["_id"][],
+	wsl: Usr["_id"][],
+	lit: Usr["_id"][],
 }

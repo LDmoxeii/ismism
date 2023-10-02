@@ -1,5 +1,5 @@
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
-import { aut_c, aut_g } from "../src/eid/aut.ts";
+import { aut_r, aut_u } from "../src/eid/aut.ts";
 import { db, coll } from "../src/eid/db.ts"
 import { msg_c, msg_f, msg_r, msg_u } from "../src/eid/msg.ts";
 import { rec_c, rec_d, rec_f, rec_r, rec_s, rec_a } from "../src/eid/rec.ts"
@@ -83,11 +83,10 @@ Deno.test("msg", async () => {
 })
 
 Deno.test("aut", async () => {
-	assertEquals({}, await aut_g())
+	assertEquals({ sup: [1, 2], aut: [2], wsl: [], lit: [] }, await aut_r())
 	await Promise.all([
-		aut_c({ _id: 1, aut: ["sup", "wsl"] }),
-		aut_c({ _id: 2, aut: ["sup", "aut"] }),
-		aut_c({ _id: 3, aut: ["lit", "wsl"] }),
+		aut_u({ $addToSet: { wsl: 3 } }),
+		aut_u({ $set: { lit: [3, 4] } }),
 	])
-	assertEquals({ sup: [1, 2], aut: [2], lit: [3], wsl: [1, 3] }, await aut_g())
+	assertEquals({ sup: [1, 2], aut: [2], wsl: [3], lit: [3, 4] }, await aut_r())
 })

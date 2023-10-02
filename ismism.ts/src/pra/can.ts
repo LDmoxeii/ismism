@@ -28,12 +28,13 @@ export function is_sec(
 export function is_pre_usr(
 	pas: Pas
 ): boolean {
-	return is_aut(pas.aut) || is_sec(pas)
+
+	return is_aut(pas.aut, pas.usr) || is_sec(pas)
 }
 export function is_pre_soc(
 	pas: Pas
 ): boolean {
-	return is_aut(pas.aut, "aut")
+	return is_aut(pas.aut, pas.usr)
 }
 export function is_pre_agd(
 	pas: Pas
@@ -61,15 +62,11 @@ export function is_pre_ern(
 export function is_pre_wsl(
 	pas: Pas
 ): boolean {
-	return is_aut(pas.aut, "wsl")
+	return is_aut(pas.aut.wsl, pas.usr)
 }
 export function is_pre_lit(
 	pas: Pas
 ): boolean {
-	return is_aut(pas.aut, "lit")
+	return is_aut(pas.aut.lit, pas.usr)
 }
-export function is_pre_aut(
-	pas: Pas
-): boolean {
-	return is_aut(pas.aut, "sup")
-}
+

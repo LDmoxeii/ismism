@@ -1,4 +1,4 @@
-import type { Aut, Id, Rec } from "./typ.ts"
+import type { Aut, Id, Rec, Usr } from "./typ.ts"
 
 export const lim_nam = 16
 export const lim_jwt = 512
@@ -77,9 +77,10 @@ export function is_recid(
 }
 
 export function is_aut(
-	aut: Aut["aut"],
-	a?: Aut["aut"][0],
+	aut: Omit<Aut, "_id"> | Usr["_id"][],
+	usr: Usr["_id"],
 ) {
-	return aut.every(a => ["sup", "aut", "wsl", "lit"].includes(a))
-		&& (!a || aut.includes(a))
+	return Array.isArray(aut)
+		? aut.includes(usr)
+		: Object.values(aut).some(a => a.includes(usr))
 }

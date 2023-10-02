@@ -1,20 +1,20 @@
-import type { Aut, Usr, Soc } from "../eid/typ.ts"
+import type { Usr, Soc, Aut } from "../eid/typ.ts"
 import { coll, DocR, DocU } from "../eid/db.ts"
 import { jwt_sign, jwt_verify } from "../ont/jwt.ts"
 import { usr_r, usr_u } from "../eid/usr.ts"
-import { aut_r } from "../eid/aut.ts"
 import { utc_h } from "../ont/utc.ts"
 import { smssend } from "../ont/sms.ts"
 import { is_id, is_jwt, len_code, lim_code } from "../eid/is.ts"
 import { rec_a } from "../eid/rec.ts"
-import { id } from "../eid/id.ts";
+import { id } from "../eid/id.ts"
+import { aut_r } from "../eid/aut.ts"
 
 export type Pas = {
 	usr: Usr["_id"],
 	nam: Usr["nam"],
 	cdt: Soc["_id"][],
 	sec: Soc["_id"][],
-	aut: Aut["aut"],
+	aut: Omit<Aut, "_id">,
 }
 
 async function pas_of_usr(
@@ -24,15 +24,15 @@ async function pas_of_usr(
 	const [cdt, sec, aut] = await Promise.all([
 		rec_a(coll.cdt, u._id, Date.now()), // deno-lint-ignore no-explicit-any
 		id(coll.soc, { sec: u._id } as any),
-		aut_r(u._id),
+		aut_r()
 	])
-	return {
+	return aut ? {
 		usr: u._id, nam: u.nam,
-		cdt, sec, aut: aut ? aut.aut : [],
-	}
+		cdt, sec, aut
+	} : null
 }
 
-type Token = { usr: Usr["_id"], utc: number }
+type Jwt = { usr: Usr["_id"], utc: number }
 
 const utc_pas_valid = new Date("2023-10-1").getTime()
 const h_sms_valid = 1
@@ -41,7 +41,7 @@ export async function pas(
 	jwt: NonNullable<Usr["jwt"]>
 ): DocR<Pas> {
 	if (!is_jwt(jwt)) return null
-	const t = await jwt_verify<Token>(jwt)
+	const t = await jwt_verify<Jwt>(jwt)
 	if (!t) return null
 	const u = await usr_r({ _id: t.usr }, { nam: 1, sms: 1, jwt: 1 })
 	if (u && u.sms && u.sms.utc > utc_pas_valid && u.jwt === jwt)
@@ -59,7 +59,7 @@ export async function pas_issue(
 		const pas = await pas_of_usr(u)
 		if (!pas) return null
 		if (u.jwt) return { pas, jwt: u.jwt }
-		const jwt = await jwt_sign({ usr: pas.usr, utc } as Token)
+		const jwt = await jwt_sign({ usr: pas.usr, utc } as Jwt)
 		const c = await usr_u(u._id, { $set: { ptoken: jwt } })
 		if (c && c > 0) return { pas, jwt }
 	}

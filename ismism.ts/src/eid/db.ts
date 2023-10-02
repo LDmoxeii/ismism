@@ -73,6 +73,7 @@ export async function db(
 
 	if (reset) {
 		await db.dropDatabase()
+
 		await c.usr.createIndexes({ indexes: [...nam, ...nbr] })
 		await c.soc.createIndexes({ indexes: [...nam, ...adm, ...sec] })
 		await c.agd.createIndexes({ indexes: [...nam, ...adm, ...soc] })
@@ -83,6 +84,8 @@ export async function db(
 
 		await c.wsl.createIndexes({ indexes: [...msg] })
 		await c.lit.createIndexes({ indexes: [...msg] })
+
+		await c.aut.insertOne({ _id: 1, sup: [1, 2], aut: [2], wsl: [], lit: [] })
 	}
 
 	if (dbnam === "ismism-dev") coll = c
