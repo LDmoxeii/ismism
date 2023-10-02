@@ -1,9 +1,10 @@
-import { Collection, IndexOptions, MongoClient, UpdateFilter, Document } from "./mod.ts"
-import { Act, Agd, Aut, Dst, Lit, Ord, Soc, Usr, Video, Work, Wsl } from "./typ.ts"
+import { Collection, IndexOptions, MongoClient, UpdateFilter, Document, Filter } from "./mod.ts"
+import { Agd, Aut, Lit, Soc, Usr, Wsl, Cdt, Dbt, Ern, } from "./typ.ts"
 
 export type Coll<T extends Document> = Collection<T>
+export type Fltr<T> = Filter<T>
 export type Proj<T, P extends keyof T> = Partial<{ [K in P]: 0 } | { [K in P]: 1 }>
-export type Update<T> = UpdateFilter<T>
+export type Updt<T> = UpdateFilter<T>
 export type DocC<_Id> = Promise<NonNullable<_Id> | null>
 export type DocR<Doc> = Promise<NonNullable<Doc> | null>
 export type DocU = Promise<0 | 1 | null>
@@ -15,45 +16,25 @@ await conn.connect("mongodb://127.0.0.1:27017")
 const nam: IndexOptions[] = [{
 	key: { nam: 1 }, name: "nam", unique: true,
 }]
+const nbr: IndexOptions[] = [{
+	key: { nbr: 1 }, name: "nbr", unique: true,
+	partialFilterExpression: { nbr: { $exists: true } },
+}]
 const adm: IndexOptions[] = [{
 	key: { adm1: 1 }, name: "adm1",
 }, {
 	key: { adm2: 1 }, name: "adm2",
 },]
-const re: IndexOptions[] = [{
-	key: { rej: 1 }, name: "rej",
-	partialFilterExpression: { rej: { $exists: true } },
-}, {
-	key: { ref: 1 }, name: "ref",
-	partialFilterExpression: { ref: { $exists: true } },
-}]
-const rel: IndexOptions[] = [{
+const sec: IndexOptions[] = [{
 	key: { sec: 1 }, name: "sec",
-}, {
-	key: { uid: 1 }, name: "uid",
-}, {
-	key: { res: 1 }, name: "res",
-	partialFilterExpression: { res: { $exists: true } },
 }]
-const nbr: IndexOptions[] = [{
-	key: { nbr: 1 }, name: "nbr", unique: true,
-	partialFilterExpression: { nbr: { $exists: true } },
-}]
+
 const rec: IndexOptions[] = [{
-	key: { "_id.uid": 1, "_id.utc": -1 }, name: "uid-utc"
+	key: { "_id.usr": 1, "_id.utc": -1 }, name: "usr-utc",
 }, {
-	key: { "_id.aid": 1, "_id.utc": -1 }, name: "aid-utc"
-}, {
-	key: { "_id.utc": -1 }, name: "utc"
+	key: { "_id.soc": 1, "_id.utc": -1 }, name: "soc-utc",
 }]
-const live: IndexOptions[] = [{
-	key: { "utc.end": -1, "utc.start": -1 }, name: "live",
-	partialFilterExpression: { utc: { $exists: true } },
-}]
-const dst: IndexOptions[] = [{
-	key: { "_id.rd": 1, "_id.aid": 1, "_id.uid": 1 }, name: "rd-aid-uid",
-}]
-const md: IndexOptions[] = [{
+const msg: IndexOptions[] = [{
 	key: { pin: 1, "utc.put": -1 }, name: "pin",
 	partialFilterExpression: { pin: { $exists: true } }
 }]
@@ -65,34 +46,31 @@ export async function db(
 	const db = conn.database(dbnam)
 	const c = {
 		usr: db.collection<Usr>("usr"),
-		agd: db.collection<Agd>("agd"),
 		soc: db.collection<Soc>("soc"),
+		agd: db.collection<Agd>("agd"),
 
-		work: db.collection<Work>("work"),
-		video: db.collection<Video>("video"),
-		ord: db.collection<Ord>("ord"),
-		dst: db.collection<Dst>("dst"),
+		cdt: db.collection<Cdt>("cdt"),
+		dbt: db.collection<Dbt>("dbt"),
+		ern: db.collection<Ern>("ern"),
 
 		wsl: db.collection<Wsl>("wsl"),
 		lit: db.collection<Lit>("lit"),
 
 		aut: db.collection<Aut>("aut"),
-		act: db.collection<Act>("act"),
 	}
 
 	if (reset) {
 		await db.dropDatabase()
-		await c.usr.createIndexes({ indexes: [...nam, ...nbr, ...re] })
-		await c.agd.createIndexes({ indexes: [...nam, ...adm, ...re, ...rel] })
-		await c.soc.createIndexes({ indexes: [...nam, ...adm, ...re, ...rel] })
+		await c.usr.createIndexes({ indexes: [...nam, ...nbr] })
+		await c.soc.createIndexes({ indexes: [...nam, ...adm, ...sec] })
+		await c.agd.createIndexes({ indexes: [...nam, ...adm] })
 
-		await c.work.createIndexes({ indexes: [...rec] })
-		await c.video.createIndexes({ indexes: [...rec, ...live] })
-		await c.ord.createIndexes({ indexes: [...rec] })
-		await c.dst.createIndexes({ indexes: [...dst] })
+		await c.cdt.createIndexes({ indexes: [...rec] })
+		await c.dbt.createIndexes({ indexes: [...rec] })
+		await c.ern.createIndexes({ indexes: [...rec] })
 
-		await c.wsl.createIndexes({ indexes: [...md] })
-		await c.lit.createIndexes({ indexes: [...md] })
+		await c.wsl.createIndexes({ indexes: [...msg] })
+		await c.lit.createIndexes({ indexes: [...msg] })
 	}
 
 	if (dbnam === "ismism-dev") coll = c
