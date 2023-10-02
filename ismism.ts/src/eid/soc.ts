@@ -10,8 +10,8 @@ export async function soc_c(
 ): DocC<Soc["_id"]> {
 	return id_c(coll.soc, {
 		_id: await id_n(coll.soc), utc: Date.now(),
-		nam, adm1, adm2,
-		msg: "", sec: [], cde: false,
+		nam, adm1, adm2, msg: "",
+		sec: [], cde: false,
 	})
 }
 
@@ -25,18 +25,18 @@ export function soc_r<
 }
 
 export async function soc_u(
-	sid: Soc["_id"],
+	_id: Soc["_id"],
 	u: Updt<Soc>,
 ): DocU {
 	if (u.$set) {
 		const s = u.$set
 		if (s.sec && !is_idl(s.sec, lim_sec)) return null
 	}
-	return await id_u(coll.soc, sid, u)
+	return await id_u(coll.soc, _id, u)
 }
 
 export function soc_d(
-	sid: Soc["_id"]
+	_id: Soc["_id"]
 ): DocD {
-	return id_d(coll.soc, sid)
+	return id_d(coll.soc, _id)
 }

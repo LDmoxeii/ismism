@@ -72,3 +72,45 @@ export async function id_d<
 		return d > 0 ? 1 : 0
 	} catch { return null }
 }
+
+export async function id<
+	T extends Id
+>(
+	c: Coll<T>,
+	f: Fltr<T>,
+): Promise<Id["_id"][]> {
+	const d = await c.find(f, { projection: { _id: 1 } }).toArray()
+	return d.map(d => d._id)
+}
+
+export async function idnam<
+	T extends Id
+>(
+	c: Coll<T>,
+	id: T["_id"][],
+): Promise<[T["_id"], T["nam"]][]> {
+	id = [...new Set(id.filter(is_id))]
+	const d = await c.find(
+		// deno-lint-ignore no-explicit-any
+		{ _id: { $in: id } } as any,
+		{ projection: { _id: 1, nam: 1 } }
+	).toArray()
+	return d.map(d => [d._id, d.nam])
+}
+
+export async function nid<
+	T extends Id,
+	A extends "adm1" | "adm2",
+>(
+	c: Coll<T>,
+	a: A,
+): Promise<[T[A], number][]> {
+	const d = await c.aggregate<{
+		_id: T[A], nid: number
+	}>([{
+		$group: { _id: `$${a}`, nid: { $count: {} } },
+	}, {
+		$sort: { nid: -1 },
+	}]).toArray()
+	return d.map(d => [d._id, d.nid])
+}

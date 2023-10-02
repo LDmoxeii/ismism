@@ -28,6 +28,9 @@ const adm: IndexOptions[] = [{
 const sec: IndexOptions[] = [{
 	key: { sec: 1 }, name: "sec",
 }]
+const soc: IndexOptions[] = [{
+	key: { soc: 1 }, name: "soc",
+}]
 
 const rec: IndexOptions[] = [{
 	key: { "_id.usr": 1, "_id.utc": -1 }, name: "usr-utc",
@@ -63,7 +66,7 @@ export async function db(
 		await db.dropDatabase()
 		await c.usr.createIndexes({ indexes: [...nam, ...nbr] })
 		await c.soc.createIndexes({ indexes: [...nam, ...adm, ...sec] })
-		await c.agd.createIndexes({ indexes: [...nam, ...adm] })
+		await c.agd.createIndexes({ indexes: [...nam, ...adm, ...soc] })
 
 		await c.cdt.createIndexes({ indexes: [...rec] })
 		await c.dbt.createIndexes({ indexes: [...rec] })

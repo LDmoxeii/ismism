@@ -1,3 +1,4 @@
+import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { db } from "../src/eid/db.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { usr_c, usr_d, usr_r, usr_u } from "../src/eid/usr.ts"
@@ -35,4 +36,16 @@ Deno.test("soc", async () => {
 	await soc_u(1, { $set: { msg: "msg", sec: [2] } })
 	assertEquals(await soc_r(1, { msg: 1, sec: 1 }), { _id: 1, msg: "msg", sec: [2] })
 	assertEquals(1, await soc_d(1))
+})
+
+Deno.test("agd", async () => {
+	const nam = "活动"
+	assertEquals(null, await agd_r(1, {}))
+	assertEquals(1, await agd_c(nam, "四川", "成都", 1))
+	assertEquals(await agd_r(1, { nam: 1, msg: 1, adm1: 1, soc: 1 }), {
+		_id: 1, nam, adm1: "四川", msg: "", soc: 1
+	})
+	await agd_u(1, { $set: { msg: "msg" } })
+	assertEquals(await agd_r(1, { msg: 1 }), { _id: 1, msg: "msg", })
+	assertEquals(1, await agd_d(1))
 })
