@@ -1,5 +1,6 @@
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
 import { db, coll } from "../src/eid/db.ts"
+import { msg_c, msg_f, msg_r, msg_u } from "../src/eid/msg.ts";
 import { rec_c, rec_d, rec_f, rec_r, rec_s } from "../src/eid/rec.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { usr_c, usr_d, usr_r, usr_u } from "../src/eid/usr.ts"
@@ -65,4 +66,16 @@ Deno.test("rec", async () => {
 	assertEquals(3, await rec_s(coll.cdt, { usr }, { exp: 6 }))
 	assertEquals(1, await rec_d(coll.cdt, { usr, soc, utc }))
 	assertEquals(2, await rec_s(coll.cdt, { usr }, { exp: 6 }))
+})
+
+Deno.test("msg", async () => {
+	assertEquals([], await msg_f(coll.wsl, 0))
+	assertEquals(1, await msg_c(coll.wsl, "标题", 2))
+	assertEquals(2, await msg_c(coll.wsl, "标题", 2))
+	assertEquals(1, await msg_u(coll.wsl, 1, { $set: { msg: "#md1", usr: 2, pin: true } }))
+	assertEquals(1, await msg_u(coll.wsl, 2, { $set: { msg: "#md2", usr: 2 } }))
+	const [m1, m2] = await Promise.all([msg_r(coll.wsl, 1), msg_r(coll.wsl, 2)])
+	assertEquals(m2!.msg, "#md2")
+	assertEquals([m1, m2], await msg_f(coll.wsl, 0))
+	assertEquals([], await msg_f(coll.wsl, 2))
 })

@@ -18,6 +18,8 @@ export const lim_sup = 2
 export const lim_aut = 8
 
 export const lim_rec_f = 64
+export const lim_msg_f = 4
+export const lim_msg_pin = 4
 
 export function is_lim(
 	n: number,
