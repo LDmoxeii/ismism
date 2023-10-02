@@ -1,4 +1,4 @@
-import type { Aut, Id, Rec, Usr } from "./typ.ts"
+import type { Aut, Cdt, Id, Rec, Usr } from "./typ.ts"
 
 export const lim_nam = 16
 export const lim_jwt = 512
@@ -38,10 +38,10 @@ export function is_id(
 	return typeof id === "number" && id > 0
 }
 export function is_idl(
-	id: Id["_id"][],
+	idl: Id["_id"][],
 	lim: number,
 ) {
-	return id.length <= lim && id.every(is_id)
+	return idl.length <= lim && idl.every(is_id)
 }
 export function is_utc(
 	utc: number
@@ -74,6 +74,21 @@ export function is_recid(
 	recid: Rec["_id"]
 ) {
 	return Object.keys(recid).length === 3 && is_id(recid.usr) && is_id(recid.soc) && Number.isInteger(recid.utc)
+}
+export function is_rec(
+	rec: Rec
+) {
+	const { _id, msg, amt, sec } = rec
+	return is_recid(_id)
+		&& typeof msg == "string" && is_msg(msg, lim_msg_rec)
+		&& typeof amt == "number"
+		&& (sec == undefined || typeof sec == "number")
+}
+export function is_cdt(
+	cdt: Cdt
+) {
+	const { eft, exp } = cdt.utc
+	return is_rec(cdt) && typeof eft == "number" && typeof exp == "number" && eft <= exp
 }
 
 export function is_aut(
