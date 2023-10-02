@@ -42,13 +42,26 @@ export async function rec_f<
 	return await c.find(f as any, { sort: { "_id.utc": -1 }, limit: lim_rec_f }).toArray() as T[]
 }
 
+export async function rec_a<
+	T extends Rec
+>(
+	c: Coll<T>,
+	usr: Rec["_id"]["usr"],
+	utc: number,
+): Promise<Rec["_id"]["soc"][]> {
+	const r = await c.find({
+		"_id.usr": usr, "utc.eft": { $lt: utc }, "utc.exp": { $gt: utc } // deno-lint-ignore no-explicit-any
+	} as any, { projection: { _id: 1 } }).toArray()
+	return [...new Set(r.map(r => r._id.soc))]
+}
+
 export async function rec_s<
 	T extends Rec
 >(
 	c: Coll<T>,
 	_id: { usr: Rec["_id"]["usr"] } | { soc: Rec["_id"]["soc"] },
 	utc: { eft?: number, now?: number, exp?: number },
-) {
+): Promise<Rec["amt"]> {
 	const $match = {
 		..."usr" in _id ? { "_id.usr": _id.usr } : { "_id.soc": _id.soc },
 		...utc.exp ? { "utc.exp": { $lt: utc.exp } } : {},

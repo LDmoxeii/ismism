@@ -54,6 +54,11 @@ export function is_nbr(
 ) {
 	return typeof nbr === "string" && /^1\d{10}$/.test(nbr)
 }
+export function is_jwt(
+	token: string
+): token is string {
+	return typeof token === "string" && token.length <= lim_jwt
+}
 export function is_msg(
 	msg: string,
 	lim: number,
