@@ -14,8 +14,12 @@ export const lim_sec = 8
 export const lim_key = 16
 export const lim_pin = 4
 
-export const lim_sup = 2
-export const lim_aut = 8
+export const lim_aut = {
+	sup: 2,
+	aut: 8,
+	wsl: 32,
+	lit: 32,
+}
 
 export const lim_rec_f = 64
 export const lim_msg_f = 4

@@ -1,6 +1,6 @@
 import type { Rec } from "./typ.ts"
 import { Coll, DocC, DocD, DocR } from "./db.ts"
-import { is_id, is_recid, lim_rec_f } from "./is.ts"
+import { is_id, is_msg, is_recid, lim_msg_rec, lim_rec_f } from "./is.ts"
 
 export async function rec_c<
 	T extends Rec
@@ -8,7 +8,7 @@ export async function rec_c<
 	c: Coll<T>,
 	rec: T,
 ): DocC<T["_id"]> {
-	if (!is_recid(rec._id)) return null
+	if (!is_recid(rec._id) || !is_msg(rec.msg, lim_msg_rec)) return null
 	try { return await c.insertOne(rec) as T["_id"] }
 	catch { return null }
 }
