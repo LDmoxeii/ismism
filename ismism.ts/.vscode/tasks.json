@@ -2,15 +2,34 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "deno",
-			"command": "test",
-			"args": ["--allow-net"],
-			"problemMatcher": [
-				"$deno-test"
-			],
-			"group": "test",
-			"label": "deno: test",
+			"label": "build",
+			"type": "shell",
+			"command": "cd ..; zsh cli/build.zsh",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
 			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "dedicated",
+				"showReuseMessage": false,
+				"clear": true
+			}
+		},
+		{
+			"label": "test",
+			"type": "shell",
+			"command": "cd ..; deno test --allow-net --allow-read ismism.ts/tst",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "dedicated",
+				"showReuseMessage": false,
 				"clear": true
 			}
 		}

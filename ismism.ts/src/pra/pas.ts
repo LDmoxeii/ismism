@@ -60,7 +60,7 @@ export async function pas_issue(
 		if (!pas) return null
 		if (u.jwt) return { pas, jwt: u.jwt }
 		const jwt = await jwt_sign({ usr: pas.usr, utc } as Jwt)
-		const c = await usr_u(u._id, { $set: { ptoken: jwt } })
+		const c = await usr_u(u._id, { $set: { jwt } })
 		if (c && c > 0) return { pas, jwt }
 	}
 	return null
@@ -76,7 +76,7 @@ export async function pas_code(
 	if (u.sms && utc - u.sms.utc < utc_h * h_sms_valid)
 		return { sms: false, utc: u.sms.utc }
 	const code = Math.round(Math.random() * lim_code)
-	const c = await usr_u(u._id, { $set: { pcode: { code, utc } } })
+	const c = await usr_u(u._id, { $set: { sms: { code, utc } } })
 	if (c && c > 0) {
 		if (sms) {
 			const { sent } = await smssend(nbr, `${code}`.padStart(len_code, "0"), `${h_sms_valid}`)
@@ -90,5 +90,5 @@ export async function pas_code(
 export function pas_clear(
 	uid: Usr["_id"]
 ): DocU {
-	return usr_u(uid, { $unset: { ptoken: "" } })
+	return usr_u(uid, { $unset: { jwt: "" } })
 }

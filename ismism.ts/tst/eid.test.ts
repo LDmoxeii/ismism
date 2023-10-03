@@ -5,7 +5,7 @@ import { msg_c, msg_f, msg_r, msg_u } from "../src/eid/msg.ts";
 import { rec_c, rec_d, rec_f, rec_r, rec_s, rec_a } from "../src/eid/rec.ts"
 import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { usr_c, usr_d, usr_r, usr_u } from "../src/eid/usr.ts"
-import { assertEquals } from "./mod.ts"
+import { assertEquals } from "./mod.test.ts"
 
 await db("tst", true)
 
