@@ -67,10 +67,10 @@ export type PreRet = {
 }
 
 export async function pre(
-	pas: Pas,
+	pas: Pas | null,
 	p: Pre,
 ): Promise<PreRet["ret"]> {
-	if (!is_pre(pas, p)) return null
+	if (!pas || !p || !is_pre(pas, p)) return null
 	switch (p.pre) {
 		case "usr": {
 			return usr_c(p.nbr, p.adm1, p.adm2)

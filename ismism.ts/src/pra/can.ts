@@ -1,7 +1,8 @@
 import type { Soc } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
 import type { Pre } from "./pre.ts"
-import { is_aut, is_cdt, is_id, is_nam, is_nbr, is_rec } from "../eid/is.ts"
+import type { Put } from "./put.ts"
+import { is_aut, is_cdt, is_id, is_idl, is_msg, is_nam, is_nbr, is_rec, is_recid, lim_aut, lim_msg, lim_msg_id, lim_sec } from "../eid/is.ts"
 import { is_adm } from "../ont/adm.ts"
 
 // deno-lint-ignore no-explicit-any
@@ -35,4 +36,32 @@ export function is_pre(
 		case "lit": return is_in(pas.aut.lit, pas.usr) && is_nam(p.nam)
 	}
 	return false
+}
+
+export function is_put(
+	pas: Pas,
+	p: Put,
+): boolean {
+	switch (p.put) {
+		case "usr": return pas.usr == p.usr
+			&& is_nam(p.nam) && is_adm(p.adm1, p.adm2) && is_msg(p.msg, lim_msg_id)
+		case "soc":
+			if ("msg" in p) return is_in(pas.sec, p.soc) && is_id(p.soc) && is_msg(p.msg, lim_msg_id)
+			else if ("nam" in p) return is_aut(pas.aut.aut, pas.usr)
+				&& is_id(p.soc) && is_nam(p.nam) && is_adm(p.adm1, p.adm2)
+				&& is_idl(p.sec, lim_sec) && typeof p.cde == "boolean"
+			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.soc)
+		case "agd":
+			if ("msg" in p) return is_in(pas.agd, p.agd) && is_id(p.agd) && is_msg(p.msg, lim_msg_id)
+			else if ("nam" in p) return is_aut(pas.aut.aut, pas.usr)
+				&& is_id(p.agd) && is_nam(p.nam) && is_adm(p.adm1, p.adm2)
+			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.agd)
+		case "cdt": case "dbt": case "ern": return is_in(pas.sec, p.id.soc) && is_recid(p.id)
+		case "wsl": case "lit":
+			if ("msg" in p) return is_in(pas.aut[p.put], pas.usr) && is_id(p.id)
+				&& is_nam(p.nam) && is_msg(p.msg, lim_msg) && typeof p.pin == "boolean"
+			else return is_in(pas.aut[p.put], pas.usr) && is_id(p.id)
+		case "aut": return is_in(pas.aut.sup, pas.usr)
+			&& is_idl(p.aut, lim_aut.aut) && is_idl(p.wsl, lim_aut.wsl) && is_idl(p.lit, lim_aut.lit)
+	}
 }

@@ -1,4 +1,4 @@
-import type { Usr, Soc, Aut } from "../eid/typ.ts"
+import type { Usr, Soc, Aut, Agd } from "../eid/typ.ts"
 import { coll, DocR, DocU } from "../eid/db.ts"
 import { jwt_sign, jwt_verify } from "../ont/jwt.ts"
 import { usr_r, usr_u } from "../eid/usr.ts"
@@ -14,6 +14,7 @@ export type Pas = {
 	nam: Usr["nam"],
 	cdt: Soc["_id"][],
 	sec: Soc["_id"][],
+	agd: Agd["_id"][],
 	aut: Omit<Aut, "_id">,
 }
 
@@ -26,10 +27,11 @@ async function pas_of_usr(
 		id(coll.soc, { sec: u._id } as any),
 		aut_r()
 	])
+	const agd = await id(coll.agd, { soc: { $in: sec } });
 	return aut ? {
 		usr: u._id, nam: u.nam,
 		cdt: cdt ? cdt.map(c => c._id.soc) : [],
-		sec, aut,
+		sec, agd, aut,
 	} : null
 }
 

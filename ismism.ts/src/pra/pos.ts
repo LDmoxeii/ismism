@@ -2,6 +2,7 @@ import { is_nbr } from "../eid/is.ts"
 import { Ret } from "./can.ts"
 import { Pas, pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre } from "./pre.ts"
+import { put } from "./put.ts"
 
 export type Pos = "pas" | "pre" | "pro" | "put"
 export type { Pas } from "./pas.ts"
@@ -49,7 +50,8 @@ export async function pos(
 			break
 		}
 
-		case "pre": if (p.pas && json) return pre(p.pas, json)
+		case "pre": return pre(p.pas, json)
+		case "put": return put(p.pas, json)
 	}
 
 	p.etag = null
