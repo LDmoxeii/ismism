@@ -1,5 +1,5 @@
-import type { Rec } from "./typ.ts"
-import { Coll, DocC, DocD, DocR } from "./db.ts"
+import type { Cdt, Rec } from "./typ.ts"
+import { Coll, DocC, DocD, DocR, coll } from "./db.ts"
 import { is_id, is_msg, is_recid, lim_msg_rec, lim_rec_f } from "./is.ts"
 
 export async function rec_c<
@@ -42,35 +42,40 @@ export async function rec_f<
 	return await c.find(f as any, { sort: { "_id.utc": -1 }, limit: lim_rec_f }).toArray() as T[]
 }
 
-export async function rec_a<
-	T extends Rec
+export async function cdt_a<
+	P extends keyof Cdt,
 >(
-	c: Coll<T>,
-	usr: Rec["_id"]["usr"],
-	utc: number,
-): Promise<Rec["_id"]["soc"][]> {
-	const r = await c.find({
-		"_id.usr": usr, "utc.eft": { $lt: utc }, "utc.exp": { $gt: utc } // deno-lint-ignore no-explicit-any
-	} as any, { projection: { _id: 1 } }).toArray()
-	return [...new Set(r.map(r => r._id.soc))]
+	id: { usr: Cdt["_id"]["usr"] } | { soc: Cdt["_id"]["soc"] } | Omit<Cdt["_id"], "utc">,
+	utc: { now: number } | { eft: number, exp: number },
+	projection?: Partial<{ [K in P]: 1 }>
+): DocR<Pick<Cdt, "_id" | P>[]> {
+	const f = {
+		..."usr" in id ? { "_id.usr": id.usr } : {},
+		..."soc" in id ? { "_id.soc": id.soc } : {},
+		..."now" in utc ? { "utc.eft": { $lt: utc.now }, "utc.exp": { $gt: utc.now } } : {},
+		..."eft" in utc ? { "utc.eft": { $lt: utc.exp }, "utc.exp": { $gt: utc.eft } } : {},
+	}
+	return await coll.cdt.find(f, { projection }).toArray()
 }
 
 export async function rec_s<
 	T extends Rec
 >(
 	c: Coll<T>,
-	_id: { usr: Rec["_id"]["usr"] } | { soc: Rec["_id"]["soc"] },
-	utc: { eft?: number, now?: number, exp?: number },
+	_id: { usr: Rec["_id"]["usr"] } | { soc: Rec["_id"]["soc"] } | Omit<Rec["_id"], "utc">,
+	utc: { frm?: number, eft?: number, now?: number, exp?: number },
 ): Promise<Rec["amt"]> {
 	const $match = {
-		..."usr" in _id ? { "_id.usr": _id.usr } : { "_id.soc": _id.soc },
+		..."usr" in _id ? { "_id.usr": _id.usr } : {},
+		..."soc" in _id ? { "_id.soc": _id.soc } : {},
+		...utc.frm ? { "_id.utc": { $gt: utc.frm } } : {},
 		...utc.exp ? { "utc.exp": { $lt: utc.exp } } : {},
 		...utc.now ? { "utc.eft": { $lt: utc.now }, "utc.exp": { $gt: utc.now } } : {},
 		...utc.eft ? { "utc.eft": { $gt: utc.eft } } : {}, // deno-lint-ignore no-explicit-any
 	} as any // deno-lint-ignore no-explicit-any
 	const $group = { _id: null, amt: { $sum: "$amt" } } as any
-	const [{ amt }] = await c.aggregate<{ amt: number }>([{ $match }, { $group }]).toArray()
-	return amt
+	const a = await c.aggregate<{ amt: number }>([{ $match }, { $group }]).toArray()
+	return a.length > 0 ? a[0].amt : 0
 }
 
 export async function rec_d<

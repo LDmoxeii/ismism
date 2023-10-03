@@ -2,11 +2,12 @@ import type { Agd, Cdt, Dbt, Ern, Lit, Soc, Usr, Wsl } from "../eid/typ.ts"
 import { agd_c } from "../eid/agd.ts"
 import { coll } from "../eid/db.ts"
 import { msg_c } from "../eid/msg.ts"
-import { rec_c } from "../eid/rec.ts"
+import { cdt_a, rec_c, rec_s } from "../eid/rec.ts"
 import { soc_c, soc_r } from "../eid/soc.ts"
 import { usr_c } from "../eid/usr.ts"
 import { Ret, is_pre } from "./can.ts"
 import { Pas } from "./pas.ts"
+import { is_id } from "../eid/is.ts"
 
 export type Pre = {
 	pre: "usr",
@@ -79,14 +80,21 @@ export async function pre(
 			const s = await soc_r(p.soc, { adm1: 1, adm2: 1 })
 			return s ? agd_c(p.nam, s.adm1, s.adm2, p.soc) : null
 		} case "cdt": {
-			const { _id, msg, amt, sec, utc } = p.cdt
-			return rec_c(coll.cdt, { _id, msg, amt, ...sec ? { sec } : {}, utc })
+			const { _id: { usr, soc, utc }, msg, amt, sec, utc: { eft, exp } } = p.cdt
+			const a = await cdt_a({ usr, soc }, { eft, exp }, { _id: 1 })
+			if (a && a.length > 0 || !is_id(sec!)) return null
+			return rec_c(coll.cdt, { _id: { usr, soc, utc }, msg, amt, sec, utc: { eft, exp } })
 		} case "dbt": {
-			const { _id, msg, amt, sec } = p.dbt
-			return rec_c(coll.dbt, { _id, msg, amt, ...sec ? { sec } : {} })
+			const { _id: { usr, soc, utc }, msg, amt } = p.dbt
+			const a = await cdt_a({ usr, soc }, { now: utc })
+			if (!a || a.length == 0) return null
+			const d = await rec_s(coll.dbt, { usr, soc }, { frm: a[0].utc.eft })
+			if (a[0].amt >= d + p.dbt.amt) return rec_c(coll.dbt, { _id: { usr, soc, utc }, msg, amt })
+			break
 		} case "ern": {
-			const { _id, msg, amt, sec } = p.ern
-			return rec_c(coll.ern, { _id, msg, amt, ...sec ? { sec } : {} })
+			const { _id: { usr, soc, utc }, msg, amt, sec } = p.ern
+			if (!is_id(sec!)) return null
+			return rec_c(coll.ern, { _id: { usr, soc, utc }, msg, amt, sec })
 		} case "wsl": {
 			return msg_c(coll.wsl, p.nam, pas.usr)
 		} case "lit": {

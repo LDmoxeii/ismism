@@ -81,7 +81,7 @@ export function is_rec(
 	const { _id, msg, amt, sec } = rec
 	return is_recid(_id)
 		&& typeof msg == "string" && is_msg(msg, lim_msg_rec)
-		&& typeof amt == "number"
+		&& typeof amt == "number" && amt >= 0
 		&& (sec == undefined || typeof sec == "number")
 }
 export function is_cdt(

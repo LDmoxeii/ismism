@@ -1,11 +1,11 @@
-import { aut_u } from "../src/eid/aut.ts";
+import { aut_u } from "../src/eid/aut.ts"
 import { db } from "../src/eid/db.ts"
-import { soc_u } from "../src/eid/soc.ts";
-import { Cdt, Dbt, Ern } from "../src/eid/typ.ts";
+import { soc_u } from "../src/eid/soc.ts"
+import { Cdt, Dbt, Ern } from "../src/eid/typ.ts"
 import { usr_c, usr_d, usr_r } from "../src/eid/usr.ts"
 import { jwk_set } from "../src/ont/jwt.ts"
 import { Pas, PasCode, PasPos, pos } from "../src/pra/pos.ts"
-import { Pre } from "../src/pra/pre.ts";
+import { Pre } from "../src/pra/pre.ts"
 import { assertEquals, assert } from "./mod.test.ts"
 
 await db("tst", true)
@@ -48,9 +48,10 @@ Deno.test("pre", async () => {
 	const [adm1, adm2] = ["广东", "汕头"]
 	const cdt: Cdt = {
 		_id: { usr: 2, soc: 1, utc: Date.now() }, msg: "cdt", amt: 10,
-		utc: { eft: Date.now() - 1000, exp: Date.now() + 1000 }, sec: 2
+		utc: { eft: Date.now() - 10000, exp: Date.now() + 10000 }, sec: 2
 	}
 	const dbt: Dbt = { _id: { usr: 2, soc: 1, utc: Date.now() }, msg: "dbt", amt: 5 }
+	const dbt2: Dbt = { _id: { usr: 2, soc: 1, utc: Date.now() + 1 }, msg: "dbt", amt: 10 }
 	const ern: Ern = { _id: { usr: 2, soc: 1, utc: Date.now() }, msg: "ern", amt: 5, sec: 2 }
 
 	await usr_c(nbr[0], "江苏", "苏州")
@@ -77,10 +78,12 @@ Deno.test("pre", async () => {
 	const r = await Promise.all([
 		pos({ jwt }, "pre", json({ pre: "agd", nam: "活动", soc: 1 } as Pre)),
 		await pos({ jwt }, "pre", json({ pre: "cdt", cdt } as Pre)),
-		pos({ jwt }, "pre", json({ pre: "dbt", dbt } as Pre)),
+		await pos({ jwt }, "pre", json({ pre: "cdt", cdt } as Pre)),
+		await pos({ jwt }, "pre", json({ pre: "dbt", dbt } as Pre)),
+		await pos({ jwt }, "pre", json({ pre: "dbt", dbt: dbt2 } as Pre)),
 		pos({ jwt }, "pre", json({ pre: "ern", ern } as Pre)),
 		pos({ jwt }, "pre", json({ pre: "wsl", nam: "标题" } as Pre)),
 		pos({ jwt }, "pre", json({ pre: "lit", nam: "标题" } as Pre)),
 	])
-	assertEquals([true, true, true, true, true, true], r.map(r => r != null))
+	assertEquals([true, true, false, true, false, true, true, true], r.map(r => r != null))
 })

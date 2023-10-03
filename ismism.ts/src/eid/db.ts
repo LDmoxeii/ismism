@@ -36,11 +36,13 @@ const rec: IndexOptions[] = [{
 	key: { "_id.usr": 1, "_id.utc": -1 }, name: "usr-utc",
 }, {
 	key: { "_id.soc": 1, "_id.utc": -1 }, name: "soc-utc",
+}, {
+	key: { "_id.usr": 1, "_id.soc": 1, "_id.utc": -1 }, name: "usr-soc-utc",
 }]
 const utc: IndexOptions[] = [{
-	key: { "_id.usr": 1, "utc.eft": -1, "utc.exp": -1 }, name: "usr-eft",
+	key: { "_id.usr": 1, "_id.soc": 1, "utc.eft": -1, "utc.exp": -1 }, name: "usr-eft",
 }, {
-	key: { "_id.usr": 1, "utc.exp": -1 }, name: "usr-exp",
+	key: { "_id.usr": 1, "_id.soc": 1, "utc.exp": -1 }, name: "usr-exp",
 }, {
 	key: { "_id.soc": 1, "utc.eft": -1, "utc.exp": -1 }, name: "soc-eft",
 }, {

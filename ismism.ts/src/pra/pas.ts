@@ -5,7 +5,7 @@ import { usr_r, usr_u } from "../eid/usr.ts"
 import { utc_h } from "../ont/utc.ts"
 import { smssend } from "../ont/sms.ts"
 import { is_id, is_jwt, len_code, lim_code } from "../eid/is.ts"
-import { rec_a } from "../eid/rec.ts"
+import { cdt_a } from "../eid/rec.ts"
 import { id } from "../eid/id.ts"
 import { aut_r } from "../eid/aut.ts"
 
@@ -22,13 +22,14 @@ async function pas_of_usr(
 ): DocR<Pas> {
 	if (!is_id(u._id)) return null
 	const [cdt, sec, aut] = await Promise.all([
-		rec_a(coll.cdt, u._id, Date.now()), // deno-lint-ignore no-explicit-any
+		cdt_a({ usr: u._id }, { now: Date.now() }, { _id: 1 }), // deno-lint-ignore no-explicit-any
 		id(coll.soc, { sec: u._id } as any),
 		aut_r()
 	])
 	return aut ? {
 		usr: u._id, nam: u.nam,
-		cdt, sec, aut
+		cdt: cdt ? cdt.map(c => c._id.soc) : [],
+		sec, aut,
 	} : null
 }
 
