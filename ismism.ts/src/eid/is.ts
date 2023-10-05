@@ -87,8 +87,8 @@ export function is_rec(
 export function is_cdt(
 	cdt: Cdt
 ) {
-	const { eft, exp } = cdt.utc
-	return is_rec(cdt) && typeof eft == "number" && typeof exp == "number" && eft <= exp
+	const { eft, exp, agr } = cdt.utc
+	return is_rec(cdt) && typeof eft == "number" && typeof exp == "number" && eft <= exp && agr >= 0
 }
 
 export function is_aut(

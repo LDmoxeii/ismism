@@ -83,7 +83,7 @@ export async function pre(
 			const { _id: { usr, soc, utc }, msg, amt, sec, utc: { eft, exp } } = p.cdt
 			const a = await cdt_a({ usr, soc }, { eft, exp }, { _id: 1 })
 			if (a && a.length > 0 || !is_id(sec!)) return null
-			return rec_c(coll.cdt, { _id: { usr, soc, utc }, msg, amt, sec, utc: { eft, exp } })
+			return rec_c(coll.cdt, { _id: { usr, soc, utc }, msg, amt, sec, utc: { eft, exp, agr: 0 } })
 		} case "dbt": {
 			const { _id: { usr, soc, utc }, msg, amt } = p.dbt
 			const a = await cdt_a({ usr, soc }, { now: utc })

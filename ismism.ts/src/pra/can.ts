@@ -47,16 +47,18 @@ export function is_put(
 			&& is_nam(p.nam) && is_adm(p.adm1, p.adm2) && is_msg(p.msg, lim_msg_id)
 		case "soc":
 			if ("msg" in p) return is_in(pas.sec, p.soc) && is_id(p.soc) && is_msg(p.msg, lim_msg_id)
+			else if ("agr" in p) return is_in(pas.sec, p.soc) && is_id(p.soc) && is_msg(p.agr, lim_msg_id)
 			else if ("nam" in p) return is_aut(pas.aut.aut, pas.usr)
-				&& is_id(p.soc) && is_nam(p.nam) && is_adm(p.adm1, p.adm2)
-				&& is_idl(p.sec, lim_sec) && typeof p.cde == "boolean"
+				&& is_id(p.soc) && is_nam(p.nam) && is_adm(p.adm1, p.adm2) && is_idl(p.sec, lim_sec)
 			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.soc)
 		case "agd":
 			if ("msg" in p) return is_in(pas.agd, p.agd) && is_id(p.agd) && is_msg(p.msg, lim_msg_id)
 			else if ("nam" in p) return is_aut(pas.aut.aut, pas.usr)
 				&& is_id(p.agd) && is_nam(p.nam) && is_adm(p.adm1, p.adm2)
 			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.agd)
-		case "cdt": case "dbt": case "ern": return is_in(pas.sec, p.id.soc) && is_recid(p.id)
+		case "cdt": case "dbt": case "ern":
+			if ("agr" in p) return is_in(pas.cdt, p.id.soc) && is_recid(p.id)
+			else return is_in(pas.sec, p.id.soc) && is_recid(p.id)
 		case "wsl": case "lit":
 			if ("msg" in p) return is_in(pas.aut[p.put], pas.usr) && is_id(p.id)
 				&& is_nam(p.nam) && is_msg(p.msg, lim_msg) && typeof p.pin == "boolean"

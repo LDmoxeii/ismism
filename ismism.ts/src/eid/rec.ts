@@ -1,5 +1,5 @@
 import type { Cdt, Rec } from "./typ.ts"
-import { Coll, DocC, DocD, DocR, coll } from "./db.ts"
+import { Coll, DocC, DocD, DocR, DocU, coll } from "./db.ts"
 import { is_id, is_msg, is_recid, lim_msg_rec, lim_rec_f } from "./is.ts"
 
 export async function rec_c<
@@ -40,6 +40,18 @@ export async function rec_f<
 		...utc > 0 ? { "_id.utc": { $lt: utc } } : {},
 	} // deno-lint-ignore no-explicit-any
 	return await c.find(f as any, { sort: { "_id.utc": -1 }, limit: lim_rec_f }).toArray() as T[]
+}
+
+export async function cdt_u(
+	_id: Cdt["_id"], agr: Cdt["utc"]["agr"],
+): DocU {
+	if (!is_recid(_id)) return null
+	try {
+		const { matchedCount, modifiedCount } = await coll.cdt
+			.updateOne({ _id }, { $set: { "utc.agr": agr } })
+		if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
+		else return null
+	} catch { return null }
 }
 
 export async function cdt_a<

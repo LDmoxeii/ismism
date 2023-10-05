@@ -11,7 +11,7 @@ export async function soc_c(
 	return id_c(coll.soc, {
 		_id: await id_n(coll.soc), utc: Date.now(),
 		nam, adm1, adm2, msg: "",
-		sec: [], cde: false,
+		sec: [], agr: { msg: "", utc: 0 },
 	})
 }
 

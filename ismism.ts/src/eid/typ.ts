@@ -14,7 +14,7 @@ export type Usr = Id & {
 }
 export type Soc = Id & {
 	sec: Usr["_id"][],
-	cde: boolean,
+	agr: { msg: string, utc: number },
 }
 export type Agd = Id & {
 	soc: Soc["_id"],
@@ -27,7 +27,7 @@ export type Rec = {
 	sec?: Usr["_id"],
 }
 export type Cdt = Rec & {
-	utc: { eft: number, exp: number }
+	utc: { eft: number, exp: number, agr: number },
 }
 export type Dbt = Rec
 export type Ern = Rec

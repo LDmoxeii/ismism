@@ -42,11 +42,7 @@ const rec: IndexOptions[] = [{
 const utc: IndexOptions[] = [{
 	key: { "_id.usr": 1, "_id.soc": 1, "utc.eft": -1, "utc.exp": -1 }, name: "usr-eft",
 }, {
-	key: { "_id.usr": 1, "_id.soc": 1, "utc.exp": -1 }, name: "usr-exp",
-}, {
 	key: { "_id.soc": 1, "utc.eft": -1, "utc.exp": -1 }, name: "soc-eft",
-}, {
-	key: { "_id.soc": 1, "utc.exp": -1 }, name: "soc-exp",
 }]
 const msg: IndexOptions[] = [{
 	key: { pin: 1, "utc.put": -1 }, name: "pin",

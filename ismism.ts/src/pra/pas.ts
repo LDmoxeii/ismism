@@ -8,11 +8,13 @@ import { is_id, is_jwt, len_code, lim_code } from "../eid/is.ts"
 import { cdt_a } from "../eid/rec.ts"
 import { id } from "../eid/id.ts"
 import { aut_r } from "../eid/aut.ts"
+import { soc_r } from "../eid/soc.ts"
 
 export type Pas = {
 	usr: Usr["_id"],
 	nam: Usr["nam"],
 	cdt: Soc["_id"][],
+	agr: Soc["_id"][],
 	sec: Soc["_id"][],
 	agd: Agd["_id"][],
 	aut: Omit<Aut, "_id">,
@@ -23,14 +25,18 @@ async function pas_of_usr(
 ): DocR<Pas> {
 	if (!is_id(u._id)) return null
 	const [cdt, sec, aut] = await Promise.all([
-		cdt_a({ usr: u._id }, { now: Date.now() }, { _id: 1 }), // deno-lint-ignore no-explicit-any
+		cdt_a({ usr: u._id }, { now: Date.now() }, { _id: 1, utc: 1 }), // deno-lint-ignore no-explicit-any
 		id(coll.soc, { sec: u._id } as any),
 		aut_r()
 	])
-	const agd = await id(coll.agd, { soc: { $in: sec } });
+	const [soc, agd] = await Promise.all([ // deno-lint-ignore no-explicit-any
+		cdt ? Promise.all(cdt.map(c => soc_r(c._id.soc, { _id: 1, "agr.utc": 1 } as any))) : [],
+		id(coll.agd, { soc: { $in: sec } }),
+	])
 	return aut ? {
 		usr: u._id, nam: u.nam,
 		cdt: cdt ? cdt.map(c => c._id.soc) : [],
+		agr: cdt ? cdt.filter((c, n) => c.utc.agr < (soc[n]?.agr.utc ?? 0)).map((_, n) => soc[n]!._id) : [],
 		sec, agd, aut,
 	} : null
 }
