@@ -1,4 +1,5 @@
 import { is_nbr } from "../eid/is.ts"
+import { utc_etag } from "../ont/utc.ts";
 import { Ret } from "./can.ts"
 import { Pas, pas, pas_clear, pas_code, pas_issue } from "./pas.ts"
 import { pre } from "./pre.ts"
@@ -28,6 +29,7 @@ export async function pos(
 		p.jwt = null
 	} else p.pas = null
 
+	let r = null
 	switch (f) {
 		case "pas": {
 			const { usr, sms, nbr, code } = json
@@ -50,10 +52,10 @@ export async function pos(
 			break
 		}
 
-		case "pre": return pre(p.pas, json)
-		case "put": return put(p.pas, json)
+		case "pre": { r = await pre(p.pas, json); break }
+		case "put": { r = await put(p.pas, json); break }
 	}
 
-	p.etag = null
-	return null
+	p.etag = r ? utc_etag() : null
+	return r
 }

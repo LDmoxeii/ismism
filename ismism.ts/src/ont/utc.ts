@@ -38,3 +38,8 @@ export function utc_week(
 	const d = new Date(utc_day(utc))
 	return d.getTime() - utc_d * ((d.getDay() + 6) % 7)
 }
+
+export function utc_etag(
+) {
+	return `W/"${Date.now()}"`
+}

@@ -60,7 +60,7 @@ export async function cdt_a<
 	id: { usr: Cdt["_id"]["usr"] } | { soc: Cdt["_id"]["soc"] } | Omit<Cdt["_id"], "utc">,
 	utc: { now: number } | { eft: number, exp: number },
 	projection?: Partial<{ [K in P]: 1 }>
-): DocR<Pick<Cdt, "_id" | P>[]> {
+): Promise<Pick<Cdt, "_id" | P>[]> {
 	const f = {
 		..."usr" in id ? { "_id.usr": id.usr } : {},
 		..."soc" in id ? { "_id.soc": id.soc } : {},
@@ -70,24 +70,24 @@ export async function cdt_a<
 	return await coll.cdt.find(f, { projection }).toArray()
 }
 
-export async function rec_s<
+export function rec_s<
 	T extends Rec
 >(
 	c: Coll<T>,
 	_id: { usr: Rec["_id"]["usr"] } | { soc: Rec["_id"]["soc"] } | Omit<Rec["_id"], "utc">,
 	utc: { frm?: number, eft?: number, now?: number, exp?: number },
-): Promise<Rec["amt"]> {
+): Promise<{ soc: Rec["_id"]["soc"], amt: number }[]> {
 	const $match = {
 		..."usr" in _id ? { "_id.usr": _id.usr } : {},
 		..."soc" in _id ? { "_id.soc": _id.soc } : {},
-		...utc.frm ? { "_id.utc": { $gt: utc.frm } } : {},
+		...utc.frm ? { "_id.utc": { $gte: utc.frm } } : {},
 		...utc.exp ? { "utc.exp": { $lt: utc.exp } } : {},
 		...utc.now ? { "utc.eft": { $lt: utc.now }, "utc.exp": { $gt: utc.now } } : {},
 		...utc.eft ? { "utc.eft": { $gt: utc.eft } } : {}, // deno-lint-ignore no-explicit-any
 	} as any // deno-lint-ignore no-explicit-any
-	const $group = { _id: null, amt: { $sum: "$amt" } } as any
-	const a = await c.aggregate<{ amt: number }>([{ $match }, { $group }]).toArray()
-	return a.length > 0 ? a[0].amt : 0
+	const $group = { _id: "$_id.soc", amt: { $sum: "$amt" } } as any
+	const $project = { _id: 0, soc: "$_id", amt: "$amt" }
+	return c.aggregate<{ soc: Rec["_id"]["soc"], amt: number }>([{ $match }, { $group }, { $project }]).toArray()
 }
 
 export async function rec_d<
