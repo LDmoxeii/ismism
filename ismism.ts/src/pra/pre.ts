@@ -41,35 +41,20 @@ export type Pre = {
 }
 
 export type PreRet = {
-	pre: "usr",
-	ret: Ret<typeof usr_c>,
-} | {
-	pre: "soc",
-	ret: Ret<typeof soc_c>,
-} | {
-	pre: "agd",
-	ret: Ret<typeof agd_c>,
-} | {
-	pre: "cdt",
-	ret: Ret<typeof rec_c>,
-} | {
-	pre: "dbt",
-	ret: Ret<typeof rec_c>,
-} | {
-	pre: "ern",
-	ret: Ret<typeof rec_c>,
-} | {
-	pre: "wsl",
-	ret: Ret<typeof msg_c>,
-} | {
-	pre: "lit",
-	ret: Ret<typeof msg_c>,
+	usr: Ret<typeof usr_c>,
+	soc: Ret<typeof soc_c>,
+	agd: Ret<typeof agd_c>,
+	cdt: Ret<typeof rec_c>,
+	dbt: Ret<typeof rec_c>,
+	ern: Ret<typeof rec_c>,
+	wsl: Ret<typeof msg_c>,
+	lit: Ret<typeof msg_c>,
 }
 
 export async function pre(
 	pas: Pas | null,
 	p: Pre,
-): Promise<PreRet["ret"]> {
+) {
 	if (!pas || !p || !is_pre(pas, p)) return null
 	switch (p.pre) {
 		case "usr": {

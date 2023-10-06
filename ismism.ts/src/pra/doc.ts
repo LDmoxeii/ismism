@@ -1,7 +1,8 @@
 import { coll } from "../eid/db.ts"
 import { id, idnam } from "../eid/id.ts"
 import { cdt_a, rec_s } from "../eid/rec.ts"
-import { Usr } from "../eid/typ.ts"
+import { soc_r } from "../eid/soc.ts"
+import { Soc, Usr } from "../eid/typ.ts"
 import { usr_r } from "../eid/usr.ts"
 
 export async function usr(
@@ -24,5 +25,27 @@ export async function usr(
 		...u, sec, soc,
 		cdt: cdt.map(({ _id, amt, utc }, n) => ({ soc: _id.soc, amt: amt - (dbt[n].length == 0 ? 0 : dbt[n][0].amt), utc })),
 		sum: { cdt: cdt_s, dbt: dbt_s, ern: ern_s },
+	}
+}
+
+export async function soc(
+	soc: Soc["_id"]
+) {
+	const [s, a, c, cdt_s, dbt_s, ern_s] = await Promise.all([
+		soc_r(soc), id(coll.agd, { soc }),
+		cdt_a({ soc }, { now: Date.now() }, { _id: 1 }),
+		rec_s(coll.cdt, { soc }, {}),
+		rec_s(coll.dbt, { soc }, {}),
+		rec_s(coll.ern, { soc }, {}),
+	])
+	if (!s) return null
+	const [sec, cdt, agd] = await Promise.all([
+		idnam(coll.usr, s.sec),
+		idnam(coll.usr, c.map(c => c._id.usr)),
+		idnam(coll.agd, a)
+	])
+	return {
+		...s, sec, cdt, agd,
+		sum: { cdt: cdt_s[0]?.amt ?? 0, dbt: dbt_s[0]?.amt ?? 0, ern: ern_s[0]?.amt ?? 0 },
 	}
 }

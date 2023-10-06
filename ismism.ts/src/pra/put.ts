@@ -77,30 +77,22 @@ export type Put = {
 }
 
 export type PutRet = {
-	pre: "usr",
-	ret: Ret<typeof usr_u>,
-} | {
-	pre: "soc",
-	ret: Ret<typeof soc_u>,
-} | {
-	pre: "agd",
-	ret: Ret<typeof agd_u>,
-} | {
-	pre: "cdt" | "dbt" | "ern",
-	ret: Ret<typeof rec_d> | Ret<typeof cdt_u>,
-} | {
-	pre: "wsl" | "lit",
-	ret: Ret<typeof msg_u>,
-} | {
-	pre: "aut",
-	ret: Ret<typeof aut_u>,
+	usr: Ret<typeof usr_u>,
+	soc: Ret<typeof soc_u>,
+	agd: Ret<typeof agd_u>,
+	cdt: Ret<typeof rec_d> | Ret<typeof cdt_u>,
+	dbt: Ret<typeof rec_d>,
+	ern: Ret<typeof rec_d>,
+	wsl: Ret<typeof msg_u>,
+	lit: Ret<typeof msg_u>,
+	aut: Ret<typeof aut_u>,
 }
 
 // deno-lint-ignore require-await
 export async function put(
 	pas: Pas | null,
 	p: Put,
-): Promise<PutRet["ret"]> {
+) {
 	if (!pas || !p || !is_put(pas, p)) return null
 	switch (p.put) {
 		case "usr": {

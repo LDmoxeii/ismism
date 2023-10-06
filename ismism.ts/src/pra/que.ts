@@ -1,6 +1,7 @@
+import { is_id } from "../eid/is.ts"
 import { Agd, Msg, Rec, Soc, Usr } from "../eid/typ.ts"
 import { Ret } from "./can.ts"
-import { usr } from "./doc.ts"
+import { soc, usr } from "./doc.ts"
 
 export type Que = {
 	que: "usr",
@@ -28,8 +29,8 @@ export type Que = {
 }
 
 export type QueRet = {
-	que: "usr",
-	ret: Ret<typeof usr>,
+	usr: Ret<typeof usr>,
+	soc: Ret<typeof soc>,
 }
 
 function json(
@@ -46,6 +47,7 @@ export function que(
 
 	if (q) switch (q.que) {
 		case "usr": return usr("nam" in q ? { nam: q.nam } : { _id: q.usr })
+		case "soc": return is_id(q.soc) ? soc(q.soc) : null
 	}
 
 	return null

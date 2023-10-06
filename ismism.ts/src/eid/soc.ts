@@ -19,7 +19,7 @@ export function soc_r<
 	P extends keyof Soc
 >(
 	_id: Soc["_id"],
-	projection: Partial<{ [K in P]: 1 }>
+	projection: Partial<{ [K in P]: 1 }> = {}
 ): DocR<Pick<Soc, "_id" | P>> {
 	return id_r(coll.soc, { _id }, projection)
 }
