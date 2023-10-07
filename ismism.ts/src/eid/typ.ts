@@ -38,7 +38,7 @@ export type Msg = {
 	utc: { pre: number, put: number },
 	usr: Usr["_id"],
 	msg: string,
-	pin?: boolean,
+	pin?: true,
 }
 export type Wsl = Msg
 export type Lit = Msg

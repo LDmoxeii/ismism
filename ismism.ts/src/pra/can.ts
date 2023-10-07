@@ -60,9 +60,10 @@ export function is_put(
 			if ("agr" in p) return is_in(pas.cdt, p.id.soc) && is_recid(p.id)
 			else return is_in(pas.sec, p.id.soc) && is_recid(p.id)
 		case "wsl": case "lit":
-			if ("msg" in p) return is_in(pas.aut[p.put], pas.usr) && is_id(p.id)
-				&& is_nam(p.nam) && is_msg(p.msg, lim_msg) && typeof p.pin == "boolean"
-			else return is_in(pas.aut[p.put], pas.usr) && is_id(p.id)
+			if (!is_in(pas.aut[p.put], pas.usr)) return false
+			else if ("msg" in p) return is_id(p.id) && is_nam(p.nam) && is_msg(p.msg, lim_msg)
+			else if ("pin" in p) return is_id(p.id) && typeof p.pin == "boolean"
+			else return is_id(p.id)
 		case "aut": return is_in(pas.aut.sup, pas.usr)
 			&& is_idl(p.aut, lim_aut.aut) && is_idl(p.wsl, lim_aut.wsl) && is_idl(p.lit, lim_aut.lit)
 	}

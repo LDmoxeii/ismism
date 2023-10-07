@@ -96,7 +96,7 @@ Deno.test("pre-put", async () => {
 	assertEquals([true, true, false, true, false, true, true, true], rpre.map(r => r != null))
 	assertEquals([1], p.pas?.agr); p.jwt = jwt
 
-	assertEquals([1, 1, 1, 0, 1, 1, 0, null, 1, 1, 1, 1], await Promise.all([
+	assertEquals([1, 1, 1, 0, 1, 1, 0, null, 1, 1, 1, 0, 1], await Promise.all([
 		pos({ jwt }, "put", json({ put: "agd", agd: 1, msg: "活动介绍" } as Put)),
 		pos({ jwt }, "put", json({ put: "agd", agd: 1, nam: "活动介绍", adm1, adm2 } as Put)),
 		pos({ jwt }, "put", json({ put: "agd", agd: 1 } as Put)),
@@ -108,6 +108,7 @@ Deno.test("pre-put", async () => {
 		pos({ jwt }, "put", json({ put: "dbt", id: dbt._id } as Put)),
 		pos({ jwt }, "put", json({ put: "ern", id: ern._id } as Put)),
 		pos({ jwt }, "put", json({ put: "wsl", id: 1, msg: "wslmsg", nam: "标题三", pin: true } as Put)),
+		pos({ jwt }, "put", json({ put: "wsl", id: 1, pin: false } as Put)),
 		pos({ jwt }, "put", json({ put: "lit", id: 1 } as Put)),
 	]))
 	assertEquals([], p.pas?.agr)

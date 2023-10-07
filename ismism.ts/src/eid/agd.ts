@@ -1,5 +1,5 @@
 import type { Agd } from "./typ.ts"
-import { coll, DocC, DocD, DocR, DocU, Updt } from "./db.ts"
+import { coll, DocC, DocD, DocR, DocU, Proj, Updt } from "./db.ts"
 import { id_c, id_d, id_n, id_r, id_u } from "./id.ts"
 import { is_id } from "./is.ts"
 
@@ -21,9 +21,9 @@ export function agd_r<
 	P extends keyof Agd
 >(
 	_id: Agd["_id"],
-	projection: Partial<{ [K in P]: 1 }> = {}
+	p?: Proj<Agd, P>,
 ): DocR<Pick<Agd, "_id" | P>> {
-	return id_r(coll.agd, { _id }, projection)
+	return id_r(coll.agd, { _id }, p)
 }
 
 export async function agd_u(

@@ -68,6 +68,9 @@ export type Put = {
 	id: Msg["_id"],
 	nam: string,
 	msg: string,
+} | {
+	put: "wsl" | "lit",
+	id: Msg["_id"],
 	pin: boolean,
 } | {
 	put: "aut",
@@ -115,10 +118,9 @@ export async function put(
 			if ("agr" in p) return cdt_u(p.id, Date.now())
 			else return rec_d(coll[p.put], p.id)
 		} case "wsl": case "lit": {
-			if ("msg" in p) {
-				const { nam, msg, pin } = p
-				return msg_u(coll[p.put], p.id, { $set: { nam, msg, pin, "utc.put": Date.now() } })
-			} else return msg_d(coll[p.put], p.id)
+			if ("msg" in p) return msg_u(coll[p.put], p.id, { $set: { nam: p.nam, msg: p.msg, "utc.put": Date.now() } })
+			else if ("pin" in p) return msg_u(coll[p.put], p.id, p.pin ? { $set: { pin: true } } : { $unset: { pin: true } })
+			else return msg_d(coll[p.put], p.id)
 		} case "aut": {
 			const { aut, wsl, lit } = p
 			return aut_u({ $set: { aut, wsl, lit } })

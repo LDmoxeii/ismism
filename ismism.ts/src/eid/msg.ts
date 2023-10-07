@@ -1,5 +1,5 @@
 import type { Msg } from "./typ.ts"
-import type { Coll, DocC, DocD, DocR, DocU, Updt } from "./db.ts"
+import type { Coll, DocC, DocD, DocR, DocU, Proj, Updt } from "./db.ts"
 import { is_id, is_lim, is_msg, is_nam, lim_msg, lim_msg_f, lim_msg_pin } from "./is.ts"
 
 async function msg_n(
@@ -31,7 +31,7 @@ export async function msg_r<
 >(
 	c: Coll<Msg>,
 	_id: Msg["_id"],
-	projection?: Partial<{ [K in P]: 1 }>,
+	projection?: Proj<Msg, P>,
 ): DocR<Pick<Msg, "_id" | P>> {
 	if (!is_id(_id)) return null
 	return await c.findOne({ _id }, { projection }) ?? null
@@ -40,7 +40,7 @@ export async function msg_r<
 export async function msg_f(
 	c: Coll<Msg>,
 	id: Msg["_id"],
-): DocR<Msg[]> {
+): Promise<Msg[]> {
 	const top = !is_id(id)
 	const pin = await c.find({ pin: true }, {
 		sort: { "utc.put": -1 },

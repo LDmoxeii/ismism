@@ -1,7 +1,7 @@
 import { is_id } from "../eid/is.ts"
 import { Agd, Msg, Rec, Soc, Usr } from "../eid/typ.ts"
 import { Ret } from "./can.ts"
-import { agd, soc, usr } from "./doc.ts"
+import { agd, msg, rec, soc, usr } from "./doc.ts"
 
 export type Que = {
 	que: "usr",
@@ -26,12 +26,18 @@ export type Que = {
 } | {
 	que: "wsl" | "lit",
 	msg: Msg["_id"] | 0,
+	f?: true,
 }
 
 export type QueRet = {
 	usr: Ret<typeof usr>,
 	soc: Ret<typeof soc>,
 	agd: Ret<typeof agd>,
+	cdt: Ret<typeof rec>,
+	dbt: Ret<typeof rec>,
+	ern: Ret<typeof rec>,
+	wsl: Ret<typeof msg>,
+	lit: Ret<typeof msg>,
 }
 
 function json(
@@ -49,7 +55,10 @@ export function que(
 	if (q) switch (q.que) {
 		case "usr": return usr("nam" in q ? { nam: q.nam } : { _id: q.usr })
 		case "soc": return is_id(q.soc) ? soc(q.soc) : null
-		case "agd": return agd(q.agd)
+		case "agd": return is_id(q.agd) ? agd(q.agd) : null
+		case "cdt": case "dbt": case "ern":
+			return rec(q.que, "usr" in q ? { usr: q.usr } : { soc: q.soc }, q.utc)
+		case "wsl": case "lit": return msg(q.que, q.msg, q.f)
 	}
 
 	return null

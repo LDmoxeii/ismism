@@ -1,5 +1,5 @@
 import type { Soc } from "./typ.ts"
-import { coll, DocC, DocD, DocR, DocU, Updt } from "./db.ts"
+import { coll, DocC, DocD, DocR, DocU, Proj, Updt } from "./db.ts"
 import { id_c, id_d, id_n, id_r, id_u } from "./id.ts"
 import { is_idl, lim_sec } from "./is.ts"
 
@@ -19,9 +19,9 @@ export function soc_r<
 	P extends keyof Soc
 >(
 	_id: Soc["_id"],
-	projection: Partial<{ [K in P]: 1 }> = {}
+	p?: Proj<Soc, P>,
 ): DocR<Pick<Soc, "_id" | P>> {
-	return id_r(coll.soc, { _id }, projection)
+	return id_r(coll.soc, { _id }, p)
 }
 
 export async function soc_u(

@@ -33,7 +33,7 @@ export async function id_r<
 >(
 	c: Coll<T>,
 	f: Partial<T>,
-	p: Proj<T, P>,
+	p?: Proj<T, P>,
 ): DocR<Pick<T, "_id" | P>> {
 	if (f._id && !is_id(f._id) || f.nam && !is_nam(f.nam)) return null
 	return await c.findOne(f as Fltr<T>, { projection: p }) ?? null
