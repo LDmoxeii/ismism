@@ -21,7 +21,7 @@ export function agd_r<
 	P extends keyof Agd
 >(
 	_id: Agd["_id"],
-	projection: Partial<{ [K in P]: 1 }>
+	projection: Partial<{ [K in P]: 1 }> = {}
 ): DocR<Pick<Agd, "_id" | P>> {
 	return id_r(coll.agd, { _id }, projection)
 }

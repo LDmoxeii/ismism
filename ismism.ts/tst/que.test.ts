@@ -32,7 +32,10 @@ Deno.test("que", async () => {
 	const soc: QueRet["soc"] = {
 		_id: 1, utc: now, nam: "俱乐部", adm1: "江苏", adm2: "苏州", msg: "",
 		sec: [[1, "1"], [2, "用户"]], agr: { msg: "", utc: 0 }, cdt: [[2, "用户"]], agd: [[1, "活动"]],
-		sum: { cdt: 30, dbt: 15, ern: 30 }
+		sum: { cdt: 30, dbt: 15, ern: 30 },
+	}
+	const agd: QueRet["agd"] = {
+		_id: 1, utc: now, nam: "活动", adm1: "江苏", adm2: "苏州", msg: "", soc: [1, "俱乐部"],
 	}
 	await Promise.all([
 		await usr_c(nbr[0], "四川", "成都"), await usr_c(nbr[1], "四川", "成都"),
@@ -44,4 +47,5 @@ Deno.test("que", async () => {
 	assertEquals(usr, { ...await que(`que="usr"&usr=2`), utc: now })
 	assertEquals(usr, { ...await que(`que="usr"&nam="用户"`), utc: now })
 	assertEquals(soc, { ...await que(`que="soc"&soc=1`), utc: now })
+	assertEquals(agd, { ...await que(`que="agd"&agd=1`), utc: now })
 })
