@@ -1,4 +1,6 @@
 /*.json
+/ssl
 /db
 /log
-/cli/*.js
+/ui
+*.js
