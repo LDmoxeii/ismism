@@ -9,6 +9,6 @@ export function usr(
 		_id, utc: Date.now(), nam: "用户名", adm1: "四川", adm2: "成都",
 		msg: "用户介绍\n联系方式\n\n测试"
 	}
-	t.append(id(u), id(u))
+	t.append(id(u))
 	return t
 }
