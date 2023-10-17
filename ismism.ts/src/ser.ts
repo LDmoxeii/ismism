@@ -1,3 +1,4 @@
+import { db } from "./eid/db.ts"
 import { jwk_load } from "./ont/jwt.ts"
 import { utc_dt } from "./ont/utc.ts"
 import { pos, PasPos } from "./pra/pos.ts"
@@ -31,10 +32,10 @@ async function handler(
 			const s = decodeURI(url.search.substring(1))
 			if (etag === "") etag = `W/"${utc}"`
 			if (req.headers.get("if-none-match")?.includes(etag)) {
-				log(utc, `${r}${s}`, 304)
+				log(utc, `${r}?${s}`, 304)
 				return new Response(null, { status: 304, headers: { etag } })
 			}
-			log(utc, `${r}${s}`, 200)
+			log(utc, `${r}?${s}`, 200)
 			return new Response(JSON.stringify(await que(s)), { status: 200, headers: { etag } })
 		} case "p": {
 			const p: PasPos = {}
@@ -54,6 +55,7 @@ async function handler(
 	return new Response(null, { status: 400 })
 }
 
+await db("ismism-dev")
 await jwk_load()
 const port = parseInt(Deno.args[0]) ?? 728
 Deno.serve({ handler, port })

@@ -8,15 +8,15 @@ export const nav: {
 	hash: "",
 }
 
-window.addEventListener("hashchange", () => {
+window.addEventListener("hashchange", async () => {
 	main.innerHTML = ""
 	const h = nav.hash = decodeURI(location.hash).substring(1)
-	if (h == "") main.append(usr(728))
-	else if (/^\d+$/.test(h)) main.append(usr(parseInt(h)))
-	else if (h == "soc") main.append(usr(0))
-	else if (/^s\d+$/.test(h)) main.append(usr(parseInt(h.substring(1))))
-	else if (h == "agd") main.append(usr(1))
-	else if (/^a\d+$/.test(h)) main.append(usr(parseInt(h.substring(1))))
+	if (h == "") main.append(await usr(728))
+	else if (/^\d+$/.test(h)) main.append(await usr(parseInt(h)))
+	else if (h == "soc") main.append(await usr(0))
+	else if (/^s\d+$/.test(h)) main.append(await usr(parseInt(h.substring(1))))
+	else if (h == "agd") main.append(await usr(1))
+	else if (/^a\d+$/.test(h)) main.append(await usr(parseInt(h.substring(1))))
 	else alert(`无效 id ${h}`)
 })
 
