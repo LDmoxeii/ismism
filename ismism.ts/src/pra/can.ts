@@ -1,8 +1,8 @@
 import type { Soc } from "../eid/typ.ts"
-import type { Pas } from "./pas.ts"
+import type { Pas, Psg } from "./pas.ts"
 import type { Pre } from "./pre.ts"
 import type { Put } from "./put.ts"
-import { is_aut, is_cdt, is_id, is_idl, is_msg, is_nam, is_nbr, is_rec, is_recid, lim_aut, lim_msg, lim_msg_id, lim_sec } from "../eid/is.ts"
+import { is_aut, is_cdt, is_id, is_idl, is_lim, is_msg, is_nam, is_nbr, is_rec, is_recid, lim_aut, lim_code, lim_msg, lim_msg_id, lim_sec } from "../eid/is.ts"
 import { is_adm } from "../ont/adm.ts"
 
 // deno-lint-ignore no-explicit-any
@@ -14,6 +14,18 @@ function is_in(
 ): boolean {
 	if (!s) return sl.length > 0
 	return sl.includes(s)
+}
+
+export function is_psg(
+	p: Psg
+): boolean {
+	switch (p.psg) {
+		case "pas": return true
+		case "sms": return is_nbr(p.nbr) && typeof p.sms == "boolean"
+		case "code": return is_nbr(p.nbr) && is_lim(p.code, lim_code)
+		case "clr": return is_id(p.usr)
+	}
+	return false
 }
 
 export function is_pre(

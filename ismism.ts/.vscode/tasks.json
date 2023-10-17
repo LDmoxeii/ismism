@@ -20,7 +20,7 @@
 		{
 			"label": "test",
 			"type": "shell",
-			"command": "cd ..; zsh cli/stop.zsh > /dev/null; sleep 0.1; zsh cli/start.zsh > /dev/null; sleep 0.1; deno test --allow-net --allow-read ismism.ts/tst; zsh cli/stop.zsh > /dev/null",
+			"command": "cd ..; zsh cli/dbtst.zsh; deno test --allow-net --allow-read ismism.ts/tst",
 			"group": {
 				"kind": "test",
 				"isDefault": true

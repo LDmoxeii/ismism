@@ -1,4 +1,5 @@
 import type { Usr, Soc, Aut, Agd } from "../eid/typ.ts"
+import type { PasPos } from "./pos.ts"
 import { coll, DocR, DocU } from "../eid/db.ts"
 import { jwt_sign, jwt_verify } from "../ont/jwt.ts"
 import { usr_r, usr_u } from "../eid/usr.ts"
@@ -9,6 +10,7 @@ import { cdt_a } from "../eid/rec.ts"
 import { id } from "../eid/id.ts"
 import { aut_r } from "../eid/aut.ts"
 import { soc_r } from "../eid/soc.ts"
+import { Ret, is_psg } from "./can.ts"
 
 export type Pas = {
 	usr: Usr["_id"],
@@ -58,7 +60,28 @@ export async function pas(
 	return null
 }
 
-export async function pas_issue(
+export type Psg = {
+	psg: "pas",
+} | {
+	psg: "sms",
+	nbr: NonNullable<Usr["nbr"]>,
+	sms: boolean,
+} | {
+	psg: "code",
+	nbr: NonNullable<Usr["nbr"]>,
+	code: NonNullable<Usr["sms"]>["code"],
+} | {
+	psg: "clr",
+	usr: Usr["_id"],
+}
+export type PsgRet = {
+	pas: PasPos["pas"],
+	sms: Ret<typeof pas_sms>,
+	code: PasPos["pas"],
+	clr: Ret<typeof pas_clr>,
+}
+
+async function pas_code(
 	nbr: NonNullable<Usr["nbr"]>,
 	code: NonNullable<Usr["sms"]>["code"],
 ): DocR<{ pas: Pas, jwt: NonNullable<Usr["jwt"]> }> {
@@ -75,7 +98,7 @@ export async function pas_issue(
 	return null
 }
 
-export async function pas_code(
+async function pas_sms(
 	nbr: NonNullable<Usr["nbr"]>,
 	sms: boolean,
 ): DocR<{ sms: boolean, utc?: number }> {
@@ -96,8 +119,31 @@ export async function pas_code(
 	return null
 }
 
-export function pas_clear(
-	uid: Usr["_id"]
+function pas_clr(
+	usr: Usr["_id"]
 ): DocU {
-	return usr_u(uid, { $unset: { jwt: "" } })
+	return usr_u(usr, { $unset: { jwt: "" } })
+}
+
+export async function psg(
+	pos: PasPos,
+	p: Psg,
+) {
+	if (!is_psg(p)) return null
+	switch (p.psg) {
+		case "pas": { return pos.pas }
+		case "sms": { return pas_sms(p.nbr, p.sms) }
+		case "code": {
+			const r = await pas_code(p.nbr, p.code)
+			if (!r) return null
+			pos.jwt = r.jwt
+			pos.pas = r.pas
+			return pos.pas
+		} case "clr": {
+			const r = pos.pas && pos.pas.usr == p.usr ? pas_clr(p.usr) : null
+			pos.pas = pos.jwt = null
+			return r
+		}
+	}
+	return null
 }
