@@ -90,4 +90,4 @@ export async function db(
 	return c
 }
 
-export let coll = await db("tst", true)
+export let coll = await db("tst")

@@ -63,6 +63,24 @@ a:focus {
 	outline: none;
 }
 
+a.idnam {
+	display: block;
+	font-size: var(--title);
+}
+
+a.idnam>code.id {
+	padding: 0.1em 8px;
+	margin-right: .8ch;
+	border: 1px solid var(--black);
+	border-radius: 4px;
+	background: var(--grayd);
+	color: var(--white);
+}
+
+a.idnam>span.nam {
+	font-weight: bold;
+}
+
 nav {
 	overflow: scroll;
 	scrollbar-width: none;
@@ -121,4 +139,42 @@ nav>menu>li.active a {
 
 nav li.active em {
 	color: var(--red);
+}
+
+article {
+	position: relative;
+	animation: scale 0.4s;
+	margin: 16px;
+	padding: 8px 16px;
+	background: var(--white);
+	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+@keyframes scale {
+	from {
+		transform: scale(0.25);
+		opacity: 0;
+	}
+
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+section {
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+
+p {
+	display: block;
+	margin: 1ch 0;
+}
+
+p.mta {
+	padding: 1ch;
+	background: var(--grayl);
+	color: var(--gray);
 }

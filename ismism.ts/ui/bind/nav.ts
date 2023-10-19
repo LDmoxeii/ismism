@@ -1,11 +1,27 @@
 // deno-lint-ignore-file no-window-prefix
+import type { PsgRet, Pas } from "../../src/pra/pas.ts"
 import { usr } from "./article.ts"
-import { main } from "./template.ts"
+import { pos } from "./fetch.ts"
+import { pas, main } from "./template.ts"
 
 export const nav: {
+	pas?: Pas | null,
 	hash: string,
 } = {
 	hash: "",
+}
+
+export async function navpas(
+	p?: Pas | null
+) {
+	nav.pas = p == undefined ? await pos<PsgRet["pas"]>({ psg: "pas" }) : p
+	if (nav.pas) {
+		pas.innerText = nav.pas.nam
+		pas.href = `#${nav.pas.usr}`
+	} else {
+		pas.innerText = "用户登录"
+		pas.href = "#psg"
+	}
 }
 
 window.addEventListener("hashchange", async () => {
@@ -20,9 +36,10 @@ window.addEventListener("hashchange", async () => {
 	else alert(`无效 id ${h}`)
 })
 
-export function load(
+export async function load(
 ) {
 	console.log("ismism-20231015")
 	console.log(`\n主义主义开发组！成员招募中！\n\n发送自我介绍至 万大可\n`)
+	await navpas()
 	window.dispatchEvent(new Event("hashchange"))
 }

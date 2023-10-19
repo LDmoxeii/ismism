@@ -1,3 +1,4 @@
+export const pas = document.getElementById("pas")! as HTMLAnchorElement
 export const main = document.getElementById("main")! as HTMLDivElement
 
 const tag: typeof document.createElement = (s: string) => document.createElement(s)

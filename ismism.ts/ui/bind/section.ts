@@ -23,7 +23,7 @@ export function id(
 	b.nam.innerText = d.nam
 	b.idnam.href = `#${p}${d._id}`
 	b.mta.innerText = `城市：${d.adm1} ${d.adm2}`
-		+ `\n注册：${utc_dt(d.utc, "medium")}`
+		+ `\n注册：${utc_dt(d.utc, "short")}`
 	b.msg.innerText = d.msg
 	return b.bind
 }
