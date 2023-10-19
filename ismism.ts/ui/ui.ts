@@ -1,7 +1,7 @@
 const [index, template, style, bind] = await Promise.all([
 	Deno.readTextFile("./ui/index/index.html"),
 	Deno.readTextFile("./ui/index/template.html"),
-	"",
+	Deno.readTextFile("./ui/index/style.css"),
 	Deno.readTextFile("./ui/bind/bind.js"),
 ])
 const ui = index

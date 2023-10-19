@@ -20,10 +20,9 @@ window.addEventListener("hashchange", async () => {
 	else alert(`无效 id ${h}`)
 })
 
-
 export function load(
 ) {
 	console.log("ismism-20231015")
-	console.log(`\n主义主义开发组！成员招募中！\n\n发送自我介绍至 万大可\n \n`)
+	console.log(`\n主义主义开发组！成员招募中！\n\n发送自我介绍至 万大可\n`)
 	window.dispatchEvent(new Event("hashchange"))
 }
