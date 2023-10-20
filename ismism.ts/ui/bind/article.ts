@@ -1,14 +1,18 @@
 import type { Usr } from "../../src/eid/typ.ts"
-import { QueRet } from "../../src/pra/que.ts"
+import type { QueRet } from "../../src/pra/que.ts"
 import { que } from "./fetch.ts"
-import { id, idn, sms } from "./section.ts"
+import { nav } from "./nav.ts"
+import { btn_usr, id, idn, sms } from "./section.ts"
 
 export async function usr(
 	usr: Usr["_id"]
 ): Promise<HTMLElement> {
 	const t = document.createElement("article")
 	const u = await que<QueRet["usr"]>({ que: "usr", usr })
-	t.append(u ? id(u) : idn(`${usr}`, "无效用户", `#${usr} 是无效用户`))
+	if (u) {
+		t.append(id(u))
+		if (nav.pas && nav.pas.usr == usr) t.append(btn_usr(u))
+	} else t.append(idn(`${usr}`, "无效用户", `#${usr} 是无效用户`))
 	return t
 }
 

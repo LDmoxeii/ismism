@@ -7,6 +7,9 @@ const section = {
 	id: { idnam: tag("a"), id: tag("code"), nam: tag("span"), mta: tag("p"), msg: tag("p") },
 	sms: { nbr: tag("input"), sms: tag("button"), hint: tag("p") },
 	code: { code: tag("input"), send: tag("button") },
+	put_id: { nam: tag("input"), adm1: tag("select"), adm2: tag("select"), msg: tag("textarea") },
+	btn_usr: { put: tag("button"), clr: tag("button") },
+	btn_put: { del: tag("button"), put: tag("button"), ret: tag("button") },
 }
 export type Section = typeof section
 

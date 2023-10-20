@@ -10,6 +10,7 @@ export const nav: {
 } = {
 	hash: "",
 }
+export const utc_rf = 750
 
 export async function navpas(
 	p?: Pas | null
@@ -40,8 +41,8 @@ window.addEventListener("hashchange", async () => {
 export function hash(
 	h = ""
 ) {
-	if (h == "" || location.href == h) window.dispatchEvent(new Event("hashchange"))
-	else location.href = h
+	if (h == "" || location.hash == h) window.dispatchEvent(new Event("hashchange"))
+	else location.hash = h
 }
 
 export async function load(

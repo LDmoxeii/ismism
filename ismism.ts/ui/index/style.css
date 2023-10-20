@@ -164,8 +164,14 @@ article {
 
 section {
 	display: block;
-	margin: 0;
+	margin: 8px 0;
 	padding: 0;
+}
+
+section>label {
+	display: block;
+	width: 100%;
+	color: var(--gray);
 }
 
 section>input {
@@ -185,9 +191,27 @@ section>input:focus::placeholder {
 	color: transparent;
 }
 
+section>textarea {
+	box-sizing: border-box;
+	display: block;
+	margin: 0;
+	padding: 1ch;
+	margin: 6px 0;
+	width: 100%;
+	font-size: 1em;
+	overflow: hidden;
+	resize: none;
+	outline: none;
+	border: 1px dotted var(--black);
+}
+
+section>textarea:focus {
+	border: 1px solid var(--black);
+}
+
 section>input:read-only,
 section>textarea:read-only {
-	background: var(--grayl);
+	background: var(--lgray);
 	border: none !important;
 }
 
@@ -199,6 +223,11 @@ section.flex {
 	gap: 6px;
 }
 
+section.flex>label {
+	transform: translateY(0.75ch);
+}
+
+section.flex>label,
 section.flex>input,
 section.flex>button,
 section.flex>select {

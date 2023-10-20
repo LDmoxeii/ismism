@@ -3,6 +3,10 @@ import { Pas, Psg, pas, psg } from "./pas.ts"
 import { Pre, pre } from "./pre.ts"
 import { Put, put } from "./put.ts"
 
+export type { Pre } from "./pre.ts"
+export type { Put } from "./put.ts"
+export type { Psg } from "./pas.ts"
+
 export type Pos = Psg | Pre | Put
 
 export type PasPos = {
