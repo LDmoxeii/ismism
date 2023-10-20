@@ -5,6 +5,8 @@ const tag: typeof document.createElement = (s: string) => document.createElement
 
 const section = {
 	id: { idnam: tag("a"), id: tag("code"), nam: tag("span"), mta: tag("p"), msg: tag("p") },
+	sms: { nbr: tag("input"), sms: tag("button"), hint: tag("p") },
+	code: { code: tag("input"), send: tag("button") },
 }
 export type Section = typeof section
 

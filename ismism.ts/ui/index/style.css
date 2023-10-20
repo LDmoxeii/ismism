@@ -168,6 +168,75 @@ section {
 	padding: 0;
 }
 
+section>input {
+	padding: 1ch;
+	max-width: 36ch;
+	border: none;
+	border-bottom: 1px dotted var(--black);
+	text-align: center;
+}
+
+section>input:focus {
+	outline: none;
+	border-bottom: 1px solid var(--black);
+}
+
+section>input:focus::placeholder {
+	color: transparent;
+}
+
+section>input:read-only,
+section>textarea:read-only {
+	background: var(--grayl);
+	border: none !important;
+}
+
+section.flex {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 6px;
+}
+
+section.flex>input,
+section.flex>button,
+section.flex>select {
+	box-sizing: border-box;
+	display: block;
+	justify-content: center;
+	align-items: center;
+	font-size: 1em;
+}
+
+section.flex>button {
+	flex: 1 1 10ch;
+	max-width: 24ch;
+	padding: 1ch;
+	background: var(--grayd);
+	color: var(--grayl);
+	border-radius: 8px;
+}
+
+section.flex>button:disabled {
+	background: var(--grayl);
+	color: var(--grayd);
+}
+
+@media (hover: hover) {
+	section.flex>button:enabled:hover {
+		opacity: 0.65;
+	}
+}
+
+section.flex>input {
+	flex: 10 1 10ch;
+}
+
+section.flex>select {
+	flex: 0 0 12ch;
+}
+
 p {
 	display: block;
 	margin: 1ch 0;
@@ -177,4 +246,24 @@ p.mta {
 	padding: 1ch;
 	background: var(--grayl);
 	color: var(--gray);
+}
+
+p.hint {
+	width: 100%;
+	text-align: center;
+	white-space: pre-line;
+	color: var(--gray);
+}
+
+button {
+	font-size: 1em;
+	white-space: nowrap;
+	color: inherit;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+button:focus {
+	outline: none;
 }
