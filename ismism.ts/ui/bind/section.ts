@@ -3,7 +3,7 @@ import type { PsgRet } from "../../src/pra/pas.ts"
 import { is_nbr, lim_msg_id } from "../../src/eid/is.ts"
 import { utc_dt } from "../../src/ont/utc.ts"
 import { pos } from "./fetch.ts"
-import { bind, main } from "./template.ts"
+import { Bind, article, section } from "./template.ts"
 import { hash, nav, navpas, utc_rf } from "./nav.ts"
 import { QueRet } from "../../src/pra/que.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
@@ -14,8 +14,8 @@ export function idn(
 	id: string,
 	nam: string,
 	mta?: string,
-) {
-	const b = bind("id")
+): Bind {
+	const b = section("id")
 	b.id.innerText = id
 	b.nam.innerText = nam
 	b.idnam.href = ""
@@ -26,8 +26,8 @@ export function idn(
 export function id(
 	d: Id,
 	p: "" | "s" | "a" = "",
-): DocumentFragment {
-	const b = bind("id")
+): Bind {
+	const b = section("id")
 	b.id.innerText = `${p}${d._id}`
 	b.nam.innerText = d.nam
 	b.idnam.href = `#${p}${d._id}`
@@ -38,8 +38,8 @@ export function id(
 }
 
 export function sms(
-): DocumentFragment {
-	const [s, c] = [bind("sms"), bind("code")]
+): Bind {
+	const [s, c] = [section("sms"), section("code")]
 	const sms = async () => {
 		if (!is_nbr(s.nbr.value)) return alert("无效手机号")
 		s.nbr.readOnly = s.sms.disabled = true
@@ -72,8 +72,8 @@ export function sms(
 
 export function put_id(
 	d: Id,
-): { bind: DocumentFragment, val: () => Pick<Id, "nam" | "adm1" | "adm2" | "msg"> } {
-	const b = bind("put_id")
+): { bind: Bind, val: () => Pick<Id, "nam" | "adm1" | "adm2" | "msg"> } {
+	const b = section("put_id")
 	b.nam.value = d.nam
 	seladm(b, d)
 	txt(b.msg, "简介", lim_msg_id, d.msg)
@@ -88,14 +88,12 @@ export function put_id(
 
 export function btn_usr(
 	d: NonNullable<QueRet["usr"]>,
-): DocumentFragment {
-	const b = bind("btn_usr")
+): Bind {
+	const b = section("btn_usr")
 	b.put.addEventListener("click", () => {
-		main.innerHTML = ""
-		const t = main.appendChild(document.createElement("article"))
 		const put = put_id(d)
 		const btn = btn_put(`#${d._id}`, () => ({ put: "usr", usr: d._id, ...put.val() }))
-		t.append(put.bind, btn)
+		article(put.bind, btn)
 	})
 	b.clr.addEventListener("click", async () => {
 		const usr = nav.pas?.usr
@@ -110,8 +108,8 @@ export function btn_put(
 	h: string,
 	put: () => Put | null,
 	del?: Put,
-): DocumentFragment {
-	const b = bind("btn_put")
+): Bind {
+	const b = section("btn_put")
 	if (del) b.del.addEventListener("click", async () => {
 		if (!is_put(nav.pas!, del) || !confirm("确认删除？")) return
 		b.del.disabled = b.put.disabled = b.ret.disabled = true

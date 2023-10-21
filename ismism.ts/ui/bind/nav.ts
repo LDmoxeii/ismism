@@ -2,39 +2,29 @@
 import type { PsgRet, Pas } from "../../src/pra/pas.ts"
 import { psg, usr } from "./article.ts"
 import { pos } from "./fetch.ts"
-import { pas, main } from "./template.ts"
+import { pas } from "./template.ts"
 
 export const nav: {
 	pas?: Pas | null,
-	hash: string,
-} = {
-	hash: "",
-}
+} = {}
 export const utc_rf = 750
 
 export async function navpas(
 	p?: Pas | null
 ) {
 	nav.pas = p == undefined ? await pos<PsgRet["pas"]>({ psg: "pas" }) : p
-	if (nav.pas) {
-		pas.innerText = nav.pas.nam
-		pas.href = `#${nav.pas.usr}`
-	} else {
-		pas.innerText = "用户登录"
-		pas.href = "#psg"
-	}
+	pas(nav.pas)
 }
 
-window.addEventListener("hashchange", async () => {
-	main.innerHTML = ""
-	const h = nav.hash = decodeURI(location.hash).substring(1)
-	if (h == "") main.append(await usr(728))
-	else if (/^\d+$/.test(h)) main.append(await usr(parseInt(h)))
-	else if (h == "soc") main.append(await usr(0))
-	else if (/^s\d+$/.test(h)) main.append(await usr(parseInt(h.substring(1))))
-	else if (h == "agd") main.append(await usr(1))
-	else if (/^a\d+$/.test(h)) main.append(await usr(parseInt(h.substring(1))))
-	else if (h == "psg") main.append(psg())
+window.addEventListener("hashchange", () => {
+	const h = decodeURI(location.hash).substring(1)
+	if (h == "") usr({ usr: 728 })
+	else if (/^\d+$/.test(h)) usr({ usr: parseInt(h) })
+	else if (h == "soc") usr({ usr: 0 })
+	else if (/^s\d+$/.test(h)) usr({ usr: parseInt(h.substring(1)) })
+	else if (h == "agd") usr({ usr: 1 })
+	else if (/^a\d+$/.test(h)) usr({ usr: parseInt(h.substring(1)) })
+	else if (h == "psg") psg()
 	else alert(`无效 id ${h}`)
 })
 

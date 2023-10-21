@@ -1,9 +1,21 @@
-export const pas = document.getElementById("pas")! as HTMLAnchorElement
-export const main = document.getElementById("main")! as HTMLDivElement
+import type { Pas } from "../../src/pra/pas.ts"
+
+const pas_a = document.getElementById("pas")! as HTMLAnchorElement
+
+export function pas(
+	p?: Pas | null
+) {
+	if (p) {
+		pas_a.innerText = p.nam
+		pas_a.href = `#${p.usr}`
+	} else {
+		pas_a.innerText = "用户登录"
+		pas_a.href = "#psg"
+	}
+}
 
 const tag: typeof document.createElement = (s: string) => document.createElement(s)
-
-const section = {
+const template = {
 	id: { idnam: tag("a"), id: tag("code"), nam: tag("span"), mta: tag("p"), msg: tag("p") },
 	sms: { nbr: tag("input"), sms: tag("button"), hint: tag("p") },
 	code: { code: tag("input"), send: tag("button") },
@@ -11,22 +23,32 @@ const section = {
 	btn_usr: { put: tag("button"), clr: tag("button") },
 	btn_put: { del: tag("button"), put: tag("button"), ret: tag("button") },
 }
-export type Section = typeof section
+type Template = typeof template
 
-export type Bind<
-	T extends keyof Section
-> = {
-	bind: DocumentFragment
-} & Section[T]
+export type Bind = DocumentFragment
+export type Section<
+	T extends keyof Template
+> = { bind: Bind } & Template[T]
 
-export function bind<
-	T extends keyof Section
+export function section<
+	T extends keyof Template
 >(
 	tid: T
-): Bind<T> {
+): Section<T> {
 	const temp = document.getElementById(tid) as HTMLTemplateElement
 	const t = temp.content.cloneNode(true) as DocumentFragment
-	return Object.fromEntries([["bind", t], ...Object.keys(section[tid]).map(c =>
+	return Object.fromEntries([["bind", t], ...Object.keys(template[tid]).map(c =>
 		[c, t.querySelector(`.${c}`)])
-	]) as Bind<T>
+	]) as Section<T>
+}
+
+const main = document.getElementById("main")! as HTMLDivElement
+
+export function article(
+	...bs: Bind[]
+): HTMLElement {
+	main.innerHTML = ""
+	const a = main.appendChild(document.createElement("article"))
+	if (bs.length > 0) a.append(...bs)
+	return a
 }
