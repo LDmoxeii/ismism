@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window-prefix
 import type { PsgRet, Pas } from "../../src/pra/pos.ts"
-import { psg, usr } from "./article.ts"
+import { psg, soc, usr } from "./article.ts"
 import { pos } from "./fetch.ts"
 import { pas } from "./template.ts"
 
@@ -20,8 +20,8 @@ window.addEventListener("hashchange", () => {
 	const h = decodeURI(location.hash).substring(1)
 	if (h == "") usr({ usr: 728 })
 	else if (/^\d+$/.test(h)) usr({ usr: parseInt(h) })
-	else if (h == "soc") usr({ usr: 0 })
-	else if (/^s\d+$/.test(h)) usr({ usr: parseInt(h.substring(1)) })
+	else if (h == "soc") soc(1)
+	else if (/^s\d+$/.test(h)) soc(parseInt(h.substring(1)))
 	else if (h == "agd") usr({ usr: 1 })
 	else if (/^a\d+$/.test(h)) usr({ usr: parseInt(h.substring(1)) })
 	else if (h == "psg") psg()

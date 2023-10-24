@@ -24,7 +24,7 @@ const template = {
 	put_t: { txt: tag("textarea") },
 	btn_usr: { put: tag("button"), clr: tag("button") },
 	btn_pos: { del: tag("button"), put: tag("button"), ret: tag("button") },
-	btn_aut: { aut: tag("button"), usr: tag("button"), soc: tag("button"), agd: tag("button") },
+	btn_aut: { aut: tag("button"), usr: tag("button"), soc: tag("button") },
 }
 type Template = typeof template
 

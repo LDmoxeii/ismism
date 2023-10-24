@@ -115,8 +115,11 @@ export function btn_aut(
 		const btn = btn_pos(`#${p.usr}`, () => ({ pre: "usr", nbr: nbr.val(), ...adm.val() }))
 		article(adm.bind, nbr.bind, btn)
 	}); else b.usr.remove()
-	if (is_aut(p.aut.aut, p.usr)) b.soc.remove()
-	if (p.sec.length == 0) b.agd.remove()
+	if (is_aut(p.aut.aut, p.usr)) b.soc.addEventListener("click", () => {
+		const [adm, nam] = [put_adm(), put_s("名称：（2-16个中文字符）")]
+		const btn = btn_pos(`#${p.usr}`, () => ({ pre: "soc", nam: nam.val(), ...adm.val() }))
+		article(adm.bind, nam.bind, btn)
+	}); else b.soc.remove()
 	return b.bind
 }
 
