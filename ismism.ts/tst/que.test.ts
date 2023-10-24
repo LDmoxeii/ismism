@@ -49,6 +49,8 @@ Deno.test("que", async () => {
 		soc_u(1, { $set: { sec: [1, 2] } }),
 		msg_u(coll.wsl, 2, { $set: { pin: true } })
 	])
+	assertEquals({ adm: [["江苏", [1]]], soc: [[1, "俱乐部"]] }, await que(`que="adm1"`) as QueRet["adm1"])
+	assertEquals({ adm: [["苏州", [1]]], soc: [[1, "俱乐部"]] }, await que(`que="adm2"`) as QueRet["adm1"])
 	assertEquals([null, null, null, null], await Promise.all(["", "abc=", `que="usr"&usr=0`, `que="usr"&nam="2"`].map(que)))
 	assertEquals(usr, { ...await que(`que="usr"&usr=2`), utc: now })
 	assertEquals(usr, { ...await que(`que="usr"&nam="用户"`), utc: now })

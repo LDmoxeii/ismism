@@ -1,11 +1,21 @@
 import { agd_r } from "../eid/agd.ts"
 import { coll } from "../eid/db.ts"
-import { id, idnam } from "../eid/id.ts"
+import { id, idadm, idnam } from "../eid/id.ts"
 import { msg_r, msg_f } from "../eid/msg.ts"
 import { cdt_a, rec_f, rec_s } from "../eid/rec.ts"
 import { soc_r } from "../eid/soc.ts"
 import { Agd, Msg, Rec, Soc, Usr } from "../eid/typ.ts"
 import { usr_r } from "../eid/usr.ts"
+
+export async function adm<
+	A extends "adm1" | "adm2"
+>(
+	adm: A,
+) {
+	const a = await idadm(adm)
+	const soc = await idnam(coll.soc, a.flatMap(a => a[1]))
+	return { adm: a, soc }
+}
 
 export async function usr(
 	f: Pick<Usr, "_id"> | Pick<Usr, "nam">,

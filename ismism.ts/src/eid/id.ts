@@ -1,5 +1,5 @@
 import type { Id } from "./typ.ts"
-import type { Coll, DocC, DocD, DocR, DocU, Fltr, Proj, Updt } from "./db.ts"
+import { coll, Coll, DocC, DocD, DocR, DocU, Fltr, Proj, Updt } from "./db.ts"
 import { is_id, is_msg, is_nam, is_utc, lim_msg_id } from "./is.ts"
 import { is_adm } from "../ont/adm.ts"
 
@@ -98,19 +98,15 @@ export async function idnam<
 	return d.map(d => [d._id, d.nam])
 }
 
-export async function nid<
-	T extends Id,
-	A extends "adm1" | "adm2",
+export async function idadm<
+	A extends "adm1" | "adm2"
 >(
-	c: Coll<T>,
-	a: A,
-): Promise<[T[A], number][]> {
-	const d = await c.aggregate<{
-		_id: T[A], nid: number
+	adm: A,
+): Promise<[Id[A], Id["_id"][]][]> {
+	const d = await coll.soc.aggregate<{
+		_id: Id[A], soc: Id["_id"][]
 	}>([{
-		$group: { _id: `$${a}`, nid: { $count: {} } },
-	}, {
-		$sort: { nid: -1 },
+		$group: { _id: `$${adm}`, soc: { $push: "$_id" } },
 	}]).toArray()
-	return d.map(d => [d._id, d.nid])
+	return d.sort((a, b) => b.soc.length - a.soc.length).map(a => [a._id, a.soc])
 }
