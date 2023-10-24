@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-window-prefix
-import type { PsgRet, Pas } from "../../src/pra/pas.ts"
+import type { PsgRet, Pas } from "../../src/pra/pos.ts"
 import { psg, usr } from "./article.ts"
 import { pos } from "./fetch.ts"
 import { pas } from "./template.ts"

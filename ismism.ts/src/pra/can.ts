@@ -1,14 +1,12 @@
 import type { Soc } from "../eid/typ.ts"
-import type { Pas, Psg } from "./pas.ts"
-import type { Pre } from "./pre.ts"
-import type { Put } from "./put.ts"
+import type { Pos, Pre, Put, Psg, Pas } from "./pos.ts"
 import { is_aut, is_cdt, is_id, is_idl, is_lim, is_msg, is_nam, is_nbr, is_rec, is_recid, lim_aut, lim_code, lim_msg, lim_msg_id, lim_sec } from "../eid/is.ts"
 import { is_adm } from "../ont/adm.ts"
 
 // deno-lint-ignore no-explicit-any
 export type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
 
-function is_in(
+export function is_in(
 	sl: Soc["_id"][],
 	s?: Soc["_id"],
 ): boolean {
@@ -79,4 +77,14 @@ export function is_put(
 		case "aut": return is_in(pas.aut.sup, pas.usr)
 			&& is_idl(p.aut, lim_aut.aut) && is_idl(p.wsl, lim_aut.wsl) && is_idl(p.lit, lim_aut.lit)
 	}
+}
+
+export function is_pos(
+	pas: Pas,
+	p: Pos,
+): boolean {
+	if ("psg" in p) return is_psg(p)
+	else if ("pre" in p) return is_pre(pas, p)
+	else if ("put" in p) return is_put(pas, p)
+	return false
 }

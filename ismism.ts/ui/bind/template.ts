@@ -1,4 +1,4 @@
-import type { Pas } from "../../src/pra/pas.ts"
+import type { Pas } from "../../src/pra/pos.ts"
 
 const pas_a = document.getElementById("pas")! as HTMLAnchorElement
 
@@ -19,9 +19,11 @@ const template = {
 	id: { idnam: tag("a"), id: tag("code"), nam: tag("span"), mta: tag("p"), msg: tag("p") },
 	sms: { nbr: tag("input"), sms: tag("button"), hint: tag("p") },
 	code: { code: tag("input"), send: tag("button") },
+	put_s: { put: tag("input") },
 	put_id: { nam: tag("input"), adm1: tag("select"), adm2: tag("select"), msg: tag("textarea") },
 	btn_usr: { put: tag("button"), clr: tag("button") },
-	btn_put: { del: tag("button"), put: tag("button"), ret: tag("button") },
+	btn_pos: { del: tag("button"), put: tag("button"), ret: tag("button") },
+	btn_aut: { aut: tag("button"), usr: tag("button"), soc: tag("button"), agd: tag("button") },
 }
 type Template = typeof template
 

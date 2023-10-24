@@ -1,14 +1,13 @@
 import type { Id } from "../../src/eid/typ.ts"
-import type { PsgRet } from "../../src/pra/pas.ts"
-import { is_nbr, lim_msg_id } from "../../src/eid/is.ts"
+import type { Pos, Put, PsgRet, Pas } from "../../src/pra/pos.ts"
+import type { QueRet } from "../../src/pra/que.ts"
+import { is_aut, is_id, is_nbr, lim_aut, lim_msg_id } from "../../src/eid/is.ts"
 import { utc_dt } from "../../src/ont/utc.ts"
 import { pos } from "./fetch.ts"
 import { Bind, article, section } from "./template.ts"
 import { hash, nav, navpas, utc_rf } from "./nav.ts"
-import { QueRet } from "../../src/pra/que.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
-import { Put } from "../../src/pra/pos.ts"
-import { is_put } from "../../src/pra/can.ts"
+import { is_in, is_pos, is_put } from "../../src/pra/can.ts"
 
 export function idn(
 	id: string,
@@ -24,15 +23,15 @@ export function idn(
 }
 
 export function id(
-	d: Id,
-	p: "" | "s" | "a" = "",
+	id: string,
+	d: QueRet["usr" | "soc" | "agd"],
 ): Bind {
+	if (!d) return idn(id, "无效链接", `#${id} 是无效 id`)
 	const b = section("id")
-	b.id.innerText = `${p}${d._id}`
+	b.id.innerText = id
 	b.nam.innerText = d.nam
-	b.idnam.href = `#${p}${d._id}`
-	b.mta.innerText = `城市：${d.adm1} ${d.adm2}`
-		+ `\n注册：${utc_dt(d.utc, "short")}`
+	b.idnam.href = `#${id}`
+	b.mta.innerText = `城市：${d.adm1} ${d.adm2}\n注册：${utc_dt(d.utc, "short")}`
 	b.msg.innerText = d.msg
 	return b.bind
 }
@@ -70,6 +69,16 @@ export function sms(
 	return s.bind
 }
 
+export function put_s(
+	nam: string,
+	s?: string,
+): { bind: Bind, val: () => string } {
+	const b = section("put_s")
+	label(b.put, nam)
+	if (s) b.put.value = s
+	return { bind: b.bind, val: () => b.put.value }
+}
+
 export function put_id(
 	d: Id,
 ): { bind: Bind, val: () => Pick<Id, "nam" | "adm1" | "adm2" | "msg"> } {
@@ -92,7 +101,7 @@ export function btn_usr(
 	const b = section("btn_usr")
 	b.put.addEventListener("click", () => {
 		const put = put_id(d)
-		const btn = btn_put(`#${d._id}`, () => ({ put: "usr", usr: d._id, ...put.val() }))
+		const btn = btn_pos(`#${d._id}`, () => ({ put: "usr", usr: d._id, ...put.val() }))
 		article(put.bind, btn)
 	})
 	b.clr.addEventListener("click", async () => {
@@ -104,12 +113,40 @@ export function btn_usr(
 	return b.bind
 }
 
-export function btn_put(
+export function btn_aut(
+	p: Pas,
+): Bind {
+	const b = section("btn_aut")
+	if (is_aut(p.aut.sup, p.usr)) b.aut.addEventListener("click", () => {
+		const [aut, wsl, lit] = [
+			put_s(`管理员：（最多${lim_aut.aut}名）`, p.aut.aut.join(",")),
+			put_s(`法律援助编辑：（最多${lim_aut.wsl}名）`, p.aut.wsl.join(",")),
+			put_s(`理论学习编辑：（最多${lim_aut.lit}名）`, p.aut.lit.join(",")),
+		]
+		const btn = btn_pos(`#${p.usr}`, () => ({
+			put: "aut",
+			aut: aut.val().split(",").map(v => parseInt(v)).filter(is_id),
+			wsl: wsl.val().split(",").map(v => parseInt(v)).filter(is_id),
+			lit: lit.val().split(",").map(v => parseInt(v)).filter(is_id),
+		}))
+		article(aut.bind, wsl.bind, lit.bind, btn)
+	}); else b.aut.remove()
+	if (is_aut(p.aut, p.usr) || is_in(p.sec)) b.usr.addEventListener("click", () => {
+		const nbr = put_s("激活手机号：")
+		const btn = btn_pos(`#${p.usr}`, () => ({ pre: "usr", nbr: nbr.val(), adm1: adm1_def, adm2: adm2_def }))
+		article(nbr.bind, btn)
+	}); else b.usr.remove()
+	if (is_aut(p.aut.aut, p.usr)) b.soc.remove()
+	if (p.sec.length == 0) b.agd.remove()
+	return b.bind
+}
+
+export function btn_pos(
 	h: string,
-	put: () => Put | null,
+	p: () => Pos | null,
 	del?: Put,
 ): Bind {
-	const b = section("btn_put")
+	const b = section("btn_pos")
 	if (del) b.del.addEventListener("click", async () => {
 		if (!is_put(nav.pas!, del) || !confirm("确认删除？")) return
 		b.del.disabled = b.put.disabled = b.ret.disabled = true
@@ -119,8 +156,8 @@ export function btn_put(
 	}); else b.del.remove()
 	b.put.addEventListener("click", async () => {
 		b.del.disabled = b.put.disabled = b.ret.disabled = true
-		const p = put()
-		if (p && is_put(nav.pas!, p) && await pos(p)) return setTimeout(() => hash(h), utc_rf)
+		const d = p()
+		if (d && is_pos(nav.pas!, d) && await pos(d) != null) return setTimeout(() => hash(h), utc_rf)
 		alert("无效输入")
 		b.del.disabled = b.put.disabled = b.ret.disabled = false
 	})
