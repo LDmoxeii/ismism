@@ -1,4 +1,3 @@
-import type { Id } from "../../src/eid/typ.ts"
 import type { Pos, Put, PsgRet, Pas } from "../../src/pra/pos.ts"
 import type { QueRet } from "../../src/pra/que.ts"
 import { is_aut, is_id, is_nbr, lim_aut, lim_msg_id } from "../../src/eid/is.ts"
@@ -69,40 +68,20 @@ export function sms(
 	return s.bind
 }
 
-export function put_s(
-	nam: string,
-	s?: string,
-): { bind: Bind, val: () => string } {
-	const b = section("put_s")
-	label(b.put, nam)
-	if (s) b.put.value = s
-	return { bind: b.bind, val: () => b.put.value }
-}
-
-export function put_id(
-	d: Id,
-): { bind: Bind, val: () => Pick<Id, "nam" | "adm1" | "adm2" | "msg"> } {
-	const b = section("put_id")
-	b.nam.value = d.nam
-	seladm(b, d)
-	txt(b.msg, "简介", lim_msg_id, d.msg)
-	return {
-		bind: b.bind, val: () => ({
-			nam: b.nam.value,
-			adm1: b.adm1.value, adm2: b.adm2.value,
-			msg: b.msg.value,
-		})
-	}
-}
-
 export function btn_usr(
 	d: NonNullable<QueRet["usr"]>,
 ): Bind {
 	const b = section("btn_usr")
 	b.put.addEventListener("click", () => {
-		const put = put_id(d)
-		const btn = btn_pos(`#${d._id}`, () => ({ put: "usr", usr: d._id, ...put.val() }))
-		article(put.bind, btn)
+		const [nam, adm, msg] = [
+			put_s("名称：（2-16个中文字符）", d.nam),
+			put_adm({ adm1: d.adm1, adm2: d.adm2 }),
+			put_t("简介：", d.msg, lim_msg_id),
+		]
+		const btn = btn_pos(`#${d._id}`, () => ({
+			put: "usr", usr: d._id, nam: nam.val(), ...adm.val(), msg: msg.val(),
+		}))
+		article(nam.bind, adm.bind, msg.bind, btn)
 	})
 	b.clr.addEventListener("click", async () => {
 		const usr = nav.pas?.usr
@@ -132,9 +111,9 @@ export function btn_aut(
 		article(aut.bind, wsl.bind, lit.bind, btn)
 	}); else b.aut.remove()
 	if (is_aut(p.aut, p.usr) || is_in(p.sec)) b.usr.addEventListener("click", () => {
-		const nbr = put_s("激活手机号：")
-		const btn = btn_pos(`#${p.usr}`, () => ({ pre: "usr", nbr: nbr.val(), adm1: adm1_def, adm2: adm2_def }))
-		article(nbr.bind, btn)
+		const [adm, nbr] = [put_adm(), put_s("激活手机号：")]
+		const btn = btn_pos(`#${p.usr}`, () => ({ pre: "usr", nbr: nbr.val(), ...adm.val() }))
+		article(adm.bind, nbr.bind, btn)
 	}); else b.usr.remove()
 	if (is_aut(p.aut.aut, p.usr)) b.soc.remove()
 	if (p.sec.length == 0) b.agd.remove()
@@ -165,31 +144,52 @@ export function btn_pos(
 	return b.bind
 }
 
+function put_s(
+	l: string,
+	s = "",
+): { bind: Bind, val: () => string } {
+	const b = section("put_s")
+	label(b.str, l)
+	if (s) b.str.value = s
+	return { bind: b.bind, val: () => b.str.value }
+}
+
+function put_adm(
+	d = { adm1: adm1_def, adm2: adm2_def },
+): { bind: Bind, val: () => ({ adm1: string, adm2: string }) } {
+	const b = section("put_adm")
+	selopt(b.adm1, adm.keys())
+	b.adm1.value = d.adm1
+	selopt(b.adm2, adm.get(d.adm1)!)
+	b.adm2.value = d.adm2
+	b.adm1.addEventListener("change", () => selopt(b.adm2, adm.get(b.adm1.value)!))
+	return { bind: b.bind, val: () => ({ adm1: b.adm1.value, adm2: b.adm2.value }) }
+}
+
+function put_t(
+	l: string,
+	t: string,
+	lim: number,
+): { bind: Bind, val: () => string } {
+	const b = section("put_t")
+	b.txt.maxLength = lim
+	b.txt.value = t
+	label(b.txt, `${l}：（${b.txt.value.length}/${b.txt.maxLength} 个字符）`)
+	b.txt.addEventListener("input", () => {
+		label(b.txt, `${l}：（${b.txt.value.length}/${b.txt.maxLength} 个字符）`)
+		b.txt.style.height = "auto"
+		b.txt.style.height = `${b.txt.scrollHeight}px`
+	})
+	if (t) setTimeout(() => b.txt.dispatchEvent(new Event("input")), 50)
+	return { bind: b.bind, val: () => b.txt.value }
+}
+
 function label(
 	el: HTMLElement | SVGSVGElement,
 	s: string,
-	append = false
 ) {
 	const l = el.previousElementSibling as HTMLLabelElement
-	if (append) l.innerText += s
-	else l.innerText = s
-}
-
-function txt(
-	t: HTMLTextAreaElement,
-	n: string,
-	lim: number,
-	s?: string,
-) {
-	t.maxLength = lim
-	if (s) t.value = s
-	label(t, `${n}：（${t.value.length}/${t.maxLength} 个字符）`)
-	t.addEventListener("input", () => {
-		label(t, `${n}：（${t.value.length}/${t.maxLength} 个字符）`)
-		t.style.height = "auto"
-		t.style.height = `${t.scrollHeight}px`
-	})
-	if (s) setTimeout(() => t.dispatchEvent(new Event("input")), 50)
+	l.innerText = s
 }
 
 function selopt(
@@ -202,15 +202,4 @@ function selopt(
 		t.text = op
 		sel.add(t)
 	}
-}
-
-function seladm(
-	t: { adm1: HTMLSelectElement, adm2: HTMLSelectElement },
-	d = { adm1: adm1_def, adm2: adm2_def },
-) {
-	selopt(t.adm1, adm.keys())
-	t.adm1.value = d.adm1
-	selopt(t.adm2, adm.get(d.adm1)!)
-	t.adm2.value = d.adm2
-	t.adm1.addEventListener("change", () => selopt(t.adm2, adm.get(t.adm1.value)!))
 }
