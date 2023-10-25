@@ -18,6 +18,7 @@ export function idn(
 	b.nam.innerText = nam
 	b.idnam.href = ""
 	if (mta) b.mta.innerText = mta
+	else b.mta.remove()
 	return b.bind
 }
 
@@ -32,6 +33,28 @@ export function id(
 	b.idnam.href = `#${id}`
 	b.mta.innerText = `城市：${d.adm1} ${d.adm2}\n注册：${utc_dt(d.utc, "short")}`
 	b.msg.innerText = d.msg
+	return b.bind
+}
+
+export function lp(
+	l: string,
+	hf: [string, string][] | [string, () => void][]
+): Bind {
+	const b = section("lp")
+	label(b.lp, l)
+	b.lp.append(...hf.map(([s, h]) => {
+		if (typeof h == "string") {
+			const a = document.createElement("a")
+			a.innerText = s
+			a.href = h
+			return a
+		} else {
+			const btn = document.createElement("button")
+			btn.innerText = s
+			btn.addEventListener("click", h)
+			return btn
+		}
+	}))
 	return b.bind
 }
 

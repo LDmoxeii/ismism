@@ -81,6 +81,27 @@ a.idnam>span.nam {
 	font-weight: bold;
 }
 
+button {
+	font-size: 1em;
+	white-space: nowrap;
+	color: inherit;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+button:focus {
+	outline: none;
+}
+
+@media (hover: hover) {
+
+	a:hover,
+	button:hover {
+		color: var(--amber) !important;
+	}
+}
+
 nav {
 	overflow: scroll;
 	scrollbar-width: none;
@@ -284,15 +305,15 @@ p.hint {
 	color: var(--gray);
 }
 
-button {
-	font-size: 1em;
-	white-space: nowrap;
-	color: inherit;
-	background: none;
-	border: none;
-	cursor: pointer;
+p.lp button {
+	padding: 0;
 }
 
-button:focus {
-	outline: none;
+p.lp button:not(:first-child):before {
+	content: "、";
+	color: var(--gray);
+}
+
+p.lp a {
+	display: block;
 }

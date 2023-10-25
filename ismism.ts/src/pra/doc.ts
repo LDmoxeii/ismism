@@ -7,14 +7,14 @@ import { soc_r } from "../eid/soc.ts"
 import { Agd, Msg, Rec, Soc, Usr } from "../eid/typ.ts"
 import { usr_r } from "../eid/usr.ts"
 
-export async function adm<
-	A extends "adm1" | "adm2"
->(
-	adm: A,
+export async function adm(
 ) {
-	const a = await idadm(adm)
-	const soc = await idnam(coll.soc, a.flatMap(a => a[1]))
-	return { adm: a, soc }
+	const [adm1, adm2] = await Promise.all([idadm("adm1"), idadm("adm2")])
+	const soc = await idnam(coll.soc, adm1.flatMap(a => a[1]))
+	adm1.forEach(a => a[1].sort())
+	adm2.forEach(a => a[1].sort())
+	soc.sort((a, b) => a[0] - b[0])
+	return { adm1, adm2, soc }
 }
 
 export async function usr(
