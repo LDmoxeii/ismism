@@ -164,11 +164,12 @@ nav li.active em {
 
 article {
 	position: relative;
-	animation: scale 0.4s;
-	margin: 16px;
+	max-width: 1080px;
+	margin: 16px auto;
 	padding: 8px 16px;
 	background: var(--white);
 	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+	animation: scale 0.4s;
 }
 
 @keyframes scale {
@@ -316,4 +317,27 @@ p.lp button:not(:first-child):before {
 
 p.lp a {
 	display: block;
+}
+
+p.lp a.sec,
+p.lp a.cdt,
+p.lp a.ern {
+	display: inline-block;
+	margin-right: 4px;
+	margin-bottom: 4px;
+	padding: 0.4ch 1ch;
+	border-radius: 4px;
+	color: var(--grayl);
+}
+
+p.lp a.sec {
+	background: var(--black);
+}
+
+p.lp a.cdt {
+	background: var(--purple);
+}
+
+p.lp a.ern {
+	background: var(--grayd);
 }

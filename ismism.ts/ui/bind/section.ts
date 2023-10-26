@@ -38,15 +38,16 @@ export function id(
 
 export function lp(
 	l: string,
-	hf: [string, string][] | [string, () => void][]
+	hf: [string, string, string?][] | [string, () => void][],
 ): Bind {
 	const b = section("lp")
 	label(b.lp, l)
-	b.lp.append(...hf.map(([s, h]) => {
+	b.lp.append(...hf.map(([s, h, c]) => {
 		if (typeof h == "string") {
 			const a = document.createElement("a")
 			a.innerText = s
 			a.href = h
+			if (c) a.classList.add(c)
 			return a
 		} else {
 			const btn = document.createElement("button")
@@ -215,7 +216,8 @@ function label(
 	s: string,
 ) {
 	const l = el.previousElementSibling as HTMLLabelElement
-	l.innerText = s
+	if (s.length > 0) l.innerText = s
+	else l.remove()
 }
 
 function selopt(

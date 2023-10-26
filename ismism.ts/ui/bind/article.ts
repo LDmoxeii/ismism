@@ -32,7 +32,15 @@ export async function usr(
 	q: { usr: Usr["_id"] } | { nam: Usr["nam"] }
 ) {
 	const u = await que<QueRet["usr"]>({ que: "usr", ...q })
-	const t = article(id("usr" in q ? `${q.usr}` : q.nam, u))
+	const soc = new Map(u?.soc ?? [])
+	const rol = u ? [
+		...u.cdt.map(c => [`${soc.get(c.soc)}会员(${c.amt}积分)`, `#s${c.soc}`, "cdt"]),
+		...u.sec.map(s => [`${soc.get(s)!}联络员`, `#s${s}`, "sec"]),
+		...u.sum.ern.map(c => [`${soc.get(c.soc)}(${c.amt}贡献)`, `#s${c.soc}`, "ern"]),
+	] as [string, string, string][] : []
+	const t = article()
+	if (rol.length > 0) t.append(lp("", rol))
+	t.append(id("usr" in q ? `${q.usr}` : q.nam, u))
 	if (u && nav.pas && nav.pas.usr == u._id) t.append(btn_usr(u), btn_aut(nav.pas))
 }
 
