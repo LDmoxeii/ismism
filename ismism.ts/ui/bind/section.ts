@@ -1,10 +1,10 @@
 import type { Pos, Put, PsgRet, Pas } from "../../src/pra/pos.ts"
 import type { QueRet } from "../../src/pra/que.ts"
-import { is_aut, is_id, is_nbr, lim_aut, lim_msg_id } from "../../src/eid/is.ts"
-import { utc_dt } from "../../src/ont/utc.ts"
+import { is_aut, is_id, is_nbr, lim_aut, lim_msg, lim_msg_id, lim_sec } from "../../src/eid/is.ts"
+import { utc_d, utc_dt } from "../../src/ont/utc.ts"
 import { pos } from "./fetch.ts"
 import { Bind, article, section } from "./template.ts"
-import { hash, nav, navpas, utc_rf } from "./nav.ts"
+import { hash, navpas, utc_rf } from "./nav.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { is_in, is_pos, is_put } from "../../src/pra/can.ts"
 
@@ -39,6 +39,7 @@ export function id(
 export function lp(
 	l: string,
 	hf: [string, string, string?][] | [string, () => void][],
+	ind = true,
 ): Bind {
 	const b = section("lp")
 	label(b.lp, l)
@@ -56,6 +57,7 @@ export function lp(
 			return btn
 		}
 	}))
+	if (ind) b.lp.classList.add("ind")
 	return b.bind
 }
 
@@ -93,6 +95,7 @@ export function sms(
 }
 
 export function btn_usr(
+	pas: Pas,
 	d: NonNullable<QueRet["usr"]>,
 ): Bind {
 	const b = section("btn_usr")
@@ -102,13 +105,13 @@ export function btn_usr(
 			put_adm({ adm1: d.adm1, adm2: d.adm2 }),
 			put_t("简介：", d.msg, lim_msg_id),
 		]
-		const btn = btn_pos(`#${d._id}`, () => ({
+		const btn = btn_pos(pas, `#${d._id}`, () => ({
 			put: "usr", usr: d._id, nam: nam.val(), ...adm.val(), msg: msg.val(),
 		}))
 		article(nam.bind, adm.bind, msg.bind, btn)
 	})
 	b.clr.addEventListener("click", async () => {
-		const usr = nav.pas?.usr
+		const usr = pas.usr
 		if (usr) await pos({ psg: "clr", usr })
 		navpas(null)
 		hash(usr ? `#${usr}` : "")
@@ -117,16 +120,16 @@ export function btn_usr(
 }
 
 export function btn_aut(
-	p: Pas,
+	pas: Pas,
 ): Bind {
 	const b = section("btn_aut")
-	if (is_aut(p.aut.sup, p.usr)) b.aut.addEventListener("click", () => {
+	if (is_aut(pas.aut.sup, pas.usr)) b.aut.addEventListener("click", () => {
 		const [aut, wsl, lit] = [
-			put_s(`管理员：（最多${lim_aut.aut}名）`, p.aut.aut.join(",")),
-			put_s(`法律援助编辑：（最多${lim_aut.wsl}名）`, p.aut.wsl.join(",")),
-			put_s(`理论学习编辑：（最多${lim_aut.lit}名）`, p.aut.lit.join(",")),
+			put_s(`管理员：（最多${lim_aut.aut}名）`, pas.aut.aut.join(",")),
+			put_s(`法律援助编辑：（最多${lim_aut.wsl}名）`, pas.aut.wsl.join(",")),
+			put_s(`理论学习编辑：（最多${lim_aut.lit}名）`, pas.aut.lit.join(",")),
 		]
-		const btn = btn_pos(`#${p.usr}`, () => ({
+		const btn = btn_pos(pas, `#${pas.usr}`, () => ({
 			put: "aut",
 			aut: aut.val().split(",").map(v => parseInt(v)).filter(is_id),
 			wsl: wsl.val().split(",").map(v => parseInt(v)).filter(is_id),
@@ -134,27 +137,28 @@ export function btn_aut(
 		}))
 		article(aut.bind, wsl.bind, lit.bind, btn)
 	}); else b.aut.remove()
-	if (is_aut(p.aut, p.usr) || is_in(p.sec)) b.usr.addEventListener("click", () => {
+	if (is_aut(pas.aut, pas.usr) || is_in(pas.sec)) b.usr.addEventListener("click", () => {
 		const [adm, nbr] = [put_adm(), put_s("激活手机号：")]
-		const btn = btn_pos(`#${p.usr}`, () => ({ pre: "usr", nbr: nbr.val(), ...adm.val() }))
+		const btn = btn_pos(pas, `#${pas.usr}`, () => ({ pre: "usr", nbr: nbr.val(), ...adm.val() }))
 		article(adm.bind, nbr.bind, btn)
 	}); else b.usr.remove()
-	if (is_aut(p.aut.aut, p.usr)) b.soc.addEventListener("click", () => {
+	if (is_aut(pas.aut.aut, pas.usr)) b.soc.addEventListener("click", () => {
 		const [adm, nam] = [put_adm(), put_s("名称：（2-16个中文字符）")]
-		const btn = btn_pos(`#${p.usr}`, () => ({ pre: "soc", nam: nam.val(), ...adm.val() }))
+		const btn = btn_pos(pas, `#${pas.usr}`, () => ({ pre: "soc", nam: nam.val(), ...adm.val() }))
 		article(adm.bind, nam.bind, btn)
 	}); else b.soc.remove()
 	return b.bind
 }
 
 export function btn_pos(
+	pas: Pas,
 	h: string,
 	p: () => Pos | null,
 	del?: Put,
 ): Bind {
 	const b = section("btn_pos")
 	if (del) b.del.addEventListener("click", async () => {
-		if (!is_put(nav.pas!, del) || !confirm("确认删除？")) return
+		if (!is_put(pas, del) || !confirm("确认删除？")) return
 		b.del.disabled = b.put.disabled = b.ret.disabled = true
 		if (await pos(del)) return hash(h)
 		alert("删除失败")
@@ -163,11 +167,93 @@ export function btn_pos(
 	b.put.addEventListener("click", async () => {
 		b.del.disabled = b.put.disabled = b.ret.disabled = true
 		const d = p()
-		if (d && is_pos(nav.pas!, d) && await pos(d) != null) return setTimeout(() => hash(h), utc_rf)
+		if (d && is_pos(pas, d) && await pos(d) != null) return setTimeout(() => hash(h), utc_rf)
 		alert("无效输入")
 		b.del.disabled = b.put.disabled = b.ret.disabled = false
 	})
 	b.ret.addEventListener("click", () => hash(h))
+	return b.bind
+}
+
+export function btn_soc(
+	pas: Pas,
+	d: NonNullable<QueRet["soc"]>,
+): Bind {
+	const b = section("btn_soc")
+	if (is_aut(pas.aut.aut, pas.usr)) b.aut.addEventListener("click", () => {
+		const [nam, adm, sec] = [
+			put_s("名称：（2-16个中文字符）", d.nam),
+			put_adm({ adm1: d.adm1, adm2: d.adm2 }),
+			put_s(`联络员员：（最多${lim_sec}名）`, d.sec.map(s => s[0]).join(",")),
+		]
+		const btn = btn_pos(pas, `#s${d._id}`, () => ({
+			put: "soc", soc: d._id, nam: nam.val(), ...adm.val(),
+			sec: sec.val().split(",").map(v => parseInt(v)).filter(is_id),
+		}))
+		article(nam.bind, adm.bind, sec.bind, btn)
+	}); else b.aut.remove()
+	if (is_in(pas.sec, d._id)) {
+		b.msg.addEventListener("click", () => {
+			const msg = put_t("简介：", d.msg, lim_msg_id)
+			const btn = btn_pos(pas, `#s${d._id}`, () => ({ put: "soc", soc: d._id, msg: msg.val() }))
+			article(msg.bind, btn)
+		})
+		b.agr.addEventListener("click", () => {
+			const agr = put_t("协议：", d.agr.msg, lim_msg)
+			const btn = btn_pos(pas, `#s${d._id}`, () => ({ put: "soc", soc: d._id, agr: agr.val() }))
+			article(agr.bind, btn)
+		})
+		b.agd.addEventListener("click", () => {
+			const nam = put_s("活动名称：（2-16个中文字符）")
+			const btn = btn_pos(pas, `#s${d._id}`, () => ({ pre: "agd", nam: nam.val(), soc: d._id }))
+			article(nam.bind, btn)
+		})
+		b.cdt.addEventListener("click", () => {
+			const utc = Date.now()
+			const [usr, msg, amt, eft, exp] = [
+				put_s("用户ID：（数字）"),
+				put_s("积分类型：（如 '开通会员' '会员续费' 等）"),
+				put_s("积分额度：（整数）"),
+				put_s("生效日期：（同时最多有一次生效积分）", utc_dt(utc, "short")),
+				put_s("有效天数：", "30"),
+			]
+			const btn = btn_pos(pas, `#s${d._id}`, () => ({
+				pre: "cdt", cdt: {
+					_id: { usr: parseInt(usr.val()), soc: d._id, utc },
+					msg: msg.val(), amt: parseInt(amt.val()), sec: pas.usr,
+					utc: { eft: new Date(eft.val()).getTime(), exp: new Date(eft.val()).getTime() + utc_d * parseInt(exp.val()), agr: 0 }
+				}
+			}))
+			article(...[usr, msg, amt, eft, exp].map(el => el.bind), btn)
+		})
+		b.ern.addEventListener("click", () => {
+			const [usr, msg, amt] = [
+				put_s("用户ID：（数字）"),
+				put_s("贡献内容：（如 '工作半天'）"),
+				put_s("贡献额度：（整数）"),
+			]
+			const btn = btn_pos(pas, `#s${d._id}`, () => ({
+				pre: "ern", ern: {
+					_id: { usr: parseInt(usr.val()), soc: d._id, utc: Date.now() },
+					msg: msg.val(), amt: parseInt(amt.val()), sec: pas.usr,
+				}
+			}))
+			article(...[usr, msg, amt].map(el => el.bind), btn)
+		})
+	} else[b.msg, b.agr, b.agd, b.cdt, b.ern].forEach(el => el.remove())
+	if (is_in(pas.cdt, d._id)) b.dbt.addEventListener("click", () => {
+		const [msg, amt] = [
+			put_s("消费内容：（如 '线下活动'）"),
+			put_s("消费额度：（整数）"),
+		]
+		const btn = btn_pos(pas, `#s${d._id}`, () => ({
+			pre: "dbt", dbt: {
+				_id: { usr: pas.usr, soc: d._id, utc: Date.now() },
+				msg: msg.val(), amt: parseInt(amt.val()),
+			}
+		}))
+		article(...[msg, amt].map(el => el.bind), btn)
+	}); else b.dbt.remove()
 	return b.bind
 }
 

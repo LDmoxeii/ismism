@@ -2,9 +2,11 @@ import type { Soc, Usr } from "../../src/eid/typ.ts"
 import type { QueRet } from "../../src/pra/que.ts"
 import { que } from "./fetch.ts"
 import { nav } from "./nav.ts"
-import { btn_aut, btn_usr, id, idn, lp, sms } from "./section.ts"
+import { btn_aut, btn_soc, btn_usr, id, idn, lp, sms } from "./section.ts"
 import { article } from "./template.ts"
 import { adm } from "../../src/ont/adm.ts"
+import { is_in } from "../../src/pra/can.ts"
+import { is_aut } from "../../src/eid/is.ts"
 
 export async function admf(
 ) {
@@ -39,16 +41,25 @@ export async function usr(
 		...u.sum.ern.map(c => [`${soc.get(c.soc)}(${c.amt}贡献)`, `#s${c.soc}`, "ern"]),
 	] as [string, string, string][] : []
 	const t = article()
-	if (rol.length > 0) t.append(lp("", rol))
+	if (rol.length > 0) t.append(lp("", rol, false))
 	t.append(id("usr" in q ? `${q.usr}` : q.nam, u))
-	if (u && nav.pas && nav.pas.usr == u._id) t.append(btn_usr(u), btn_aut(nav.pas))
+	if (u && nav.pas && nav.pas.usr == u._id) t.append(btn_usr(nav.pas, u), btn_aut(nav.pas))
 }
 
 export async function soc(
 	_id: Soc["_id"]
 ) {
 	const s = await que<QueRet["soc"]>({ que: "soc", soc: _id })
-	article(id(`s${_id}`, s))
+	const t = article(id(`s${_id}`, s))
+	if (!s) return
+	const agd = s.agd.map(([a, n]) => [n, `#a${a}`]) as [string, string][]
+	t.append(lp("联络员：", s.sec.map(([u, n]) => [n, `#${u}`, "ln"])))
+	if (agd.length > 0) t.append(lp("活动：", agd))
+	if (nav.pas) {
+		if (is_in(nav.pas.cdt, _id) || is_aut(nav.pas.aut, nav.pas.usr))
+			t.append(lp(`会员：(${s.cdt.length}) (仅会员可见)`, s.cdt.map(([u, n]) => [n, `#${u}`, "ln"])))
+		t.append(btn_soc(nav.pas, s))
+	}
 }
 
 export function psg(

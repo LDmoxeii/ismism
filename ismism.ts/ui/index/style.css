@@ -306,17 +306,21 @@ p.hint {
 	color: var(--gray);
 }
 
-p.lp button {
-	padding: 0;
+p.ind {
+	padding: 0 2ch !important;
 }
 
-p.lp button:not(:first-child):before {
-	content: "、";
+p.lp:empty::before {
 	color: var(--gray);
+	content: "无";
 }
 
 p.lp a {
 	display: block;
+}
+
+p.lp a.ln {
+	display: inline-block;
 }
 
 p.lp a.sec,
@@ -340,4 +344,14 @@ p.lp a.cdt {
 
 p.lp a.ern {
 	background: var(--grayd);
+}
+
+p.lp button {
+	padding: 0;
+}
+
+p.lp a.ln:not(:first-child):before,
+p.lp button:not(:first-child):before {
+	content: "、";
+	color: var(--gray);
 }

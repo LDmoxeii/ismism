@@ -26,6 +26,7 @@ const template = {
 	btn_usr: { put: tag("button"), clr: tag("button") },
 	btn_pos: { del: tag("button"), put: tag("button"), ret: tag("button") },
 	btn_aut: { aut: tag("button"), usr: tag("button"), soc: tag("button") },
+	btn_soc: { aut: tag("button"), msg: tag("button"), agr: tag("button"), agd: tag("button"), cdt: tag("button"), dbt: tag("button"), ern: tag("button") },
 }
 type Template = typeof template
 
