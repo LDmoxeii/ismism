@@ -78,15 +78,14 @@ Deno.test("rec", async () => {
 })
 
 Deno.test("msg", async () => {
-	assertEquals([], await msg_f(coll.wsl, 0))
+	assertEquals([], await msg_f(coll.wsl))
 	assertEquals(1, await msg_c(coll.wsl, "标题", 2))
 	assertEquals(2, await msg_c(coll.wsl, "标题", 2))
 	assertEquals(1, await msg_u(coll.wsl, 1, { $set: { msg: "#md1", usr: 2, pin: true } }))
 	assertEquals(1, await msg_u(coll.wsl, 2, { $set: { msg: "#md2", usr: 2 } }))
 	const [m1, m2] = await Promise.all([msg_r(coll.wsl, 1), msg_r(coll.wsl, 2)])
 	assertEquals(m2!.msg, "#md2")
-	assertEquals([m1, m2], await msg_f(coll.wsl, 0))
-	assertEquals([], await msg_f(coll.wsl, 2))
+	assertEquals([m1!._id, m2!._id], (await msg_f(coll.wsl)).map(m => m._id))
 })
 
 Deno.test("aut", async () => {

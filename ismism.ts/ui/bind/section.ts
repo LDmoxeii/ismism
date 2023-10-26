@@ -1,13 +1,13 @@
-import type { Pos, Put, PsgRet, Pas } from "../../src/pra/pos.ts"
-import type { QueRet } from "../../src/pra/que.ts"
+import type { Pos, Put, PsgRet, Pas, PutRet } from "../../src/pra/pos.ts"
+import type { Que, QueRet } from "../../src/pra/que.ts"
 import { is_aut, is_id, is_nbr, lim_aut, lim_msg, lim_msg_id, lim_sec } from "../../src/eid/is.ts"
 import { utc_d, utc_dt } from "../../src/ont/utc.ts"
-import { pos } from "./fetch.ts"
+import { pos, que } from "./fetch.ts"
 import { Bind, article, section } from "./template.ts"
 import { hash, navpas, utc_rf } from "./nav.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { is_in, is_pos, is_put } from "../../src/pra/can.ts"
-import { Msg } from "../../src/eid/typ.ts"
+import { Cdt, Msg } from "../../src/eid/typ.ts"
 
 const { marked } = await import("https://cdn.jsdelivr.net/npm/marked@latest/lib/marked.esm.js")
 
@@ -99,6 +99,60 @@ export function sms(
 	s.sms.addEventListener("click", sms)
 	c.send.addEventListener("click", send)
 	return s.bind
+}
+
+export function dtl(
+	s: string,
+	q: Que & { que: "cdt" | "dbt" | "ern" },
+	pas?: Pas | null,
+): Bind {
+	const b = section("dtl")
+	label(b.dtl, s)
+	const rec = async () => {
+		if (q.utc < 0 || b.dtl.scrollHeight > b.dtl.scrollTop + b.dtl.clientHeight) return
+		const r = await que<QueRet["cdt" | "dbt" | "ern"]>(q)
+		if (!r) return
+		q.utc = r.rec.length > 0 ? r.rec[r.rec.length - 1]._id.utc : -1
+		const [usr, soc] = [new Map(r.usr), new Map(r.soc)]
+		r.rec.forEach(r => {
+			const d = section("rec")
+			d.usr.innerText = usr.get(r._id.usr)!
+			d.usr.href = `#${r._id.usr}`
+			d.soc.innerText = soc.get(r._id.soc)!
+			d.soc.href = `#s${r._id.soc}`
+			d.mta.innerText = `${utc_dt(r._id.utc)}`
+			if (is_id(r.sec!)) d.mta.innerText += `（联络员：${usr.get(r.sec!)}#${r.sec}）`
+			let s = `${r.msg}\n数额：${r.amt}`
+			if ("utc" in r) {
+				const { eft, exp } = r.utc as Cdt["utc"]
+				s += `\n生效日期：${utc_dt(eft)}\n失效日期：${utc_dt(exp)}`
+				if (eft > Date.now()) d.msg.classList.add("green")
+			}
+			d.msg.innerText = s
+			if (q.que == "dbt" && !r.sec) d.msg.classList.add("green")
+			if (pas && is_in(pas.sec, r._id.soc)) {
+				d.clr.addEventListener("click", async () => {
+					d.clr.disabled = true
+					if (!confirm("确认删除？")) return
+					const p = await pos<PutRet["cdt"]>({ put: "cdt", id: r._id })
+					if (p) return setTimeout(() => hash(`#s${r._id.soc}`), utc_rf)
+					d.clr.disabled = false
+				})
+				if (q.que == "dbt" && !r.sec) {
+					d.fin.addEventListener("click", async () => {
+						d.fin.disabled = true
+						const p = await pos<PutRet["dbt"]>({ put: "dbt", id: r._id, sec: pas.usr })
+						if (p) return setTimeout(() => hash(`#s${r._id.soc}`), utc_rf)
+						d.fin.disabled = false
+					})
+				} else d.fin.remove()
+			} else[d.clr, d.fin].forEach(el => el.remove())
+			b.dtl.append(d.bind)
+		})
+	}
+	b.dtl.addEventListener("scroll", rec)
+	b.dtl.parentElement?.addEventListener("toggle", rec)
+	return b.bind
 }
 
 export function btn_usr(
@@ -306,7 +360,12 @@ export function btn_msg(
 			)
 		})
 		b.pin.innerText = m.pin ? "取消置顶" : "置顶"
-		b.pin.addEventListener("click", () => { pos({ put: p, id: m._id, pin: !m.pin }).then(() => hash(`#${p}`)) })
+		b.pin.addEventListener("click", async () => {
+			b.pin.disabled = true
+			const r = await pos({ put: p, id: m._id, pin: !m.pin })
+			if (r) return setTimeout(() => hash(`#${p}`), utc_rf)
+			b.pin.disabled = false
+		})
 	}
 	return b.bind
 }

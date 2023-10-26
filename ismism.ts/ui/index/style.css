@@ -297,6 +297,74 @@ section.flex>select {
 	flex: 0 0 12ch;
 }
 
+details>summary {
+	color: var(--gray);
+	user-select: none;
+	cursor: pointer;
+}
+
+details:focus,
+details>summary:focus {
+	outline: none;
+}
+
+@media (hover: hover) {
+	section>details>summary:hover {
+		background: var(--grayl);
+	}
+}
+
+details>p {
+	display: block;
+	background: var(--grayl);
+	border-radius: 16px;
+	padding: 16px 8px;
+	margin: 8px auto;
+	max-height: 480px;
+	overflow-y: scroll;
+}
+
+details>p>section>section {
+	margin: 0;
+	padding: 0 1ch;
+}
+
+details a.soc {
+	display: inline-block;
+	margin-left: 8px;
+	margin-bottom: 4px;
+	padding: 0.4ch 1ch;
+	border-radius: 4px;
+	font-size: var(--small);
+	background: var(--grayd);
+	color: var(--white);
+}
+
+details section.mta {
+	font-size: var(--small);
+	color: var(--gray);
+}
+
+details section.msg {
+	margin: 8px;
+	min-width: 240px;
+	width: fit-content;
+	padding: 0.8em 16px;
+	background: var(--grayl);
+	border-radius: 0 8px 8px 8px;
+	box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px;
+	white-space: pre-line;
+}
+
+details section.msg.green {
+	background: var(--greenl);
+}
+
+details button {
+	font-style: italic;
+	color: var(--gray);
+}
+
 p {
 	display: block;
 	margin: 1ch 0;

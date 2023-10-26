@@ -20,6 +20,8 @@ const template = {
 	lp: { lp: tag("p") },
 	sms: { nbr: tag("input"), sms: tag("button"), hint: tag("p") },
 	code: { code: tag("input"), send: tag("button") },
+	dtl: { dtl: tag("p") },
+	rec: { usr: tag("a"), soc: tag("a"), mta: tag("section"), msg: tag("section"), clr: tag("button"), fin: tag("button") },
 	put_s: { str: tag("input") },
 	put_adm: { adm1: tag("select"), adm2: tag("select") },
 	put_t: { txt: tag("textarea") },

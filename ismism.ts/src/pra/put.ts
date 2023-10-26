@@ -2,7 +2,7 @@ import { agd_d, agd_u } from "../eid/agd.ts"
 import { aut_u } from "../eid/aut.ts"
 import { coll } from "../eid/db.ts"
 import { msg_d, msg_u } from "../eid/msg.ts"
-import { cdt_u, rec_d } from "../eid/rec.ts"
+import { cdt_u, dbt_s, rec_d } from "../eid/rec.ts"
 import { soc_d, soc_u } from "../eid/soc.ts"
 import { Agd, Cdt, Dbt, Ern, Msg, Soc, Usr } from "../eid/typ.ts"
 import { usr_u } from "../eid/usr.ts"
@@ -54,6 +54,10 @@ export type Put = {
 } | {
 	put: "dbt",
 	id: Dbt["_id"],
+} | {
+	put: "dbt",
+	id: Dbt["_id"],
+	sec: NonNullable<Dbt["sec"]>,
 } | {
 	put: "ern",
 	id: Ern["_id"],
@@ -112,6 +116,7 @@ export async function put(
 			} else return agd_d(p.agd)
 		} case "cdt": case "dbt": case "ern": {
 			if ("agr" in p) return cdt_u(p.id, Date.now())
+			else if ("sec" in p) return dbt_s(p.id, p.sec)
 			else return rec_d(coll[p.put], p.id)
 		} case "wsl": case "lit": {
 			if ("msg" in p) return msg_u(coll[p.put], p.id, { $set: { nam: p.nam, msg: p.msg, "utc.put": Date.now() } })

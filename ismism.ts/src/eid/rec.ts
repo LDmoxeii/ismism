@@ -1,4 +1,4 @@
-import type { Cdt, Rec } from "./typ.ts"
+import type { Cdt, Dbt, Rec } from "./typ.ts"
 import { Coll, DocC, DocD, DocR, DocU, coll } from "./db.ts"
 import { is_id, is_msg, is_recid, lim_msg_rec, lim_rec_f } from "./is.ts"
 
@@ -68,6 +68,17 @@ export async function cdt_a<
 		..."eft" in utc ? { "utc.eft": { $lt: utc.exp }, "utc.exp": { $gt: utc.eft } } : {},
 	}
 	return await coll.cdt.find(f, { projection }).toArray()
+}
+
+export async function dbt_s(
+	_id: Dbt["_id"], sec: NonNullable<Dbt["sec"]>
+): DocU {
+	if (!is_recid(_id) || !is_id(sec)) return null
+	try {
+		const { matchedCount, modifiedCount } = await coll.dbt.updateOne({ _id }, { $set: { sec } })
+		if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
+		else return null
+	} catch { return null }
 }
 
 export function rec_s<

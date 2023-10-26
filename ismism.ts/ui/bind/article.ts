@@ -1,6 +1,6 @@
 import type { Agd, Msg, Soc, Usr } from "../../src/eid/typ.ts"
 import type { QueRet } from "../../src/pra/que.ts"
-import { btn_agd, btn_aut, btn_msg, btn_soc, btn_usr, id, idn, lp, sms } from "./section.ts"
+import { btn_agd, btn_aut, btn_msg, btn_soc, btn_usr, dtl, id, idn, lp, sms } from "./section.ts"
 import { que } from "./fetch.ts"
 import { nav } from "./nav.ts"
 import { article } from "./template.ts"
@@ -43,6 +43,11 @@ export async function usr(
 	const t = article()
 	if (rol.length > 0) t.append(lp("", rol, false))
 	t.append(id("usr" in q ? `${q.usr}` : q.nam, u))
+	if (u) t.append(
+		dtl(`积分记录：（${u.sum.cdt.length}个俱乐部）`, { que: "cdt", usr: u._id, utc: 0 }, nav.pas),
+		dtl(`积分使用：（${u.sum.dbt.length}个俱乐部）`, { que: "dbt", usr: u._id, utc: 0 }, nav.pas),
+		dtl(`贡献记录：（${u.sum.ern.length}个俱乐部）`, { que: "ern", usr: u._id, utc: 0 }, nav.pas),
+	)
 	if (u && nav.pas && nav.pas.usr == u._id) t.append(btn_usr(nav.pas, u), btn_aut(nav.pas))
 }
 
@@ -56,8 +61,12 @@ export async function soc(
 	t.append(lp("联络员：", s.sec.map(([u, n]) => [n, `#${u}`, "ln"])))
 	if (agd.length > 0) t.append(lp("活动：", agd))
 	if (nav.pas) {
-		if (is_in(nav.pas.cdt, _id) || is_aut(nav.pas.aut, nav.pas.usr))
-			t.append(lp(`会员：(${s.cdt.length}) (仅会员可见)`, s.cdt.map(([u, n]) => [n, `#${u}`, "ln"])))
+		if (is_in(nav.pas.cdt, _id) || is_aut(nav.pas.aut, nav.pas.usr)) t.append(
+			lp(`会员：(${s.cdt.length}) (仅会员可见)`, s.cdt.map(([u, n]) => [n, `#${u}`, "ln"])),
+			dtl(`积分记录：（总积分：${s.sum.cdt}）`, { que: "cdt", soc: s._id, utc: 0 }, nav.pas),
+			dtl(`积分使用：（总使用：${s.sum.dbt}）`, { que: "dbt", soc: s._id, utc: 0 }, nav.pas),
+			dtl(`贡献记录：（总贡献：${s.sum.ern}）`, { que: "ern", soc: s._id, utc: 0 }, nav.pas),
+		)
 		t.append(btn_soc(nav.pas, s))
 	}
 }
