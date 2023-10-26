@@ -1,8 +1,8 @@
-import type { Soc, Usr } from "../../src/eid/typ.ts"
+import type { Agd, Soc, Usr } from "../../src/eid/typ.ts"
 import type { QueRet } from "../../src/pra/que.ts"
+import { btn_agd, btn_aut, btn_soc, btn_usr, id, idn, lp, sms } from "./section.ts"
 import { que } from "./fetch.ts"
 import { nav } from "./nav.ts"
-import { btn_aut, btn_soc, btn_usr, id, idn, lp, sms } from "./section.ts"
 import { article } from "./template.ts"
 import { adm } from "../../src/ont/adm.ts"
 import { is_in } from "../../src/pra/can.ts"
@@ -31,7 +31,7 @@ export async function admf(
 }
 
 export async function usr(
-	q: { usr: Usr["_id"] } | { nam: Usr["nam"] }
+	q: { usr: Usr["_id"] } | { nam: Usr["nam"] },
 ) {
 	const u = await que<QueRet["usr"]>({ que: "usr", ...q })
 	const soc = new Map(u?.soc ?? [])
@@ -47,7 +47,7 @@ export async function usr(
 }
 
 export async function soc(
-	_id: Soc["_id"]
+	_id: Soc["_id"],
 ) {
 	const s = await que<QueRet["soc"]>({ que: "soc", soc: _id })
 	const t = article(id(`s${_id}`, s))
@@ -60,6 +60,16 @@ export async function soc(
 			t.append(lp(`会员：(${s.cdt.length}) (仅会员可见)`, s.cdt.map(([u, n]) => [n, `#${u}`, "ln"])))
 		t.append(btn_soc(nav.pas, s))
 	}
+}
+
+export async function agd(
+	_id: Agd["_id"],
+) {
+	const a = await que<QueRet["agd"]>({ que: "agd", agd: _id })
+	const t = article(id(`a${_id}`, a))
+	if (!a) return
+	t.prepend(lp("", [[a.soc[1], `#s${a.soc[0]}`, "cdt"]], false))
+	if (nav.pas && is_in(nav.pas.agd, _id)) t.append(btn_agd(nav.pas, a))
 }
 
 export function psg(

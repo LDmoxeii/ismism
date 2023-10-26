@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window-prefix
 import type { PsgRet, Pas } from "../../src/pra/pos.ts"
-import { admf, psg, soc, usr } from "./article.ts"
+import { admf, agd, psg, soc, usr } from "./article.ts"
 import { pos } from "./fetch.ts"
 import { pas } from "./template.ts"
 
@@ -21,7 +21,7 @@ window.addEventListener("hashchange", () => {
 	if (h == "" || h == "soc") admf()
 	else if (/^\d+$/.test(h)) usr({ usr: parseInt(h) })
 	else if (/^s\d+$/.test(h)) soc(parseInt(h.substring(1)))
-	else if (/^a\d+$/.test(h)) usr({ usr: parseInt(h.substring(1)) })
+	else if (/^a\d+$/.test(h)) agd(parseInt(h.substring(1)))
 	else if (h == "psg") psg()
 	else alert(`无效 id ${h}`)
 })
@@ -35,7 +35,7 @@ export function hash(
 
 export async function load(
 ) {
-	console.log("ismism-20231015")
+	console.log("ismism-20231026")
 	console.log(`\n主义主义开发组！成员招募中！\n\n发送自我介绍至 万大可\n`)
 	await navpas()
 	hash()

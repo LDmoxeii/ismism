@@ -43,9 +43,6 @@ export type Put = {
 	nam: string,
 	adm1: string,
 	adm2: string,
-} | {
-	put: "agd",
-	agd: Agd["_id"],
 	msg: string,
 } | {
 	put: "cdt",
@@ -109,10 +106,9 @@ export async function put(
 				return soc_u(p.soc, { $set: { nam, adm1, adm2, sec } })
 			} else return soc_d(p.soc)
 		} case "agd": {
-			if ("msg" in p) return agd_u(p.agd, { $set: { msg: p.msg } })
 			if ("nam" in p) {
 				const { nam, adm1, adm2 } = p
-				return agd_u(p.agd, { $set: { nam, adm1, adm2 } })
+				return agd_u(p.agd, { $set: { nam, adm1, adm2, msg: p.msg } })
 			} else return agd_d(p.agd)
 		} case "cdt": case "dbt": case "ern": {
 			if ("agr" in p) return cdt_u(p.id, Date.now())

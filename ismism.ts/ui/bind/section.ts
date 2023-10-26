@@ -182,7 +182,7 @@ export function btn_soc(
 	const b = section("btn_soc")
 	if (is_aut(pas.aut.aut, pas.usr)) b.aut.addEventListener("click", () => {
 		const [nam, adm, sec] = [
-			put_s("名称：（2-16个中文字符）", d.nam),
+			put_s("俱乐部名称：（2-16个中文字符）", d.nam),
 			put_adm({ adm1: d.adm1, adm2: d.adm2 }),
 			put_s(`联络员员：（最多${lim_sec}名）`, d.sec.map(s => s[0]).join(",")),
 		]
@@ -194,7 +194,7 @@ export function btn_soc(
 	}); else b.aut.remove()
 	if (is_in(pas.sec, d._id)) {
 		b.msg.addEventListener("click", () => {
-			const msg = put_t("简介：", d.msg, lim_msg_id)
+			const msg = put_t("俱乐部简介：", d.msg, lim_msg_id)
 			const btn = btn_pos(pas, `#s${d._id}`, () => ({ put: "soc", soc: d._id, msg: msg.val() }))
 			article(msg.bind, btn)
 		})
@@ -254,6 +254,25 @@ export function btn_soc(
 		}))
 		article(...[msg, amt].map(el => el.bind), btn)
 	}); else b.dbt.remove()
+	return b.bind
+}
+
+export function btn_agd(
+	pas: Pas,
+	d: NonNullable<QueRet["agd"]>,
+): Bind {
+	const b = section("btn_agd")
+	b.put.addEventListener("click", () => {
+		const [nam, adm, msg] = [
+			put_s("活动名称：（2-16个中文字符）", d.nam),
+			put_adm({ adm1: d.adm1, adm2: d.adm2 }),
+			put_t("活动简介：", d.msg, lim_msg_id),
+		]
+		const btn = btn_pos(pas, `#s${d.soc[0]}`, () => ({
+			put: "agd", agd: d._id, nam: nam.val(), ...adm.val(), msg: msg.val(),
+		}), { put: "agd", agd: d._id })
+		article(lp("", [[d.soc[1], `#s${d.soc[0]}`, "cdt"]], false), nam.bind, adm.bind, msg.bind, btn)
+	})
 	return b.bind
 }
 

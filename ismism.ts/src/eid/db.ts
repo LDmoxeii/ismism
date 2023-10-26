@@ -74,7 +74,7 @@ export async function db(
 
 		await c.usr.createIndexes({ indexes: [...nam, ...nbr] })
 		await c.soc.createIndexes({ indexes: [...nam, ...adm, ...sec] })
-		await c.agd.createIndexes({ indexes: [...nam, ...soc] })
+		await c.agd.createIndexes({ indexes: [...soc] })
 
 		await c.cdt.createIndexes({ indexes: [...rec, ...utc] })
 		await c.dbt.createIndexes({ indexes: [...rec] })

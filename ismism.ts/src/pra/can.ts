@@ -62,9 +62,8 @@ export function is_put(
 				&& is_id(p.soc) && is_nam(p.nam) && is_adm(p.adm1, p.adm2) && is_idl(p.sec, lim_sec)
 			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.soc)
 		case "agd":
-			if ("msg" in p) return is_in(pas.agd, p.agd) && is_id(p.agd) && is_msg(p.msg, lim_msg_id)
-			else if ("nam" in p) return is_aut(pas.aut.aut, pas.usr)
-				&& is_id(p.agd) && is_nam(p.nam) && is_adm(p.adm1, p.adm2)
+			if ("nam" in p) return is_in(pas.agd, p.agd) && is_id(p.agd)
+				&& is_nam(p.nam) && is_adm(p.adm1, p.adm2) && is_msg(p.msg, lim_msg_id)
 			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.agd)
 		case "cdt": case "dbt": case "ern":
 			if ("agr" in p) return is_in(pas.cdt, p.id.soc) && is_recid(p.id)
