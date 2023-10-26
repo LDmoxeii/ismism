@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window-prefix
 import type { PsgRet, Pas } from "../../src/pra/pos.ts"
-import { admf, agd, psg, soc, usr } from "./article.ts"
+import { admf, agd, msg, psg, soc, usr } from "./article.ts"
 import { pos } from "./fetch.ts"
 import { pas } from "./template.ts"
 
@@ -22,6 +22,8 @@ window.addEventListener("hashchange", () => {
 	else if (/^\d+$/.test(h)) usr({ usr: parseInt(h) })
 	else if (/^s\d+$/.test(h)) soc(parseInt(h.substring(1)))
 	else if (/^a\d+$/.test(h)) agd(parseInt(h.substring(1)))
+	else if (h.startsWith("wsl")) msg("wsl", h == "wsl" ? 0 : parseInt(h.substring(3)))
+	else if (h.startsWith("lit")) msg("lit", h == "lit" ? 0 : parseInt(h.substring(3)))
 	else if (h == "psg") psg()
 	else alert(`无效 id ${h}`)
 })

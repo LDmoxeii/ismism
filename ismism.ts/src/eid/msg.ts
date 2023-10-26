@@ -1,6 +1,6 @@
 import type { Msg } from "./typ.ts"
-import type { Coll, DocC, DocD, DocR, DocU, Proj, Updt } from "./db.ts"
-import { is_id, is_lim, is_msg, is_nam, lim_msg, lim_msg_f, lim_msg_pin } from "./is.ts"
+import type { Coll, DocC, DocD, DocR, DocU, Updt } from "./db.ts"
+import { is_id, is_lim, is_msg, is_nam, lim_msg, lim_msg_pin } from "./is.ts"
 
 async function msg_n(
 	c: Coll<Msg>
@@ -31,27 +31,21 @@ export async function msg_r<
 >(
 	c: Coll<Msg>,
 	_id: Msg["_id"],
-	projection?: Proj<Msg, P>,
 ): DocR<Pick<Msg, "_id" | P>> {
 	if (!is_id(_id)) return null
-	return await c.findOne({ _id }, { projection }) ?? null
+	return await c.findOne({ _id }) ?? null
 }
 
 export async function msg_f(
 	c: Coll<Msg>,
-	id: Msg["_id"],
-): Promise<Msg[]> {
-	const top = !is_id(id)
+): Promise<Omit<Msg, "msg">[]> {
+	const projection = { msg: 0 }
 	const pin = await c.find({ pin: true }, {
 		sort: { "utc.put": -1 },
-		projection: top ? undefined : { _id: 1 },
+		projection,
 	}).toArray()
-	const f = {
-		...top ? {} : { $lt: id },
-		$nin: pin.map(p => p._id),
-	}
-	const msg = await c.find({ _id: f }, { sort: { _id: -1 }, limit: lim_msg_f }).toArray()
-	return top ? [...pin, ...msg] : msg
+	const msg = await c.find({ _id: { $nin: pin.map(p => p._id) } }, { projection }).toArray()
+	return [...pin, ...msg]
 }
 
 export async function msg_u(

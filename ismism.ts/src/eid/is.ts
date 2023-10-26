@@ -22,7 +22,6 @@ export const lim_aut = {
 }
 
 export const lim_rec_f = 64
-export const lim_msg_f = 4
 export const lim_msg_pin = 4
 
 export function is_lim(

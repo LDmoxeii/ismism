@@ -7,6 +7,7 @@ import { Bind, article, section } from "./template.ts"
 import { hash, navpas, utc_rf } from "./nav.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { is_in, is_pos, is_put } from "../../src/pra/can.ts"
+import { Msg } from "../../src/eid/typ.ts"
 
 const { marked } = await import("https://cdn.jsdelivr.net/npm/marked@latest/lib/marked.esm.js")
 
@@ -26,15 +27,19 @@ export function idn(
 
 export function id(
 	id: string,
-	d: QueRet["usr" | "soc" | "agd"],
+	d: QueRet["usr" | "soc" | "agd" | "wsl" | "lit"],
 ): Bind {
 	if (!d) return idn(id, "无效链接", `#${id} 是无效 id`)
 	const b = section("id")
 	b.id.innerText = id
-	b.nam.innerText = d.nam
+	b.nam.innerText = "nam" in d ? d.nam : "nam" in d.msg ? d.msg.nam
+		: id == "wsl" ? "法律援助" : id == "lit" ? "理论学习" : ""
 	b.idnam.href = `#${id}`
-	b.mta.innerText = `城市：${d.adm1} ${d.adm2}\n注册：${utc_dt(d.utc, "short")}`
-	b.msg.innerHTML = marked.parse(d.msg)
+	b.mta.innerText = "adm1" in d ? `城市：${d.adm1} ${d.adm2}\n注册：${utc_dt(d.utc, "short")}`
+		: "utc" in d.msg ? `发布时间：${utc_dt(d.msg.utc.pre)}\n最后更新：${utc_dt(d.msg.utc.put)}`
+			: `共${d.msg.length}篇文章`
+	b.msg.innerHTML = "nam" in d ? marked.parse(d.msg)
+		: "nam" in d.msg ? marked.parse(`编辑：[${d.usr[0][1]}](#${d.usr[0][0]})\n\n` + d.msg.msg) : ""
 	return b.bind
 }
 
@@ -275,6 +280,34 @@ export function btn_agd(
 		}), { put: "agd", agd: d._id })
 		article(lp("", [[d.soc[1], `#s${d.soc[0]}`, "cdt"]], false), nam.bind, adm.bind, msg.bind, btn)
 	})
+	return b.bind
+}
+
+export function btn_msg(
+	pas: Pas,
+	p: "wsl" | "lit",
+	m?: Msg,
+): Bind {
+	const b = section("btn_msg")
+	if (m == undefined) {
+		b.pre.addEventListener("click", () => {
+			const nam = put_s("标题：（2-16个中文字符）")
+			article(nam.bind, btn_pos(pas, `#${p}`, () => ({ pre: p, nam: nam.val() })))
+		})
+		b.put.remove()
+		b.pin.remove()
+	} else {
+		b.pre.remove()
+		b.put.addEventListener("click", () => {
+			const [nam, msg,] = [put_s("标题：（2-16个中文字符）", m.nam), put_t("内容：", m.msg, lim_msg)]
+			article(nam.bind, msg.bind, btn_pos(pas, `#${p}`,
+				() => ({ put: p, id: m._id, nam: nam.val(), msg: msg.val() }),
+				{ put: p, id: m._id })
+			)
+		})
+		b.pin.innerText = m.pin ? "取消置顶" : "置顶"
+		b.pin.addEventListener("click", () => { pos({ put: p, id: m._id, pin: !m.pin }).then(() => hash(`#${p}`)) })
+	}
 	return b.bind
 }
 

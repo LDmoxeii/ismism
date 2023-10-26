@@ -242,7 +242,7 @@ section>textarea:focus {
 
 section>input:read-only,
 section>textarea:read-only {
-	background: var(--lgray);
+	background: var(--grayl);
 	border: none !important;
 }
 
@@ -319,6 +319,11 @@ p.msg img {
 	display: block;
 	max-width: 720px;
 	margin: auto;
+}
+
+p.msg a {
+	text-decoration: underline;
+	text-underline-offset: 4px;
 }
 
 p.ind {

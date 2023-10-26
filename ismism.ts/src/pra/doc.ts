@@ -1,6 +1,7 @@
 import { agd_r } from "../eid/agd.ts"
 import { coll } from "../eid/db.ts"
 import { id, idadm, idnam } from "../eid/id.ts"
+import { is_id } from "../eid/is.ts"
 import { msg_r, msg_f } from "../eid/msg.ts"
 import { cdt_a, rec_f, rec_s } from "../eid/rec.ts"
 import { soc_r } from "../eid/soc.ts"
@@ -87,10 +88,13 @@ export async function rec(
 
 export async function msg(
 	q: "wsl" | "lit",
-	id: Msg["_id"],
-	f?: true,
+	id: Msg["_id"] | 0,
 ) {
-	const msg = await (f ? msg_f(coll[q], id) : msg_r(coll[q], id).then(m => m ? [m] : []))
-	const usr = await idnam(coll.usr, msg.map(m => m.usr))
-	return { msg, usr }
+	if (is_id(id)) {
+		const msg = await msg_r(coll[q], id)
+		return msg ? { msg, usr: await idnam(coll.usr, [msg.usr]) } : { msg: [], usr: [] }
+	} else {
+		const msg = await msg_f(coll[q])
+		return { msg, usr: await idnam(coll.usr, msg.map(m => m.usr)) }
+	}
 }

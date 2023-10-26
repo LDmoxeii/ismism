@@ -28,7 +28,6 @@ export type Que = {
 } | {
 	que: "wsl" | "lit",
 	msg: Msg["_id"] | 0,
-	f?: true,
 }
 
 export type QueRet = {
@@ -62,7 +61,7 @@ export function que(
 		case "agd": return is_id(q.agd) ? agd(q.agd) : null
 		case "cdt": case "dbt": case "ern":
 			return rec(q.que, "usr" in q ? { usr: q.usr } : { soc: q.soc }, q.utc)
-		case "wsl": case "lit": return msg(q.que, q.msg, q.f)
+		case "wsl": case "lit": return msg(q.que, q.msg)
 	}
 
 	return null

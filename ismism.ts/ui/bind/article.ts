@@ -1,6 +1,6 @@
-import type { Agd, Soc, Usr } from "../../src/eid/typ.ts"
+import type { Agd, Msg, Soc, Usr } from "../../src/eid/typ.ts"
 import type { QueRet } from "../../src/pra/que.ts"
-import { btn_agd, btn_aut, btn_soc, btn_usr, id, idn, lp, sms } from "./section.ts"
+import { btn_agd, btn_aut, btn_msg, btn_soc, btn_usr, id, idn, lp, sms } from "./section.ts"
 import { que } from "./fetch.ts"
 import { nav } from "./nav.ts"
 import { article } from "./template.ts"
@@ -70,6 +70,22 @@ export async function agd(
 	if (!a) return
 	t.prepend(lp("", [[a.soc[1], `#s${a.soc[0]}`, "cdt"]], false))
 	if (nav.pas && is_in(nav.pas.agd, _id)) t.append(btn_agd(nav.pas, a))
+}
+
+export async function msg(
+	q: "wsl" | "lit",
+	_id: Msg["_id"] | 0,
+) {
+	const m = await que<QueRet["wsl" | "lit"]>({ que: q, msg: _id, ..._id == 0 ? { f: true } : {} })
+	const usr = new Map(m.usr)
+	const t = article(id(_id == 0 ? q : `${q}${_id}`, m))
+	if ("length" in m.msg) {
+		if (m.msg.length > 0) t.append(lp("", m.msg.map(m => [
+			`${m.pin ? "【置顶】" : ""}${m.nam}  -  ${usr.get(m.usr)}`,
+			`#${q}${m._id}`]), true))
+		if (nav.pas && is_aut(nav.pas.aut[q], nav.pas.usr)) t.append(btn_msg(nav.pas, q))
+	}
+	if ("_id" in m.msg && nav.pas?.usr == m.msg.usr) t.append(btn_msg(nav.pas, q, m.msg))
 }
 
 export function psg(
