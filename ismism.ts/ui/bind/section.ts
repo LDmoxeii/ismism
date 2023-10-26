@@ -8,6 +8,8 @@ import { hash, navpas, utc_rf } from "./nav.ts"
 import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { is_in, is_pos, is_put } from "../../src/pra/can.ts"
 
+const { marked } = await import("https://cdn.jsdelivr.net/npm/marked@latest/lib/marked.esm.js")
+
 export function idn(
 	id: string,
 	nam: string,
@@ -32,7 +34,7 @@ export function id(
 	b.nam.innerText = d.nam
 	b.idnam.href = `#${id}`
 	b.mta.innerText = `城市：${d.adm1} ${d.adm2}\n注册：${utc_dt(d.utc, "short")}`
-	b.msg.innerText = d.msg
+	b.msg.innerHTML = marked.parse(d.msg)
 	return b.bind
 }
 

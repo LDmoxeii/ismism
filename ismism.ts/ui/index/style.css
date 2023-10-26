@@ -315,6 +315,12 @@ p.hint {
 	color: var(--gray);
 }
 
+p.msg img {
+	display: block;
+	max-width: 720px;
+	margin: auto;
+}
+
 p.ind {
 	padding: 0 2ch !important;
 }
