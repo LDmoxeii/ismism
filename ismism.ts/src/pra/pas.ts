@@ -32,13 +32,16 @@ async function pas_of_usr(
 		aut_r()
 	])
 	const [soc, agd] = await Promise.all([ // deno-lint-ignore no-explicit-any
-		cdt ? Promise.all(cdt.map(c => soc_r(c._id.soc, { _id: 1, "agr.utc": 1 } as any))) : [],
+		cdt ? Promise.all(cdt.map(c => soc_r(c._id.soc, { _id: 1, agr: 1 } as any))) : [],
 		id(coll.agd, { soc: { $in: sec } }),
 	])
 	return aut ? {
 		usr: u._id, nam: u.nam,
 		cdt: cdt ? cdt.map(c => c._id.soc) : [],
-		agr: cdt ? cdt.filter((c, n) => c.utc.agr < (soc[n]?.agr.utc ?? 0)).map((_, n) => soc[n]!._id) : [],
+		agr: cdt ? cdt.filter((c, n) => {
+			const s = soc ? soc[n] : null
+			return s && s.agr.msg.length > 0 && c.utc.agr < s.agr.utc
+		}).map((_, n) => soc[n]!._id) : [],
 		sec, agd, aut,
 	} : null
 }

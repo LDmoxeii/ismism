@@ -1,12 +1,26 @@
 import type { Agd, Msg, Soc, Usr } from "../../src/eid/typ.ts"
 import type { QueRet } from "../../src/pra/que.ts"
-import { btn_agd, btn_aut, btn_msg, btn_soc, btn_usr, dtl, id, idn, lp, sms } from "./section.ts"
+import { btn_agd, btn_aut, btn_msg, btn_pos, btn_soc, btn_usr, dtl, id, idn, lp, sms } from "./section.ts"
 import { que } from "./fetch.ts"
 import { nav } from "./nav.ts"
 import { article } from "./template.ts"
 import { adm } from "../../src/ont/adm.ts"
 import { is_in } from "../../src/pra/can.ts"
 import { is_aut } from "../../src/eid/is.ts"
+import { utc_dt } from "../../src/ont/utc.ts"
+
+export async function agr(
+	soc: Soc["_id"],
+) {
+	const s = await que<QueRet["soc"]>({ que: "soc", soc })
+	if (!s || !nav.pas) return
+	article(
+		idn("用户协议", s.nam, `更新时间：${utc_dt(s.agr.utc)}\n\n必须同意用户协议才能继续使用网站`, s.agr.msg),
+		btn_pos(nav.pas, `#${nav.pas.usr}`, () => ({
+			put: "cdt", usr: nav.pas!.usr, soc, agr: Date.now()
+		}), undefined)
+	)
+}
 
 export async function admf(
 ) {

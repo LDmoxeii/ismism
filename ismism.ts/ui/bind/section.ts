@@ -15,6 +15,7 @@ export function idn(
 	id: string,
 	nam: string,
 	mta?: string,
+	msg?: string,
 ): Bind {
 	const b = section("id")
 	b.id.innerText = id
@@ -22,6 +23,7 @@ export function idn(
 	b.idnam.href = ""
 	if (mta) b.mta.innerText = mta
 	else b.mta.remove()
+	if (msg) b.msg.innerHTML = marked.parse(msg)
 	return b.bind
 }
 

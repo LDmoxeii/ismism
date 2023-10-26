@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window-prefix
 import type { PsgRet, Pas } from "../../src/pra/pos.ts"
-import { admf, agd, msg, psg, soc, usr } from "./article.ts"
+import { admf, agd, agr, msg, psg, soc, usr } from "./article.ts"
 import { pos } from "./fetch.ts"
 import { pas } from "./template.ts"
 
@@ -17,6 +17,9 @@ export async function navpas(
 }
 
 window.addEventListener("hashchange", () => {
+	if (nav.pas && nav.pas.agr.length > 0) {
+		return agr(nav.pas.agr[0])
+	}
 	const h = decodeURI(location.hash).substring(1)
 	if (h == "" || h == "soc") admf()
 	else if (/^\d+$/.test(h)) usr({ usr: parseInt(h) })
