@@ -101,7 +101,7 @@ Deno.test("pre-put", async () => {
 		pos({ jwt }, json({ put: "agd", agd: 1, nam: "活动介绍", adm1, adm2, msg: "活动介绍" } as Put)),
 		pos({ jwt }, json({ put: "agd", agd: 1 } as Put)),
 		pos({ jwt }, json({ put: "agd", agd: 1 } as Put)),
-		await pos({ jwt }, json({ put: "cdt", id: cdt._id, agr: 3 } as Put)),
+		await pos({ jwt }, json({ put: "cdt", usr: 2, soc: 1, agr: 3 } as Put)),
 		pos(p, json({ put: "cdt", id: cdt._id } as Put)),
 		pos({ jwt }, json({ put: "cdt", id: cdt._id } as Put)),
 		pos({ jwt }, json({ put: "cdt", id: cdt._id, agr: 5 } as Put)),

@@ -49,7 +49,8 @@ export type Put = {
 	id: Cdt["_id"],
 } | {
 	put: "cdt",
-	id: Cdt["_id"],
+	usr: Cdt["_id"]["usr"],
+	soc: Cdt["_id"]["soc"],
 	agr: Cdt["utc"]["agr"],
 } | {
 	put: "dbt",
@@ -115,7 +116,7 @@ export async function put(
 				return agd_u(p.agd, { $set: { nam, adm1, adm2, msg: p.msg } })
 			} else return agd_d(p.agd)
 		} case "cdt": case "dbt": case "ern": {
-			if ("agr" in p) return cdt_u(p.id, Date.now())
+			if ("agr" in p) return cdt_u(p.usr, p.soc, Date.now())
 			else if ("sec" in p) return dbt_s(p.id, p.sec)
 			else return rec_d(coll[p.put], p.id)
 		} case "wsl": case "lit": {

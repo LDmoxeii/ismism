@@ -400,9 +400,9 @@ function put_t(
 	const b = section("put_t")
 	b.txt.maxLength = lim
 	b.txt.value = t
-	label(b.txt, `${l}：（${b.txt.value.length}/${b.txt.maxLength} 个字符）`)
+	label(b.txt, `${l}（${b.txt.value.length}/${b.txt.maxLength} 个字符）`)
 	b.txt.addEventListener("input", () => {
-		label(b.txt, `${l}：（${b.txt.value.length}/${b.txt.maxLength} 个字符）`)
+		label(b.txt, `${l}（${b.txt.value.length}/${b.txt.maxLength} 个字符）`)
 		b.txt.style.height = "auto"
 		b.txt.style.height = `${b.txt.scrollHeight}px`
 	})

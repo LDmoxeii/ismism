@@ -66,7 +66,7 @@ export function is_put(
 				&& is_nam(p.nam) && is_adm(p.adm1, p.adm2) && is_msg(p.msg, lim_msg_id)
 			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.agd)
 		case "cdt": case "dbt": case "ern":
-			if ("agr" in p) return is_in(pas.cdt, p.id.soc) && is_recid(p.id)
+			if ("agr" in p) return pas.usr == p.usr && is_in(pas.cdt, p.soc)
 			else return is_in(pas.sec, p.id.soc) && is_recid(p.id)
 		case "wsl": case "lit":
 			if (!is_in(pas.aut[p.put], pas.usr)) return false

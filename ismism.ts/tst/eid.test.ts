@@ -65,7 +65,7 @@ Deno.test("rec", async () => {
 	assertEquals(3, (await cdt_a({ usr, soc }, { eft: 1, exp: 5 }))?.length)
 	assertEquals(2, (await cdt_a({ soc }, { eft: 3, exp: 4 }))?.length)
 	assertEquals(0, (await cdt_a({ usr, soc }, { eft: 5, exp: 6 }))?.length)
-	assertEquals(1, await cdt_u({ usr, soc, utc: utc + 2 }, utc + 10))
+	assertEquals(1, await cdt_u(usr, soc, utc + 10))
 	assertEquals({ _id: { usr, soc, utc: utc + 2 }, utc: { eft: 3, exp: 5, agr: utc + 10 } },
 		(await cdt_a({ usr, soc }, { now: 4 }, { utc: 1 }))![0])
 

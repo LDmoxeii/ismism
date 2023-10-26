@@ -43,12 +43,12 @@ export async function rec_f<
 }
 
 export async function cdt_u(
-	_id: Cdt["_id"], agr: Cdt["utc"]["agr"],
+	usr: Cdt["_id"]["usr"], soc: Cdt["_id"]["soc"], agr: Cdt["utc"]["agr"],
 ): DocU {
-	if (!is_recid(_id)) return null
+	if (!is_id(usr) || !is_id(soc) || agr < 0) return null
 	try {
 		const { matchedCount, modifiedCount } = await coll.cdt
-			.updateOne({ _id }, { $set: { "utc.agr": agr } })
+			.updateMany({ "_id.usr": usr, "_id.soc": soc }, { $set: { "utc.agr": agr } })
 		if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
 		else return null
 	} catch { return null }
