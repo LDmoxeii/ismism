@@ -76,7 +76,7 @@ export function sms(
 	const sms = async () => {
 		if (!is_nbr(s.nbr.value)) return alert("无效手机号")
 		s.nbr.readOnly = s.sms.disabled = true
-		const sent = await pos<PsgRet["sms"]>({ psg: "sms", nbr: s.nbr.value, sms: true })
+		const sent = await pos<PsgRet["sms"]>({ psg: "sms", nbr: s.nbr.value, sms: location.hostname === "ismist.cn" })
 		if (sent) {
 			const utc = sent.utc ? `\n上次发送：${utc_dt(sent.utc, "medium")}` : ""
 			s.hint.innerText = `验证码已发送，可多次使用\n一小时内不再重复发送${utc}`

@@ -55,7 +55,7 @@ async function handler(
 	return new Response(null, { status: 400 })
 }
 
-await db("ismism-dev")
+await db("ismism")
 await jwk_load()
 const port = parseInt(Deno.args[0]) ?? 728
 Deno.serve({ handler, port })

@@ -4,4 +4,7 @@
 /log
 /cache
 /ui
+/dbimport
+/dbexport
+dbmig.ts
 *.js

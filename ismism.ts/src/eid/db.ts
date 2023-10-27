@@ -50,7 +50,7 @@ const msg: IndexOptions[] = [{
 }]
 
 export async function db(
-	dbnam: "ismism-dev" | "tst",
+	dbnam: "ismism" | "tst",
 	reset = false,
 ) {
 	const db = conn.database(dbnam)
@@ -86,7 +86,7 @@ export async function db(
 		await c.aut.insertOne({ _id: 1, sup: [1, 2], aut: [2], wsl: [], lit: [] })
 	}
 
-	if (dbnam === "ismism-dev") coll = c
+	if (dbnam === "ismism") coll = c
 	return c
 }
 
