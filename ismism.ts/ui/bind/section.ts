@@ -9,7 +9,10 @@ import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { is_in, is_pos, is_put } from "../../src/pra/can.ts"
 import { Cdt, Msg } from "../../src/eid/typ.ts"
 
-const { marked } = await import("https://ismist.cn/mod/marked.esm.js")
+const { marked } = await import(location.hostname == "ismist.cn"
+	? "https://ismist.cn/mod/marked.esm.js"
+	: "https://localhost/mod/marked.esm.js"
+)
 
 export function idn(
 	id: string,
@@ -42,6 +45,9 @@ export function id(
 			: `共${d.msg.length}篇文章`
 	b.msg.innerHTML = "nam" in d ? marked.parse(d.msg)
 		: "nam" in d.msg ? marked.parse(`编辑：[${d.usr[0][1]}](#${d.usr[0][0]})\n\n` + d.msg.msg) : ""
+	if ("agr" in d && d.agr.msg.length > 0 && d.agr.utc > 0) b.msg.prepend(lp("", [["用户协议", () => article(
+		idn("用户协议", d.nam, `更新时间：${utc_dt(d.agr.utc)}\n\n必须同意用户协议才能继续使用网站`, d.agr.msg)
+	)]]))
 	return b.bind
 }
 
@@ -137,15 +143,23 @@ export function dtl(
 					d.clr.disabled = true
 					if (!confirm("确认删除？")) return
 					const p = await pos<PutRet["cdt"]>({ put: q.que as "cdt", id: r._id })
-					if (p) return setTimeout(() => hash(`#s${r._id.soc}`), utc_rf)
-					d.clr.disabled = false
+					if (p) {
+						d.msg.classList.remove("green")
+						d.msg.classList.add("red")
+						d.msg.innerText = "已删除"
+						d.clr.remove()
+						d.fin.remove()
+					} else d.clr.disabled = false
 				})
 				if (q.que == "dbt" && !r.sec) {
 					d.fin.addEventListener("click", async () => {
 						d.fin.disabled = true
 						const p = await pos<PutRet["dbt"]>({ put: "dbt", id: r._id, sec: pas.usr })
-						if (p) return setTimeout(() => hash(`#s${r._id.soc}`), utc_rf)
-						d.fin.disabled = false
+						if (p) {
+							d.mta.innerText += `（联络员：${pas.nam}#${pas.usr}）`
+							d.msg.classList.remove("green")
+							d.fin.remove()
+						} else d.fin.disabled = false
 					})
 				} else d.fin.remove()
 			} else[d.clr, d.fin].forEach(el => el.remove())

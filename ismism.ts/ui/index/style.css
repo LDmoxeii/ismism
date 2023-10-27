@@ -360,6 +360,11 @@ details section.msg.green {
 	background: var(--greenl);
 }
 
+details section.msg.red {
+	background: var(--redl);
+	font-style: italic;
+}
+
 details button {
 	font-style: italic;
 	color: var(--gray);
