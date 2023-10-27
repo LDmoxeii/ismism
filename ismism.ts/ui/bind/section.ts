@@ -9,7 +9,7 @@ import { adm, adm1_def, adm2_def } from "../../src/ont/adm.ts"
 import { is_in, is_pos, is_put } from "../../src/pra/can.ts"
 import { Cdt, Msg } from "../../src/eid/typ.ts"
 
-const { marked } = await import("https://cdn.jsdelivr.net/npm/marked@latest/lib/marked.esm.js")
+const { marked } = await import("https://ismist.cn/mod/marked.esm.js")
 
 export function idn(
 	id: string,

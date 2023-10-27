@@ -26,6 +26,7 @@ export async function admf(
 ) {
 	const a = await que<QueRet["adm"]>({ que: "adm" })
 	const s = new Map(a.soc)
+	a.soc.sort((a, b) => a[0] - b[0])
 	article(
 		idn("soc", "同城俱乐部"),
 		lp("地区：", a.adm1.map(([a1, s1]) => {
@@ -35,9 +36,9 @@ export async function admf(
 				idn("soc", a1),
 				lp("地区：", a2.map(([a2, s2]) => [`${a2}(${s2.length})`, () => article(
 					idn("soc", `${a1} ${a2}`),
-					lp(`俱乐部（${s2.length}）：`, s2.map(s2 => [s.get(s2)!, `#s${s2}`]))
+					lp(`俱乐部（${s2.length}）：`, s2.sort((a, b) => a - b).map(s2 => [s.get(s2)!, `#s${s2}`]))
 				)])),
-				lp(`俱乐部（${s1.length}）：`, s1.map(s1 => [s.get(s1)!, `#s${s1}`])),
+				lp(`俱乐部（${s1.length}）：`, s1.sort((a, b) => a - b).map(s1 => [s.get(s1)!, `#s${s1}`])),
 			)]
 		})),
 		lp(`俱乐部（${a.soc.length}）：`, a.soc.map(([s, n]) => [n, `#s${s}`])),
