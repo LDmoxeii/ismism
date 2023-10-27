@@ -8,7 +8,8 @@ cd ismism.ts
 
 set -e
 deno check src/ser.ts
-deno run -A cli/bundle.ts src/ser ui/bind/bind
+deno run -A cli/bundle.ts src/ser ui/bind/bind cli/dbset
 deno run -A ui/ui.ts
 cp -r ui/mod ../ui
 mv src/ser.js ../cli
+mv cli/dbset.js ../cli

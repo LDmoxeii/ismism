@@ -6,5 +6,7 @@
 /ui
 /dbimport
 /dbexport
+/release
 dbmig.ts
 *.js
+*.zip
