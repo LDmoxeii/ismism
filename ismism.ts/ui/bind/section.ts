@@ -136,7 +136,7 @@ export function dtl(
 				d.clr.addEventListener("click", async () => {
 					d.clr.disabled = true
 					if (!confirm("确认删除？")) return
-					const p = await pos<PutRet["cdt"]>({ put: "cdt", id: r._id })
+					const p = await pos<PutRet["cdt"]>({ put: q.que as "cdt", id: r._id })
 					if (p) return setTimeout(() => hash(`#s${r._id.soc}`), utc_rf)
 					d.clr.disabled = false
 				})
