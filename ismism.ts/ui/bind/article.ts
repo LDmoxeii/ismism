@@ -57,7 +57,7 @@ export async function usr(
 	] as [string, string, string][] : []
 	const t = article()
 	if (rol.length > 0) t.append(lp("", rol, false))
-	t.append(id("usr" in q ? `${q.usr}` : q.nam, u))
+	t.append(id(u ? `${u._id}` : "nam" in q ? q.nam : `${q.usr}`, u))
 	if (u) t.append(
 		dtl(`积分记录：（${u.sum.cdt.length}个俱乐部）`, { que: "cdt", usr: u._id, utc: 0 }, nav.pas),
 		dtl(`积分使用：（${u.sum.dbt.length}个俱乐部）`, { que: "dbt", usr: u._id, utc: 0 }, nav.pas),
