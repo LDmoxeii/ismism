@@ -390,7 +390,7 @@ p.hint {
 
 p.msg img {
 	display: block;
-	max-width: 720px;
+	max-width: min(100%, 720px);
 	margin: auto;
 }
 
