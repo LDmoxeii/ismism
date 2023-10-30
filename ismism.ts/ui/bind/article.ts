@@ -121,14 +121,13 @@ export async function agr(
 export function dbt(
 	q: string
 ) {
-	const d = json<{ soc: Soc["_id"], msg: string, amt: number, sec: Usr["_id"] }>(q)
-	console.log(q, d)
+	const d = json<{ soc: Soc["_id"], msg: string, amt: number }>(q)
 	if (!nav.pas || !d) return article(idn("dbt", "无效二维码", "向联络员确认二维码"))
 	article(idn(`s${d.soc}`, "使用积分", `为 ${d.msg} 使用 ${d.amt} 积分？`),
 		btn_pos(nav.pas, `${nav.pas.usr}`, () => ({
 			pre: "dbt", dbt: {
 				_id: { usr: nav.pas!.usr, soc: d.soc, utc: Date.now() },
-				msg: d.msg, amt: d.amt, sec: d.sec,
+				msg: d.msg, amt: d.amt
 			}
 		})))
 }
