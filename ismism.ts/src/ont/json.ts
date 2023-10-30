@@ -5,3 +5,10 @@ export type Json =
 	| string
 	| Json[]
 	| { [key: string]: Json }
+
+export function json<T = Json>(
+	s: string,
+): T | null {
+	try { return JSON.parse(`{"${s.substring(1).replace(/&/g, ',"').replace(/=/g, '":')}}`) }
+	catch { return null }
+}

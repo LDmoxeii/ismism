@@ -31,13 +31,13 @@ async function handler(
 			log(utc, "etag updated")
 			return new Response(null, { status: 200 })
 		} case "q": {
-			const s = decodeURI(url.search.substring(1))
+			const s = decodeURI(url.search)
 			if (etag === "") { etag = utc_etag(); utc_f = utc }
 			if (req.headers.get("if-none-match")?.includes(etag)) {
-				log(utc, `${r}?${s}`, 304)
+				log(utc, `${r}${s}`, 304)
 				return new Response(null, { status: 304, headers: { etag } })
 			}
-			log(utc, `${r}?${s}`, 200)
+			log(utc, `${r}${s}`, 200)
 			return new Response(JSON.stringify(await que(s)), { status: 200, headers: { etag } })
 		} case "p": {
 			const p: PasPos = {}

@@ -1,5 +1,6 @@
 import { is_id } from "../eid/is.ts"
 import { Agd, Msg, Rec, Soc, Usr } from "../eid/typ.ts"
+import { json } from "../ont/json.ts"
 import { Ret } from "./can.ts"
 import { adm, agd, msg, rec, soc, usr } from "./doc.ts"
 
@@ -42,17 +43,11 @@ export type QueRet = {
 	lit: Ret<typeof msg>,
 }
 
-function json(
-	s: string,
-): Que | null {
-	try { return JSON.parse(`{"${s.replace(/&/g, ',"').replace(/=/g, '":')}}`) }
-	catch { return null }
-}
 
 export function que(
 	s: string,
 ) {
-	const q = json(s)
+	const q = json<Que>(s)
 
 	if (q) switch (q.que) {
 		case "adm": return adm()
