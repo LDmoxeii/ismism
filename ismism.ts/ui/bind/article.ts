@@ -47,8 +47,8 @@ export async function usr(
 	if (rol.length > 0) t.append(lp("", rol, false))
 	t.append(id(u ? `${u._id}` : "nam" in q ? q.nam : `${q.usr}`, u))
 	if (u) t.append(
-		dtl(`积分记录：（${u.sum.cdt.length}个俱乐部）`, { que: "cdt", usr: u._id, utc: 0 }, nav.pas),
 		dtl(`积分使用：（${u.sum.dbt.length}个俱乐部）`, { que: "dbt", usr: u._id, utc: 0 }, nav.pas),
+		dtl(`积分记录：（${u.sum.cdt.length}个俱乐部）`, { que: "cdt", usr: u._id, utc: 0 }, nav.pas),
 		dtl(`贡献记录：（${u.sum.ern.length}个俱乐部）`, { que: "ern", usr: u._id, utc: 0 }, nav.pas),
 	)
 	if (u && nav.pas && nav.pas.usr == u._id) t.append(btn_usr(nav.pas, u), btn_aut(nav.pas))
@@ -66,8 +66,8 @@ export async function soc(
 	if (nav.pas) {
 		if (is_in(nav.pas.cdt, _id) || is_aut(nav.pas.aut, nav.pas.usr)) t.append(
 			lp(`会员：(${s.cdt.length}) (仅会员可见)`, s.cdt.map(([u, n]) => [n, `#${u}`, "ln"])),
-			dtl(`积分记录：（总积分：${s.sum.cdt}）`, { que: "cdt", soc: s._id, utc: 0 }, nav.pas),
 			dtl(`积分使用：（总使用：${s.sum.dbt}）`, { que: "dbt", soc: s._id, utc: 0 }, nav.pas),
+			dtl(`积分记录：（总积分：${s.sum.cdt}）`, { que: "cdt", soc: s._id, utc: 0 }, nav.pas),
 			dtl(`贡献记录：（总贡献：${s.sum.ern}）`, { que: "ern", soc: s._id, utc: 0 }, nav.pas),
 		)
 		t.append(btn_soc(nav.pas, s))
@@ -121,8 +121,9 @@ export async function agr(
 export function dbt(
 	q: string
 ) {
+	if (!nav.pas) return article(idn("dbt", "用户未登陆", "用户登录后再重新扫码"))
 	const d = json<{ soc: Soc["_id"], msg: string, amt: number }>(q)
-	if (!nav.pas || !d) return article(idn("dbt", "无效二维码", "向联络员确认二维码"))
+	if (!d) return article(idn("dbt", "无效二维码", "向联络员确认二维码内容"))
 	article(idn(`s${d.soc}`, "使用积分", `为 ${d.msg} 使用 ${d.amt} 积分？`),
 		btn_pos(nav.pas, `${nav.pas.usr}`, () => ({
 			pre: "dbt", dbt: {
