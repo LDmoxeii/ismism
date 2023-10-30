@@ -47,7 +47,7 @@ export type QueRet = {
 export function que(
 	s: string,
 ) {
-	const q = json<Que>(s)
+	const q = json<Que>(s.substring(1))
 
 	if (q) switch (q.que) {
 		case "adm": return adm()

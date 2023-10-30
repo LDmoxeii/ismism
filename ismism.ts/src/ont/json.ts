@@ -9,6 +9,6 @@ export type Json =
 export function json<T = Json>(
 	s: string,
 ): T | null {
-	try { return JSON.parse(`{"${s.substring(1).replace(/&/g, ',"').replace(/=/g, '":')}}`) }
+	try { return JSON.parse(`{"${s.replace(/&/g, ',"').replace(/=/g, '":')}}`) }
 	catch { return null }
 }

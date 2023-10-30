@@ -8,19 +8,7 @@ import { adm } from "../../src/ont/adm.ts"
 import { is_in } from "../../src/pra/can.ts"
 import { is_aut } from "../../src/eid/is.ts"
 import { utc_dt } from "../../src/ont/utc.ts"
-
-export async function agr(
-	soc: Soc["_id"],
-) {
-	const s = await que<QueRet["soc"]>({ que: "soc", soc })
-	if (!s || !nav.pas) return
-	article(
-		idn("用户协议", s.nam, `更新时间：${utc_dt(s.agr.utc)}\n\n必须同意用户协议才能继续使用网站`, s.agr.msg),
-		btn_pos(nav.pas, `#${nav.pas.usr}`, () => ({
-			put: "cdt", usr: nav.pas!.usr, soc, agr: Date.now()
-		}), undefined)
-	)
-}
+import { json } from "../../src/ont/json.ts"
 
 export async function admf(
 ) {
@@ -115,4 +103,32 @@ export async function msg(
 export function psg(
 ) {
 	article(idn("psg", "用户登录", "输入手机号与验证码"), sms())
+}
+
+export async function agr(
+	soc: Soc["_id"],
+) {
+	const s = await que<QueRet["soc"]>({ que: "soc", soc })
+	if (!s || !nav.pas) return
+	article(
+		idn("用户协议", s.nam, `更新时间：${utc_dt(s.agr.utc)}\n\n必须同意用户协议才能继续使用网站`, s.agr.msg),
+		btn_pos(nav.pas, `#${nav.pas.usr}`, () => ({
+			put: "cdt", usr: nav.pas!.usr, soc, agr: Date.now()
+		}), undefined)
+	)
+}
+
+export function dbt(
+	q: string
+) {
+	const d = json<{ soc: Soc["_id"], msg: string, amt: number, sec: Usr["_id"] }>(q)
+	console.log(q, d)
+	if (!nav.pas || !d) return article(idn("dbt", "无效二维码", "向联络员确认二维码"))
+	article(idn(`s${d.soc}`, "使用积分", `为 ${d.msg} 使用 ${d.amt} 积分？`),
+		btn_pos(nav.pas, `${nav.pas.usr}`, () => ({
+			pre: "dbt", dbt: {
+				_id: { usr: nav.pas!.usr, soc: d.soc, utc: Date.now() },
+				msg: d.msg, amt: d.amt, sec: d.sec,
+			}
+		})))
 }
