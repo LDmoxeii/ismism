@@ -43,7 +43,7 @@ Deno.test("pas", async () => {
 	await usr_d(usr)
 })
 
-Deno.test("pre-put", async () => {
+Deno.test("pos", async () => {
 	const nbr = ["11111111111", "11111111112", "11111111113"]
 	const [adm1, adm2] = ["广东", "汕头"]
 	const cdt: Cdt = {
@@ -97,13 +97,14 @@ Deno.test("pre-put", async () => {
 	assertEquals([true, true, false, true, false, true, true, true], rpre.map(r => r != null))
 	assertEquals([1], p.pas?.agr); p.jwt = jwt
 
-	assertEquals([1, 1, 0, 1, 1, 0, null, 1, 1, 1, 0, 1], await Promise.all([
+	assertEquals([1, 1, 0, 1, 1, 1, 0, null, 1, 1, 1, 0, 1], await Promise.all([
 		pos({ jwt }, json({ put: "agd", agd: 1, nam: "活动介绍", adm1, adm2, msg: "活动介绍" } as Put)),
 		pos({ jwt }, json({ put: "agd", agd: 1 } as Put)),
 		pos({ jwt }, json({ put: "agd", agd: 1 } as Put)),
 		await pos({ jwt }, json({ put: "cdt", usr: 2, soc: 1, agr: 3 } as Put)),
-		pos(p, json({ put: "cdt", id: cdt._id } as Put)),
-		pos({ jwt }, json({ put: "cdt", id: cdt._id } as Put)),
+		await pos({ jwt }, json({ put: "cdt", id: cdt._id, msg: "msg", amt: 5 } as Put)),
+		await pos(p, json({ put: "cdt", id: cdt._id } as Put)),
+		await pos({ jwt }, json({ put: "cdt", id: cdt._id } as Put)),
 		pos({ jwt }, json({ put: "cdt", id: cdt._id, agr: 5 } as Put)),
 		pos({ jwt }, json({ put: "dbt", id: dbt._id } as Put)),
 		pos({ jwt }, json({ put: "ern", id: ern._id } as Put)),

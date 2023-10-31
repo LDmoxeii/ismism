@@ -1,6 +1,6 @@
 import type { Soc } from "../eid/typ.ts"
 import type { Pos, Pre, Put, Psg, Pas } from "./pos.ts"
-import { is_aut, is_cdt, is_id, is_idl, is_lim, is_msg, is_nam, is_nbr, is_rec, is_recid, lim_aut, lim_code, lim_msg, lim_msg_id, lim_sec } from "../eid/is.ts"
+import { is_aut, is_cdt, is_id, is_idl, is_lim, is_msg, is_nam, is_nbr, is_rec, is_recid, lim_aut, lim_code, lim_msg, lim_msg_id, lim_msg_rec, lim_sec } from "../eid/is.ts"
 import { is_adm } from "../ont/adm.ts"
 
 // deno-lint-ignore no-explicit-any
@@ -67,6 +67,8 @@ export function is_put(
 			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.agd)
 		case "cdt": case "dbt": case "ern":
 			if ("agr" in p) return pas.usr == p.usr && is_in(pas.cdt, p.soc)
+			else if ("msg" in p) return is_in(pas.sec, p.id.soc) && is_recid(p.id)
+				&& is_msg(p.msg, lim_msg_rec) && typeof p.amt == "number"
 			else return is_in(pas.sec, p.id.soc) && is_recid(p.id)
 		case "wsl": case "lit":
 			if (!is_in(pas.aut[p.put], pas.usr)) return false

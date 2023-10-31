@@ -83,11 +83,18 @@ export function is_rec(
 		&& typeof amt == "number" && amt >= 0
 		&& (sec == undefined || typeof sec == "number")
 }
+export function is_aug(
+	aug: NonNullable<Cdt["aug"]>[0]
+) {
+	return Object.keys(aug).length == 4 && is_msg(aug.msg, lim_msg_rec)
+		&& typeof aug.amt == "number" && is_id(aug.sec) && Number.isInteger(aug.utc)
+}
 export function is_cdt(
 	cdt: Cdt
 ) {
-	const { eft, exp, agr } = cdt.utc
+	const { utc: { eft, exp, agr }, aug } = cdt
 	return is_rec(cdt) && typeof eft == "number" && typeof exp == "number" && eft <= exp && agr >= 0
+		&& aug ? aug.every(is_aug) : true
 }
 
 export function is_aut(

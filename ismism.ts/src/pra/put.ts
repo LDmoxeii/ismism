@@ -2,7 +2,7 @@ import { agd_d, agd_u } from "../eid/agd.ts"
 import { aut_u } from "../eid/aut.ts"
 import { coll } from "../eid/db.ts"
 import { msg_d, msg_u } from "../eid/msg.ts"
-import { cdt_u, dbt_s, rec_d } from "../eid/rec.ts"
+import { cdt_a, cdt_u, dbt_s, rec_d } from "../eid/rec.ts"
 import { soc_d, soc_u } from "../eid/soc.ts"
 import { Agd, Cdt, Dbt, Ern, Msg, Soc, Usr } from "../eid/typ.ts"
 import { usr_u } from "../eid/usr.ts"
@@ -52,6 +52,11 @@ export type Put = {
 	usr: Cdt["_id"]["usr"],
 	soc: Cdt["_id"]["soc"],
 	agr: Cdt["utc"]["agr"],
+} | {
+	put: "cdt",
+	id: Cdt["_id"],
+	msg: Cdt["msg"],
+	amt: Cdt["amt"],
 } | {
 	put: "dbt",
 	id: Dbt["_id"],
@@ -117,6 +122,7 @@ export async function put(
 			} else return agd_d(p.agd)
 		} case "cdt": case "dbt": case "ern": {
 			if ("agr" in p) return cdt_u(p.usr, p.soc, Date.now())
+			else if ("msg" in p) return cdt_a(p.id, { msg: p.msg, amt: p.amt, sec: pas.usr, utc: Date.now() })
 			else if ("sec" in p) return dbt_s(p.id, p.sec)
 			else return rec_d(coll[p.put], p.id)
 		} case "wsl": case "lit": {

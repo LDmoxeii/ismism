@@ -28,6 +28,7 @@ export type Rec = {
 }
 export type Cdt = Rec & {
 	utc: { eft: number, exp: number, agr: number },
+	aug?: { msg: string, amt: number, sec: Usr["_id"], utc: number }[],
 }
 export type Dbt = Rec
 export type Ern = Rec

@@ -1,6 +1,6 @@
 import type { Cdt, Dbt, Rec } from "./typ.ts"
 import { Coll, DocC, DocD, DocR, DocU, coll } from "./db.ts"
-import { is_id, is_msg, is_recid, lim_msg_rec, lim_rec_f } from "./is.ts"
+import { is_aug, is_id, is_msg, is_recid, lim_msg_rec, lim_rec_f } from "./is.ts"
 
 export async function rec_c<
 	T extends Rec
@@ -49,6 +49,17 @@ export async function cdt_u(
 	try {
 		const { matchedCount, modifiedCount } = await coll.cdt
 			.updateMany({ "_id.usr": usr, "_id.soc": soc }, { $set: { "utc.agr": agr } })
+		if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
+		else return null
+	} catch { return null }
+}
+
+export async function cdt_a(
+	_id: Cdt["_id"], aug: NonNullable<Cdt["aug"]>[0]
+): DocU {
+	if (!is_recid(_id) || !is_aug(aug)) return null
+	try {
+		const { matchedCount, modifiedCount } = await coll.cdt.updateOne({ _id }, { $push: { aug } })
 		if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
 		else return null
 	} catch { return null }
