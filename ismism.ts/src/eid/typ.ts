@@ -1,105 +1,53 @@
 export type Id = {
 	_id: number,
-	nam: string,
 	utc: number,
+	nam: string,
 	adm1: string,
 	adm2: string,
-	intro: string,
-} & Re
-export type Re = {
-	rej: Usr["_id"][],
-	ref: Usr["_id"][],
-}
-export type Rel = {
-	sec: Usr["_id"][],
-	uidlim: number,
-	uid: Usr["_id"][],
-	reslim: number,
-	res: Usr["_id"][],
+	msg: string,
 }
 
 export type Usr = Id & {
 	nbr?: string,
-	pcode?: { code: number, utc: number },
-	ptoken?: string,
+	sms?: { code: number, utc: number },
+	jwt?: string,
 }
-export type Soc = Id & Rel
-export type Agd = Soc & {
-	account: string,
-	budget: number,
-	fund: number,
-	expense: number,
-	goal: { nam: string, pct: number }[],
-	img: { nam: string, src: string }[],
-	ordutc: number,
-	ordlim: number,
-	ordlimw: number,
+export type Soc = Id & {
+	sec: Usr["_id"][],
+	agr: { msg: string, utc: number },
 }
-
-export type Ord = {
-	_id: { nbr: string, aid: Agd["_id"], utc: number },
-	code: number,
-	ord: boolean,
-	msg: string,
+export type Agd = Id & {
+	soc: Soc["_id"],
 }
 
 export type Rec = {
-	_id: { uid: Usr["_id"], aid: Agd["_id"], utc: number },
-}
-export type Work = Rec & Re & ({
-	work: "work",
+	_id: { usr: Usr["_id"], soc: Soc["_id"], utc: number },
 	msg: string,
-} | {
-	work: "video",
-	nam: string,
-	src: string,
-} | {
-	work: "live",
-	nam: string,
-	src: string,
-	utcs: number,
-	utce: number,
-})
-export type Fund = Rec & {
-	fund: number,
-	msg: string,
-	rd?: Dst["_id"]["rd"],
-	unit?: number,
+	amt: number,
+	sec?: Usr["_id"],
 }
-
-export type Dst = {
-	_id: { rd: number, aid?: Agd["_id"], uid?: Usr["_id"] },
-	json?: string,
-	dst?: number,
+export type Cdt = Rec & {
+	utc: { eft: number, exp: number, agr: number },
+	aug?: { msg: string, amt: number, sec: Usr["_id"], utc: number }[],
 }
+export type Dbt = Rec
+export type Ern = Rec
 
-export type Aut = {
-	_id: Usr["_id"],
-	aut: ("sup" | "aud" | "aut" | "wsl" | "lit")[],
-}
-export type Act = {
-	_id: string,
-	exp: number,
-} & ({
-	act: "fund",
-	aid: Agd["_id"],
-	msg: string,
-	rd?: Dst["_id"]["rd"],
-	unit?: number,
-} | {
-	act: "nbr",
-	uid: number,
-})
-
-export type Md = {
+export type Msg = {
 	_id: number,
 	nam: string,
-	utc: number,
-	utcp: number,
-	uid: Usr["_id"],
-	md: string,
-	pin?: boolean,
+	utc: { pre: number, put: number },
+	usr: Usr["_id"],
+	msg: string,
+	pin?: true,
 }
+export type Wsl = Msg
+export type Lit = Msg
 
-export type Wsl = Md
-export type Lit = Md
+export type Aut = {
+	_id: 1,
+	sup: Usr["_id"][],
+	aut: Usr["_id"][],
+	wsl: Usr["_id"][],
+	lit: Usr["_id"][],
+}

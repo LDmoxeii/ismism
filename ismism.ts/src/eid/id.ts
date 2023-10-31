@@ -1,7 +1,7 @@
-import type { Coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
-import type { Id, Re, Usr } from "./typ.ts"
-import { is_adm, is_adm1, is_adm2 } from "../ont/adm.ts"
-import { is_id, is_idl, is_intro, is_nam, lim_re } from "./is.ts"
+import type { Id } from "./typ.ts"
+import { coll, Coll, DocC, DocD, DocR, DocU, Fltr, Proj, Updt } from "./db.ts"
+import { is_id, is_msg, is_nam, is_utc, lim_msg_id } from "./is.ts"
+import { is_adm } from "../ont/adm.ts"
 
 export async function id_n<
 	T extends Id
@@ -17,17 +17,14 @@ export async function id_c<
 >(
 	c: Coll<T>,
 	id: T,
-	isnam = false,
 ): DocC<T["_id"]> {
 	const is = is_id(id._id)
-		&& (isnam || is_nam(id.nam))
-		&& is_adm([id.adm1, id.adm2])
-		&& is_intro(id.intro)
-		&& is_idl(id.rej, lim_re)
-		&& is_idl(id.ref, lim_re)
+		&& is_utc(id.utc)
+		&& (is_nam(id.nam) || id.nam === `${id._id}`)
+		&& is_adm(id.adm1, id.adm2)
+		&& is_msg(id.msg, lim_msg_id)
 	if (!is) return null
-	try { return await c.insertOne(id) as T["_id"] }
-	catch { return null }
+	try { return await c.insertOne(id) as T["_id"] } catch { return null }
 }
 
 export async function id_r<
@@ -36,10 +33,10 @@ export async function id_r<
 >(
 	c: Coll<T>,
 	f: Partial<T>,
-	projection: Partial<{ [K in P]: 1 }>
+	p?: Proj<T, P>,
 ): DocR<Pick<T, "_id" | P>> {
 	if (f._id && !is_id(f._id) || f.nam && !is_nam(f.nam)) return null
-	return await c.findOne(f, { projection }) ?? null
+	return await c.findOne(f as Fltr<T>, { projection: p }) ?? null
 }
 
 export async function id_u<
@@ -47,19 +44,16 @@ export async function id_u<
 >(
 	c: Coll<T>,
 	_id: T["_id"],
-	u: Update<T>,
+	u: Updt<T>,
 ): DocU {
 	if (!is_id(_id)) return null
-	if ("$set" in u && u.$set) {
-		const s = u.$set
-		if ("nam" in s && !is_nam(s.nam!)) return null
-		if (("adm1" in s || "adm2" in s) && !is_adm([s.adm1, s.adm2])) return null
-		if ("intro" in s && !is_intro(s.intro!)) return null
-		if (s.rej && !is_idl(s.rej, lim_re)) return null
-		if (s.ref && !is_idl(s.ref, lim_re)) return null
+	const s = u.$set
+	if (s) {
+		if (s.nam && !is_nam(s.nam)) return null
+		if ((s.adm1 || s.adm2) && !((s.adm1 && s.adm2) && is_adm(s.adm1, s.adm2))) return null
+		if (s.msg && !is_msg(s.msg, lim_msg_id)) return null
 	}
-	try {
-		// deno-lint-ignore no-explicit-any
+	try { // deno-lint-ignore no-explicit-any
 		const { matchedCount, modifiedCount } = await c.updateOne({ _id } as any, u)
 		if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
 		else return null
@@ -73,11 +67,20 @@ export async function id_d<
 	_id: T["_id"],
 ): DocD {
 	if (!is_id(_id)) return null
-	try {
-		// deno-lint-ignore no-explicit-any
+	try { // deno-lint-ignore no-explicit-any
 		const d = await c.deleteOne({ _id } as any)
 		return d > 0 ? 1 : 0
 	} catch { return null }
+}
+
+export async function id<
+	T extends Id
+>(
+	c: Coll<T>,
+	f: Fltr<T>,
+): Promise<Id["_id"][]> {
+	const d = await c.find(f, { projection: { _id: 1 } }).toArray()
+	return d.map(d => d._id)
 }
 
 export async function idnam<
@@ -95,46 +98,15 @@ export async function idnam<
 	return d.map(d => [d._id, d.nam])
 }
 
-export async function id<
-	T extends Id,
+export async function idadm<
+	A extends "adm1" | "adm2"
 >(
-	c: Coll<T>,
-	f?: { adm1: string } | { adm2: string } | Partial<{ [R in keyof Re]: Usr["_id"] }>,
-): Promise<Id["_id"][]> {
-	if (f && ("adm1" in f && !is_adm1(f.adm1)
-		|| "adm2" in f && !is_adm2(f.adm2)
-		|| "rej" in f && !is_id(f.rej!)
-		|| "ref" in f && !is_id(f.ref!)
-	)) return []
-	// deno-lint-ignore no-explicit-any
-	const d = await c.find(f as any, { projection: { _id: 1 }, sort: { _id: -1 } }).toArray()
-	return d.map(d => d._id)
-}
-
-export async function nid<
-	T extends Id
->(
-	c: Coll<T>,
-	f?: Partial<{ [R in keyof Re]: Usr["_id"] }>,
-): Promise<number> {
-	if (f && ("rej" in f && !is_id(f.rej!) || "ref" in f && !is_id(f.ref!))) return 0
-	// deno-lint-ignore no-explicit-any
-	return f ? await c.countDocuments(f as any) : c.estimatedDocumentCount()
-}
-
-export async function nid_of_adm<
-	T extends Id,
-	A extends "adm1" | "adm2",
->(
-	c: Coll<T>,
-	a: A,
-): Promise<[T[A], number][]> {
-	const d = await c.aggregate<{
-		_id: T[A], nid: number
+	adm: A,
+): Promise<[Id[A], Id["_id"][]][]> {
+	const d = await coll.soc.aggregate<{
+		_id: Id[A], soc: Id["_id"][]
 	}>([{
-		$group: { _id: `$${a}`, nid: { $count: {} } },
-	}, {
-		$sort: { nid: -1 },
+		$group: { _id: `$${adm}`, soc: { $push: "$_id" } },
 	}]).toArray()
-	return d.map(d => [d._id, d.nid])
+	return d.sort((a, b) => b.soc.length - a.soc.length).map(a => [a._id, a.soc])
 }

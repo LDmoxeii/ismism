@@ -1,11 +1,9 @@
-import { assert } from "https://deno.land/std@0.178.0/testing/asserts.ts"
+import type { Json } from "./json.ts"
 import { from_base64, from_u8, to_base64, to_u8 } from "./base.ts"
 import { key, sign, verify } from "./crypt.ts"
 
-type Json = Record<string, string | number | boolean>
-
 const jwk_url = "./jwk.json"
-let jwk: CryptoKey | null = null
+let jwk = await key(`${Date.now() * Math.random()}`)
 
 export async function jwk_set(
 	k: string
@@ -20,7 +18,6 @@ export async function jwk_load(
 export async function jwt_sign(
 	json: Json
 ): Promise<string> {
-	assert(jwk)
 	const p = to_base64(to_u8(JSON.stringify(json)))
 	const s = to_base64(await sign(jwk, p))
 	return `${p}.${s}`

@@ -1,5 +1,4 @@
-import * as base64 from "https://deno.land/std@0.178.0/encoding/base64url.ts"
-import * as hex from "https://deno.land/std@0.178.0/encoding/hex.ts"
+import { base64, hex } from "./mod.ts"
 
 const te = new TextEncoder()
 const td = new TextDecoder()
@@ -10,29 +9,29 @@ export function to_u8(
 	return te.encode(s)
 }
 export function from_u8(
-	b: ArrayBuffer
+	u8: ArrayBuffer
 ): string {
-	return td.decode(b)
+	return td.decode(u8)
 }
 
 export function to_base64(
-	b: ArrayBuffer
+	u8: ArrayBuffer
 ): string {
-	return base64.encode(b)
+	return base64.encode(u8)
 }
 export function from_base64(
-	s: string
+	b64: string
 ): Uint8Array {
-	return base64.decode(s)
+	return base64.decode(b64)
 }
 
 export function to_hex(
-	b: ArrayBuffer
+	u8: ArrayBuffer
 ): string {
-	return from_u8(hex.encode(new Uint8Array(b)))
+	return from_u8(hex.encode(new Uint8Array(u8)))
 }
 export function from_hex(
-	s: string
+	h: string
 ): Uint8Array {
-	return hex.decode(to_u8(s))
+	return hex.decode(to_u8(h))
 }

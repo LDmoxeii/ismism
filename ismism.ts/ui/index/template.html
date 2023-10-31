@@ -1,794 +1,126 @@
-<template id="pas">
-	<article>
-		<section>
-			<a class="idnam" href="#pas"><code class="id active">pas</code> <span class="nam">用户登录与激活</span></a>
-		</section>
-		<hr>
-		<section class="flex">
-			<label>手机号：</label>
-			<input class="nbr" type="text" inputmode="numeric" pattern="\d{11}" placeholder="十一位手机号（中国大陆）"
-				minlength="11" maxlength="11" required />
-			<button class="send">发送验证码</button>
-		</section>
-		<hr>
-		<section class="flex adm none">
-			<label>居住地区：</label>
-			<select class="adm1"></select>
-			<select class="adm2"></select>
-		</section>
-		<hr>
-		<section class="flex pre none">
-			<label>激活码：</label>
-			<input class="actid" type="text" placeholder="激活码" minlength="6" maxlength="24" required />
-			<button class="act">激活</button>
-		</section>
-		<hr>
-		<section class="flex pas none">
-			<label>验证码：</label>
-			<input class="code" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
-				maxlength="6" required />
-			<button class="issue">登录</button>
-		</section>
-		<hr>
-		<section class="hint"></section>
-	</article>
-</template>
-
 <template id="id">
-	<article>
-		<section>
-			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section class="meta"></section>
-		<hr>
-		<section>
-			<label></label>
-			<p class="idl"></p>
-		</section>
-	</article>
+	<section>
+		<a class="idnam"><code class="id"></code><span class="nam"></span></a>
+		<p class="mta"></p>
+		<p class="msg"></p>
+	</section>
 </template>
 
-<template id="usr">
-	<article>
-		<section>
-			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section class="meta">
-			居住地区：<span class="adm"></span><br>
-			注册时间：<span class="utc"></span><br>
-			<hr>
-			反对者：<span class="rej"></span><br>
-			推荐人：<span class="ref"></span><br>
-			<hr>
-			反对者达两名时，<em class="rej2">权限不可用</em><br>
-			仅管理团队和联络员能反对或推荐用户
-			<span class="dst"></span>
-		</section>
-		<hr>
-		<section>
-			<label>权限：</label>
-			<p class="rolref"></p>
-		</section>
-		<hr>
-		<section>
-			<label>反对：</label>
-			<p class="urej"></p>
-		</section>
-		<hr>
-		<section>
-			<label>推荐：</label>
-			<p class="uref"></p>
-		</section>
-		<hr>
-		<section>
-			<label>简介：</label>
-			<p class="intro"></p>
-		</section>
-		<hr>
-		<section class="nrecday">
-			<label>活动：</label>
-		</section>
-		<section>
-			<details>
-				<summary>工作日志：</summary>
-				<p class="recwork"></p>
-			</details>
-			<details>
-				<summary>支持记录：</summary>
-				<p class="recfund"></p>
-			</details>
-		</section>
-		<hr>
-		<section class="pos flex">
-			<button class="put">编辑</button>
-			<button class="pas">登出</button>
-		</section>
-		<hr>
-		<section class="pre flex">
-			<button class="preaud">增删审计员</button>
-			<button class="preaut">增删管理员</button>
-			<button class="preusr">添加用户</button>
-			<button class="presoc">添加小组</button>
-			<button class="preagd">添加活动</button>
-			<button class="prefund">添加支持</button>
-		</section>
-		<hr>
-		<section class="wsllit flex">
-			<button class="prewsla">增删法律援助编辑</button>
-			<button class="prelita">增删理论学习编辑</button>
-			<button class="prewsl">添加法律援助文章</button>
-			<button class="prelit">添加理论学习文章</button>
-		</section>
-		<hr>
-		<section class="putpro flex">
-			<button class="putrej">反对</button>
-			<button class="putref">推荐</button>
-		</section>
-		<hr>
-	</article>
+<template id="lp">
+	<section>
+		<label></label>
+		<p class="lp"></p>
+	</section>
 </template>
 
-<template id="soc">
-	<article>
-		<section>
-			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section class="meta">
-			小组地区：<span class="adm"></span><br>
-			注册时间：<span class="utc"></span><br>
-			<hr>
-			推荐人：<span class="ref"></span><br>
-		</section>
-		<hr>
-		<section>
-			<label>联络员：</label>
-			<p class="sec"></p>
-		</section>
-		<hr>
-		<section>
-			<label>志愿者：</label>
-			<p class="uid"></p>
-		</section>
-		<hr>
-		<section>
-			<label>申请人：</label>
-			<p class="res"></p>
-		</section>
-		<hr>
-		<section>
-			<label>简介：</label>
-			<p class="intro"></p>
-		</section>
-		<hr>
-		<section class="nrecday">
-			<label>活动：</label>
-		</section>
-		<section>
-			<details>
-				<summary>工作日志：</summary>
-				<p class="recwork"></p>
-			</details>
-			<details>
-				<summary>支持记录：</summary>
-				<p class="recfund"></p>
-			</details>
-		</section>
-		<hr>
-		<section class="pos flex">
-			<button class="put">编辑</button>
-		</section>
-		<hr>
-		<section class="putrel flex">
-			<button class="putsec">增删联络员</button>
-			<button class="putuid">增删志愿者</button>
-			<button class="putresn">清空申请人</button>
-			<button class="putres">申请加入</button>
-		</section>
-		<hr>
-		<section class="putpro flex">
-			<button class="putrej">反对</button>
-			<button class="putref">推荐</button>
-		</section>
-		<hr>
-	</article>
+<template id="sms">
+	<section class="flex">
+		<input class="nbr" type="text" inputmode="numeric" pattern="\d{11}" placeholder="十一位手机号（中国大陆）" minlength="11"
+			maxlength="11" required />
+		<button class="sms">发送验证码</button>
+		<p class="hint"></p>
+	</section>
 </template>
 
-<template id="agd">
-	<article>
-		<section>
-			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section class="meta">
-			活动地区：<span class="adm"></span><br>
-			注册时间：<span class="utc"></span><br>
-			<hr>
-			推荐人：<span class="ref"></span><br>
-		</section>
-		<hr>
-		<section class="acct">
-			<div><span>收到支持</span><span>当前预算</span></div>
-			<svg width="100%" height="4em">
-				<rect width="100%" height="100%" fill="var(--lightgray)" />
-				<rect class="fundbar" y="0" width="0%" height="50%" />
-				<rect class="expensebar" y="50%" width="0%" height="50%" />
-				<text class="fund" y="25%" x="1%" dominant-baseline="central">0</text>
-				<text class="fundpct" y="25%" x="50%" dominant-baseline="central">0%</text>
-				<text class="budget" y="25%" x="99%" dominant-baseline="central">0</text>
-				<text class="expense" y="75%" x="1%" dominant-baseline="central">0</text>
-				<text class="expensepct" y="75%" x="50%" dominant-baseline="central">0%</text>
-			</svg>
-			<div><span>当前支出</span><a class="account">历史明细</a></div>
-		</section>
-		<hr>
-		<section>
-			<label>当前目标：</label>
-			<p class="goal"></p>
-		</section>
-		<hr>
-		<section class="cover flex">
-			<div class="imgn">第 1 / 6 张</div>
-			<div><button class="prev">上一张</button> / <button class="next">下一张</button></div>
-			<div class="imgnam"></div>
-			<img class="img" src="" loading="lazy">
-		</section>
-		<hr>
-		<section>
-			<label>简介：</label>
-			<p class="intro"></p>
-		</section>
-		<hr>
-		<section>
-			<label>联络员：</label>
-			<p class="sec"></p>
-		</section>
-		<hr>
-		<section>
-			<label>本周志愿者：</label>
-			<p class="uid"></p>
-		</section>
-		<hr>
-		<section>
-			<label>申请人：</label>
-			<p class="res"></p>
-		</section>
-		<hr>
-		<section class="none">
-			<label>订单：（仅联络员与志愿者可见）</label>
-			<p class="ord"></p>
-		</section>
-		<hr>
-		<section class="nrecday">
-			<label>活动：</label>
-		</section>
-		<section>
-			<details>
-				<summary>工作日志：</summary>
-				<p class="recwork"></p>
-			</details>
-			<details>
-				<summary>支持记录：</summary>
-				<p class="recfund"></p>
-			</details>
-		</section>
-		<hr>
-		<section class="pos flex">
-			<button class="put">编辑信息</button>
-			<button class="putord">编辑订单</button>
-			<button class="putimg">编辑图片</button>
-			<button class="putgoal">编辑目标</button>
-			<button class="prelive">添加直播</button>
-			<button class="prevideo">添加视频</button>
-			<button class="prework">添加日志</button>
-		</section>
-		<hr>
-		<section class="putrel flex">
-			<button class="putsec">增删联络员</button>
-			<button class="putuid">增删志愿者</button>
-			<button class="putresn">清空申请人</button>
-			<button class="putres">申请加入</button>
-		</section>
-		<hr>
-		<section class="putpro flex">
-			<button class="putrej">反对</button>
-			<button class="putref">推荐</button>
-		</section>
-		<hr>
-	</article>
+<template id="code">
+	<section class="flex">
+		<input class="code" type="text" inputmode="numeric" pattern="\d{6}" placeholder="六位验证码" minlength="6"
+			maxlength="6" required />
+		<button class="send">登录</button>
+	</section>
 </template>
 
-<template id="goal">
-	<div style="width: 160px">
-		<svg width="160" height="160">
-			<circle cx="50%" cy="50%" r="60" />
-			<circle class="circle" cx="50%" cy="50%" r="60" />
-			<text class="pct" y="50%" x="50%" dominant-baseline="central"></text>
-		</svg>
-		<span class="nam"></span>
-	</div>
-</template>
-
-<template id="nrecday">
-	<svg class="nrecday" width="calc(17em * 1.25)" height="calc(8em * 1.25)" viewBox="-1 -0.5 17 8">
-		<g transform="translate(0,0)">
-			<text x="0" y="0.75" font-size="0.75">一</text>
-			<text x="0" y="2.75" font-size="0.75">三</text>
-			<text x="0" y="4.75" font-size="0.75">五</text>
-			<text x="0" y="6.75" font-size="0.75">日</text>
-		</g>
-		<g transform="translate(1,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(2,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(3,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(4,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(5,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(6,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(7,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(8,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(9,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(10,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(11,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(12,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(13,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(14,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-		<g transform="translate(15,0)">
-			<rect x="0" y="0" width="0.9" height="0.9"></rect>
-			<rect x="0" y="1" width="0.9" height="0.9"></rect>
-			<rect x="0" y="2" width="0.9" height="0.9"></rect>
-			<rect x="0" y="3" width="0.9" height="0.9"></rect>
-			<rect x="0" y="4" width="0.9" height="0.9"></rect>
-			<rect x="0" y="5" width="0.9" height="0.9"></rect>
-			<rect x="0" y="6" width="0.9" height="0.9"></rect>
-		</g>
-	</svg>
-</template>
-
-<template id="live">
-	<article class="transparent">
-		<section>
-			<details>
-				<summary>正在直播：</summary>
-				<p class="live"></p>
-			</details>
-			<details>
-				<summary>直播预告：</summary>
-				<p class="livep"></p>
-			</details>
-		</section>
-	</article>
-</template>
-
-<template id="ordl">
-	<article class="transparent">
-		<section class="flex">
-			<button class="pre">添加订单</button><br>
-			<button class="que">自动刷新</button>
-		</section>
-		<hr>
-		<section>
-			<label>准备取餐（手机尾号）：</label>
-			<p class="orda"></p>
-		</section>
-		<hr>
-		<section>
-			<details open>
-				<summary>订单：</summary>
-				<p class="ordl"></p>
-			</details>
-		</section>
-		<hr>
-		<section><img class="qrcode"></section>
-	</article>
-</template>
-
-<template id="ord">
-	<article class="ord">
-		<section class="nam flex"><a class="unam"></a> <a class="anam uid"></a></section>
-		<section class="meta"></section>
-		<section class="msg"></section>
-		<section class="put">
-			<button class="putc">取消</button>
-			<button class="puto">完成</button>
-		</section>
-	</article>
+<template id="dtl">
+	<section>
+		<details>
+			<summary>积分记录：</summary>
+			<p class="dtl"></p>
+		</details>
+	</section>
 </template>
 
 <template id="rec">
-	<article class="rec">
-		<section class="nam flex"><a class="unam"></a> <a class="anam uid"></a></section>
-		<section class="meta"></section>
+	<section>
+		<section><a class="usr"></a> <a class="soc"></a></section>
+		<section class="mta"></section>
 		<section class="msg"></section>
-		<section class="re">
-			反对者：<span class="rej"></span> ｜ 推荐人：<span class="ref"></span>
-			<section class="putpro">
-				<button class="putrej">反对</button>
-				<button class="putref">推荐</button>
-				<button class="put">编辑</button>
-			</section>
+		<section>
+			<button class="clr">删除</button>
+			<button class="fin">确认</button>
+			<button class="aug">追加</button>
 		</section>
-	</article>
+	</section>
 </template>
 
-<template id="dst">
-	<article>
-		<section>
-			<img class="img" src="" loading="lazy" width="100%">
-		</section>
-		<hr>
-		<section>
-			<a class="idnam"><code class="id" hidden></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section>
-			<label>简介：</label>
-			<p class="intro"></p>
-		</section>
-		<hr>
-		<section>
-			<label>活动奖励：</label>
-			<img class="img" src="https://pic.imgdb.cn/item/6476b7d8f024cca1734cd90c.png" loading="lazy" width="100%">
-		</section>
-		<section>
-			<label>目标：</label>
-			<p class="goal" style="margin: 2ch 0;"></p>
-		</section>
-		<hr>
-		<section style="margin-top: 2ch;">
-			<label>参赛投稿：</label>
-			<p class="idl" style="margin: 2ch 0; line-height: 2;"></p>
-		</section>
-		<hr>
-		<section class="pos flex" style="margin: 2ch 0;">
-			<button class="put">编辑比赛信息</button>
-			<button class="preaid">添加参赛投稿</button>
-			<button class="preuid" disabled>投票</button>
-		</section>
-	</article>
+<template id="put_s">
+	<section class="flex">
+		<label></label>
+		<input class="str" />
+	</section>
 </template>
 
-<template id="imgl">
-	<article>
-		<section>
-			<a class="idnam" href="#dst"><code class="id" hidden></code> <span class="nam">参赛作品</span></a>
-		</section>
-		<hr>
-		<section>
-			<label>作品分区：</label>
-			<p class="adm1"></p>
-		</section>
-		<hr>
-		<section class="cover flex">
-			<div class="imgn">第 1 / 6 张</div>
-			<div><button class="prev">上一张</button> / <button class="next">下一张</button></div>
-			<div class="imgnam"></div>
-			<img class="img" src="" loading="lazy">
-		</section>
-		<section class="imgl"></section>
-		<hr>
-	</article>
+<template id="put_adm">
+	<section class="flex adm">
+		<label>地区：</label>
+		<select class="adm1"></select>
+		<select class="adm2"></select>
+	</section>
 </template>
 
-<template id="aut">
-	<article>
-		<section>
-			<a class="idnam" href="#aut"><code class="id active">aut</code> <span class="nam">网站管理团队与编辑</span></a>
-		</section>
-		<hr>
-		<section class="meta">
-			活动与小组由本平台管理团队核实<br>
-			用户信息由活动与小组联络员核实
-		</section>
-		<hr>
-		<section>
-			<label>超级管理员：</label>
-			<p class="sup"></p>
-		</section>
-		<hr>
-		<section>
-			<label>审计员：</label>
-			<p class="aud"></p>
-		</section>
-		<hr>
-		<section>
-			<label>本平台管理团队：</label>
-			<p class="aut"></p>
-		</section>
-		<hr>
-		<section>
-			<label>法律援助编辑：</label>
-			<p class="wsl"></p>
-		</section>
-		<hr>
-		<section>
-			<label>理论学习编辑：</label>
-			<p class="lit"></p>
-		</section>
-		<hr>
-	</article>
+<template id="put_t">
+	<section>
+		<label>简介：</label>
+		<textarea class="txt"></textarea>
+	</section>
 </template>
 
-<template id="md">
-	<article>
-		<section>
-			<a class="idnam"><code class="id"></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section class="meta">
-			发布时间：<span class="utc"></span><br>
-			最后更新：<span class="utcp"></span><br>
-			文章编辑：<span class="unam"></span><br>
-		</section>
-		<hr>
-		<section class="md"></section>
-		<hr>
-		<section class="flex">
-			<button class="put">编辑</button>
-			<button class="putpin">置顶</button>
-		</section>
-		<hr>
-	</article>
+<template id="btn_usr">
+	<section class="flex">
+		<button class="put">编辑</button>
+		<button class="clr">登出</button>
+	</section>
 </template>
 
-<template id="pre">
-	<article>
-		<section>
-			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section class="flex">
-			<label>手机号：</label>
-			<input class="nbr" type="text" inputmode="numeric" pattern="\d{11}" placeholder="十一位手机号（中国大陆）"
-				minlength="11" maxlength="11" required />
-		</section>
-		<hr>
-		<section class="flex">
-			<label>名称：（2-16个中文字符）</label>
-			<input class="pnam" type="text" maxlength="16" required />
-		</section>
-		<hr>
-		<section class="flex adm">
-			<label>地区：</label>
-			<select class="adm1"></select>
-			<select class="adm2"></select>
-		</section>
-		<hr>
-		<section class="flex">
-			<button class="pre">确认</button>
-			<button class="cancel">取消</button>
-		</section>
-		<hr>
-	</article>
+<template id="btn_pos">
+	<section class="flex">
+		<button class="del">删除</button>
+		<button class="put">确认</button>
+		<button class="ret">取消</button>
+	</section>
 </template>
 
-<template id="put">
-	<article>
-		<section>
-			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section class="flex">
-			<label>p1</label>
-			<input class="p1" type="text" maxlength="256" />
-		</section>
-		<hr>
-		<section class="flex">
-			<label>p2</label>
-			<input class="p2" type="text" maxlength="256" />
-		</section>
-		<hr>
-		<section class="flex">
-			<label>p3</label>
-			<input class="p3" type="text" maxlength="256" />
-		</section>
-		<hr>
-		<section class="flex">
-			<label>p4</label>
-			<input class="p4" type="text" maxlength="256" />
-		</section>
-		<hr>
-		<section>
-			<label>pa</label>
-			<textarea class="pa" maxlength="256"></textarea>
-		</section>
-		<hr>
-		<section class="flex">
-			<button class="putn">删除</button>
-			<button class="put">确认</button>
-			<button class="cancel">取消</button>
-		</section>
-		<hr>
-	</article>
+<template id="btn_aut">
+	<section class="flex">
+		<button class="aut">增删管理员</button>
+		<button class="usr">添加用户</button>
+		<button class="soc">添加俱乐部</button>
+	</section>
 </template>
 
-<template id="putid">
-	<article>
-		<section>
-			<a class="idnam"><code class="id active"></code> <span class="nam"></span></a>
-		</section>
-		<hr>
-		<section class="flex">
-			<label>名称：（2-16个中文字符）</label>
-			<input class="pnam" type="text" maxlength="16" required />
-		</section>
-		<hr>
-		<section class="flex adm">
-			<label>地区：</label>
-			<select class="adm1"></select>
-			<select class="adm2"></select>
-		</section>
-		<hr>
-		<section class="flex">
-			<label>志愿者上限：（0-256）</label>
-			<input class="uidlim" type="text" inputmode="numeric" pattern="\d{1,3}" placeholder="0-256 的整数"
-				minlength="1" maxlength="3" required />
-		</section>
-		<hr>
-		<section class="meta">
-			以上基础信息仅本平台管理团队可编辑<br>
-			以下内容信息仅联络员可编辑
-		</section>
-		<hr>
-		<section>
-			<label>简介：（0 / 2048 个字符）</label>
-			<textarea class="intro" maxlength="2048"></textarea>
-		</section>
-		<hr>
-		<section class="flex">
-			<label>申请人上限：（0-64）</label>
-			<input class="reslim" type="text" inputmode="numeric" pattern="\d{1,2}" placeholder="0-64 的整数" minlength="1"
-				maxlength="2" required />
-		</section>
-		<hr>
-		<section class="flex">
-			<label>历史明细：（文档链接）</label>
-			<input class="account" type="text" maxlength="128" required />
-		</section>
-		<hr>
-		<section class="flex">
-			<label>当前预算：</label>
-			<input class="budget" type="text" inputmode="numeric" required />
-		</section>
-		<hr>
-		<section class="flex">
-			<label>收到支持：</label>
-			<input class="fund" type="text" inputmode="numeric" required />
-		</section>
-		<hr>
-		<section class="flex">
-			<label>当前支出：</label>
-			<input class="expense" type="text" inputmode="numeric" required />
-		</section>
-		<hr>
-		<section class="flex">
-			<button class="putn">删除</button>
-			<button class="put">确认</button>
-			<button class="cancel">取消</button>
-		</section>
-		<hr>
-	</article>
+<template id="btn_soc">
+	<section class="flex">
+		<button class="aut">编辑俱乐部</button>
+		<button class="msg">编辑简介</button>
+		<button class="agr">编辑协议</button>
+	</section>
+	<section class="flex">
+		<button class="agd">添加活动</button>
+		<button class="cdt">添加积分</button>
+		<button class="ern">添加贡献</button>
+		<button class="dbt">使用积分</button>
+	</section>
 </template>
 
-<template id="idn">
-	<article>
-		<section>
-			<a class="idnam" href=""><code class="id active"></code> <span class="nam">无效链接</span></a>
-		</section>
-		<hr>
-		<section class="meta"></section>
-		<hr>
-	</article>
+<template id="btn_agd">
+	<section class="flex">
+		<button class="put">编辑</button>
+	</section>
+</template>
+
+<template id="btn_msg">
+	<section class="flex">
+		<button class="pre">添加文章</button>
+		<button class="put">编辑</button>
+		<button class="pin">置顶</button>
+	</section>
 </template>

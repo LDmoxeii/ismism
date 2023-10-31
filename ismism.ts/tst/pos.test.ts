@@ -1,19 +1,12 @@
-import type { Ord, Rec } from "../src/eid/typ.ts"
-import type { Pas } from "../src/pra/pas.ts"
-import { assert, assertEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts"
-import { coll, db } from "../src/db.ts"
-import { usr_c, usr_d, usr_r, usr_u } from "../src/eid/usr.ts"
+import { db } from "../src/eid/db.ts"
+import { Cdt, Dbt, Ern } from "../src/eid/typ.ts"
+import { usr_c, usr_d, usr_r } from "../src/eid/usr.ts"
 import { jwk_set } from "../src/ont/jwt.ts"
-import { PasCode, PasPos, pos } from "../src/pra/pos.ts"
-import { aut_c, aut_d, aut_r } from "../src/eid/aut.ts"
-import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
-import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
-import { rec_c, rec_d, rec_f } from "../src/eid/rec.ts"
-import { act_c, act_d } from "../src/eid/act.ts"
-import { lim_rd, lim_re } from "../src/eid/is.ts"
-import { md_c, md_d, md_r } from "../src/eid/md.ts"
-import { ord_c, ord_d, ord_r } from "../src/eid/ord.ts"
-import { dst_c, dst_r } from "../src/eid/dst.ts"
+import { PsgRet } from "../src/pra/pas.ts"
+import { PasPos, pos } from "../src/pra/pos.ts"
+import { Pre } from "../src/pra/pre.ts"
+import { Put } from "../src/pra/put.ts"
+import { assertEquals, assert } from "./mod.test.ts"
 
 await db("tst", true)
 await jwk_set("testkey")
@@ -22,214 +15,103 @@ const json = JSON.stringify
 
 Deno.test("pas", async () => {
 	const nbr = "11111111111"
-	const uid = await usr_c(nbr, "四川", "成都")
-	assert(uid === 1)
+	const usr = await usr_c(nbr, "四川", "成都")
+	assertEquals(usr, 1)
 	const p: PasPos = {}
-	assert(null === await pos(p, "pas", ""))
+	assertEquals(null, await pos(p, ""))
 	assertEquals(p, { etag: null, pas: null })
-	assertEquals(await pos(p, "pas", json({ nbr, sms: false })), { sms: false })
-	const pascode = await pos(p, "pas", json({ nbr, sms: true })) as PasCode
+	assertEquals(await pos(p, json({ psg: "sms", nbr, sms: false })), { sms: false })
+	const pascode = await pos(p, json({ psg: "sms", nbr, sms: true })) as PsgRet["sms"]
 	assert(pascode && pascode.sms === false && pascode.utc && pascode.utc > 0)
-	const pcode = await usr_r({ _id: uid }, { pcode: 1 })
-	assert(pcode && pcode.pcode && pcode.pcode.code > 0)
-	const code = pcode.pcode.code
-	assert(null === await pos(p, "pas", json({ nbr, code: code + 1 })))
+	const sms = await usr_r({ _id: usr! }, { sms: 1 })
+	assert(sms && sms.sms && sms.sms.code > 0)
+	const code = sms.sms.code
+	assert(null === await pos(p, json({ psg: "code", nbr, code: code + 1 })))
 	assertEquals(p, { etag: null, pas: null })
-	const pas = await pos(p, "pas", json({ nbr, code: code })) as Pas
-	assert(p.jwt && p.jwt.length > 0 && p.pas && p.pas.uid === uid)
+	const pas = await pos(p, json({ psg: "code", nbr, code: code })) as PsgRet["code"]
+	assert(p.jwt && p.jwt.length > 0 && p.pas && p.pas.usr === usr)
 	const jwt = p.jwt
 	assertEquals(p.pas, pas)
-	assertEquals(await pos(p, "pas", ""), pas)
+	assertEquals(await pos(p, json({ psg: "pas" })), pas)
 	assertEquals(p, { etag: null, pas, jwt: null })
-	assertEquals(await pos(p, "pas", ""), null)
-	await pos(p, "pas", json({ nbr, code: code }))
+	assertEquals(await pos(p, ""), null)
+	await pos(p, json({ psg: "code", nbr, code: code }))
 	assertEquals(p.jwt, jwt)
-	assertEquals(await pos(p, "pas", json({ uid: p.pas.uid })), 1)
+	assertEquals(await pos(p, json({ psg: "clr", usr: p.pas.usr })), 1)
 	assertEquals(p, { etag: null, pas: null, jwt: null })
-	assertEquals(await usr_r({ _id: uid }, { ptoken: 1 }), { _id: uid })
-	await usr_d(uid)
+	assertEquals(await usr_r({ _id: usr }, { jwt: 1 }), { _id: usr })
+	await usr_d(usr)
 })
 
-Deno.test("pre", async () => {
-	const p: PasPos = {}
-	const actid = ["111111", "111112", "111113"]
+Deno.test("pos", async () => {
 	const nbr = ["11111111111", "11111111112", "11111111113"]
-	const utc = Date.now()
-	const [adm1, adm2] = ["四川", "成都"]
-	await Promise.all([
-		act_c({ _id: actid[0], exp: utc + 1000, act: "fund", aid: 1, msg: "msg" }),
-		act_c({ _id: actid[1], exp: utc + 1000, act: "fund", aid: 2, msg: "msg" }),
-		act_c({ _id: actid[2], exp: utc + 1000, act: "nbr", uid: 1 }),
-		aut_c({ _id: 1, aut: ["sup", "aut"] }),
-	])
-	assertEquals([1, null, 1, null], [
-		await pos({}, "pre", json({ actid: actid[0], nbr: nbr[0], adm1, adm2 })),
-		await pos({}, "pre", json({ actid: actid[0], nbr: nbr[0], adm1, adm2 })),
-		await pos({}, "pre", json({ actid: actid[2], nbr: nbr[1], adm1, adm2 })),
-		await pos({}, "pre", json({ actid: actid[2], nbr: nbr[1], adm1, adm2 })),
-	])
-	assertEquals({ _id: 1, nbr: nbr[1] }, await usr_r({ _id: 1 }, { nbr: 1 }))
-	await Promise.all([
-		pos(p, "pas", json({ nbr: nbr[1], sms: false })),
-		usr_u(1, { $set: { nam: "用户一", ref: [1, 2] } }),
-	])
-	const pcode = await usr_r({ _id: 1 }, { pcode: 1 })
-	await pos(p, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
-	const jwt = p.jwt
-	assertEquals([2, 1, 1, 1, 1, 1, null, 1], await Promise.all([
-		pos({ jwt }, "pre", json({ nbr: nbr[2], adm1, adm2 })),
-		pos({ jwt }, "pre", json({ snam: "小组", adm1, adm2 })),
-		pos({ jwt }, "pre", json({ anam: "活动", adm1, adm2 })),
-		pos({ jwt }, "pre", json({ nam: "用户一", aut: "wsl" })),
-		await pos({ jwt }, "pre", json({ nam: "用户一", aut: "lit" })),
-		pos({ jwt }, "pre", json({ nam: "用户一", aut: "lit" })),
-		pos({ jwt }, "pre", json({ nam: "用户二", aut: "lit" })),
-		pos({ jwt }, "pre", json({ wslnam: "标题" }))
-	]))
-	assertEquals({ _id: 1, aut: ["sup", "aut", "wsl"] }, await aut_r(1))
-	await agd_u(1, { $set: { sec: [1, 2], uid: [1], ordutc: utc - 1000, ordlim: 2, ordlimw: 1 } })
-	const ord = [
-		await pos({}, "pre", json({ aid: 1, nbr: nbr[0], sms: false, msg: "msg" })),
-		await pos({}, "pre", json({ aid: 1, nbr: nbr[0], sms: false, msg: "msg" })),
-		await pos({}, "pre", json({ aid: 1, nbr: nbr[1], sms: false, msg: "msg" })),
-	] as (Ord["_id"] | null)[]
-	assertEquals([2, null], [ord.filter(ordid => ordid !== null).length, ord[1]])
-	await pos({ jwt }, "pas", json({ nbr: nbr[1], code: pcode?.pcode?.code }))
-	const w = [
-		await pos({ jwt }, "pre", json({ actid: actid[1] })),
-		await pos({ jwt }, "pre", json({ aid: 1, msg: "msg" })),
-		await pos({ jwt }, "pre", json({ aid: 1, nam: "nam", src: "httpsrc" })),
-		await pos({ jwt }, "pre", json({ aid: 1, nam: "nam", src: "httpsrc", utcs: utc, utce: utc + 1000 })),
-	] as Rec["_id"][]
-	assertEquals([2, 1, 1, 1], w.map(w => w.aid))
-	const dst = await Promise.all([
-		pos({ jwt }, "pre", json({ rd: lim_rd, aid: 1 })),
-		pos({ jwt }, "pre", json({ rd: lim_rd, aid: 2 })),
-	])
-	assertEquals([1, 1], dst)
-	await Promise.all([
-		usr_d(1), usr_d(2), soc_d(1), agd_d(1),
-		...ord.filter(ordid => ordid !== null).map(ordid => ord_d(ordid!)),
-		rec_d(coll.fund, w[0]), rec_d(coll.work, w[1]), rec_d(coll.work, w[2]), rec_d(coll.work, w[3]),
-		aut_d(1), ...actid.map(act_d), md_d(coll.lit, 1),
-	])
-})
+	const [adm1, adm2] = ["广东", "汕头"]
+	const cdt: Cdt = {
+		_id: { usr: 2, soc: 1, utc: Date.now() }, msg: "cdt", amt: 10,
+		utc: { eft: Date.now() - 10000, exp: Date.now() + 10000, agr: 0 }, sec: 2
+	}
+	const dbt: Dbt = { _id: { usr: 2, soc: 1, utc: Date.now() }, msg: "dbt", amt: 5 }
+	const dbt2: Dbt = { _id: { usr: 2, soc: 1, utc: Date.now() + 1 }, msg: "dbt", amt: 10 }
+	const ern: Ern = { _id: { usr: 2, soc: 1, utc: Date.now() }, msg: "ern", amt: 5, sec: 2 }
 
-Deno.test("pro", async () => {
+	await usr_c(nbr[0], "江苏", "苏州")
+	const u2 = (await usr_c(nbr[1], "四川", "成都"))!
 	const p: PasPos = {}
-	const nbr = ["11111111111", "11111111112", "11111111113"]
-	const utc = Date.now()
-	const workid = { uid: 2, aid: 1, utc }
-	const rej = new Array(lim_re).fill(0).map((_, n) => n + 1)
-	await Promise.all([
-		await usr_c(nbr[0], "四川", "成都"), usr_u(1, { $set: { ref: [1, 2] } }),
-		await usr_c(nbr[1], "广东", "汕头"), usr_u(2, { $set: { ref: [1, 2] } }),
-		await usr_c(nbr[2], "广东", "汕头"), usr_u(3, { $set: { ref: [2, 3] } }),
-		aut_c({ _id: 1, aut: ["aud", "aut"] }), aut_c({ _id: 2, aut: ["aud", "aut"] }),
-		...[0, 2].map(n => pos(p, "pas", json({ nbr: nbr[n], sms: false }))),
-		await soc_c("团体", "四川", "成都"), soc_u(1, { $set: { ref: [1, 2] } }),
-		await agd_c("活动", "四川", "成都"), agd_u(1, { $set: { ref: [2], sec: [2, 3], uid: [3] } }),
-		rec_c(coll.work, { _id: workid, rej, ref: [1, 2], work: "work", msg: "msg" }),
-	])
-	const code = await Promise.all([1, 3].map(_id => usr_r({ _id }, { pcode: 1 })))
-	await pos(p, "pas", json({ nbr: nbr[0], code: code[0]?.pcode?.code }))
-	let jwt = p.jwt
-	assertEquals([null, 1, 0, 1, 1, 1, null, null], await Promise.all([
-		pos({ jwt }, "pro", json({ re: "rej", uid: 2, add: true })),
-		pos({ jwt }, "pro", json({ re: "ref", uid: 3, add: true })),
-		pos({ jwt }, "pro", json({ re: "ref", sid: 1, add: true })),
-		pos({ jwt }, "pro", json({ re: "rej", sid: 1, add: true })),
-		pos({ jwt }, "pro", json({ re: "ref", aid: 1, add: true })),
-		pos({ jwt }, "pro", json({ re: "rej", aid: 1, add: true })),
-		pos({ jwt }, "pro", json({ re: "rej", workid, add: true })),
-		pos({ jwt }, "pro", json({ re: "ref", workid, add: true })),
-	]))
-	await pos(p, "pas", json({ nbr: nbr[2], code: code[1]?.pcode?.code }))
-	jwt = p.jwt
-	assertEquals([null, null, null, null, null, null, null, 1, 1, 1], await Promise.all([
-		pos({ jwt }, "pro", json({ re: "ref", uid: 1, add: false })),
-		pos({ jwt }, "pro", json({ re: "ref", uid: 3, add: false })),
-		pos({ jwt }, "pro", json({ re: "rej", uid: 3, add: true })),
-		pos({ jwt }, "pro", json({ re: "rej", uid: 4, add: true })),
-		pos({ jwt }, "pro", json({ re: "ref", sid: 1, add: true })),
-		pos({ jwt }, "pro", json({ re: "rej", aid: 1, add: true })),
-		pos({ jwt }, "pro", json({ re: "rej", workid, add: true })),
-		pos({ jwt }, "pro", json({ re: "rej", workid, add: false })),
-		pos({ jwt }, "pro", json({ re: "rej", workid, add: true })),
-		pos({ jwt }, "pro", json({ re: "ref", workid, add: true })),
-	]))
-	await Promise.all([
-		...[1, 2, 3].map(usr_d),
-		...[1, 2, 3].map(aut_d),
-		soc_d(1), agd_d(1),
-		rec_d(coll.work, workid),
-	])
-})
-
-Deno.test("put", async () => {
-	const p: PasPos = {}
-	const nbr = "11111111111"
-	const utc = Date.now()
-	const ordid = { nbr, aid: 1, utc }
-	const workid = { uid: 1, aid: 1, utc }
-	await Promise.all([
-		await usr_c(nbr, "四川", "成都"), usr_u(1, { $set: { ref: [1, 2] } }),
-		await soc_c("小组", "江苏", "苏州"), soc_u(1, { $set: { ref: [1, 2] } }),
-		await agd_c("活动", "江苏", "苏州"), agd_u(1, { $set: { ref: [1, 2], sec: [2] } }),
-		await ord_c({ _id: ordid, code: 1, ord: true, msg: "msg" }),
-		await md_c(coll.wsl, { nam: "标题", uid: 1 }),
-		rec_c(coll.work, { _id: workid, ref: [], rej: [], work: "work", msg: "msg" }),
-		aut_c({ _id: 1, aut: ["aut", "wsl"] }),
-		aut_c({ _id: 2, aut: ["aut", "lit"] }),
-		dst_c({ _id: { rd: lim_rd }, json: "" }),
-		pos(p, "pas", json({ nbr, sms: false })),
-	])
-	const code = await usr_r({ _id: 1 }, { pcode: 1 })
-	await pos(p, "pas", json({ nbr, code: code?.pcode?.code }))
+	await pos(p, json({ psg: "sms", nbr: nbr[1], sms: false }))
+	const { sms } = (await usr_r({ _id: u2 }, { sms: 1 }))!
+	await pos(p, json({ psg: "code", nbr: nbr[1], code: sms!.code }))
 	const jwt = p.jwt
-	const uu = { nam: "用户一", adm1: "广东", adm2: "汕头", intro: "简介" }
-	const su = { sid: 1, nam: "小组一", adm1: "广东", adm2: "汕头", uidlim: 8 }
-	const au = { aid: 1, nam: "活动一", adm1: "广东", adm2: "汕头", uidlim: 8 }
-	const aus = { aid: 1, intro: "简介", reslim: 10, account: "http明细", budget: 9, fund: 9, expense: 9 }
-	const mdu = { wslid: 1, nam: "标题二", md: "#123" }
-	const rd = JSON.stringify({ nam: "比赛", sale: 32 })
-	await Promise.all([
-		pos({ jwt }, "put", json(uu)),
-		pos({ jwt }, "put", json(su)),
-		pos({ jwt }, "put", json(au)),
-		await pos({ jwt }, "put", json({ aid: 1, rol: "sec", uid: 1, add: true })),
-		pos({ jwt }, "put", json(aus)),
-		await pos({ jwt }, "put", json({ aid: 1, rol: "res", uid: 1, add: true })),
-		await pos({ jwt }, "put", json({ aid: 1, rol: "res", uid: 2, add: true })),
-		await pos({ jwt }, "put", json({ aid: 1, rol: "uid", uid: 1, add: true })),
-		pos({ jwt }, "put", json({ aid: 1, rol: "uid", uid: 2, add: true })),
-		pos({ jwt }, "put", json({ ordid, ord: false })),
-		pos({ jwt }, "put", json({ workid, msg: "updated" })),
-		pos({ jwt }, "put", json({ aid: 1 })),
-		pos({ jwt }, "put", json({ rd })),
-		pos({ jwt }, "put", json(mdu)),
+	assertEquals([
+		3, 1, null, null, null, null, null, null,
+		1, null, null, 1, 1, 1, 1,
+	], await Promise.all([
+		pos({ jwt }, json({ pre: "usr", nbr: nbr[2], adm1, adm2 } as Pre)),
+		await pos({ jwt }, json({ pre: "soc", nam: "俱乐部", adm1, adm2 } as Pre)),
+		pos({ jwt }, json({ pre: "agd", nam: "活动", soc: 1 } as Pre)),
+		pos({ jwt }, json({ pre: "cdt", cdt } as Pre)),
+		pos({ jwt }, json({ pre: "dbt", dbt } as Pre)),
+		pos({ jwt }, json({ pre: "ern", ern } as Pre)),
+		pos({ jwt }, json({ pre: "wsl", nam: "标题" } as Pre)),
+		pos({ jwt }, json({ pre: "lit", nam: "标题" } as Pre)),
+
+		pos({ jwt }, json({ put: "usr", usr: 2, nam: "用户", adm1, adm2, msg: "消息" } as Put)),
+		pos({ jwt }, json({ put: "soc", soc: 1, msg: "消息" } as Put)),
+		pos({ jwt }, json({ put: "soc", soc: 1, agr: "消息" } as Put)),
+		await pos({ jwt }, json({ put: "soc", soc: 1, nam: "同城俱乐部", adm1, adm2, sec: [2, 3] } as Put)),
+		pos({ jwt }, json({ put: "soc", soc: 1, msg: "消息" } as Put)),
+		await pos({ jwt }, json({ put: "soc", soc: 1, agr: "同意" } as Put)),
+		pos(p, json({ put: "aut", aut: [2], wsl: [2], lit: [2] } as Put))
+	]))
+	assertEquals([], p.pas?.agr); p.jwt = jwt
+
+	const rpre = await Promise.all([
+		pos({ jwt }, json({ pre: "agd", nam: "活动", soc: 1 } as Pre)),
+		await pos({ jwt }, json({ pre: "cdt", cdt } as Pre)),
+		await pos({ jwt }, json({ pre: "cdt", cdt } as Pre)),
+		await pos(p, json({ pre: "dbt", dbt } as Pre)),
+		await pos({ jwt }, json({ pre: "dbt", dbt: dbt2 } as Pre)),
+		pos({ jwt }, json({ pre: "ern", ern } as Pre)),
+		pos({ jwt }, json({ pre: "wsl", nam: "标题" } as Pre)),
+		pos({ jwt }, json({ pre: "lit", nam: "标题" } as Pre)),
 	])
-	assertEquals({ _id: 1, ...uu }, await usr_r({ _id: 1 }, { nam: 1, adm1: 1, adm2: 1, intro: 1 }))
-	assertEquals({ _id: 1, nam: su.nam, uidlim: su.uidlim }, await soc_r(1, { nam: 1, uidlim: 1 }))
-	assertEquals({
-		_id: 1, nam: au.nam, intro: aus.intro,
-		sec: [2, 1], uid: [1], res: [],
-		uidlim: au.uidlim, reslim: aus.reslim,
-		expense: aus.expense,
-	}, await agd_r(1, {
-		nam: 1, intro: 1, sec: 1, uid: 1, res: 1, uidlim: 1, reslim: 1, expense: 1,
-	}))
-	const wsl = await md_r(coll.wsl, 1, { nam: 1, md: 1, utc: 1, utcp: 1 })
-	assert(wsl!.utcp > wsl!.utc)
-	assertEquals({ nam: mdu.nam, md: mdu.md }, { nam: wsl!.nam, md: wsl!.md })
-	await pos({ jwt }, "put", json({ aid: 1, rol: "uid", add: false }))
-	await pos({ jwt }, "put", json({ aid: 1, rol: "sec", add: false }))
-	assertEquals({ _id: 1, sec: [], uid: [] }, await agd_r(1, { sec: 1, uid: 1 }))
-	await pos({ jwt }, "put", json({ aid: 1, rol: "res", uid: 1, add: true }))
-	await pos({ jwt }, "put", json({ aid: 1, rol: "sec", add: true }))
-	assertEquals({ _id: 1, sec: [1], res: [] }, await agd_r(1, { sec: 1, res: 1 }))
-	assertEquals({ _id: ordid, code: 1, ord: false, msg: "msg" }, await ord_r(ordid))
-	assertEquals([{ _id: workid, ref: [], rej: [], work: "work", msg: "updated" }], await rec_f(coll.work, 0))
-	assertEquals({ _id: { rd: lim_rd }, json: rd }, await dst_r({ rd: lim_rd }))
-	await Promise.all([usr_d(1), soc_d(1), agd_d(1), md_d(coll.wsl, 1), ord_d(ordid), rec_d(coll.work, workid), aut_d(1)])
+	assertEquals([true, true, false, true, false, true, true, true], rpre.map(r => r != null))
+	assertEquals([1], p.pas?.agr); p.jwt = jwt
+
+	assertEquals([1, 1, 0, 1, 1, 1, 0, null, 1, 1, 1, 0, 1], await Promise.all([
+		pos({ jwt }, json({ put: "agd", agd: 1, nam: "活动介绍", adm1, adm2, msg: "活动介绍" } as Put)),
+		pos({ jwt }, json({ put: "agd", agd: 1 } as Put)),
+		pos({ jwt }, json({ put: "agd", agd: 1 } as Put)),
+		await pos({ jwt }, json({ put: "cdt", usr: 2, soc: 1, agr: 3 } as Put)),
+		await pos({ jwt }, json({ put: "cdt", id: cdt._id, msg: "msg", amt: 5 } as Put)),
+		await pos(p, json({ put: "cdt", id: cdt._id } as Put)),
+		await pos({ jwt }, json({ put: "cdt", id: cdt._id } as Put)),
+		pos({ jwt }, json({ put: "cdt", id: cdt._id, agr: 5 } as Put)),
+		pos({ jwt }, json({ put: "dbt", id: dbt._id } as Put)),
+		pos({ jwt }, json({ put: "ern", id: ern._id } as Put)),
+		pos({ jwt }, json({ put: "wsl", id: 1, msg: "wslmsg", nam: "标题三", pin: true } as Put)),
+		pos({ jwt }, json({ put: "wsl", id: 1, pin: false } as Put)),
+		pos({ jwt }, json({ put: "lit", id: 1 } as Put)),
+	]))
+	assertEquals([], p.pas?.agr)
+	await Promise.all([usr_d(1), usr_d(2), usr_d(3)])
 })

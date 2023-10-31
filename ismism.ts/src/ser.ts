@@ -1,9 +1,10 @@
-import { serve } from "https://deno.land/std@0.178.0/http/server.ts"
+import { db } from "./eid/db.ts"
 import { jwk_load } from "./ont/jwt.ts"
-import { utc_short } from "./ont/utc.ts"
+import { utc_dt, utc_etag, utc_h } from "./ont/utc.ts"
 import { pos, PasPos } from "./pra/pos.ts"
 import { que } from "./pra/que.ts"
 
+let utc_f = Date.now()
 let etag = ""
 
 function log(
@@ -11,44 +12,42 @@ function log(
 	msg: string,
 	status?: number,
 ) {
-	console.log(`${utc_short(utc)} - ${msg} - ${status ?? ""} - ${etag}`)
+	console.log(`${utc_dt(utc, "short")} - ${msg} - ${status ?? ""} - ${etag}`)
 }
 
-async function route(
+async function handler(
 	req: Request
 ): Promise<Response> {
 	const url = new URL(req.url)
-	const [_, r, f] = url.pathname.split("/")
-	const t = Date.now()
+	const [_, r] = url.pathname.split("/")
+	const utc = Date.now()
+	if (utc - utc_f > utc_h) etag = ""
 	switch (r) {
 		case "quit": {
-			log(t, "quit")
+			log(utc, "quit")
 			Deno.exit(); break
 		} case "update": {
 			etag = ""
-			log(t, "etag updated")
+			log(utc, "etag updated")
 			return new Response(null, { status: 200 })
 		} case "q": {
-			if (etag === "") etag = `W/"${t}"`
+			const s = decodeURI(url.search)
+			if (etag === "") { etag = utc_etag(); utc_f = utc }
 			if (req.headers.get("if-none-match")?.includes(etag)) {
-				log(t, `${f}${url.search}`, 304)
+				log(utc, `${r}${s}`, 304)
 				return new Response(null, { status: 304, headers: { etag } })
 			}
-			log(t, `${f}${url.search}`, 200)
-			return new Response(
-				JSON.stringify(await que(f, url.searchParams)), {
-				status: 200,
-				headers: { etag }
-			})
+			log(utc, `${r}${s}`, 200)
+			return new Response(JSON.stringify(await que(s)), { status: 200, headers: { etag } })
 		} case "p": {
 			const p: PasPos = {}
 			const [cookie] = req.headers.get("cookie")?.split(";").filter(c => c.startsWith("pp=")) ?? []
 			if (cookie) p.jwt = cookie.substring(3)
 			const b = await req.text()
-			const r = await pos(p, f, b)
-			if (r && p.etag) etag = p.etag
+			const r = await pos(p, b)
+			if (r && p.etag) { etag = p.etag; utc_f = utc }
 			const s = JSON.stringify(r)
-			log(t, `${f}#${p.pas?.uid ?? ""} ${b} => ${s}`, 200)
+			log(utc, `#${p.pas?.usr ?? ""} ${b} => ${s}`, 200)
 			const headers: Headers = new Headers()
 			if (!p.pas) headers.set("set-cookie", `pp=""; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=0`)
 			else if (p.jwt) headers.set("set-cookie", `pp=${p.jwt}; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=31728728`)
@@ -58,6 +57,7 @@ async function route(
 	return new Response(null, { status: 400 })
 }
 
+await db("ismism")
 await jwk_load()
-const port = parseInt(Deno.args[0])
-serve(route, { port: isNaN(port) ? 728 : port })
+const port = parseInt(Deno.args[0]) ?? 728
+Deno.serve({ handler, port })

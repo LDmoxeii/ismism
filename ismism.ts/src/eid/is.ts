@@ -1,39 +1,28 @@
-import { Act, Agd, Aut, Dst, Id, Md, Ord, Rec, Usr } from "./typ.ts"
+import type { Aut, Cdt, Id, Rec, Usr } from "./typ.ts"
 
-export const req_re = 2
-export const lim_re = 64
-
-export const lim_sup = 1
-export const lim_aud = 1
-export const lim_aut = 7
-export const lim_sec = 8
-export const lim_uid_def = lim_re
-export const lim_uid_max = lim_re * lim_sec / req_re
-export const lim_res_def = 16
-export const lim_res_max = 64
-export const lim_wsl = 16
-export const lim_lit = 16
-
+export const lim_nam = 16
+export const lim_jwt = 512
 export const len_code = 6
 export const lim_code = 10 ** len_code
-export const lim_ptoken = 1024
-export const lim_intro = 2048
-export const lim_img = 9
-export const lim_goal = 9
-export const lim_url = 128
-export const lim_msg = 256
-export const lim_json = lim_intro * 8
-export const lim_md = lim_intro * 8
-export const lim_ord_max = 128
 
-export const lim_ord_a = 8
-export const lim_ord_f = 32
-export const lim_nrecday = 90
-export const lim_rec_f = 32
-export const lim_md_f = 4
-export const lim_md_pin = lim_md_f
-export const lim_rd = 1
-export const lim_dst = 20
+export const lim_msg_id = 2048
+export const lim_msg_rec = 256
+export const lim_msg = 2048 * 8
+
+export const lim_sec = 8
+
+export const lim_key = 16
+export const lim_pin = 4
+
+export const lim_aut = {
+	sup: 2,
+	aut: 8,
+	wsl: 32,
+	lit: 32,
+}
+
+export const lim_rec_f = 64
+export const lim_msg_pin = 4
 
 export function is_lim(
 	n: number,
@@ -44,79 +33,68 @@ export function is_lim(
 
 export function is_id(
 	id: Id["_id"]
-): id is Id["_id"] {
+) {
 	return typeof id === "number" && id > 0
 }
 export function is_idl(
-	id: Id["_id"][],
+	idl: Id["_id"][],
 	lim: number,
-): id is Id["_id"][] {
-	return id.length <= lim && id.every(is_id)
+) {
+	return idl.length <= lim && idl.every(is_id)
 }
-
+export function is_utc(
+	utc: number
+) {
+	return Number.isInteger(utc)
+}
 export function is_nam(
 	nam: string
-): nam is Id["nam"] {
+) {
 	return typeof nam === "string" && /^[\u4E00-\u9FFF]{2,16}$/.test(nam)
 }
 export function is_nbr(
-	nbr: NonNullable<Usr["nbr"]>
-): nbr is NonNullable<Usr["nbr"]> {
+	nbr: string
+) {
 	return typeof nbr === "string" && /^1\d{10}$/.test(nbr)
 }
-export function is_ptoken(
+export function is_jwt(
 	token: string
 ): token is string {
-	return typeof token === "string" && token.length <= lim_ptoken
-}
-
-export function is_intro(
-	intro: Id["intro"]
-): intro is Id["intro"] {
-	return typeof intro === "string" && intro.length <= lim_intro
-}
-
-export function is_goal(
-	goal: Agd["goal"]
-): goal is Agd["goal"] {
-	return is_lim(goal.length, lim_goal) && goal.every(g =>
-		Object.keys(g).length === 2 && is_nam(g.nam) && is_lim(g.pct, 100)
-	)
-}
-export function is_img(
-	img: Agd["img"]
-): img is Agd["img"] {
-	return is_lim(img.length, lim_img) && img.every(m =>
-		Object.keys(m).length === 2 && is_nam(m.nam) && is_url(m.src)
-	)
-}
-
-export function is_url(
-	url: string
-): url is string {
-	return typeof url === "string" && url.length <= lim_url && url.startsWith("http")
+	return typeof token === "string" && token.length <= lim_jwt
 }
 export function is_msg(
-	msg: string
-): msg is string {
-	return typeof msg === "string" && 2 <= msg.length && msg.length <= lim_msg
-}
-export function is_json(
-	json: string
-): json is string {
-	return typeof json === "string" && json.length <= lim_json
-}
-
-export function is_ordid(
-	ordid: Ord["_id"]
-): ordid is Ord["_id"] {
-	return Object.keys(ordid).length === 3 && is_nbr(ordid.nbr) && is_id(ordid.aid) && ordid.utc > 0
+	msg: string,
+	lim: number,
+) {
+	return typeof msg === "string" && msg.length <= lim
 }
 
 export function is_recid(
 	recid: Rec["_id"]
-): recid is Rec["_id"] {
-	return Object.keys(recid).length === 3 && is_id(recid.uid) && is_id(recid.aid) && recid.utc > 0
+) {
+	return Object.keys(recid).length === 3 && is_id(recid.usr) && is_id(recid.soc) && Number.isInteger(recid.utc)
+}
+export function is_rec(
+	rec: Rec
+) {
+	const { _id, msg, amt, sec } = rec
+	return is_recid(_id)
+		&& typeof msg == "string" && is_msg(msg, lim_msg_rec)
+		&& typeof amt == "number" && amt >= 0
+		&& (sec == undefined || typeof sec == "number")
+}
+export function is_aug(
+	aug: NonNullable<Cdt["aug"]>[0]
+) {
+	return Object.keys(aug).length == 4 && is_msg(aug.msg, lim_msg_rec)
+		&& typeof aug.amt == "number" && is_id(aug.sec) && Number.isInteger(aug.utc)
+}
+export function is_cdt(
+	cdt: Cdt
+) {
+	const { utc: { eft, exp, agr }, aug } = cdt
+	return is_rec(cdt) && typeof eft == "number" && typeof exp == "number" && eft <= exp && agr >= 0
+		&& aug ? aug.every(is_aug) : true
 }
 
 export function is_dstid(
@@ -128,20 +106,10 @@ export function is_dstid(
 }
 
 export function is_aut(
-	aut: Aut["aut"],
-	a?: Aut["aut"][0],
-): a is Aut["aut"][0] {
-	return a ? aut.includes(a) : (["sup", "aud", "aut"] as const).some(a => aut.includes(a))
-}
-
-export function is_actid(
-	actid: Act["_id"]
-): actid is Act["_id"] {
-	return typeof actid === "string" && 6 <= actid.length && actid.length <= lim_url
-}
-
-export function is_md(
-	md: string
-): md is Md["md"] {
-	return typeof md === "string" && md.length <= lim_md
+	aut: Omit<Aut, "_id"> | Usr["_id"][],
+	usr: Usr["_id"],
+) {
+	return Array.isArray(aut)
+		? aut.includes(usr)
+		: Object.values(aut).some(a => a.includes(usr))
 }

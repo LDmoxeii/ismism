@@ -20,7 +20,7 @@
 		{
 			"label": "test",
 			"type": "shell",
-			"command": "cd ..; deno test --allow-all ismism.ts/tst",
+			"command": "cd ..; zsh cli/dbtst.zsh; deno test --allow-net --allow-read ismism.ts/tst",
 			"group": {
 				"kind": "test",
 				"isDefault": true
@@ -35,4 +35,3 @@
 		}
 	]
 }
-

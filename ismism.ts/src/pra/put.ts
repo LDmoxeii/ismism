@@ -1,112 +1,138 @@
-import type { Agd, Dst, Lit, Ord, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
-import type { Pas } from "./pas.ts"
-import { usr_u } from "../eid/usr.ts"
-import { coll, DocU } from "../db.ts"
-import { is_put_agd, is_put_dst, is_put_lit, is_put_ord, is_put_soc, is_put_work, is_put_wsl, PutAgd, PutLit, PutSoc, PutWsl } from "./can.ts"
-import { soc_d, soc_r, soc_u } from "../eid/soc.ts"
 import { agd_d, agd_u } from "../eid/agd.ts"
-import { nrec, rec_d, rec_r, rec_u } from "../eid/rec.ts"
-import { rel_u } from "../eid/rel.ts"
-import { is_id, lim_rd } from "../eid/is.ts"
-import { md_d, md_r, md_u } from "../eid/md.ts"
-import { ord_d, ord_u } from "../eid/ord.ts"
-import { dst_u } from "../eid/dst.ts"
+import { aut_u } from "../eid/aut.ts"
+import { coll } from "../eid/db.ts"
+import { msg_d, msg_u } from "../eid/msg.ts"
+import { cdt_a, cdt_u, dbt_s, rec_d } from "../eid/rec.ts"
+import { soc_d, soc_u } from "../eid/soc.ts"
+import { Agd, Cdt, Dbt, Ern, Msg, Soc, Usr } from "../eid/typ.ts"
+import { usr_u } from "../eid/usr.ts"
+import { Ret, is_put } from "./can.ts"
+import { Pas } from "./pas.ts"
 
-export function put_usr(
-	pas: Pas,
-	p: Pick<Usr, "nam" | "adm1" | "adm2" | "intro">
-): DocU {
-	return usr_u(pas.uid, { $set: p })
+export type Put = {
+	put: "usr",
+	usr: Usr["_id"],
+	nam: string,
+	adm1: string,
+	adm2: string,
+	msg: string,
+} | {
+	put: "soc",
+	soc: Soc["_id"],
+} | {
+	put: "soc",
+	soc: Soc["_id"],
+	nam: string,
+	adm1: string,
+	adm2: string,
+	sec: Soc["sec"],
+} | {
+	put: "soc",
+	soc: Soc["_id"],
+	msg: string,
+} | {
+	put: "soc",
+	soc: Soc["_id"],
+	agr: string,
+} | {
+	put: "agd",
+	agd: Agd["_id"],
+} | {
+	put: "agd",
+	agd: Agd["_id"],
+	nam: string,
+	adm1: string,
+	adm2: string,
+	msg: string,
+} | {
+	put: "cdt",
+	id: Cdt["_id"],
+} | {
+	put: "cdt",
+	usr: Cdt["_id"]["usr"],
+	soc: Cdt["_id"]["soc"],
+	agr: Cdt["utc"]["agr"],
+} | {
+	put: "cdt",
+	id: Cdt["_id"],
+	msg: Cdt["msg"],
+	amt: Cdt["amt"],
+} | {
+	put: "dbt",
+	id: Dbt["_id"],
+} | {
+	put: "dbt",
+	id: Dbt["_id"],
+	sec: NonNullable<Dbt["sec"]>,
+} | {
+	put: "ern",
+	id: Ern["_id"],
+} | {
+	put: "wsl" | "lit",
+	id: Msg["_id"],
+} | {
+	put: "wsl" | "lit",
+	id: Msg["_id"],
+	nam: string,
+	msg: string,
+} | {
+	put: "wsl" | "lit",
+	id: Msg["_id"],
+	pin: boolean,
+} | {
+	put: "aut",
+	aut: Usr["_id"][],
+	wsl: Usr["_id"][],
+	lit: Usr["_id"][],
 }
 
-export async function put_soc(
-	pas: Pas,
-	sid: Soc["_id"],
-	p: PutSoc | null,
-): DocU {
-	if (!is_put_soc(pas, sid, p)) return null
-	if (p === null) {
-		const s = await soc_r(sid, { uid: 1 })
-		if (!s || s.uid.length !== 0) return null
-		return soc_d(sid)
-	}
-	if ("nam" in p || "intro" in p) return soc_u(sid, { $set: p })
-	if ("rol" in p) {
-		const u = await rel_u(coll.soc, sid, p)
-		return u ? soc_u(sid, u) : null
+export type PutRet = {
+	usr: Ret<typeof usr_u>,
+	soc: Ret<typeof soc_u>,
+	agd: Ret<typeof agd_u>,
+	cdt: Ret<typeof rec_d> | Ret<typeof cdt_u>,
+	dbt: Ret<typeof rec_d>,
+	ern: Ret<typeof rec_d>,
+	wsl: Ret<typeof msg_u>,
+	lit: Ret<typeof msg_u>,
+	aut: Ret<typeof aut_u>,
+}
+
+// deno-lint-ignore require-await
+export async function put(
+	pas: Pas | null,
+	p: Put,
+) {
+	if (!pas || !p || !is_put(pas, p)) return null
+	switch (p.put) {
+		case "usr": {
+			const { nam, adm1, adm2, msg } = p
+			return usr_u(p.usr, { $set: { nam, adm1, adm2, msg } })
+		} case "soc": {
+			if ("msg" in p) return soc_u(p.soc, { $set: { msg: p.msg } })
+			else if ("agr" in p) return soc_u(p.soc, { $set: { agr: { msg: p.agr, utc: p.agr.length > 0 ? Date.now() : 0 } } })
+			else if ("nam" in p) {
+				const { nam, adm1, adm2, sec } = p
+				return soc_u(p.soc, { $set: { nam, adm1, adm2, sec } })
+			} else return soc_d(p.soc)
+		} case "agd": {
+			if ("nam" in p) {
+				const { nam, adm1, adm2 } = p
+				return agd_u(p.agd, { $set: { nam, adm1, adm2, msg: p.msg } })
+			} else return agd_d(p.agd)
+		} case "cdt": case "dbt": case "ern": {
+			if ("agr" in p) return cdt_u(p.usr, p.soc, Date.now())
+			else if ("msg" in p) return cdt_a(p.id, { msg: p.msg, amt: p.amt, sec: pas.usr, utc: Date.now() })
+			else if ("sec" in p) return dbt_s(p.id, p.sec)
+			else return rec_d(coll[p.put], p.id)
+		} case "wsl": case "lit": {
+			if ("msg" in p) return msg_u(coll[p.put], p.id, { $set: { nam: p.nam, msg: p.msg, "utc.put": Date.now() } })
+			else if ("pin" in p) return msg_u(coll[p.put], p.id, p.pin ? { $set: { pin: true } } : { $unset: { pin: true } })
+			else return msg_d(coll[p.put], p.id)
+		} case "aut": {
+			const { aut, wsl, lit } = p
+			return aut_u({ $set: { aut, wsl, lit } })
+		}
 	}
 	return null
-}
-
-export async function put_agd(
-	pas: Pas,
-	aid: Agd["_id"],
-	p: PutAgd | null,
-): DocU {
-	if (!is_put_agd(pas, aid, p)) return null
-	if (p === null) {
-		const r = await nrec({ aid })
-		if (r === null || r.work !== 0 || r.fund !== 0) return null
-		return agd_d(aid)
-	}
-	if ("nam" in p || "intro" in p || "img" in p || "goal" in p || "ordlim" in p) return agd_u(aid, { $set: p })
-	if ("rol" in p) {
-		const u = await rel_u(coll.agd, aid, p)
-		return u ? agd_u(aid, u) : null
-	}
-	return null
-}
-
-export async function put_ord(
-	pas: Pas,
-	ordid: Ord["_id"],
-	p: { ord: Ord["ord"] } | null,
-): DocU {
-	if (!is_put_ord(pas, ordid)) return null
-	return p === null ? ord_d(ordid) : await ord_u(ordid, { $set: p })
-}
-
-export async function put_work(
-	pas: Pas,
-	workid: Work["_id"],
-	p: { msg: string } | { nam: string, src: string } | { nam: string, src: string, utcs: number, utce: number } | null,
-): DocU {
-	if (pas.uid !== workid.uid) return null
-	const w = await rec_r(coll.work, workid, { ref: 1, work: 1 })
-	if (!w || !is_put_work(pas, w, p)) return null
-	return p === null ? rec_d(coll.work, workid) : rec_u(coll.work, workid, { $set: p })
-}
-
-export async function put_dst(
-	pas: Pas,
-	rd: NonNullable<Dst["json"]>,
-): DocU {
-	if (!is_put_dst(pas)) return null
-	return await dst_u(lim_rd, rd)
-}
-
-export async function put_wsl(
-	pas: Pas,
-	wslid: Wsl["_id"],
-	p: PutWsl,
-): DocU {
-	if (!is_id(wslid)) return null
-	const wsl = await md_r(coll.wsl, wslid, { uid: 1 })
-	if (!wsl || !is_put_wsl(pas, wsl, p)) return null
-	return p === null ? md_d(coll.wsl, wslid) : "nam" in p ? md_u(coll.wsl, wslid, {
-		$set: { ...p, utcp: Date.now() }
-	}) : md_u(coll.wsl, wslid, p.pin ? { $set: { pin: true } } : { $unset: { pin: false } })
-}
-
-export async function put_lit(
-	pas: Pas,
-	litid: Lit["_id"],
-	p: PutLit,
-): DocU {
-	if (!is_id(litid)) return null
-	const lit = await md_r(coll.lit, litid, { uid: 1 })
-	if (!lit || !is_put_lit(pas, lit, p)) return null
-	return p === null ? md_d(coll.lit, litid) : "nam" in p ? md_u(coll.lit, litid, {
-		$set: { ...p, utcp: Date.now() }
-	}) : md_u(coll.lit, litid, p.pin ? { $set: { pin: true } } : { $unset: { pin: false } })
 }

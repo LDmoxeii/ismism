@@ -1,161 +1,92 @@
-import { assert, assertEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts"
-import { coll, db } from "../src/db.ts"
-import { usr_c, usr_r, usr_u, usr_d } from "../src/eid/usr.ts"
-import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
 import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts"
-import { fund_f, nrec, rec_c, rec_d, rec_f, rec_r, rec_u, work_l, work_n } from "../src/eid/rec.ts"
-import { rol } from "../src/eid/rel.ts"
-import { nid } from "../src/eid/id.ts"
-import { md_c, md_f, md_r, md_u } from "../src/eid/md.ts"
-import { aut_c, aut_d, aut_g } from "../src/eid/aut.ts"
-import { utc_h } from "../src/ont/utc.ts"
-import { ord_c, ord_d, ord_f, ord_r, ord_u } from "../src/eid/ord.ts"
-import { dst_c, dst_f, dst_n, dst_r } from "../src/eid/dst.ts"
-import { lim_rd } from "../src/eid/is.ts"
+import { aut_r, aut_u } from "../src/eid/aut.ts"
+import { db, coll } from "../src/eid/db.ts"
+import { msg_c, msg_f, msg_r, msg_u } from "../src/eid/msg.ts"
+import { rec_c, rec_d, rec_f, rec_s, cdt_f, rec_r, cdt_u, cdt_a } from "../src/eid/rec.ts"
+import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts"
+import { usr_c, usr_d, usr_r, usr_u } from "../src/eid/usr.ts"
+import { assertEquals } from "./mod.test.ts"
 
 await db("tst", true)
 
 Deno.test("usr", async () => {
 	const nbr = "11111111111"
-	assert(null === await usr_r({ _id: 1 }, { nbr: 1 }))
-	const r_c = await usr_c(nbr, "四川", "成都")
-	assert(r_c && r_c === 1 && await nid(coll.usr) === 1)
-	const u = await usr_r({ _id: r_c }, { nam: 1, intro: 1, adm2: 1, nbr: 1 })
-	assert(u && u.nam === "1" && u.intro.length === 0 && u.adm2 === "成都" && u.nbr === nbr)
-	assertEquals([0, 0], await Promise.all([nid(coll.usr, { rej: 2 }), nid(coll.usr, { ref: 2 })]))
-	await usr_u(r_c, { $set: { nam: "中文名", adm1: "广东", adm2: "汕头", rej: [2], intro: "介绍" } })
-	const u2 = await usr_r({ _id: r_c }, { nam: 1, adm2: 1, intro: 1 })
-	assert(u2 && u2.nam === "中文名" && u2.adm2 === "汕头" && u2.intro.length === 2)
-	assertEquals([1, 0], await Promise.all([nid(coll.usr, { rej: 2 }), nid(coll.usr, { ref: 2 })]))
-	await usr_d(r_c)
-	assert(null === await usr_r({ _id: 1 }, { nbr: 1 }))
+	assertEquals(null, await usr_r({ _id: 1 }, { nbr: 1 }))
+	const uid = await usr_c(nbr, "四川", "成都") as number
+	assertEquals(1, uid)
+	assertEquals({
+		_id: uid, nam: `${uid}`, msg: "", adm2: "成都", nbr,
+	}, await usr_r(
+		{ _id: uid }, { nam: 1, msg: 1, adm2: 1, nbr: 1 })
+	)
+	await usr_u(uid, { $set: { nam: "中文名", adm1: "广东", adm2: "汕头", msg: "介绍" } })
+	assertEquals({
+		_id: uid, nam: "中文名", adm2: "汕头", msg: "介绍"
+	}, await usr_r(
+		{ _id: uid }, { nam: 1, adm2: 1, msg: 1 })
+	)
+	assertEquals(1, await usr_d(uid))
+	assertEquals(null, await usr_r({ _id: 1 }, { nbr: 1 }))
 })
 
 Deno.test("soc", async () => {
-	const nam = "小组"
-	assert(null === await soc_r(1, {}))
-	const r_c = await soc_c(nam, "四川", "成都")
-	assert(r_c && r_c === 1)
-	const s = await soc_r(r_c, { nam: 1, intro: 1, adm1: 1, uid: 1 })
-	assert(s && s.nam === nam && s.adm1 === "四川" && s.uid.length === 0)
-	await soc_u(r_c, { $set: { sec: [2], ref: [2], uid: [2, 3, 4] } })
-	const s2 = await soc_r(r_c, { sec: 1, ref: 1, uid: 1 })
-	assertEquals(s2, { _id: 1, sec: [2], ref: [2], uid: [2, 3, 4] })
-	await soc_d(r_c)
-	assert(null === await soc_r(r_c, {}))
+	const nam = "俱乐部"
+	assertEquals(null, await soc_r(1, {}))
+	assertEquals(1, await soc_c(nam, "四川", "成都"))
+	assertEquals(await soc_r(1, { nam: 1, msg: 1, adm1: 1, sec: 1 }), {
+		_id: 1, nam, adm1: "四川", msg: "", sec: []
+	})
+	await soc_u(1, { $set: { msg: "msg", sec: [2] } })
+	assertEquals(await soc_r(1, { msg: 1, sec: 1 }), { _id: 1, msg: "msg", sec: [2] })
+	assertEquals(1, await soc_d(1))
 })
 
 Deno.test("agd", async () => {
 	const nam = "活动"
-	assert(null === await agd_r(1, {}))
-	const r_c = await agd_c(nam, "四川", "成都")
-	assert(r_c && r_c === 1)
-	const s = await agd_r(r_c, { nam: 1, intro: 1, adm1: 1, goal: 1 })
-	assert(s && s.nam === nam && s.adm1 === "四川" && s.goal.length === 0)
-	await agd_u(r_c, { $set: { ref: [2], goal: [{ nam: "目标", pct: 75 }], img: [{ nam: "图片一", src: "httpb" }] } })
-	const s2 = await agd_r(r_c, { ref: 1, goal: 1, img: 1 })
-	assertEquals(s2, { _id: 1, ref: [2], goal: [{ nam: "目标", pct: 75 }], img: [{ nam: "图片一", src: "httpb" }] })
-	await agd_d(r_c)
-	assert(null === await agd_r(r_c, {}))
-})
-
-Deno.test("rel", async () => {
-	assertEquals([
-		await usr_c("11111111111", "四川", "成都"),
-		await soc_c("小组一", "广东", "汕头"),
-		await soc_c("小组二", "四川", "成都"),
-		await soc_c("小组三", "广东", "汕头"),
-	], [1, 1, 2, 3])
-	await Promise.all([
-		aut_c({ _id: 2, aut: ["aut"] }),
-		aut_c({ _id: 3, aut: ["aut"] }),
-		usr_u(1, { $set: { ref: [1, 2, 3] } }),
-		soc_u(1, { $set: { sec: [1, 4, 4], uid: [1, 3], res: [] } }),
-		soc_u(2, { $set: { sec: [1, 3, 4], uid: [1, 3], res: [1, 2] } }),
-		soc_u(3, { $set: { sec: [2, 3], uid: [1, 3], res: [1, 2] } }),
-	])
-	assertEquals(await rol(coll.soc, 1), { sec: [1, 2], uid: [1, 2, 3], res: [2, 3] })
-	await Promise.all([
-		aut_d(2), aut_d(3), usr_d(1), soc_d(1), soc_d(2), soc_d(3)
-	])
-})
-
-Deno.test("ord", async () => {
-	const utc = Date.now()
-	const id = [
-		{ nbr: "11111111112", aid: 3, utc: utc + 200 },
-		{ nbr: "11111111112", aid: 4, utc: utc + 100 },
-		{ nbr: "11111111111", aid: 4, utc },
-	]
-	assert(0 === (await ord_f())?.length)
-	assert(0 === (await ord_f({ nbr: id[0].nbr, utc }))?.length)
-
-	assertEquals(id, await Promise.all(id.map(_id => ord_c({ _id, code: 1, ord: true, msg: "msg" }))))
-	assertEquals((await ord_f({ utc: utc + 100 }))!.length, 1)
-	assertEquals((await ord_f({ utc: utc + 200 }))!.map(r => r._id), id.slice(1))
-	assertEquals((await ord_f({ nbr: id[0].nbr, utc: utc + 300 }))!.map(r => r._id), id.slice(0, 2))
-	assertEquals((await ord_f({ nbr: id[0].nbr, aid: id[0].aid, utc: id[0].utc + 100 })), [{ _id: id[0], code: 1, ord: true, msg: "msg" }])
-	assertEquals(await ord_u(id[1], { $set: { ord: false } }), 1)
-	assertEquals(await ord_r(id[1]), { _id: id[1], code: 1, ord: false, msg: "msg" })
-	assertEquals([1, 1, 1], await Promise.all(id.map(ord_d)))
+	assertEquals(null, await agd_r(1, {}))
+	assertEquals(1, await agd_c(nam, "四川", "成都", 1))
+	assertEquals(await agd_r(1, { nam: 1, msg: 1, adm1: 1, soc: 1 }), {
+		_id: 1, nam, adm1: "四川", msg: "", soc: 1
+	})
+	await agd_u(1, { $set: { msg: "msg" } })
+	assertEquals(await agd_r(1, { msg: 1 }), { _id: 1, msg: "msg", })
+	assertEquals(1, await agd_d(1))
 })
 
 Deno.test("rec", async () => {
-	const utc = Date.now()
-	const id = [
-		{ uid: 2, aid: 3, utc: utc + 200 },
-		{ uid: 2, aid: 4, utc: utc + 100 },
-		{ uid: 1, aid: 4, utc },
-	]
-	const idl = [
-		{ uid: 1, aid: 4, utc: utc + 300 },
-		{ uid: 1, aid: 4, utc: utc + 400 },
-	]
-
-	assertEquals(await nrec(), { work: 0, fund: 0 })
-	assertEquals(await nrec({ aid: 4 }), { work: 0, fund: 0 })
-	assert(0 === (await rec_f(coll.work, 0))?.length)
-	assert(0 === (await rec_f(coll.fund, utc, { uid: [2] }))?.length)
-
-	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.work, {
-		_id, ref: [_id.uid], rej: [], work: "work", msg: "msg"
-	}))))
-	await rec_c(coll.work, {
-		_id: idl[0], ref: [], rej: [], work: "live",
-		nam: "直播1", src: "https://ismist.cn",
-		utcs: utc - utc_h,
-		utce: utc + utc_h,
-	})
-	await rec_c(coll.work, {
-		_id: idl[1], ref: [], rej: [], work: "live",
-		nam: "直播2", src: "https://ismist.cn",
-		utcs: utc + utc_h,
-		utce: utc + 2 * utc_h,
-	})
-	assertEquals(id, await Promise.all(id.map(_id => rec_c(coll.fund, {
-		_id, fund: 32, msg: "msg", rd: 1, unit: 3,
-	}))))
-	assertEquals(await nrec(), { work: 5, fund: 3 })
-	assertEquals(await nrec({ uid: [2] }), { work: 2, fund: 2 })
-	assertEquals(await work_n(2), 2)
-	assertEquals([{ _id: id[2], fund: 32, msg: "msg", rd: 1, unit: 3, }], await fund_f({ rd: 1, "_id.uid": 1 }))
-	assertEquals(await nrec({ aid: 4 }), { work: 4, fund: 2 })
-
-	assertEquals((await rec_f(coll.work, utc + 100))!.length, 1)
-	assertEquals((await rec_f(coll.fund, utc + 200))!.map(r => r._id), id.slice(1))
-	assertEquals((await rec_f(coll.work, utc + 300, { uid: [2] }))!.map(r => r._id), id.slice(0, 2))
-	assertEquals((await rec_f(coll.work, 0, { aid: 3 })), [{ _id: id[0], work: "work", msg: "msg", ref: [2], rej: [] }])
-	assertEquals(2, (await work_l())?.length)
-
-	assertEquals(await rec_u(coll.work, id[1], { $set: { msg: "updated" } }), 1)
-	// deno-lint-ignore no-explicit-any
-	assertEquals(await rec_r(coll.work, id[1], { _id: 0, msg: 1 } as any), { msg: "updated" } as any)
-
+	const [usr, soc, utc, msg, amt, aug] = [1, 2, 1, "msg", 1, { msg: "msg", amt: 1, sec: 1, utc: 5 }]
 	await Promise.all([
-		id.map(_id => rec_d(coll.work, _id)),
-		id.map(_id => rec_d(coll.fund, _id)),
-	].flat())
-	assertEquals(await nrec(), { work: 2, fund: 0 })
+		rec_c(coll.cdt, { _id: { usr, soc, utc }, msg, amt, utc: { eft: 1, exp: 2, agr: 0 } }),
+		rec_c(coll.cdt, { _id: { usr, soc, utc: utc + 1 }, msg, amt, utc: { eft: 2, exp: 5, agr: 0 } }),
+		rec_c(coll.cdt, { _id: { usr, soc, utc: utc + 2 }, msg, amt, utc: { eft: 3, exp: 5, agr: 0 } }),
+	])
+	assertEquals([await rec_r(coll.cdt, { usr, soc, utc })], await rec_f(coll.cdt, { usr }, utc + 1))
+	assertEquals(2, (await cdt_f({ usr }, { now: 4 }))?.length)
+	assertEquals(3, (await cdt_f({ usr, soc }, { eft: 1, exp: 5 }))?.length)
+	assertEquals(2, (await cdt_f({ soc }, { eft: 3, exp: 4 }))?.length)
+	assertEquals(0, (await cdt_f({ usr, soc }, { eft: 5, exp: 6 }))?.length)
+	assertEquals(1, await cdt_u(usr, soc, utc + 10))
+	assertEquals(1, await cdt_a({ usr, soc, utc: utc + 2 }, aug))
+	assertEquals({ _id: { usr, soc, utc: utc + 2 }, utc: { eft: 3, exp: 5, agr: utc + 10 }, aug: [aug] },
+		(await cdt_f({ usr, soc }, { now: 4 }, { utc: 1, aug: 1 }))![0])
+
+	assertEquals([{ soc, amt: 3 }], await rec_s(coll.cdt, { usr }, {}))
+	assertEquals([{ soc, amt: 2 }], await rec_s(coll.cdt, { soc }, { now: 4 }))
+	assertEquals([{ soc, amt: 1 }], await rec_s(coll.cdt, { usr }, { eft: 2 }))
+	assertEquals([{ soc, amt: 3 }], await rec_s(coll.cdt, { usr }, { exp: 6 }))
+	assertEquals(1, await rec_d(coll.cdt, { usr, soc, utc }))
+	assertEquals([{ soc, amt: 2 }], await rec_s(coll.cdt, { usr }, { exp: 6 }))
+})
+
+Deno.test("msg", async () => {
+	assertEquals([], await msg_f(coll.wsl))
+	assertEquals(1, await msg_c(coll.wsl, "标题", 2))
+	assertEquals(2, await msg_c(coll.wsl, "标题", 2))
+	assertEquals(1, await msg_u(coll.wsl, 1, { $set: { msg: "#md1", usr: 2, pin: true } }))
+	assertEquals(1, await msg_u(coll.wsl, 2, { $set: { msg: "#md2", usr: 2 } }))
+	const [m1, m2] = await Promise.all([msg_r(coll.wsl, 1), msg_r(coll.wsl, 2)])
+	assertEquals(m2!.msg, "#md2")
+	assertEquals([m1!._id, m2!._id], (await msg_f(coll.wsl)).map(m => m._id))
 })
 
 Deno.test("dst", async () => {
@@ -177,23 +108,10 @@ Deno.test("dst", async () => {
 })
 
 Deno.test("aut", async () => {
-	assertEquals({}, await aut_g())
+	assertEquals({ sup: [1, 2], aut: [2], wsl: [], lit: [] }, await aut_r())
 	await Promise.all([
-		aut_c({ _id: 1, aut: ["sup", "wsl"] }),
-		aut_c({ _id: 2, aut: ["aud", "aut"] }),
-		aut_c({ _id: 3, aut: ["lit", "wsl"] }),
+		aut_u({ $addToSet: { wsl: 3 } }),
+		aut_u({ $set: { lit: [3, 4] } }),
 	])
-	assertEquals({ aud: [2], aut: [2], lit: [3], sup: [1], wsl: [1, 3] }, await aut_g())
-})
-
-Deno.test("md", async () => {
-	assertEquals([], await md_f(coll.wsl, 0))
-	assertEquals(1, await md_c(coll.wsl, { nam: "标题", uid: 1 }))
-	assertEquals(2, await md_c(coll.wsl, { nam: "标题", uid: 1 }))
-	assertEquals(1, await md_u(coll.wsl, 1, { $set: { md: "#md1", uid: 2, pin: true } }))
-	assertEquals(1, await md_u(coll.wsl, 2, { $set: { md: "#md2", uid: 2 } }))
-	const [md1, md2] = await Promise.all([md_r(coll.wsl, 1), md_r(coll.wsl, 2)])
-	assertEquals(md2!.md, "#md2")
-	assertEquals([md1, md2], await md_f(coll.wsl, 0))
-	assertEquals([], await md_f(coll.wsl, 2))
+	assertEquals({ sup: [1, 2], aut: [2], wsl: [3], lit: [3, 4] }, await aut_r())
 })

@@ -1,3 +1,4 @@
+mkdir -p db
 rm -rf log; mkdir log
 
 if systemctl > /dev/null; then

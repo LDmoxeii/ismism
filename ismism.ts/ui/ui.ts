@@ -10,7 +10,5 @@
 		.replace("<style></style>", `<style>\n${style}\n</style>`)
 		.replace("<script></script>", `<script type="module">\n${bind}\n</script>`)
 
-	Deno.writeTextFileSync("../ui/index.html", ui)
-
-	console.log(`\n/index.html: ${ui.length}\nindex: ${index.length}\ntemplate: ${template.length}\nstyle: ${style.length}\nbind: ${bind.length}`)
-}
+console.log(`emitting ui/index.html #${ui.length}`)
+Deno.writeTextFileSync("../ui/index.html", ui)

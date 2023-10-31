@@ -5,12 +5,11 @@ rm -rf ui
 mkdir ui
 
 cd ismism.ts
-rm -f ui/bind/*.js
 
 set -e
-deno check src/ser.ts cli/dbset.ts ui/bind/bind.ts
-deno run -A cli/bundle.ts src/ser cli/dbset ui/bind/bind
+deno check src/ser.ts
+deno run -A cli/bundle.ts src/ser ui/bind/bind cli/dbset
 deno run -A ui/ui.ts
-
+cp -r ui/mod ../ui
 mv src/ser.js ../cli
 mv cli/dbset.js ../cli

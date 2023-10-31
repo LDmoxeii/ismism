@@ -1,209 +1,91 @@
-import type { Usr, Re, Agd, Soc, Work, Rel, Id, Md, Wsl, Lit, Ord } from "../eid/typ.ts"
-import type { Pas } from "./pas.ts"
-import type { UpdateRel } from "../eid/rel.ts"
-import { is_aut, is_id, is_md, is_msg, is_nam, is_recid, is_url, req_re } from "../eid/is.ts"
+import type { Soc } from "../eid/typ.ts"
+import type { Pos, Pre, Put, Psg, Pas } from "./pos.ts"
+import { is_aut, is_cdt, is_id, is_idl, is_lim, is_msg, is_nam, is_nbr, is_rec, is_recid, lim_aut, lim_code, lim_msg, lim_msg_id, lim_msg_rec, lim_sec } from "../eid/is.ts"
+import { is_adm } from "../ont/adm.ts"
 
 // deno-lint-ignore no-explicit-any
 export type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>
 
-export function is_rej(
-	re: Re
+export function is_in(
+	sl: Soc["_id"][],
+	s?: Soc["_id"],
 ): boolean {
-	return re.rej.length >= req_re
-}
-export function is_ref(
-	re: Re
-): boolean {
-	return re.ref.length >= req_re
-}
-export function is_re(
-	re: Re
-): boolean {
-	return !is_rej(re) && is_ref(re)
+	if (!s) return sl.length > 0
+	return sl.includes(s)
 }
 
-export function is_sec(
-	pas: Pas,
-	sec?: { sid: Soc["_id"] } | { aid: Agd["_id"] }
+export function is_psg(
+	p: Psg
 ): boolean {
-	if (!sec) return (pas.sid.sec.length > 0 || pas.aid.sec.length > 0) && !is_rej(pas)
-	if ("sid" in sec) return pas.sid.sec.includes(sec.sid) && !is_rej(pas)
-	if ("aid" in sec) return pas.aid.sec.includes(sec.aid) && !is_rej(pas)
-	return false
-}
-export function is_uid(
-	pas: Pas,
-	uid: { sid: Soc["_id"] } | { aid: Agd["_id"] }
-): boolean {
-	if ("sid" in uid) return pas.sid.uid.includes(uid.sid) && !is_rej(pas)
-	if ("aid" in uid) return pas.aid.uid.includes(uid.aid) && !is_rej(pas)
-	return false
-}
-export function is_res(
-	pas: Pas,
-	res: { sid: Soc["_id"] } | { aid: Agd["_id"] }
-): boolean {
-	if ("sid" in res) return pas.sid.res.includes(res.sid) && !is_rej(pas)
-	if ("aid" in res) return pas.aid.res.includes(res.aid) && !is_rej(pas)
-	return false
-}
-
-export function is_pre_usr(
-	pas: Pas
-): boolean {
-	return is_aut(pas.aut) || is_sec(pas)
-}
-function is_pre_rel(
-	pas: Pas
-): boolean {
-	return is_aut(pas.aut, "aut")
-}
-export function is_pre_soc(
-	pas: Pas
-): boolean {
-	return is_pre_rel(pas)
-}
-export function is_pre_agd(
-	pas: Pas
-): boolean {
-	return is_pre_rel(pas)
-}
-export function is_pre_work(
-	pas: Pas,
-	aid: Agd["_id"],
-): boolean {
-	return is_uid(pas, { aid })
-}
-export function is_pre_dst(
-	pas: Pas,
-): boolean {
-	return is_aut(pas.aut, "aut")
-}
-export function is_pre_aut(
-	pas: Pas
-): boolean {
-	return is_aut(pas.aut, "sup")
-}
-export function is_pre_wsl(
-	pas: Pas
-): boolean {
-	return is_aut(pas.aut, "wsl")
-}
-export function is_pre_lit(
-	pas: Pas
-): boolean {
-	return is_aut(pas.aut, "lit")
-}
-
-export function is_pro_usr(
-	pas: Pas,
-	re: keyof Re,
-	uid: Usr["_id"],
-): boolean {
-	if (re !== "rej" && re !== "ref" || !is_id(uid)) return false
-	return is_pre_usr(pas) && pas.uid !== uid && !pas.ref.includes(uid)
-}
-export function is_pro_soc(
-	pas: Pas,
-): boolean {
-	return is_aut(pas.aut, "aud")
-}
-export function is_pro_agd(
-	pas: Pas,
-): boolean {
-	return is_aut(pas.aut, "aud")
-}
-export function is_pro_work(
-	pas: Pas,
-	re: keyof Re,
-	workid: Work["_id"],
-): boolean {
-	if (!is_recid(workid)) return false
-	if (re === "rej") return is_uid(pas, { aid: workid.aid })
-	if (re === "ref") return is_sec(pas, { aid: workid.aid })
-	return false
-}
-
-export type PutIdRel = Pick<Id & Rel, "nam" | "adm1" | "adm2" | "uidlim"> | Pick<Id & Rel, "intro" | "reslim">
-export type PutSoc = PutIdRel | UpdateRel
-export type PutAgd = PutSoc
-	| Pick<Agd, "intro" | "reslim" | "account" | "budget" | "fund" | "expense">
-	| Pick<Agd, "goal"> | Pick<Agd, "img">
-	| Pick<Agd, "ordlim" | "ordlimw">
-export type PutWork = { msg: string } | { nam: string, src: string } | { nam: string, src: string, utcs: number, utce: number }
-export type PutMd = { nam: Md["nam"], md: Md["md"] } | { pin: boolean } | null
-export type PutWsl = PutMd
-export type PutLit = PutMd
-
-function is_put_idrel(
-	pas: Pas,
-	id: { sid: Soc["_id"] } | { aid: Agd["_id"] },
-	p: PutIdRel | UpdateRel | null,
-): boolean {
-	if (p === null || "nam" in p) return is_pre_rel(pas)
-	else if ("intro" in p) return is_sec(pas, id)
-	else if ("rol" in p) switch (p.rol) {
-		case "sec": return is_pre_rel(pas)
-		case "uid": return "uid" in p && p.uid === pas.uid && p.add === false || is_sec(pas, id)
-		case "res": return "uid" in p && p.uid === pas.uid && (p.add === false || !is_rej(pas))
-			|| p.add === false && !("uid" in p) && (is_aut(pas.aut, "aut") || is_sec(pas, id))
+	switch (p.psg) {
+		case "pas": return true
+		case "sms": return is_nbr(p.nbr) && typeof p.sms == "boolean"
+		case "code": return is_nbr(p.nbr) && is_lim(p.code, lim_code)
+		case "clr": return is_id(p.usr)
 	}
 	return false
 }
-export function is_put_soc(
+
+export function is_pre(
 	pas: Pas,
-	sid: Soc["_id"],
-	p: PutSoc | null,
+	p: Pre,
 ): boolean {
-	return is_put_idrel(pas, { sid }, p)
+	switch (p.pre) {
+		case "usr": return (is_aut(pas.aut, pas.usr) || is_in(pas.sec))
+			&& is_nbr(p.nbr)
+			&& is_adm(p.adm1, p.adm2)
+		case "soc": return is_aut(pas.aut, pas.usr) && is_nam(p.nam) && is_adm(p.adm1, p.adm2)
+		case "agd": return is_in(pas.sec) && is_nam(p.nam) && is_id(p.soc)
+		case "cdt": return is_in(pas.sec, p.cdt._id.soc)
+			&& is_cdt(p.cdt) && p.cdt.sec == pas.usr
+		case "dbt": return is_in(pas.cdt, p.dbt._id.soc)
+			&& is_rec(p.dbt) && pas.usr == p.dbt._id.usr
+		case "ern": return is_in(pas.sec, p.ern._id.soc)
+			&& is_rec(p.ern) && p.ern.sec == pas.usr
+		case "wsl": return is_in(pas.aut.wsl, pas.usr) && is_nam(p.nam)
+		case "lit": return is_in(pas.aut.lit, pas.usr) && is_nam(p.nam)
+	}
+	return false
 }
-export function is_put_agd(
+
+export function is_put(
 	pas: Pas,
-	aid: Agd["_id"],
-	p: PutAgd | null,
+	p: Put,
 ): boolean {
-	if (p !== null && ("goal" in p || "img" in p || "ordlim" in p)) return is_sec(pas, { aid })
-	return is_put_idrel(pas, { aid }, p)
+	switch (p.put) {
+		case "usr": return pas.usr == p.usr
+			&& is_nam(p.nam) && is_adm(p.adm1, p.adm2) && is_msg(p.msg, lim_msg_id)
+		case "soc":
+			if ("msg" in p) return is_in(pas.sec, p.soc) && is_id(p.soc) && is_msg(p.msg, lim_msg_id)
+			else if ("agr" in p) return is_in(pas.sec, p.soc) && is_id(p.soc) && is_msg(p.agr, lim_msg)
+			else if ("nam" in p) return is_aut(pas.aut.aut, pas.usr)
+				&& is_id(p.soc) && is_nam(p.nam) && is_adm(p.adm1, p.adm2) && is_idl(p.sec, lim_sec)
+			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.soc)
+		case "agd":
+			if ("nam" in p) return is_in(pas.agd, p.agd) && is_id(p.agd)
+				&& is_nam(p.nam) && is_adm(p.adm1, p.adm2) && is_msg(p.msg, lim_msg_id)
+			else return is_aut(pas.aut.aut, pas.usr) && is_id(p.agd)
+		case "cdt": case "dbt": case "ern":
+			if ("agr" in p) return pas.usr == p.usr && is_in(pas.cdt, p.soc)
+			else if ("msg" in p) return is_in(pas.sec, p.id.soc) && is_recid(p.id)
+				&& is_msg(p.msg, lim_msg_rec) && typeof p.amt == "number"
+			else return is_in(pas.sec, p.id.soc) && is_recid(p.id)
+		case "wsl": case "lit":
+			if (!is_in(pas.aut[p.put], pas.usr)) return false
+			else if ("msg" in p) return is_id(p.id) && is_nam(p.nam) && is_msg(p.msg, lim_msg)
+			else if ("pin" in p) return is_id(p.id) && typeof p.pin == "boolean"
+			else return is_id(p.id)
+		case "aut": return is_in(pas.aut.sup, pas.usr)
+			&& is_idl(p.aut, lim_aut.aut) && is_idl(p.wsl, lim_aut.wsl) && is_idl(p.lit, lim_aut.lit)
+	}
 }
-export function is_put_ord(
+
+export function is_pos(
 	pas: Pas,
-	_id: Ord["_id"],
+	p: Pos,
 ): boolean {
-	return is_uid(pas, { aid: _id.aid })
-}
-export function is_put_work(
-	pas: Pas,
-	work: Pick<Work, "_id" | "ref" | "work">,
-	p: PutWork | null,
-): boolean {
-	return work._id.uid === pas.uid && work.ref.length === 0 && (p === null
-		|| "msg" in p && is_msg(p.msg) && work.work === "work"
-		|| "src" in p && is_msg(p.nam) && is_url(p.src) && (work.work === "video" || work.work === "live")
-	)
-}
-export function is_put_dst(
-	pas: Pas,
-): boolean {
-	return is_aut(pas.aut, "aut")
-}
-function is_put_md(
-	pas: Pas,
-	md: Pick<Md, "uid">,
-	p: PutMd,
-): boolean {
-	return pas.uid === md.uid && (p === null || "nam" in p && is_nam(p.nam) && is_md(p.md) || "pin" in p)
-}
-export function is_put_wsl(
-	pas: Pas,
-	wsl: Pick<Wsl, "uid">,
-	p: PutWsl,
-): boolean {
-	return is_put_md(pas, wsl, p) && is_pre_wsl(pas)
-}
-export function is_put_lit(
-	pas: Pas,
-	lit: Pick<Lit, "uid">,
-	p: PutLit,
-): boolean {
-	return is_put_md(pas, lit, p) && is_pre_lit(pas)
+	if ("psg" in p) return is_psg(p)
+	else if ("pre" in p) return is_pre(pas, p)
+	else if ("put" in p) return is_put(pas, p)
+	return false
 }

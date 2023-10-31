@@ -1,186 +1,91 @@
-import type { Act, Agd, Aut, Dst, Fund, Lit, Ord, Soc, Usr, Work, Wsl } from "../eid/typ.ts"
-import type { Pas } from "./pas.ts"
-import { is_pre_agd, is_pre_lit, is_pre_soc, is_pre_usr, is_pre_work, is_pre_wsl, is_pre_aut, is_pre_dst } from "./can.ts"
-import { coll, DocC, DocU } from "../db.ts"
-import { act_r, act_u } from "../eid/act.ts"
-import { usr_c, usr_r, usr_u } from "../eid/usr.ts"
-import { soc_c, soc_u } from "../eid/soc.ts"
-import { agd_c, agd_r, agd_u } from "../eid/agd.ts"
-import { rec_c } from "../eid/rec.ts"
-import { md_c } from "../eid/md.ts"
-import { is_aut, is_id, is_lim, is_msg, is_nam, is_ordid, is_url, len_code, lim_aud, lim_aut, lim_code, lim_lit, lim_wsl } from "../eid/is.ts"
-import { aut_c, aut_d, aut_g, aut_r, aut_u } from "../eid/aut.ts"
-import { utc_d, utc_h, utc_week } from "../ont/utc.ts"
-import { nord_f, ord_c, ord_d } from "../eid/ord.ts"
-import { smssend } from "../ont/sms.ts"
-import { dst_a, dst_c, dst_d } from "../eid/dst.ts"
+import type { Agd, Cdt, Dbt, Ern, Lit, Soc, Usr, Wsl } from "../eid/typ.ts"
+import { agd_c } from "../eid/agd.ts"
+import { coll } from "../eid/db.ts"
+import { msg_c } from "../eid/msg.ts"
+import { cdt_f, rec_c, rec_s } from "../eid/rec.ts"
+import { soc_c, soc_r } from "../eid/soc.ts"
+import { usr_c } from "../eid/usr.ts"
+import { Ret, is_pre } from "./can.ts"
+import { Pas } from "./pas.ts"
+import { is_id } from "../eid/is.ts"
 
-export async function pre_usr(
-	pa: { pas: Pas } | { actid: Act["_id"] },
+export type Pre = {
+	pre: "usr",
 	nbr: NonNullable<Usr["nbr"]>,
-	adm1: string,
-	adm2: string,
-): DocC<Usr["_id"]> {
-	if ("actid" in pa) {
-		const a = await act_r(pa.actid)
-		if (a) switch (a.act) {
-			case "fund": {
-				const uid = await usr_c(nbr, adm1, adm2)
-				if (!is_id(uid!)) return null
-				const utc = Date.now()
-				await Promise.all([
-					act_u(pa.actid, { $set: { exp: utc } }),
-					rec_c(coll.fund, {
-						_id: { uid, aid: a.aid, utc }, fund: 0, msg: a.msg,
-						...a.rd ? { rd: a.rd } : {},
-						...a.unit ? { unit: a.unit } : {},
-					}),
-				])
-				return uid
-			} case "nbr": {
-				const u = await usr_u(a.uid, { $set: { nbr, adm1, adm2 } })
-				if (u && u > 0) {
-					await act_u(pa.actid, { $set: { exp: Date.now() } })
-					return a.uid
-				} break
-			}
-		}
-	} else if ("pas" in pa && is_pre_usr(pa.pas)) return usr_c(nbr, adm1, adm2)
-	return null
-}
-
-export async function pre_soc(
-	pas: Pas,
+	adm1: Usr["adm1"],
+	adm2: Usr["adm1"],
+} | {
+	pre: "soc",
 	nam: Soc["nam"],
-	adm1: string,
-	adm2: string,
-): DocC<Soc["_id"]> {
-	if (!is_pre_soc(pas)) return null
-	const sid = await soc_c(nam, adm1, adm2)
-	if (sid) await soc_u(sid, { $set: { ref: [pas.uid] } })
-	return sid
-}
-
-export async function pre_agd(
-	pas: Pas,
+	adm1: Soc["adm1"],
+	adm2: Soc["adm1"],
+} | {
+	pre: "agd",
 	nam: Agd["nam"],
-	adm1: string,
-	adm2: string,
-): DocC<Agd["_id"]> {
-	if (!is_pre_agd(pas)) return null
-	const aid = await agd_c(nam, adm1, adm2)
-	if (aid) await agd_u(aid, { $set: { ref: [pas.uid] } })
-	return aid
-}
-
-const h_code_valid = 1
-
-export async function pre_ord(
-	nbr: Ord["_id"]["nbr"],
-	aid: Ord["_id"]["aid"],
-	msg: Ord["msg"],
-	sms: boolean,
-): DocC<Ord["_id"]> {
-	const utc = Date.now()
-	const _id = { nbr, aid, utc } as Ord["_id"]
-	if (!is_ordid(_id)) return null
-	const agd = await agd_r(aid, { ordutc: 1, ordlim: 1, ordlimw: 1 })
-	if (!agd || (utc - agd.ordutc > utc_d)) return null
-	const [ordh, ordw, ord] = await Promise.all([
-		nord_f({ nbr, aid, utc: utc - utc_h }),
-		nord_f({ nbr, aid, utc: utc_week(utc) }),
-		nord_f({ aid, utc: agd.ordutc }),
-	])
-	if (ordh > 0 || !is_lim(ordw + 1, agd.ordlimw) || !is_lim(ord + 1, agd.ordlim)) return null
-	const code = Math.round(Math.random() * lim_code)
-	const c = await ord_c({ _id, code, ord: true, msg })
-	if (c && sms) {
-		const { sent } = await smssend(nbr, `${code}`.padStart(len_code, "0"), `${h_code_valid}`)
-		if (sent) return c
-		await ord_d(c)
-		return null
-	}
-	return c
-}
-
-export async function pre_work(
-	pas: Pas,
-	aid: Agd["_id"],
-	work: { msg: string } | { nam: string, src: string } | { nam: string, src: string, utcs: number, utce: number },
-): DocC<Work["_id"]> {
-	if (!is_pre_work(pas, aid)) return null
-	const r = { _id: { uid: pas.uid, aid, utc: Date.now() }, rej: [], ref: [] }
-	if ("msg" in work && is_msg(work.msg))
-		return await rec_c(coll.work, { ...r, work: "work", ...work })
-	else if ("src" in work && is_msg(work.nam) && is_url(work.src)) {
-		if ("utcs" in work) return await rec_c(coll.work, { ...r, work: "live", ...work })
-		else return await rec_c(coll.work, { ...r, work: "video", ...work })
-	}
-	return null
-}
-
-export async function pre_fund(
-	pas: Pas,
-	actid: Act["_id"],
-): DocC<Fund["_id"]> {
-	const a = await act_r(actid)
-	if (!a || a.act !== "fund") return null
-	const utc = Date.now()
-	await act_u(actid, { $set: { exp: utc } })
-	return rec_c(coll.fund, {
-		_id: { uid: pas.uid, aid: a.aid, utc }, fund: 0, msg: a.msg,
-		...a.rd ? { rd: a.rd } : {},
-		...a.unit ? { unit: a.unit } : {},
-	})
-}
-
-export async function pre_dst(
-	pas: Pas,
-	dstid: Dst["_id"],
-): DocU {
-	if (!dstid.uid && is_pre_dst(pas)) return await dst_c({ _id: dstid }) ? 1 : null
-	if (dstid.uid === pas.uid && pas.redst && !dstid.aid) return await dst_d({ rd: dstid.rd, uid: dstid.uid })
-	if (dstid.uid === pas.uid && is_id(dstid.aid!) && is_lim(pas.dst.reduceRight((a, b) => a + b[1], 1), pas.limdst)) return await dst_a(dstid)
-	return null
-}
-
-export async function pre_aut(
-	pas: Pas,
-	nam: Usr["nam"],
-	aut: Aut["aut"][0],
-): DocC<Aut["_id"]> {
-	if (aut === "sup" || !is_nam(nam) || !is_pre_aut(pas)) return null
-	const { _id } = await usr_r({ nam }, {}) ?? {}
-	const lim = aut === "aud" ? lim_aud :
-		aut === "aut" ? lim_aut : aut === "wsl" ? lim_wsl : aut === "lit" ? lim_lit : 0
-	if (!is_id(_id!)) return null
-	const [a, g] = await Promise.all([aut_r(_id), aut_g()])
-	if (is_lim((g[aut]?.length ?? 0) + (g[aut]?.includes(_id) ? -1 : 1), lim)) {
-		if (a) {
-			if (is_aut(a.aut, aut) && a.aut.length === 1) {
-				await aut_d(_id)
-				return _id
-			}
-			const u = await aut_u(_id, is_aut(a.aut, aut) ? { $pull: { aut } } : { $addToSet: { aut } })
-			return u && u > 0 ? _id : null
-		}
-		else return aut_c({ _id, aut: [aut] })
-	}
-	return null
-}
-
-export async function pre_wsl(
-	pas: Pas,
+	soc: Agd["soc"],
+} | {
+	pre: "cdt",
+	cdt: Cdt,
+} | {
+	pre: "dbt",
+	dbt: Dbt,
+} | {
+	pre: "ern",
+	ern: Ern,
+} | {
+	pre: "wsl",
 	nam: Wsl["nam"],
-): DocC<Wsl["_id"]> {
-	if (!is_nam(nam) || !is_pre_wsl(pas)) return null
-	return await md_c(coll.wsl, { uid: pas.uid, nam })
+} | {
+	pre: "lit",
+	nam: Lit["nam"],
 }
 
-export async function pre_lit(
-	pas: Pas,
-	nam: Lit["nam"],
-): DocC<Lit["_id"]> {
-	if (!is_nam(nam) || !is_pre_lit(pas)) return null
-	return await md_c(coll.lit, { uid: pas.uid, nam })
+export type PreRet = {
+	usr: Ret<typeof usr_c>,
+	soc: Ret<typeof soc_c>,
+	agd: Ret<typeof agd_c>,
+	cdt: Ret<typeof rec_c>,
+	dbt: Ret<typeof rec_c>,
+	ern: Ret<typeof rec_c>,
+	wsl: Ret<typeof msg_c>,
+	lit: Ret<typeof msg_c>,
+}
+
+export async function pre(
+	pas: Pas | null,
+	p: Pre,
+) {
+	if (!pas || !p || !is_pre(pas, p)) return null
+	switch (p.pre) {
+		case "usr": {
+			return usr_c(p.nbr, p.adm1, p.adm2)
+		} case "soc": {
+			return soc_c(p.nam, p.adm1, p.adm2)
+		} case "agd": {
+			const s = await soc_r(p.soc, { adm1: 1, adm2: 1 })
+			return s ? agd_c(p.nam, s.adm1, s.adm2, p.soc) : null
+		} case "cdt": {
+			const { _id: { usr, soc, utc }, msg, amt, sec, utc: { eft, exp } } = p.cdt
+			const a = await cdt_f({ usr, soc }, { eft, exp }, { _id: 1 })
+			if (a && a.length > 0 || !is_id(sec!)) return null
+			return rec_c(coll.cdt, { _id: { usr, soc, utc }, msg, amt, sec, utc: { eft, exp, agr: 0 } })
+		} case "dbt": {
+			const { _id: { usr, soc, utc }, msg, amt } = p.dbt
+			const a = await cdt_f({ usr, soc }, { now: utc })
+			if (!a || a.length == 0) return null
+			const aug = a[0].aug ? a[0].aug.reduce((a, b) => a + b.amt, a[0].amt) : a[0].amt
+			const [d] = await rec_s(coll.dbt, { usr, soc }, { frm: a[0].utc.eft })
+			if (aug >= (d ? d.amt : 0) + p.dbt.amt) return rec_c(coll.dbt, { _id: { usr, soc, utc }, msg, amt })
+			break
+		} case "ern": {
+			const { _id: { usr, soc, utc }, msg, amt, sec } = p.ern
+			if (!is_id(sec!)) return null
+			return rec_c(coll.ern, { _id: { usr, soc, utc }, msg, amt, sec })
+		} case "wsl": {
+			return msg_c(coll.wsl, p.nam, pas.usr)
+		} case "lit": {
+			return msg_c(coll.lit, p.nam, pas.usr)
+		}
+	}
+	return null
 }

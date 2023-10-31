@@ -1,7 +1,7 @@
-import { coll, DocC, DocD, DocR, DocU, Update } from "../db.ts"
+import type { Usr } from "./typ.ts"
+import { DocC, DocD, DocR, DocU, Proj, Updt, coll } from "./db.ts"
+import { is_lim, is_nbr, lim_code, lim_jwt } from "./is.ts"
 import { id_c, id_d, id_n, id_r, id_u } from "./id.ts"
-import { is_nbr, is_ptoken } from "./is.ts"
-import { Usr } from "./typ.ts"
 
 export async function usr_c(
 	nbr: NonNullable<Usr["nbr"]>,
@@ -11,36 +11,35 @@ export async function usr_c(
 	if (!is_nbr(nbr)) return null
 	const _id = await id_n(coll.usr)
 	return id_c(coll.usr, {
-		_id, nam: `${_id}`, nbr,
-		utc: Date.now(), adm1, adm2,
-		intro: "",
-		rej: [], ref: [],
-	}, true)
+		_id, utc: Date.now(), nam: `${_id}`,
+		nbr, adm1, adm2, msg: "",
+	})
 }
 
 export async function usr_r<
 	P extends keyof Usr
 >(
-	f: { _id: Usr["_id"] } | { nam: Usr["nam"] } | { nbr: NonNullable<Usr["nbr"]> },
-	projection: Partial<{ [K in P]: 1 }>
+	f: Pick<Usr, "_id"> | Pick<Usr, "nam"> | { nbr: NonNullable<Usr["nbr"]> },
+	p: Proj<Usr, P>,
 ): DocR<Pick<Usr, "_id" | P>> {
 	if ("nbr" in f && !is_nbr(f.nbr)) return null
-	return await id_r(coll.usr, f, projection)
+	return await id_r(coll.usr, f, p)
 }
 
 export async function usr_u(
-	uid: Usr["_id"],
-	u: Update<Usr>,
+	_id: Usr["_id"],
+	u: Updt<Usr>,
 ): DocU {
-	if (u.$set && (
-		u.$set.nbr && !is_nbr(u.$set.nbr)
-		|| u.$set.ptoken && !is_ptoken(u.$set.ptoken)
-	)) return null
-	return await id_u(coll.usr, uid, u)
+	const s = u.$set
+	if (s?.nbr && !is_nbr(s.nbr)
+		|| s?.sms && !is_lim(s.sms.code, lim_code)
+		|| s?.jwt && !is_lim(s.jwt.length, lim_jwt)
+	) return null
+	return await id_u(coll.usr, _id, u)
 }
 
 export function usr_d(
-	uid: Usr["_id"]
+	_id: Usr["_id"]
 ): DocD {
-	return id_d(coll.usr, uid)
+	return id_d(coll.usr, _id)
 }

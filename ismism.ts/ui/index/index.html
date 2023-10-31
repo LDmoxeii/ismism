@@ -17,30 +17,14 @@
 <template></template>
 
 <body>
-	<div id="banner">
-		本网站域名及所有云服务均从<a href="https://cloud.tencent.com" target="_blank"
-			rel="noopener noreferrer">腾讯云</a>购买。所有开发及运营成本，均由<a
-			href="https://sc.gsxt.gov.cn/%7B317FA59E009783E8C7FCDA4D629D0896ADB5B49B0C14EB0AD047D9E2FA3D0833150DF213C95E5F34DF412AC1C0E6E7706907B53FD0FE78DDF341EC4967575B670BF50BF50B8D204CCCD0CC1BCCA92985E98574857485748574857485740F67F23527DEF10E9B280E90BFF66E52AC5201006B8081990C236A563AC43AC43A-1689156546797%7D"
-			target="_blank" rel="noopener noreferrer">高新区柒贰捌软件开发工作室</a>全额单独承担。
-		网站不接受任何形式的资助或捐赠。
-	</div>
-	<nav class="main">
+	<nav>
 		<menu>
 			<li><a href="">主义主义</a></li>
-			<li><a id="agd_a" onclick="nav(this, false)" href="#agd"><em>活动</em>公示</a></li>
-			<li><a id="soc_a" onclick="nav(this)" href="#soc">同城<em>俱乐部</em></a></li>
+			<li><a onclick="nav(this)" href="#soc">同城<em>俱乐部</em></a></li>
 			<li><a onclick="nav(this)" href="#wsl">法律<em>援助</em></a></li>
 			<li><a onclick="nav(this)" href="#lit">理论<em>学习</em></a></li>
-			<li><a id="pas_a" href="#pas">用户登录</a></li>
+			<li><a id="pas" href="#psg">用户登录</a></li>
 		</menu>
-	</nav>
-	<hr>
-	<nav class="adm none">
-		<menu id="adm1"></menu>
-	</nav>
-	<hr>
-	<nav class="adm none">
-		<menu id="adm2"></menu>
 	</nav>
 	<hr>
 	<div id="main"></div>
@@ -48,17 +32,11 @@
 
 <script>
 	function nav(
-		t, scroll = true
+		t
 	) {
 		for (const e of t.parentElement.parentElement.children) e.classList.remove("active")
 		t.parentElement.classList.add("active")
 	}
-	for (const n of document.getElementsByTagName("nav")) n.addEventListener("wheel", e => {
-		if (e.deltaX != 0) return
-		e.preventDefault()
-		if (e.deltaY > 0) n.scrollLeft -= 60
-		else if (e.deltaY < 0) n.scrollLeft += 60
-	})
 </script>
 
 <script></script>
