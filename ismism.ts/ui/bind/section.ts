@@ -175,7 +175,7 @@ export function dtl(
 					}))
 					article(msg.bind, amt.bind, btn)
 				}); else d.aug.remove()
-			} else[d.clr, d.fin].forEach(el => el.remove())
+			} else[d.clr, d.fin, d.aug].forEach(el => el.remove())
 			b.dtl.append(d.bind)
 		})
 	}
