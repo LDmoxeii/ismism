@@ -54,7 +54,7 @@ export async function cdt_u(
 	} catch { return null }
 }
 
-export async function cdt_a<
+export async function cdt_f<
 	P extends keyof Cdt,
 >(
 	id: { usr: Cdt["_id"]["usr"] } | { soc: Cdt["_id"]["soc"] } | Omit<Cdt["_id"], "utc">,

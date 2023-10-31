@@ -2,7 +2,7 @@ import type { Agd, Cdt, Dbt, Ern, Lit, Soc, Usr, Wsl } from "../eid/typ.ts"
 import { agd_c } from "../eid/agd.ts"
 import { coll } from "../eid/db.ts"
 import { msg_c } from "../eid/msg.ts"
-import { cdt_a, rec_c, rec_s } from "../eid/rec.ts"
+import { cdt_f, rec_c, rec_s } from "../eid/rec.ts"
 import { soc_c, soc_r } from "../eid/soc.ts"
 import { usr_c } from "../eid/usr.ts"
 import { Ret, is_pre } from "./can.ts"
@@ -66,12 +66,12 @@ export async function pre(
 			return s ? agd_c(p.nam, s.adm1, s.adm2, p.soc) : null
 		} case "cdt": {
 			const { _id: { usr, soc, utc }, msg, amt, sec, utc: { eft, exp } } = p.cdt
-			const a = await cdt_a({ usr, soc }, { eft, exp }, { _id: 1 })
+			const a = await cdt_f({ usr, soc }, { eft, exp }, { _id: 1 })
 			if (a && a.length > 0 || !is_id(sec!)) return null
 			return rec_c(coll.cdt, { _id: { usr, soc, utc }, msg, amt, sec, utc: { eft, exp, agr: 0 } })
 		} case "dbt": {
 			const { _id: { usr, soc, utc }, msg, amt } = p.dbt
-			const a = await cdt_a({ usr, soc }, { now: utc })
+			const a = await cdt_f({ usr, soc }, { now: utc })
 			if (!a || a.length == 0) return null
 			const [d] = await rec_s(coll.dbt, { usr, soc }, { frm: a[0].utc.eft })
 			if (a[0].amt >= (d ? d.amt : 0) + p.dbt.amt) return rec_c(coll.dbt, { _id: { usr, soc, utc }, msg, amt })
