@@ -138,7 +138,7 @@ export function dtl(
 			}
 			if ("aug" in r && r.aug) s += `\n\n追加积分：\n\n`
 				+ (r.aug as NonNullable<Cdt["aug"]>).map(a =>
-					`${utc_dt(a.utc)}（联络员：${usr.get(a.sec!)}#${a.sec}）\n`
+					`${utc_dt(a.utc)}（联络员#${a.sec}）\n`
 					+ `${a.msg}：${a.amt > 0 ? "+" : ""}${a.amt}`
 				).join("\n\n")
 			d.msg.innerText = s

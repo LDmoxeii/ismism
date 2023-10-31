@@ -25,7 +25,7 @@ export async function usr(
 	if (!u) return null
 	const [sec, cdt, cdt_s, dbt_s, ern_s] = await Promise.all([ // deno-lint-ignore no-explicit-any
 		id(coll.soc, { sec: u._id } as any),
-		cdt_f({ usr: u._id }, { now: Date.now() }, { amt: 1, utc: 1 }),
+		cdt_f({ usr: u._id }, { now: Date.now() }, { amt: 1, utc: 1, aug: 1 }),
 		rec_s(coll.cdt, { usr: u._id }, {}),
 		rec_s(coll.dbt, { usr: u._id }, {}),
 		rec_s(coll.ern, { usr: u._id }, {}),
@@ -36,8 +36,10 @@ export async function usr(
 	])
 	return {
 		...u, sec, soc,
-		cdt: cdt.map(({ _id, amt, utc }, n) => ({ soc: _id.soc, amt: amt - (dbt[n].length == 0 ? 0 : dbt[n][0].amt), utc })),
-		sum: { cdt: cdt_s, dbt: dbt_s, ern: ern_s },
+		cdt: cdt.map(({ _id, amt, utc, aug }, n) => ({
+			soc: _id.soc,
+			amt: (aug ? aug.reduce((a, b) => a + b.amt, amt) : amt) - (dbt[n].length == 0 ? 0 : dbt[n][0].amt), utc
+		})), sum: { cdt: cdt_s, dbt: dbt_s, ern: ern_s },
 	}
 }
 

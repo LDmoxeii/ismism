@@ -73,8 +73,9 @@ export async function pre(
 			const { _id: { usr, soc, utc }, msg, amt } = p.dbt
 			const a = await cdt_f({ usr, soc }, { now: utc })
 			if (!a || a.length == 0) return null
+			const aug = a[0].aug ? a[0].aug.reduce((a, b) => a + b.amt, a[0].amt) : a[0].amt
 			const [d] = await rec_s(coll.dbt, { usr, soc }, { frm: a[0].utc.eft })
-			if (a[0].amt >= (d ? d.amt : 0) + p.dbt.amt) return rec_c(coll.dbt, { _id: { usr, soc, utc }, msg, amt })
+			if (aug >= (d ? d.amt : 0) + p.dbt.amt) return rec_c(coll.dbt, { _id: { usr, soc, utc }, msg, amt })
 			break
 		} case "ern": {
 			const { _id: { usr, soc, utc }, msg, amt, sec } = p.ern

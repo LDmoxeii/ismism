@@ -67,7 +67,7 @@ export async function soc(
 		if (is_in(nav.pas.cdt, _id) || is_aut(nav.pas.aut, nav.pas.usr)) t.append(
 			lp(`会员：(${s.cdt.length}) (仅会员可见)`, s.cdt.map(([u, n]) => [n, `#${u}`, "ln"])),
 			dtl(`积分使用：（总使用：${s.sum.dbt}）`, { que: "dbt", soc: s._id, utc: 0 }, nav.pas),
-			dtl(`积分记录：（总积分：${s.sum.cdt}）`, { que: "cdt", soc: s._id, utc: 0 }, nav.pas),
+			dtl(`积分记录：`, { que: "cdt", soc: s._id, utc: 0 }, nav.pas),
 			dtl(`贡献记录：（总贡献：${s.sum.ern}）`, { que: "ern", soc: s._id, utc: 0 }, nav.pas),
 		)
 		t.append(btn_soc(nav.pas, s))
