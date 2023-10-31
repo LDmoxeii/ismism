@@ -136,6 +136,11 @@ export function dtl(
 				s += `\n生效日期：${utc_dt(eft)}\n失效日期：${utc_dt(exp)}`
 				if (eft > Date.now()) d.msg.classList.add("green")
 			}
+			if ("aug" in r && r.aug) s += `\n\n追加积分：\n\n`
+				+ (r.aug as NonNullable<Cdt["aug"]>).map(a =>
+					`${utc_dt(a.utc)}（联络员：${usr.get(a.sec!)}#${a.sec}）\n`
+					+ `${a.msg}：${a.amt > 0 ? "+" : ""}${a.amt}`
+				).join("\n\n")
 			d.msg.innerText = s
 			if (q.que == "dbt" && !r.sec) d.msg.classList.add("green")
 			if (pas && is_in(pas.sec, r._id.soc)) {
@@ -151,17 +156,25 @@ export function dtl(
 						d.fin.remove()
 					} else d.clr.disabled = false
 				})
-				if (q.que == "dbt" && !r.sec) {
-					d.fin.addEventListener("click", async () => {
-						d.fin.disabled = true
-						const p = await pos<PutRet["dbt"]>({ put: "dbt", id: r._id, sec: pas.usr })
-						if (p) {
-							d.mta.innerText += `（联络员：${pas.nam}#${pas.usr}）`
-							d.msg.classList.remove("green")
-							d.fin.remove()
-						} else d.fin.disabled = false
-					})
-				} else d.fin.remove()
+				if (q.que == "dbt" && !r.sec) d.fin.addEventListener("click", async () => {
+					d.fin.disabled = true
+					const p = await pos<PutRet["dbt"]>({ put: "dbt", id: r._id, sec: pas.usr })
+					if (p) {
+						d.mta.innerText += `（联络员：${pas.nam}#${pas.usr}）`
+						d.msg.classList.remove("green")
+						d.fin.remove()
+					} else d.fin.disabled = false
+				}); else d.fin.remove()
+				if (q.que == "cdt" && r.sec) d.aug.addEventListener("click", () => {
+					const [msg, amt] = [
+						put_s("积分类型：（如 '积分奖励'）"),
+						put_s("积分额度：（整数）"),
+					]
+					const btn = btn_pos(pas, `#s${r._id.soc}`, () => ({
+						put: "cdt", id: r._id, msg: msg.val(), amt: parseInt(amt.val())
+					}))
+					article(msg.bind, amt.bind, btn)
+				}); else d.aug.remove()
 			} else[d.clr, d.fin].forEach(el => el.remove())
 			b.dtl.append(d.bind)
 		})
