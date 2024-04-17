@@ -4,7 +4,7 @@ import { Collection, Document, Filter, IndexOptions, MongoClient, UpdateFilter }
 export type Coll<T extends Document> = Collection<T>
 export type Fltr<T> = Filter<T>
 export type Proj<T, P extends keyof T> = Partial<{ [K in P]: 0} | { [K in P ]: 1}>
-export type Upfy<T> = UpdateFilter<T>
+export type Updt<T> = UpdateFilter<T>
 export type DocC<_Id> = Promise<NonNullable<_Id> | null>
 export type DocR<Dco> = Promise<NonNullable<Dco> | null>
 export type DocU = Promise<0 | 1 | null>
