@@ -1,4 +1,4 @@
-import type { Aut, Cdt, Dbt, Id, Rec } from "./typ"
+import type { Aut, Cdt, Dbt, Id, Rec } from "./typ.ts"
 
 export const lim_code = 999999
 export const lim_amt = 999999
