@@ -20,7 +20,7 @@ export async function id_c<
 ): DocC<T["_id"]>{
     const is = is_id(id._id)
         && is_utc(id.utc)
-        && is_nam(id.nam)
+        && (is_nam(id.nam) || id.nam == `${id._id}`)
         && is_adm(id.adm1, id.adm2)
         && is_msg(id.msg, len_msg_id)
     if (!is) return null

@@ -11,7 +11,7 @@ export type DocU = Promise<0 | 1 | null>
 export type DocD = Promise<0 | 1 | null>
 
 const conn = new MongoClient()
-conn.connect('mongodb://localhost:27017')
+await conn.connect("mongodb://127.0.0.1:27017")
 
 const nam: IndexOptions[] = [{
     key: {nam: 1},
