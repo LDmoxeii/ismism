@@ -18,7 +18,7 @@ export type Soc = Id & {
     agr: {msg: string, utc: number},
 }
 
-export type Age = Id & {
+export type Agd = Id & {
     soc: Soc["_id"],
     txt: string,
     utc: number,
