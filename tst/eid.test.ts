@@ -1,6 +1,7 @@
 import { agd_c, agd_d, agd_r, agd_u } from "../eid/agd.ts";
+import { aut, aut_f, aut_u } from "../eid/aut.ts";
 import { coll, db } from "../eid/db.ts";
-import { msg_c, msg_d, msg_f, msg_r, msg_u } from "../eid/msg.ts";
+import { msg_c, msg_f, msg_r, msg_u } from "../eid/msg.ts";
 import { soc_c, soc_d, soc_r, soc_u } from "../eid/soc.ts";
 import { usr_c, usr_d, usr_r, usr_u } from "../eid/usr.ts";
 import { assertEquals } from "./mod.test.ts";
@@ -58,4 +59,10 @@ Deno.test("msg", async () => {
 	const [m1, m2] = await Promise.all([msg_r(coll.wsl, 1), msg_r(coll.wsl, 2)])
 	assertEquals("msg2", m1?.msg)
 	assertEquals([m1?._id, m2?._id], (await msg_f(coll.wsl)).map(m => m._id))
+})
+
+Deno.test("aut", async () => {
+	assertEquals({ sup: [1, 2], aut: [2], wsl: [], lit: [] }, await aut())
+	assertEquals(1, await aut_u({ sup: [1, 2], aut: [2, 3], wsl: [3, 4], lit: [3, 4] }))
+	assertEquals(["aut", "wsl", "lit",], await aut_f(3))
 })

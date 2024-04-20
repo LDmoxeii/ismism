@@ -47,6 +47,13 @@ export function is_idl(
     return idl.length <= len && idl.every(is_id)
 }
 
+export function is_in(
+    idl: Id["_id"][],
+    is: Id["_id"],
+){
+    return idl.includes(is)
+}
+
 export function is_utc(
     utc: number,
 ) {

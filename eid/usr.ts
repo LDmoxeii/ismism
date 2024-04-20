@@ -44,7 +44,7 @@ export async function usr_u(
     return await id_u(coll.usr, _id, u)
 }
 
-export async function usr_d(
+export function usr_d(
     _id: Usr["_id"],
 ): DocD {
     return id_d(coll.usr, _id)

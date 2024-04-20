@@ -1,5 +1,5 @@
+import type { Agd, Aut, Cdt, Dbt, Ern, Lit, Soc, Usr, Wsl } from "./typ.ts"
 import { Collection, Document, Filter, IndexOptions, MongoClient, UpdateFilter } from 'https://deno.land/x/mongo@v0.32.0/mod.ts';
-import type { Agd, Aut, Cdt, Dbt, Ern, Lit, Soc, Usr, Wsl } from "./typ.ts";
 
 export type Coll<T extends Document> = Collection<T>
 export type Fltr<T> = Filter<T>

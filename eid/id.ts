@@ -59,8 +59,9 @@ export async function id_u<
         }
         if (s.msg && !is_msg(s.msg, len_msg_id)) return null;
     }
-    try { // deno-lint-ignore no-explicit-any
+    try {
         const { matchedCount, modifiedCount } = await c.updateOne(
+            // deno-lint-ignore no-explicit-any
             { _id } as any,
             u,
         );
