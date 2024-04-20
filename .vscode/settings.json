@@ -1,3 +1,10 @@
 {
-  "deno.enable": true
+  "deno.enable": true,
+  "editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true, // 在保存时使用 eslint 格式化
+	    "source.organizeImports": true // 保存时整理 import ，去掉没用的导包
+	},
+  "editor.formatOnPaste": true, // 粘贴代码时格式化
+    "editor.formatOnSave": true, // 在保存时对代码格式化
+    "editor.formatOnType": false, // 在输入时对代码格式化
 }

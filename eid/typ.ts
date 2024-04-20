@@ -9,13 +9,13 @@ export type Id = {
 
 export type Usr = Id & {
     nbr?: string,
-    sms?: {code: number, utc: number},
+    sms?: { code: number, utc: number },
     jwt?: string,
 }
 
 export type Soc = Id & {
     sec: Usr["_id"][],
-    agr: {msg: string, utc: number},
+    agr: { msg: string, utc: number },
 }
 
 export type Agd = Id & {
@@ -23,19 +23,19 @@ export type Agd = Id & {
 }
 
 export type Rec = {
-    _id: {usr: Usr["_id"], soc: Soc["_id"], utc: number},
+    _id: { usr: Usr["_id"], soc: Soc["_id"], utc: number },
     msg: string,
     amt: number,
     sec?: Usr["_id"],
 }
 
 export type Cdt = Rec & {
-    utc: {eft: number, exp: number, agr: number},
-    aug?: {msg: string,amt: number,utc: number,sec: Usr["_id"]}[],
+    utc: { eft: number, exp: number, agr: number },
+    aug?: { msg: string, amt: number, utc: number, sec: Usr["_id"] }[],
 }
 
 export type Dbt = Rec & {
-    rev?: {mag: string, rev: 1 | 2 | 3 | 4 | 5, utc: number},
+    rev?: { mag: string, rev: 1 | 2 | 3 | 4 | 5, utc: number },
 }
 
 export type Ern = Rec
@@ -43,7 +43,7 @@ export type Ern = Rec
 export type Msg = {
     _id: number,
     nam: string,
-    utc: {pre: number, put: number},
+    utc: { pre: number, put: number },
     usr: Usr["_id"],
     msg: string,
     pin?: true,

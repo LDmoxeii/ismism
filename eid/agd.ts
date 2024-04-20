@@ -1,6 +1,6 @@
 import { DocC, DocD, DocR, DocU, Proj, Updt, coll } from "./db.ts";
 import { id_c, id_d, id_n, id_r, id_u } from "./id.ts";
-import { is_id, is_idl, is_msg } from "./is.ts";
+import { is_id } from "./is.ts";
 import type { Agd } from "./typ.ts";
 
 export async function agd_c(
@@ -13,7 +13,7 @@ export async function agd_c(
     return id_c(coll.agd, {
         _id: await id_n(coll.agd),
         utc: Date.now(),
-        nam, adm1, adm2, msg: "",soc
+        nam, adm1, adm2, msg: "", soc
     })
 }
 
@@ -23,7 +23,7 @@ export function agd_r<
     _id: Agd["_id"],
     p?: Proj<Agd, "_id" | P>,
 ): DocR<Pick<Agd, "_id" | P>> {
-    return id_r(coll.agd, {_id}, p)
+    return id_r(coll.agd, { _id }, p)
 }
 
 export async function agd_u(

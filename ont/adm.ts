@@ -3,7 +3,7 @@ export const adm: ReadonlyMap<string, string[]> = new Map([["北京", ["北京"]
 export function is_adm(
     adm1: string,
     adm2: string,
-    
+
 ): boolean {
     return adm.get(adm1)?.includes(adm2) ?? false
 }

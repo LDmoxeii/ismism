@@ -11,9 +11,10 @@ export const len_aut = {
     lit: 32,
 }
 export const len_msg_id = 2048
-export const len_mag_rec = 256
-export const len_mag_agr = 2048 * 8
-export const len_mag = 2048 * 8 
+export const len_msg_rec = 256
+export const len_msg_agr = 2048 * 8
+export const len_msg_pin = 4
+export const len_msg = 2048 * 8
 export const len_jwt = 512
 
 export const is_dbt = is_cdt
@@ -32,34 +33,34 @@ export function is_lim(
 }
 
 
-export function is_id (
+export function is_id(
     id: Id["_id"],
 ) {
     return Number.isInteger(id) && id > 0
 }
 
 
-export function is_idl (
+export function is_idl(
     idl: Id["_id"][],
     len: number,
 ) {
     return idl.length <= len && idl.every(is_id)
 }
 
-export function is_utc (
+export function is_utc(
     utc: number,
 ) {
     return Number.isInteger(utc)
 }
 
-export function is_nam (
+export function is_nam(
     nam: string,
 ) {
     return typeof nam == "string"
         && /^[\u4E00-\u9FFF]{2,16}$/.test(nam)
 }
 
-export function is_nbr (
+export function is_nbr(
     nbr: string,
 ) {
     return typeof nbr == "string"
@@ -95,8 +96,8 @@ export function is_rec(
 
 ) {
     const { _id, msg, amt, sec } = rec
-    return is_recid(_id) 
-        && is_msg(msg, len_mag_rec)
+    return is_recid(_id)
+        && is_msg(msg, len_msg_rec)
         && is_lim(amt, lim_amt, -lim_amt)
         && (sec == undefined || is_id(sec))
 }
@@ -105,7 +106,7 @@ export function is_aug(
     aug: NonNullable<Cdt["aug"]>[0],
 ) {
     return Object.keys(aug).length === 4
-        && is_msg(aug.msg, len_mag_rec)
+        && is_msg(aug.msg, len_msg_rec)
         && is_lim(aug.amt, lim_amt, -lim_amt)
         && is_utc(aug.utc) && is_id(aug.sec)
 }
@@ -126,7 +127,7 @@ export function is_rev(
     rev: NonNullable<Dbt["rev"]>,
 ) {
     return Object.keys(rev).length === 3
-        && is_msg(rev.mag, len_mag_rec)
+        && is_msg(rev.mag, len_msg_rec)
         && [1, 2, 3, 4, 5].includes(rev.rev)
         && is_utc(rev.utc)
 }
