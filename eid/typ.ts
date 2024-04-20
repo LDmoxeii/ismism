@@ -20,8 +20,6 @@ export type Soc = Id & {
 
 export type Agd = Id & {
     soc: Soc["_id"],
-    txt: string,
-    utc: number,
 }
 
 export type Rec = {

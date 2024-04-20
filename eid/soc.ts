@@ -1,3 +1,4 @@
+import type { Soc } from "./typ.ts";
 import { DocD } from "./db.ts";
 import { DocC, DocR, DocU, Proj, Updt, coll } from "./db.ts";
 import { id_d } from "./id.ts";
@@ -9,7 +10,6 @@ import { len_mag_agr } from "./is.ts";
 import { len_sec } from "./is.ts";
 import { is_msg } from "./is.ts";
 import { is_idl } from "./is.ts";
-import { Soc } from "./typ.ts";
 
 export async function soc_c(
     nam:Soc["nam"],
@@ -24,7 +24,7 @@ export async function soc_c(
     })
 }
 
-export async function sco_r<
+export async function soc_r<
     P extends keyof Soc
 >(
     _id: Soc["_id"],
