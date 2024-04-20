@@ -15,6 +15,9 @@ export const len_msg_rec = 256
 export const len_msg_agr = 2048 * 8
 export const len_msg_pin = 4
 export const len_msg = 2048 * 8
+export const len_rec_frm = 2048 * 8
+export const len_rec_to = 64
+export const len_rec_now = 1024
 export const len_jwt = 512
 
 export const is_dbt = is_cdt
@@ -115,7 +118,7 @@ export function is_aug(
     return Object.keys(aug).length === 4
         && is_msg(aug.msg, len_msg_rec)
         && is_lim(aug.amt, lim_amt, -lim_amt)
-        && is_utc(aug.utc) && is_id(aug.sec)
+        && is_utc(aug.utc) && is_id(aug.usr)
 }
 
 export function is_cdt(

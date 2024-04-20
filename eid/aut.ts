@@ -1,6 +1,6 @@
 import { DocR, DocU, coll } from './db.ts';
-import { is_aug, is_aut, is_in } from './is.ts';
-import { Aut, Usr } from './typ.ts';
+import { is_aut, is_in } from './is.ts';
+import type { Aut, Usr } from './typ.ts';
 
 
 export async function aut(

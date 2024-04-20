@@ -27,7 +27,7 @@ export async function msg_c(
             usr,
             msg: "",
         })
-    } catch { 
+    } catch {
         return null
     }
 }
