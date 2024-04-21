@@ -3,7 +3,7 @@
 ## 代码结构
 
 * `src` 源代码 `source`
-    * `ont` 基础计算 `ontic`
+    * `ont` 基础操作 `ontic`
         - `base.ts` 进制转换
         - `utc.ts` 时间格式 `Universal Time Convention`
         - `crypt.ts` 签名验证 `cryptography` 
@@ -22,4 +22,7 @@
         - `msg.ts` 文章数据操作 `message`
         - `aut.ts` 权限数据操作 `author` `authority`
     * `pra` 业务操作 `praxic`
+        - `can.ts` 操作权限
+		- `doc.ts` 数据组合 `document`
+		- `que.ts` 查询接口 `query`
 * `tst` 测试代码 `tests`

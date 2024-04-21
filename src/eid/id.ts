@@ -1,5 +1,5 @@
 import { is_adm } from "../ont/adm.ts";
-import { Coll, DocC, DocD, DocR, DocU, Fltr, Proj, Updt } from "./db.ts";
+import { Coll, DocC, DocD, DocR, DocU, Fltr, Proj, Updt, coll } from "./db.ts";
 import { is_id, is_msg, is_nam, is_utc, len_msg_id } from "./is.ts";
 import type { Id } from "./typ.ts";
 
@@ -80,4 +80,40 @@ export async function id_d<
         const d = await c.deleteOne({ _id } as any)
         return d > 0 ? 1 : 0
     } catch { return null }
+}
+
+export async function id<
+    T extends Id,
+>(
+    c: Coll<T>,
+    f: Fltr<T>,
+): Promise<Id["_id"][]> {
+    const d = await c.find(f, { projection: { _id: 1 } }).toArray()
+    return d.map(d => d._id)
+}
+
+export async function idnam<
+    T extends Id
+>(
+    c: Coll<T>,
+    id: T["_id"][],
+): Promise<[T["_id"], T["nam"]][]> {
+    id = [...new Set(id)]
+    const d = await c.find(
+        // deno-lint-ignore no-explicit-any
+        { _id: { $in: id } } as any,
+        { projection: { _id: 1, nam: 1 } }
+    ).toArray()
+    return d.map(d => [d._id, d.nam])
+}
+
+export async function idadm<
+    A extends "adm1" | "adm2"
+>(
+    adm: A
+): Promise<[Id[A], Id["_id"][]][]> {
+    const d = await coll.soc.aggregate<{
+        _id: Id[A], soc: Id["_id"][]
+    }>([{ $group: { _id: `$${adm}`, soc: { $push: "$_id" } } }]).toArray()
+    return d.sort((a, b) => b.soc.length - a.soc.length).map(d => [d._id, d.soc.sort()])
 }
