@@ -1,7 +1,8 @@
 import { coll } from "../eid/db.ts";
 import { id, idadm, idnam } from "../eid/id.ts";
 import { cdt_a, rec_f, rec_n, rec_s } from "../eid/rec.ts";
-import { Usr } from "../eid/typ.ts";
+import { soc_r } from "../eid/soc.ts";
+import { Soc, Usr } from "../eid/typ.ts";
 import { usr_r } from "../eid/usr.ts";
 
 export async function adm(
@@ -39,5 +40,29 @@ export async function usr(
         })).sort((a, b) => b.amt - a.amt),
         ern: ern.map(n => ({ ...n, nam: soc.get(n.soc)! })).sort((a, b) => b.amt - a.amt),
         sum: { cdt: cdt_n, dbt: dbt_n, ern: ern_n },
+    }
+}
+
+export async function soc(
+    soc: Soc["_id"]
+) {
+    const [s, a, c, dbt_s, ern_s] = await Promise.all([
+        soc_r(soc), id(coll.agd, { soc }),
+        rec_f(coll.cdt, { soc }, { now: Date.now() }),
+        rec_s(coll.dbt, { soc }, {}),
+        rec_s(coll.ern, { soc }, {}),
+    ])
+    if (!s) return null
+    const [sec, cdt, agd] = await Promise.all([
+        idnam(coll.usr, s.sec),
+        idnam(coll.usr, c.map(c => c._id.usr)),
+        idnam(coll.agd, a),
+    ])
+    return {
+        ...s, sec, cdt, agd, sum: {
+            cdt: c.reduce((s, c) => s + cdt_a(c), 0),
+            dbt: dbt_s[0] ? dbt_s[0].amt : 0,
+            ern: ern_s[0] ? ern_s[0].amt : 0,
+        }
     }
 }
