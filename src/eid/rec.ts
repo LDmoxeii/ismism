@@ -163,3 +163,9 @@ export async function dbt_u(
         else return null
     } catch { return null }
 }
+
+export function cdt_a(
+    { amt, aug }: Cdt,
+): number {
+    return aug ? aug.reduce((a, b) => a + b.amt, amt) : amt
+}
