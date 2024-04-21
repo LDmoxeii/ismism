@@ -1,8 +1,9 @@
+import { agd_r } from "../eid/agd.ts";
 import { coll } from "../eid/db.ts";
 import { id, idadm, idnam } from "../eid/id.ts";
 import { cdt_a, rec_f, rec_n, rec_s } from "../eid/rec.ts";
 import { soc_r } from "../eid/soc.ts";
-import { Soc, Usr } from "../eid/typ.ts";
+import { Agd, Soc, Usr } from "../eid/typ.ts";
 import { usr_r } from "../eid/usr.ts";
 
 export async function adm(
@@ -65,4 +66,13 @@ export async function soc(
             ern: ern_s[0] ? ern_s[0].amt : 0,
         }
     }
+}
+
+export async function agd(
+    agd: Agd["_id"],
+) {
+    const a = await agd_r(agd)
+    if (!a) return null
+    const [soc] = await idnam(coll.soc, [a.soc])
+    return { ...a, soc }
 }

@@ -1,7 +1,7 @@
 import type { Agd, Msg, Rec, Soc, Usr } from "../eid/typ.ts";
 import { json } from "../ont/json.ts";
 import { Ret } from "./can.ts";
-import { adm, soc, usr } from "./doc.ts";
+import { adm, agd, soc, usr } from "./doc.ts";
 
 export type Que = {
     que: "adm",
@@ -34,6 +34,7 @@ export type QueRet = {
     adm: Ret<typeof adm>
     usr: Ret<typeof usr>,
     soc: Ret<typeof soc>,
+    agd: Ret<typeof agd>,
 }
 
 export function que(
@@ -44,6 +45,7 @@ export function que(
         case "adm": return adm()
         case "usr": return usr("nam" in q ? { nam: q.nam } : { _id: q.usr })
         case "soc": return soc(q.soc)
+        case "agd": return agd(q.agd)
     }
     return null
 }
