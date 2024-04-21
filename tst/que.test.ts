@@ -54,4 +54,5 @@ Deno.test("que", async () => {
     assertEquals(usr, { ...await que(`?que="usr"&nam="用户"`) as QueRet["usr"], utc: now })
     assertEquals(soc, { ...await que(`?que="soc"&soc=1`) as QueRet["soc"], utc: now })
     assertEquals(agd, { ...await que(`?que="agd"&agd=1`) as QueRet["agd"], utc: now })
+    assertEquals(cdt, (await que(`?que="cdt"&usr=2&utc=0`) as QueRet["cdt"])?.rec.reverse())
 })

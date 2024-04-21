@@ -3,7 +3,7 @@ import { coll } from "../eid/db.ts";
 import { id, idadm, idnam } from "../eid/id.ts";
 import { cdt_a, rec_f, rec_n, rec_s } from "../eid/rec.ts";
 import { soc_r } from "../eid/soc.ts";
-import { Agd, Soc, Usr } from "../eid/typ.ts";
+import { Agd, Rec, Soc, Usr } from "../eid/typ.ts";
 import { usr_r } from "../eid/usr.ts";
 
 export async function adm(
@@ -75,4 +75,17 @@ export async function agd(
     if (!a) return null
     const [soc] = await idnam(coll.soc, [a.soc])
     return { ...a, soc }
+}
+
+export async function rec(
+    q: "cdt" | "dbt" | "ern",
+    id: { usr: Rec["_id"]["usr"] } | { soc: Rec["_id"]["soc"] },
+    utc: Rec["_id"]["utc"],
+) {
+    const r = await rec_f(coll[q], id, { to: utc })
+    const [usr, soc] = await Promise.all([
+        idnam(coll.usr, r.flatMap(({ _id: { usr }, sec }) => sec ? [usr, sec] : [usr])),
+        idnam(coll.soc, r.map(r => r._id.soc)),
+    ])
+    return { rec: r, usr, soc }
 }
