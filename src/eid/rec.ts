@@ -9,7 +9,8 @@ function fltr(
     id: FltrId,
     utc: FltrUtc,
 ): Fltr<Rec> | null {
-    if ("_id" in id && !is_recid(id._id)
+    if (
+        "_id" in id && !is_recid(id._id)
         || "usr" in id && !is_id(id.usr!)
         || "soc" in id && !is_id(id.soc!)
         || "frm" in utc && !is_utc(utc.frm!)
@@ -37,9 +38,7 @@ export async function rec_c<
     if (!is_rec(rec)) return null
     try {
         return await c.insertOne(rec)
-    } catch {
-        return null
-    }
+    } catch { return null }
 }
 
 export async function rec_r<
@@ -93,7 +92,11 @@ export async function rec_s<
 
     return await c.aggregate<
         { soc: Rec["_id"]["soc"], amt: Rec["amt"] }
-    >([{ $match: f }, { $group }, { $project }]).toArray()
+    >([
+        { $match: f },
+        { $group },
+        { $project }
+    ]).toArray()
 }
 
 export async function rec_n(
@@ -111,57 +114,43 @@ export async function rec_d(
 ): DocD {
     if (!is_recid(_id)) return null
     try {
-        const d = await c.deleteOne({ _id })
+        // deno-lint-ignore no-explicit-any
+        const d = await c.deleteOne({ _id } as any)
         return d > 0 ? 1 : 0
-    } catch {
-        return null
-    }
+    } catch { return null }
 }
 
 export async function cdt_u(
     _id: Cdt["_id"],
     u: {
-        $set:
-        {
-            "utc.agr": Cdt["utc"]["agr"]
-        }
+        $set: { "utc.agr": Cdt["utc"]["agr"] }
     } |
     {
-        $push:
-        {
-            aug: NonNullable<Cdt["aug"]>[0]
-        }
+        $push: { aug: NonNullable<Cdt["aug"]>[0] }
     } |
     {
-        $pop:
-        {
-            aug: 1
-        }
+        $pop: { aug: 1 }
     },
 ): DocU {
     if (
         !is_recid(_id)
         || "$set" in u && !is_utc(u.$set["utc.agr"])
         || "$push" in u && !is_aug(u.$push.aug)
-    )
-        return null
+    ) return null
     try {
         const { matchedCount, modifiedCount } = await coll.cdt.updateOne({ _id }, u)
         if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
         else return null
-    } catch {
-        return null
-    }
+    } catch { return null }
 }
 
 export async function dbt_u(
     _id: Dbt["_id"],
     $set: {
         sec: NonNullable<Dbt["sec"]>
-    }
-        | {
-            rev: NonNullable<Dbt["rev"]>
-        },
+    } | {
+        rev: NonNullable<Dbt["rev"]>
+    },
 ): DocU {
     if (
         !is_recid(_id)
@@ -172,7 +161,5 @@ export async function dbt_u(
         const { matchedCount, modifiedCount } = await coll.dbt.updateOne({ _id }, { $set })
         if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
         else return null
-    } catch {
-        return null
-    }
+    } catch { return null }
 }

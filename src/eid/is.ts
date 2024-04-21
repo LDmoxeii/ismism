@@ -22,8 +22,6 @@ export const len_jwt = 512
 
 export const is_dbt = is_cdt
 export const is_ern = is_cdt
-export const is_wsl = is_msg
-export const is_lit = is_msg
 
 export function is_lim(
     num: number,
@@ -103,7 +101,6 @@ export function is_recid(
 
 export function is_rec(
     rec: Rec,
-
 ) {
     const { _id, msg, amt, sec } = rec
     return is_recid(_id)

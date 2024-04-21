@@ -29,7 +29,5 @@ export async function aut_u(
         const { matchedCount, modifiedCount } = await coll.aut.updateOne({ _id: 1 }, { $set: a })
         if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
         else return null
-    } catch {
-        return null
-    }
+    } catch { return null }
 }

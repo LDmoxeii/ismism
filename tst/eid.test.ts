@@ -1,10 +1,11 @@
-import { agd_c, agd_d, agd_r, agd_u } from "../eid/agd.ts";
-import { aut, aut_f, aut_u } from "../eid/aut.ts";
-import { coll, db } from "../eid/db.ts";
-import { msg_c, msg_f, msg_r, msg_u } from "../eid/msg.ts";
-import { cdt_u, rec_c, rec_d, rec_f, rec_r, rec_s } from "../eid/rec.ts";
-import { soc_c, soc_d, soc_r, soc_u } from "../eid/soc.ts";
-import { usr_c, usr_d, usr_r, usr_u } from "../eid/usr.ts";
+import { agd_c, agd_d, agd_r, agd_u } from "../src/eid/agd.ts";
+import { aut, aut_f, aut_u } from "../src/eid/aut.ts";
+import { coll, db } from "../src/eid/db.ts";
+import { msg_c, msg_f, msg_r, msg_u } from "../src/eid/msg.ts";
+import { cdt_u, rec_c, rec_d, rec_f, rec_r, rec_s } from "../src/eid/rec.ts";
+import { soc_c, soc_d, soc_r, soc_u } from "../src/eid/soc.ts";
+import type { Rec } from '../src/eid/typ.ts';
+import { usr_c, usr_d, usr_r, usr_u } from "../src/eid/usr.ts";
 import { assertEquals } from "./mod.test.ts";
 
 await db("tst", true)
@@ -12,6 +13,7 @@ await db("tst", true)
 Deno.test("usr", async () => {
 	const nbr = "11111111111"
 	assertEquals(null, await usr_r({ nbr }, { nbr: 1 }))
+
 	const _id = await usr_c(nbr, "四川", "成都") as number
 	assertEquals(1, _id)
 	assertEquals({
@@ -55,12 +57,12 @@ Deno.test("rec", async () => {
 	const [usr, soc, utc, msg, amt, aug] = [1, 2, 1, "msg", 1,
 		{ msg: "msg", amt: 1, usr: 1, utc: 5, }
 	]
-	const id = [
+	const id: Rec["_id"][] = [
 		{ usr, soc, utc },
 		{ usr, soc, utc: utc + 1 },
 		{ usr, soc, utc: utc + 2 },
-
 	]
+
 	assertEquals([id[0], id[1], id[2]], await Promise.all([
 		rec_c(coll.cdt, {
 			_id: id[0],

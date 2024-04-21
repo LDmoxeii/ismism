@@ -8,8 +8,8 @@ export async function msg_n<
 >(
     c: Coll<T>,
 ): Promise<Msg["_id"]> {
-    const l = await c.findOne({}, { projection: { _id: 1 }, sort: { _id: -1 } });
-    return l ? l._id + 1 : 1;
+    const l = await c.findOne({}, { projection: { _id: 1 }, sort: { _id: -1 } })
+    return l ? l._id + 1 : 1
 }
 
 export async function msg_c(
@@ -27,9 +27,7 @@ export async function msg_c(
             usr,
             msg: "",
         })
-    } catch {
-        return null
-    }
+    } catch { return null }
 }
 
 
@@ -37,7 +35,7 @@ export async function msg_r(
     c: Coll<Msg>,
     _id: Msg["_id"],
 ): DocR<Msg> {
-    if (!is_id(_id)) return null;
+    if (!is_id(_id)) return null
     return await c.findOne({ _id }) ?? null
 }
 
@@ -62,32 +60,27 @@ export async function msg_u(
     _id: Msg["_id"],
     u: Updt<Msg>,
 ): DocU {
-    if (!is_id(_id)) return null;
+    if (!is_id(_id)) return null
     if ("$set" in u && u.$set) {
         const s = u.$set
         if (s.nam && !is_nam(s.nam)) return null
         if (s.msg && !is_msg(s.msg, len_msg)) return null
         if (s.pin && !is_lim(await c.countDocuments({ pin: true }) + 1, len_msg_pin)) return null
     }
-
     try {
         const { matchedCount, modifiedCount } = await c.updateOne({ _id }, u)
         if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0
         else return null
-    } catch {
-        return null
-    }
+    } catch { return null }
 }
 
 export async function msg_d(
     c: Coll<Msg>,
     _id: Msg["_id"],
 ): DocD {
-    if (!is_id(_id)) return null;
+    if (!is_id(_id)) return null
     try {
         const d = await c.deleteOne({ _id })
         return d > 0 ? 1 : 0
-    } catch {
-        return null
-    }
+    } catch { return null }
 }

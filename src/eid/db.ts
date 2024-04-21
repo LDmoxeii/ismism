@@ -1,12 +1,12 @@
-import type { Agd, Aut, Cdt, Dbt, Ern, Lit, Soc, Usr, Wsl } from "./typ.ts"
 import { Collection, Document, Filter, IndexOptions, MongoClient, UpdateFilter } from 'https://deno.land/x/mongo@v0.32.0/mod.ts';
+import type { Agd, Aut, Cdt, Dbt, Ern, Lit, Soc, Usr, Wsl } from "./typ.ts";
 
 export type Coll<T extends Document> = Collection<T>
 export type Fltr<T> = Filter<T>
 export type Proj<T, P extends keyof T> = Partial<{ [K in P]: 0 } | { [K in P]: 1 }>
 export type Updt<T> = UpdateFilter<T>
 export type DocC<_Id> = Promise<NonNullable<_Id> | null>
-export type DocR<Dco> = Promise<NonNullable<Dco> | null>
+export type DocR<Doc> = Promise<NonNullable<Doc> | null>
 export type DocU = Promise<0 | 1 | null>
 export type DocD = Promise<0 | 1 | null>
 

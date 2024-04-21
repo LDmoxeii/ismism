@@ -1,6 +1,6 @@
 import { DocC, DocD, DocR, DocU, Proj, Updt, coll } from "./db.ts";
 import { id_c, id_d, id_n, id_r, id_u } from "./id.ts";
-import { is_idl, is_msg, is_utc, len_sec, len_msg_agr } from "./is.ts";
+import { is_idl, is_msg, is_utc, len_msg_agr, len_sec } from "./is.ts";
 import type { Soc } from "./typ.ts";
 
 export async function soc_c(
@@ -16,7 +16,7 @@ export async function soc_c(
     })
 }
 
-export async function soc_r<
+export function soc_r<
     P extends keyof Soc
 >(
     _id: Soc["_id"],
@@ -30,8 +30,8 @@ export async function soc_u(
     u: Updt<Soc>,
 ): DocU {
     const s = u.$set
-    if (s?.sec && !is_idl(s.sec, len_sec) || s?.agr &&
-        (!is_msg(s.agr.msg, len_msg_agr) || !is_utc(s.agr.utc))
+    if (s?.sec && !is_idl(s.sec, len_sec) || s?.agr
+        && (!is_msg(s.agr.msg, len_msg_agr) || !is_utc(s.agr.utc))
     ) return null
     return await id_u(coll.soc, _id, u)
 }

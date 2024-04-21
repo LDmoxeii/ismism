@@ -1,4 +1,4 @@
-import { is_adm } from "../ont/adm.ts"
+import { is_adm } from "../src/ont/adm.ts"
 import { assertEquals } from "./mod.test.ts"
 
 Deno.test("adm", () => {

@@ -31,7 +31,7 @@ export async function agd_u(
     u: Updt<Agd>,
 ): DocU {
     const s = u.$set
-    if (u.$set && "soc" in u.$set) return null
+    if (s && "soc" in s) return null
     return await id_u(coll.agd, _id, u)
 }
 
