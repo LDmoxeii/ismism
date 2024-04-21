@@ -23,7 +23,6 @@ export function utc_dt(
             const y = t.getUTCFullYear()
             const m = `${t.getUTCMonth() + 1}`.padStart(2, "0")
             const d = `${t.getUTCDate()}`.padStart(2, "0")
-            console.log(y, m, d)
             return `${y}-${m}-${d}`
         }
     }
