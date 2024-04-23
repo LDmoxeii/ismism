@@ -1,9 +1,10 @@
 import { agd_r } from "../eid/agd.ts";
 import { coll } from "../eid/db.ts";
 import { id, idadm, idnam } from "../eid/id.ts";
+import { msg_f, msg_r } from "../eid/msg.ts";
 import { cdt_a, rec_f, rec_n, rec_s } from "../eid/rec.ts";
 import { soc_r } from "../eid/soc.ts";
-import { Agd, Rec, Soc, Usr } from "../eid/typ.ts";
+import { Agd, Msg, Rec, Soc, Usr } from "../eid/typ.ts";
 import { usr_r } from "../eid/usr.ts";
 
 export async function adm(
@@ -88,4 +89,17 @@ export async function rec(
         idnam(coll.soc, r.map(r => r._id.soc)),
     ])
     return { rec: r, usr, soc }
+}
+
+export async function msg(
+    q: "wsl" | "lit",
+    id: Msg["_id"] | 0,
+) {
+    if (id == 0) {
+        const msg = await msg_f(coll[q])
+        return { msg, usr: await idnam(coll.usr, msg.map(m => m.usr)) }
+    }
+    const msg = await msg_r(coll[q], id)
+    if (!msg) return { msg: [], usr: [] }
+    return { msg, usr: await idnam(coll.usr, [msg.usr]) }
 }
