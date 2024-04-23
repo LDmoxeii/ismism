@@ -1,5 +1,6 @@
 import { agd_c } from "../src/eid/agd.ts";
 import { coll, db } from "../src/eid/db.ts";
+import { msg_c } from "../src/eid/msg.ts";
 import { rec_c } from "../src/eid/rec.ts";
 import { soc_c, soc_u } from "../src/eid/soc.ts";
 import { Cdt } from "../src/eid/typ.ts";
@@ -38,12 +39,15 @@ Deno.test("que", async () => {
         _id: 1, utc: now, nam: "活动", adm1: "江苏", adm2: "苏州", msg: "", soc: [1, "俱乐部"],
     }
     assertEquals([
-        1, 2, 1, 1, 1, 1, ...cdt.flatMap(c => [c._id, c._id, c._id]),
+        1, 2, 1, 1, 1, 1, ...cdt.flatMap(c => [c._id, c._id, c._id]), 1, 2, 3,
     ], await Promise.all([
         await usr_c(nbr[0], "四川", "成都"), await usr_c(nbr[1], "四川", "成都"),
         agd_c("活动", "江苏", "苏州", 1), usr_u(2, { $set: { nam: "用户" } }),
         await soc_c("俱乐部", "江苏", "苏州"), soc_u(1, { $set: { sec: [1, 2] } }),
         ...cdt.flatMap(c => [rec_c(coll.cdt, c), rec_c(coll.dbt, { ...c, amt: 5 }), rec_c(coll.ern, c)]),
+        await msg_c(coll.lit, "文章一", 2),
+        await msg_c(coll.lit, "文章二", 2),
+        await msg_c(coll.lit, "文章三", 2),
     ]))
 
     assertEquals(
@@ -55,4 +59,8 @@ Deno.test("que", async () => {
     assertEquals(soc, { ...await que(`?que="soc"&soc=1`) as QueRet["soc"], utc: now })
     assertEquals(agd, { ...await que(`?que="agd"&agd=1`) as QueRet["agd"], utc: now })
     assertEquals(cdt, (await que(`?que="cdt"&usr=2&utc=0`) as QueRet["cdt"])?.rec.reverse())
+    assertEquals(false, "msg" in (await que(`?que="lit"&msg=0`) as QueRet["lit"]).msg)
+    assertEquals(true, "length" in (await que(`?que="lit"&msg=0`) as QueRet["lit"]).msg)
+    assertEquals(true, "msg" in (await que(`?que="lit"&msg=2`) as QueRet["lit"]).msg)
+    assertEquals(false, "length" in (await que(`?que="lit"&msg=2`) as QueRet["lit"]).msg)
 })
