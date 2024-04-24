@@ -87,7 +87,7 @@ export async function id<
 >(
     c: Coll<T>,
     f: Fltr<T>,
-): Promise<Id["_id"][]> {
+): Promise<T["_id"][]> {
     const d = await c.find(f, { projection: { _id: 1 } }).toArray()
     return d.map(d => d._id)
 }

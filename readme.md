@@ -25,4 +25,5 @@
         - `can.ts` 操作权限
 		- `doc.ts` 数据组合 `document`
 		- `que.ts` 查询接口 `query`
+    * `ser.ts` 服务接口 `serve`
 * `tst` 测试代码 `tests`

@@ -20,9 +20,6 @@ export const len_rec_to = 64
 export const len_rec_now = 1024
 export const len_jwt = 512
 
-export const is_dbt = is_cdt
-export const is_ern = is_cdt
-
 export function is_lim(
     num: number,
     max: number,

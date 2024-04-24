@@ -27,3 +27,8 @@ export function utc_dt(
         }
     }
 }
+
+export function utc_etag(
+) {
+    return `W/"${Date.now()}"`
+}

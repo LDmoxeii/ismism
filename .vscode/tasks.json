@@ -4,7 +4,7 @@
 		{
 			"label": "deno test",
 			"type": "shell",
-			"command": "zsh cli/dbtst.zsh; deno test --allow-net --allow-read tst",
+			"command": "zsh cli/db.zsh; deno test --allow-net --allow-read tst",
 			"group": {
 				"kind": "test",
 				"isDefault": true,
