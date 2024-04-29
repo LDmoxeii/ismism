@@ -22,7 +22,7 @@ export async function usr_c(
 }
 
 export async function usr_r<
-    P extends keyof Usr,
+    P extends keyof Usr
 >(
     f: Pick<Usr, "_id"> | Pick<Usr, "nam"> | { nbr: NonNullable<Usr["nbr"]> },
     p: Proj<Usr, "_id" | P>,
@@ -45,7 +45,7 @@ export async function usr_u(
 }
 
 export function usr_d(
-    _id: Usr["_id"],
+    _id: Usr["_id"]
 ): DocD {
     return id_d(coll.usr, _id)
 }

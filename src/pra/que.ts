@@ -31,7 +31,7 @@ export type Que = {
 }
 
 export type QueRet = {
-    adm: Ret<typeof adm>
+    adm: Ret<typeof adm>,
     usr: Ret<typeof usr>,
     soc: Ret<typeof soc>,
     agd: Ret<typeof agd>,

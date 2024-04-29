@@ -5,19 +5,19 @@ const te = new TextEncoder()
 const td = new TextDecoder()
 
 export function to_u8(
-    s: string
+    s: string,
 ): Uint8Array {
     return te.encode(s)
 }
 
 export function frm_u8(
-    u8: ArrayBuffer
+    u8: ArrayBuffer,
 ): string {
     return td.decode(u8)
 }
 
 export function to_base64(
-    u8: ArrayBuffer
+    u8: ArrayBuffer,
 ): string {
     return base64.encode(u8)
 }
@@ -29,13 +29,13 @@ export function frm_base64(
 }
 
 export function to_hex(
-    u8: ArrayBuffer
+    u8: ArrayBuffer,
 ): string {
     return frm_u8(hex.encode(new Uint8Array(u8)))
 }
 
 export function frm_hex(
-    h: string
+    h: string,
 ): Uint8Array {
     return hex.decode(to_u8(h))
 }

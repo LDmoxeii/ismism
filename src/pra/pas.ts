@@ -11,8 +11,6 @@ import { smssend } from "../ont/sms.ts"
 import { utc_h } from "../ont/utc.ts"
 import { Ret, is_psg } from "./can.ts"
 
-// 用户登陆 Pass
-
 export type Pas = {
     usr: Usr["_id"],
     nam: Usr["nam"],
@@ -44,12 +42,10 @@ async function pas_of_usr(
     }
 }
 
-// 登陆票据
 type Jwt = { usr: Usr["_id"], utc: number }
 
 const utc_pas = new Date("2023-11-22").getTime()
 const h_sms = 1
-
 
 export async function pas(
     jwt: NonNullable<Usr["jwt"]>,

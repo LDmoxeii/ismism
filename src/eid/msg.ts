@@ -3,10 +3,8 @@ import { is_id, is_lim, is_msg, is_nam, len_msg, len_msg_pin } from "./is.ts";
 import type { Msg } from "./typ.ts";
 
 
-export async function msg_n<
-    T extends Msg,
->(
-    c: Coll<T>,
+export async function msg_n(
+    c: Coll<Msg>,
 ): Promise<Msg["_id"]> {
     const l = await c.findOne({}, { projection: { _id: 1 }, sort: { _id: -1 } })
     return l ? l._id + 1 : 1

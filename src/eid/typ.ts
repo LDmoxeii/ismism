@@ -35,7 +35,7 @@ export type Cdt = Rec & {
 }
 
 export type Dbt = Rec & {
-    rev?: { mag: string, rev: 1 | 2 | 3 | 4 | 5, utc: number },
+    rev?: { msg: string, rev: 1 | 2 | 3 | 4 | 5, utc: number },
 }
 
 export type Ern = Rec

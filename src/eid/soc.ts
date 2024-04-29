@@ -12,7 +12,7 @@ export async function soc_c(
         _id: await id_n(coll.soc),
         utc: Date.now(),
         nam, adm1, adm2, msg: "",
-        sec: [], agr: { msg: "", utc: 0 }
+        sec: [], agr: { msg: "", utc: 0 },
     })
 }
 

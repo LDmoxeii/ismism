@@ -1,5 +1,5 @@
 import { is_id, is_lim, is_nbr, lim_code } from "../eid/is.ts";
-import { Psg } from "./pas.ts";
+import type { Psg } from "./pas.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Ret<T extends (...args: any) => any> = Awaited<ReturnType<T>>

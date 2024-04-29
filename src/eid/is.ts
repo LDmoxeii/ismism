@@ -22,12 +22,12 @@ export const len_jwt = 512
 
 export function is_lim(
     num: number,
-    max: number,
-    min: number = 0,
+    lim: number,
+    min = 0,
 ) {
     return Number.isInteger(num)
         && min <= num
-        && max >= num
+        && num <= lim
 }
 
 
@@ -47,9 +47,9 @@ export function is_idl(
 
 export function is_in(
     idl: Id["_id"][],
-    is: Id["_id"],
-){
-    return idl.includes(is)
+    id: Id["_id"],
+) {
+    return idl.includes(id)
 }
 
 export function is_utc(
@@ -84,7 +84,7 @@ export function is_jwt(
     jwt: string,
 ) {
     return typeof jwt == "string"
-        && jwt.length == len_jwt
+        && jwt.length <= len_jwt
 }
 
 export function is_recid(
@@ -131,7 +131,7 @@ export function is_rev(
     rev: NonNullable<Dbt["rev"]>,
 ) {
     return Object.keys(rev).length === 3
-        && is_msg(rev.mag, len_msg_rec)
+        && is_msg(rev.msg, len_msg_rec)
         && [1, 2, 3, 4, 5].includes(rev.rev)
         && is_utc(rev.utc)
 }

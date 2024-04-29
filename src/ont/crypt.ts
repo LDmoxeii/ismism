@@ -2,7 +2,7 @@ import { to_u8 } from "./base.ts";
 
 const alg = {
     name: "HMAC",
-    hash: "SHA-256"
+    hash: "SHA-256",
 }
 
 export function key(

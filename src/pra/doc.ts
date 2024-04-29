@@ -46,7 +46,7 @@ export async function usr(
 }
 
 export async function soc(
-    soc: Soc["_id"]
+    soc: Soc["_id"],
 ) {
     const [s, a, c, dbt_s, ern_s] = await Promise.all([
         soc_r(soc), id(coll.agd, { soc }),
