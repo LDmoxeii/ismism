@@ -2,9 +2,14 @@ import type { Ret } from "./can.ts"
 import { Psg, pas, psg } from "./pas.ts"
 import { Pre, pre } from "./pre.ts"
 
+export type { PsgRet } from "./pas.ts"
+export type { PreRet } from "./pre.ts"
 
 export type Pos = Psg | Pre
-export type PosRet = Ret<typeof psg>
+export type PosRet = {
+    psg: Ret<typeof psg>,
+    pre: { ret: Ret<typeof pre> },
+}
 
 export async function pos(
     b: string,
@@ -18,7 +23,7 @@ export async function pos(
 
     if ("psg" in json) return psg(p, json)
     else if (!p) return { ret: null }
-    else if ("pre" in json) return pre(p, json)
+    else if ("pre" in json) return { ret: await pre(p, json) }
 
     return { ret: null }
 }
