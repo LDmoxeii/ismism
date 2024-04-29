@@ -16,8 +16,8 @@
 		- `usr.ts` 用户数据操作 `user`
 		- `soc.ts` 俱乐部数据操作 `sociation` `social`
 		- `agd.ts` 活动数据操作 `agenda`
-		- `rec.ts` 记录数据操作 `record`
-		- `msg.ts` 文章数据操作 `message`
+		- `rec.ts` 记录数据操作 `record` - `credit` `debit` `earn`
+		- `msg.ts` 文章数据操作 `message` - `wsl` `lit`
 		- `aut.ts` 权限数据操作 `author` `authority`
 	* `pra` 业务操作 `praxic`
 		- `can.ts` 操作权限
