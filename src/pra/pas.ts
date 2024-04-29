@@ -1,24 +1,26 @@
 import { aut_f } from "../eid/aut.ts"
 import { DocR, coll } from "../eid/db.ts"
 import { id } from "../eid/id.ts"
-import { is_id, is_jwt } from "../eid/is.ts"
+import { is_id, is_jwt, lim_code } from "../eid/is.ts"
 import { rec_f } from "../eid/rec.ts"
 import { soc_r } from "../eid/soc.ts"
 import type { Agd, Cdt, Soc, Usr } from "../eid/typ.ts"
-import { usr_r } from "../eid/usr.ts"
-import { jwt_verify } from "../ont/jwt.ts"
-import { Ret } from "./can.ts"
+import { usr_r, usr_u } from "../eid/usr.ts"
+import { jwt_sign, jwt_verify } from "../ont/jwt.ts"
+import { smssend } from "../ont/sms.ts"
+import { utc_h } from "../ont/utc.ts"
+import { Ret, is_psg } from "./can.ts"
 
 // 用户登陆 Pass
 
 export type Pas = {
     usr: Usr["_id"],
     nam: Usr["nam"],
-    cdt: Cdt[], // 会员权限
-    agr: Cdt["_id"] | undefined, // 待确认的 俱乐部 用户协议
-    sec: Soc["_id"][], // 联络员权限
-    agd: Agd["_id"][], // 活动联络员权限
-    aut: Ret<typeof aut_f>, // 网站管理员权限
+    cdt: Cdt[],
+    agr: Cdt["_id"] | undefined,
+    sec: Soc["_id"][],
+    agd: Agd["_id"][],
+    aut: Ret<typeof aut_f>,
 }
 
 async function pas_of_usr(
@@ -45,8 +47,9 @@ async function pas_of_usr(
 // 登陆票据
 type Jwt = { usr: Usr["_id"], utc: number }
 
-const utc_pas = new Date("2023-11-22").getTime()  // 票据版本时间
-const h_sms = 1 // 验证短信的有效时间（小时）
+const utc_pas = new Date("2023-11-22").getTime()
+const h_sms = 1
+
 
 export async function pas(
     jwt: NonNullable<Usr["jwt"]>,
@@ -59,20 +62,87 @@ export async function pas(
         return pas_of_usr({ _id: u._id, nam: u.nam })
     return null
 }
+async function pas_sms(
+    nbr: NonNullable<Usr["nbr"]>,
+    sms: boolean,
+) {
+    const u = await usr_r({ nbr }, { sms: 1 })
+    if (!u) return null
+    const utc = Date.now()
+    if (u.sms && utc - u.sms.utc < utc_h * h_sms) return { sms: false, utc: u.sms.utc }
+    const code = Math.round(Math.random() * lim_code)
+    const c = await usr_u(u._id, { $set: { sms: { code, utc } } })
+    if (c) {
+        if (sms) {
+            const { sent } = await smssend(nbr, `${code}`, `${h_sms}`)
+            return { sms: sent }
+        }
+        return { sms: false }
+    }
+    return null
+}
 
-// 登陆流程 Passage
+async function pas_code(
+    nbr: NonNullable<Usr["nbr"]>,
+    code: NonNullable<Usr["sms"]>["code"],
+) {
+    const u = await usr_r({ nbr }, { nam: 1, sms: 1, jwt: 1 })
+    const utc = Date.now()
+    if (u && u.sms && utc - u.sms.utc < utc_h * h_sms && code == u.sms.code) {
+        const pas = await pas_of_usr({ _id: u._id, nam: u.nam })
+        if (!pas) return null
+        if (u.jwt) return { pas, jwt: u.jwt }
+        const jwt = await jwt_sign({ usr: pas.usr, utc } as Jwt)
+        const c = await usr_u(pas.usr, { $set: { jwt } })
+        if (c) return { pas, jwt }
+    }
+    return null
+}
+
+function pas_clr(
+    usr: Usr["_id"],
+) {
+    return usr_u(usr, { $unset: { jwt: "" } })
+}
 
 export type Psg = {
-    psg: "pas",  // 票据登陆
+    psg: "pas",
 } | {
-    psg: "sms",  // 登陆短信
+    psg: "sms",
     nbr: NonNullable<Usr["nbr"]>,
-    sms: boolean, // 是否发送短信
+    sms: boolean,
 } | {
-    psg: "code", // 验证码登陆
+    psg: "code",
     nbr: NonNullable<Usr["nbr"]>,
     code: NonNullable<Usr["sms"]>["code"],
 } | {
-    psg: "clr", // 登出
+    psg: "clr",
     usr: Usr["_id"],
+}
+
+export type PsgRet = {
+    pas: Ret<typeof pas>,
+    sms: Ret<typeof pas_sms>,
+    code: NonNullable<Ret<typeof pas_code>>["pas"] | null,
+    clr: Ret<typeof pas_clr>,
+}
+
+export async function psg(
+    pas: Pas | null,
+    p: Psg,
+): Promise<{
+    ret: PsgRet[Psg["psg"]],
+    jwt?: NonNullable<Ret<typeof pas_code>>["jwt"] | null
+}> {
+    if (!is_psg(p)) return { ret: null }
+    switch (p.psg) {
+        case "pas": return { ret: pas }
+        case "sms": return { ret: await pas_sms(p.nbr, p.sms) }
+        case "code": {
+            const r = await pas_code(p.nbr, p.code)
+            if (r) return { ret: r.pas, jwt: r.jwt }
+            break
+        } case "clr": return { ret: await pas_clr(p.usr), jwt: null }
+    }
+    return { ret: null }
 }
