@@ -1,5 +1,6 @@
 ## 代码结构
 
+* `cli` 命令接口 `command line interface`
 * `src` 源代码 `source`
 	* `ont` 基础操作 `ontic`
 		- `base.ts` 进制转换
@@ -31,5 +32,6 @@
 		- `pos.ts` 请求接口 `post` `HTTP POST` 对操作组合做请求
 	* `ser.ts` 服务接口 `serve`
 * `tst` 测试代码 `tests`
+* `ui` 图形界面 `user interface`
 
 ## [系列视频](https://space.bilibili.com/483417795/video)

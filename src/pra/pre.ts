@@ -43,6 +43,11 @@ export type PreRet = {
     usr: Ret<typeof usr_c>,
     soc: Ret<typeof soc_c>,
     agd: Ret<typeof agd_c>,
+    cdt: Ret<typeof rec_c>,
+    dbt: Ret<typeof rec_c>,
+    ern: Ret<typeof rec_c>,
+    wsl: Ret<typeof msg_c>,
+    lit: Ret<typeof msg_c>,
 }
 
 export async function pre(
