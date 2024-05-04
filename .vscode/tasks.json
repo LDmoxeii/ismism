@@ -4,18 +4,33 @@
 		{
 			"label": "deno test",
 			"type": "shell",
-			"command": "zsh cli/db.zsh; deno test --allow-net --allow-read tst",
+			"command": "zsh cli/db.zsh; deno test --allow-net --allow-read ismism.ts/tst",
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "zsh cli/build.zsh",
 			"group": {
 				"kind": "test",
-				"isDefault": true,
+				"isDefault": true
 			},
 			"presentation": {
 				"echo": true,
 				"reveal": "always",
 				"panel": "dedicated",
 				"showReuseMessage": true,
-				"clear": true,
-			}
+				"clear": true
+			},
+			"problemMatcher": []
 		}
 	]
 }
