@@ -19,7 +19,7 @@ Deno.test("pas", async () => {
     const usr = await usr_c(nbr, "四川", "成都")
     assertEquals(1, usr)
     assertEquals([
-        { ret: null }, { ret: null }, { ret: null }
+        { ret: null, jwt: null }, { ret: null, jwt: null }, { ret: null }
     ], await Promise.all([
         pos(""), pos("", ""), pos(json({ psg: "pas" }), "invalidkey")
     ]))
@@ -27,7 +27,7 @@ Deno.test("pas", async () => {
     const { ret: sms } = await pos(json({ psg: "sms", nbr, sms: false })) as { ret: PsgRet["sms"] }
     assertEquals(true, sms && !sms.sms && is_utc(sms.utc!))
     const code = await usr_r({ nbr }, { sms: 1 })
-    const { ret: pas, jwt } = await pos(json({ psg: "code", nbr, code: code?.sms?.code! })) as PosRet["psg"] & { ret: PsgRet["code"] }
+    const { ret: pas, jwt } = await pos(json({ psg: "code", nbr, code: code?.sms?.code! })) as PosRet & { ret: PsgRet["code"] }
     assertEquals(true, pas && pas.usr == usr && jwt!.length > 0)
     assertEquals({ ret: pas }, await pos(json({ psg: "pas" }), jwt!))
     assertEquals({ ret: 1, jwt: null }, await pos(json({ psg: "clr", usr: pas!.usr }), jwt!))
@@ -53,7 +53,7 @@ Deno.test("pos", async () => {
     const u2 = (await usr_c(nbr[1], adm1, adm2))!
     await pos(json({ psg: "sms", nbr: nbr[1], sms: false }))
     const { sms } = (await usr_r({ _id: u2 }, { sms: 1 }))!
-    const { jwt } = (await pos(json({ psg: "code", nbr: nbr[1], code: sms!.code })))! as PosRet["psg"]
+    const { jwt } = (await pos(json({ psg: "code", nbr: nbr[1], code: sms!.code })))! as PosRet
     assertEquals([
         3, 1,
         null, null, null, null, null, null,

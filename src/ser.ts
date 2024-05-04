@@ -1,5 +1,6 @@
 import { db } from "./eid/db.ts"
 import { utc_dt, utc_etag, utc_h } from "./ont/utc.ts"
+import { pos } from "./pra/pos.ts";
 import { que } from "./pra/que.ts"
 
 db("ismism")
@@ -41,6 +42,21 @@ async function handler(
             log(utc, `${r}${s}`, 200)
             const q = await que(s)
             return new Response(JSON.stringify(q), { status: 200, headers: { etag } })
+        } case "p": {
+            const [cookie] = req.headers.get("cookie")?.split(";").filter(c => c.startsWith("pp=")) ?? []
+            const jwt = cookie ? cookie.substring(3) : undefined
+            const b = await req.text()
+            const r = await pos(b, jwt)
+            const headers: Headers = new Headers()
+            if ("jwt" in r) {
+                const [pp, ma] = r.jwt ? [r.jwt, 31728728] : ["", 0]
+                headers.set("set-cookie", `pp=${pp}; Path=/p; SameSite=Strict; Secure; HttpOnly; Max-Age=${ma}`)
+            }
+            if ("etag" in r) etag = r.etag ?? ""
+            const s = JSON.stringify(r.ret)
+            log(utc, `${b} => ${s}`, 200)
+            return new Response(s, { status: 200, headers })
+
         }
     }
     return new Response(null, { status: 400 })

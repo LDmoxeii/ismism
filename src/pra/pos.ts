@@ -7,23 +7,24 @@ export type { PreRet } from "./pre.ts"
 
 export type Pos = Psg | Pre
 export type PosRet = {
-    psg: Ret<typeof psg>,
-    pre: { ret: Ret<typeof pre> },
+    ret: Ret<typeof psg>["ret"] | Ret<typeof pre>,
+    jwt?: string | null,
+    etag?: "",
 }
 
 export async function pos(
     b: string,
     jwt?: string,
-) {
+): Promise<PosRet> {
     let json
     try { json = b.length > 0 ? JSON.parse(b) as Pos : {} }
     catch { return { ret: null } }
 
     const p = jwt ? await pas(jwt) : null
-
+    let ret = null
     if ("psg" in json) return psg(p, json)
-    else if (!p) return { ret: null }
-    else if ("pre" in json) return { ret: await pre(p, json) }
+    else if (!p) return { ret: null, jwt: null }
+    else if ("pre" in json) ret = await pre(p, json)
 
-    return { ret: null }
+    return ret ? { ret, etag: "" } : { ret }
 }

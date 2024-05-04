@@ -27,7 +27,7 @@
 		- `que.ts` 查询接口 `query` `HTTP GET` 对数据组合做请求
 		- `pas.ts` 用户登陆 `pass` (的操作组合)
 		- `pre.ts` 创建操作 `pre-data` `prepare` （的操作组合）
-		- `put.ts` 数据操作 `put-data`（的操作组合）
+		- `put.ts` 更新操作 `put-data`（的操作组合）
 		- `pos.ts` 请求接口 `post` `HTTP POST` 对操作组合做请求
 	* `ser.ts` 服务接口 `serve`
 * `tst` 测试代码 `tests`
