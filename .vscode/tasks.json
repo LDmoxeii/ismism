@@ -18,9 +18,9 @@
 		{
 			"label": "build",
 			"type": "shell",
-			"command": "zsh cli/build.zsh",
+			"command": "cd ismism.ts; zsh cli/build.zsh",
 			"group": {
-				"kind": "test",
+				"kind": "build",
 				"isDefault": true
 			},
 			"presentation": {

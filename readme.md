@@ -1,9 +1,17 @@
-## 代码结构
+# 【从零开发】主义主义网站
+
+## 代码结构 `ismism`
+
+编译环境 - 写的代码
+运行环境 - 跑的代码
+
+编译环境 =>编译生成=> 运行环境 =>部署=> 运行（服务器端 + 浏览器端）
 
 * `ismism.ts` 编译环境
-	* `cli` 命令接口 `command line interface`
+	* `cli` 命令 `command line interface`
 		- `sendsms.ts` 发送测试短信
-		- `bundle.ts` 编译并打包 `build and bundle`
+		- `bundle.ts` 编译 .ts 并打包 .js `build .ts and bundle .js`
+		- `build.zsh` 编译生成运行环境
 	* `src` 源代码 `source`
 		* `ont` 基础操作 `ontic`
 			- `base.ts` 进制转换
@@ -39,13 +47,19 @@
 			- `template.html` UI元素
 			- `style.css` UI样式
 		* `bind` UI定义（TS/JS）绑定服务器端与浏览器端的数据
+			- `fetch.ts` 绑定数据
 			- `bind.ts` 绑定UI入口
 			- `template.ts` 绑定UI元素
 		* `ui.ts` 打包UI `ui bundle`
-* `cli` 命令接口（运行环境）（服务器端）
-	- `build.zsh` 构建运行环境
-* `ui` 图形界面（运行环境）（浏览器端）
+* `cli` 命令（运行环境）（服务器端）
+	- `*ser.js` 服务 `serve`
+	- `db.zsh` 启动数据库
+	- `stop.zsh` 停止服务
+	- `start.zsh` 启动服务
+* `*ui` 图形界面（运行环境）（浏览器端）
+	- `*index.html` 网页界面
 * `mongod.service` `mongod.yaml` 数据库配置（服务器端）
 * `nginx.conf` 端口配置（服务器端）
 
 ## [系列视频](https://space.bilibili.com/483417795/video)
+

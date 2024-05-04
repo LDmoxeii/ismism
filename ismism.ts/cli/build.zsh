@@ -1,10 +1,7 @@
 echo "building ismism.ts\n"
 
-rm -f cli/*.js
-rm -rf ui
-mkdir ui
-
-cd ismism.ts
+rm -f ../cli/*.js
+rm -rf ../ui; mkdir ../ui
 
 set -e
 deno check src/ser.ts ui/bind/bind.ts
