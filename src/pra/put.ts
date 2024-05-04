@@ -18,7 +18,7 @@ export type Put = {
     sec: Soc["sec"],
 } | {
     put: "soc", // 更新俱乐部数据 （管理员）
-    soc: Soc["_id"], // 删除俱乐部
+    del: Soc["_id"], // 删除俱乐部
 } | {
     put: "soc", // 更新俱乐部数据 （联络员）
     soc: Soc["_id"],
@@ -29,7 +29,7 @@ export type Put = {
     agr: Soc["agr"]["msg"],
 } | {
     put: "agd", // 更新活动数据 （联络员）
-    agd: Agd["_id"], // 删除活动
+    del: Agd["_id"], // 删除活动
 } | {
     put: "agd", // 更新活动数据 （联络员）
     agd: Agd["_id"],
