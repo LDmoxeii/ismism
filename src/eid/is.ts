@@ -18,6 +18,7 @@ export const len_msg = 2048 * 8
 export const len_rec_frm = 2048 * 8
 export const len_rec_to = 64
 export const len_rec_now = 1024
+export const len_aug = 64
 export const len_jwt = 512
 
 export function is_lim(
