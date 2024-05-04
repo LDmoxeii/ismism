@@ -55,11 +55,20 @@ Deno.test("pos", async () => {
     const { sms } = (await usr_r({ _id: u2 }, { sms: 1 }))!
     const { jwt } = (await pos(json({ psg: "code", nbr: nbr[1], code: sms!.code })))! as PosRet
     assertEquals([
-        3, 1,
-        null, null, null, null, null, null,
+        1, 1,
+        null, null, null,
+        null, null, null, null, null,
+        1, 1, 1,
+        1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1,
+
     ], (await Promise.all([
         pos(json({ pre: "usr", nbr: nbr[2], adm1, adm2 }), jwt!),
         await pos(json({ pre: "soc", nam: "俱乐部", adm1, adm2 }), jwt!),
+
+        pos(json({ put: "soc", soc: 1, msg: "msg" }), jwt!),
+        pos(json({ put: "soc", soc: 1, agr: "agr" }), jwt!),
 
         pos(json({ pre: "agd", nam: "活动", soc: 1 }), jwt!),
         pos(json({ pre: "cdt", cdt }), jwt!),
@@ -67,6 +76,34 @@ Deno.test("pos", async () => {
         pos(json({ pre: "ern", ern }), jwt!),
         pos(json({ pre: "wsl", nam: "文章" }), jwt!),
         pos(json({ pre: "lit", nam: "文章" }), jwt!),
-    ])).map(r => r.ret))
+        pos(json({ put: "usr", usr: u2, nam: "用户", adm1, adm2, msg: "msg" }), jwt!),
+        await pos(json({ put: "soc", soc: 1, nam: "俱乐部改", adm1, adm2, sec: [u2] }), jwt!),
+        await pos(json({ put: "aut", aut: [2, 3], wsl: [2], lit: [2] }), jwt!),
+
+        await pos(json({ pre: "cdt", cdt }), jwt!),
+        pos(json({ pre: "cdt", cdt: cdt2 }), jwt!),
+        pos(json({ pre: "dbt", dbt }), jwt!),
+        pos(json({ pre: "ern", ern }), jwt!),
+        pos(json({ pre: "wsl", nam: "文章" }), jwt!),
+        pos(json({ pre: "lit", nam: "文章" }), jwt!),
+
+        pos(json({ put: "soc", soc: 1, msg: "msg" }), jwt!),
+        pos(json({ put: "soc", soc: 1, agr: "agr" }), jwt!),
+        await pos(json({ pre: "agd", nam: "活动", soc: 1 }), jwt!),
+        pos(json({ put: "agd", agd: 1, nam: "活动改", adm1, adm2, msg: "msg" }), jwt!),
+
+        pos(json({ put: "cdt", aug: cdt._id, msg: "msg", amt: 1 }), jwt!),
+        pos(json({ put: "cdt", agr: cdt._id }), jwt!),
+        pos(json({ put: "cdt", quo: 1, msg: "签到" }), jwt!),
+        pos(json({ put: "dbt", sec: dbt._id }), jwt!),
+        pos(json({ put: "dbt", dbt: dbt._id, rev: { msg: "rev", rev: 3, utc } }), jwt!),
+        pos(json({ put: "wsl", id: 1, nam: "文章改", msg: "msg" }), jwt!),
+        pos(json({ put: "wsl", id: 1, pin: true }), jwt!),
+    ])).map(r => r.ret ? 1 : null))
+    assertEquals([null, 1, null], (await Promise.all([
+        pos(json({ pre: "dbt", dbt: dbt2 }), jwt!),
+        await pos(json({ put: "cdt", mov: cdt2._id, msg: "mov", amt: 5 }), jwt!),
+        pos(json({ put: "cdt", mov: cdt2._id, msg: "mov", amt: 1 }), jwt!),
+    ])).map(r => r.ret ? 1 : null))
 })
 

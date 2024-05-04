@@ -22,9 +22,9 @@ export async function aut_f(
 }
 
 export async function aut_u(
-    a: Omit<Aut, "_id">,
+    a: Omit<Aut, "_id" | "sup">,
 ): DocU {
-    if (!is_aut({ _id: 1, ...a })) return null
+    if (!is_aut({ _id: 1, ...a, sup: [1, 2] })) return null
     try {
         const { matchedCount, modifiedCount } = await coll.aut.updateOne({ _id: 1 }, { $set: a })
         if (matchedCount > 0) return modifiedCount > 0 ? 1 : 0

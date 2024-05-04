@@ -1,100 +1,101 @@
 import type { Agd, Aut, Cdt, Dbt, Ern, Msg, Soc, Usr } from "../eid/typ.ts"
 import type { Pas } from "./pas.ts"
-import { Ret, is_put } from "./can.ts"
+
+import { agd_d, agd_u } from "../eid/agd.ts"
+import { aut_u } from "../eid/aut.ts"
 import { coll } from "../eid/db.ts"
 import { is_lim, len_aug } from "../eid/is.ts"
+import { msg_d, msg_u } from "../eid/msg.ts"
+import { cdt_u, dbt_u, rec_d, rec_r, rec_s } from "../eid/rec.ts"
+import { soc_d, soc_u } from "../eid/soc.ts"
 import { usr_u } from "../eid/usr.ts"
-import { soc_u, soc_d } from "../eid/soc.ts"
-import { agd_d, agd_u } from "../eid/agd.ts"
-import { cdt_u, rec_d, rec_r, rec_s } from "../eid/rec.ts"
-
-// 更新操作
+import { Ret, is_put } from "./can.ts"
 
 export type Put = {
-    put: "usr", // 更新用户数据 （本人）
+    put: "usr",
     usr: Usr["_id"],
     nam: Usr["nam"],
     adm1: Usr["adm1"],
     adm2: Usr["adm2"],
     msg: Usr["msg"],
 } | {
-    put: "soc", // 更新俱乐部数据 （管理员）
+    put: "soc",
     soc: Soc["_id"],
     nam: Soc["nam"],
     adm1: Soc["adm1"],
     adm2: Soc["adm2"],
     sec: Soc["sec"],
 } | {
-    put: "soc", // 更新俱乐部数据 （管理员）
-    del: Soc["_id"], // 删除俱乐部
+    put: "soc",
+    del: Soc["_id"],
 } | {
-    put: "soc", // 更新俱乐部数据 （联络员）
+    put: "soc",
     soc: Soc["_id"],
     msg: Soc["msg"],
 } | {
-    put: "soc", // 更新俱乐部数据 （联络员）
+    put: "soc",
     soc: Soc["_id"],
     agr: Soc["agr"]["msg"],
 } | {
-    put: "agd", // 更新活动数据 （联络员）
-    del: Agd["_id"], // 删除活动
+    put: "agd",
+    del: Agd["_id"],
 } | {
-    put: "agd", // 更新活动数据 （联络员）
+    put: "agd",
     agd: Agd["_id"],
     nam: Agd["nam"],
     adm1: Agd["adm1"],
     adm2: Agd["adm2"],
     msg: Agd["msg"],
 } | {
-    put: "cdt", // 更新积分记录（联络员）
-    del: Cdt["_id"], // 删除积分记录
+    put: "cdt",
+    del: Cdt["_id"],
 } | {
-    put: "cdt", // 更新积分记录（联络员）
-    aug: Cdt["_id"], // 追加项
+    put: "cdt",
+    aug: Cdt["_id"],
     msg: Cdt["msg"],
     amt: Cdt["amt"],
 } | {
-    put: "cdt", // 更新积分记录（联络员）
-    dim: Cdt["_id"], // 撤回追加项
+    put: "cdt",
+    dim: Cdt["_id"],
 } | {
-    put: "cdt", // 更新积分记录（会员）
-    agr: Cdt["_id"], // 同意用户协议
+    put: "cdt",
+    agr: Cdt["_id"],
 } | {
-    put: "cdt", // 更新积分记录（会员）
-    mov: Cdt["_id"], // 转让积分至 mov
+    put: "cdt",
+    mov: Cdt["_id"],
     msg: Cdt["msg"],
     amt: Cdt["amt"],
 } | {
-    put: "cdt", // 更新积分记录（会员）
-    quo: Cdt["_id"]["soc"], // 签到并使用 quota
+    put: "cdt",
+    quo: Cdt["_id"]["soc"],
     msg: Cdt["msg"],
 } | {
-    put: "dbt", // 更新积分使用（联络员）
-    del: Dbt["_id"], // 删除积分使用
+    put: "dbt",
+    del: Dbt["_id"],
 } | {
-    put: "dbt", // 更新积分使用（联络员）
-    sec: Dbt["_id"], // 确认积分使用
+    put: "dbt",
+    sec: Dbt["_id"],
 } | {
-    put: "dbt", // 更新积分使用（会员）
-    dbt: Dbt["_id"], // 反馈
+    put: "dbt",
+    dbt: Dbt["_id"],
     rev: NonNullable<Dbt["rev"]>,
 } | {
-    put: "ern", // 更新贡献记录（联络员）
-    del: Ern["_id"], // 删除
+    put: "ern",
+    del: Ern["_id"],
 } | {
-    put: "wsl" | "lit", // 更新文章（编辑）
+    put: "wsl" | "lit",
     id: Msg["_id"],
     nam: Msg["nam"],
     msg: Msg["msg"],
 } | {
-    put: "wsl" | "lit", // 更新文章（编辑）
-    id: Msg["_id"], // 置顶
+    put: "wsl" | "lit",
+    id: Msg["_id"],
     pin: boolean,
 } | {
-    put: "wsl" | "lit", // 更新文章（编辑）
-    del: Msg["_id"], // 删除
+    put: "wsl" | "lit",
+    del: Msg["_id"],
 } | {
-    put: "aut", // 更新管理员权限（超级管理员）
+    put: "aut",
     aut: Aut["aut"],
     wsl: Aut["wsl"],
     lit: Aut["lit"],
@@ -145,7 +146,19 @@ export async function put(
                     return cdt_u(c._id, { $push: { aug: { msg: p.msg, amt: 0, utc: now, usr: pas.usr } } })
             }
             break
-        }
+        } case "dbt": case "ern": {
+            if ("del" in p) return rec_d(coll[p.put], p.del)
+            else if ("sec" in p) return dbt_u(p.sec, { sec: pas.usr })
+            else if ("rev" in p) return dbt_u(p.dbt, { rev: p.rev })
+            break
+        } case "wsl": case "lit": {
+            if ("nam" in p) return msg_u(coll[p.put], p.id, { $set: { nam: p.nam, msg: p.msg, "utc.put": now } })
+            else if ("pin" in p) return msg_u(coll[p.put], p.id, p.pin ? { $set: { pin: true } } : { $unset: { pin: true } })
+            else if ("del" in p) return msg_d(coll[p.put], p.del)
+            break
+        } case "aut": return aut_u({ aut: p.aut, wsl: p.wsl, lit: p.lit })
+
+
     }
     return null
 }

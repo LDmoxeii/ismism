@@ -115,6 +115,6 @@ Deno.test("msg", async () => {
 
 Deno.test("aut", async () => {
 	assertEquals({ sup: [1, 2], aut: [2], wsl: [], lit: [] }, await aut())
-	assertEquals(1, await aut_u({ sup: [1, 2], aut: [2, 3], wsl: [3, 4], lit: [3, 4] }))
+	assertEquals(1, await aut_u({ aut: [2, 3], wsl: [3, 4], lit: [3, 4] }))
 	assertEquals(["aut", "wsl", "lit",], await aut_f(3))
 })
