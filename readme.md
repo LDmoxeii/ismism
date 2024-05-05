@@ -39,7 +39,7 @@
 			- `pre.ts` 创建操作 `pre-data` `prepare` （的操作组合）
 			- `put.ts` 更新操作 `put-data`（的操作组合）
 			- `pos.ts` 请求接口 `post` `HTTP POST` 对操作组合做请求
-		* `ser.ts` 服务接口 `serve`
+		* `ser.ts` 服务 `serve`
 	* `tst` 测试代码 `tests`
 	* `ui` 图形界面 `graphical user interface`
 		* `index` UI声明（HTML/CSS）
@@ -58,6 +58,7 @@
 	- `start.zsh` 启动服务
 * `*ui` 图形界面（运行环境）（浏览器端）
 	- `*index.html` 网页界面
+* `*ssl` 域名证书和签名
 * `mongod.service` `mongod.yaml` 数据库配置（服务器端）
 * `nginx.conf` 端口配置（服务器端）
 
